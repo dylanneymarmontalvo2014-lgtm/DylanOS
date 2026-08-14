@@ -1,0 +1,39 @@
+---
+componentName:   debian
+welcomeStyleCalamares: true
+welcomeExpandingLogo: true
+windowExpanding: normal
+windowSize: 800px,580px
+windowPlacement: center
+
+strings:
+    productName:         Debian GNU/Linux
+    shortProductName:    Debian
+    version:             13
+    shortVersion:        13
+    versionedName:       Debian 13
+    shortVersionedName:  Debian 13
+    bootloaderEntryName: Debian
+    productUrl:          https://debian.org
+    supportUrl:          https://www.debian.org/support
+    knownIssuesUrl:      https://bugs.debian.org
+    releaseNotesUrl:     https://www.debian.org/releases/trixie/releasenotes
+    donateUrl:           https://www.debian.org
+
+sidebar: widget
+navigation: widget
+
+images:
+    productLogo:         "debian-logo.png"
+    productIcon:         "debian-logo.png"
+    productWelcome:      "welcome.png"
+
+slideshow:               "show.qml"
+
+style:
+   SidebarBackground:    "#26475b"
+   SidebarText:          "#FFFFFF"
+   SidebarTextCurrent:   "#fbfbfb"
+   SidebarBackgroundCurrent: "#265370"
+
+slideshowAPI: 2
