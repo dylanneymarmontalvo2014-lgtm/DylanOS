@@ -1,0 +1,13 @@
+[SddmGreeterTheme]
+Name=Apple-Sonoma-v2
+Description=apple like style
+Author=zayronxio
+Copyright=(c) 2022, zayronxio
+License=gpl3.0
+Type=sddm-theme
+Version=1.0
+Screenshot=screenshot.png
+MainScript=Main.qml
+ConfigFile=theme.conf
+Theme-Id=Apple-Sonoma-v2
+QtVersion=6
