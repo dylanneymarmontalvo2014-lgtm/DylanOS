@@ -1,3 +1,4 @@
+
 import QtQuick
 import QtQuick.Controls
 import QtQuick.Layouts
@@ -30,7 +31,6 @@ ApplicationWindow {
         pageItems = appModel.itemsForPage(0, pageSize)
     }
 
-    focus: true
     Keys.onEscapePressed: Qt.quit()
     Keys.onLeftPressed: goToPage(currentPage - 1)
     Keys.onRightPressed: goToPage(currentPage + 1)
@@ -109,7 +109,7 @@ ApplicationWindow {
                             border.width: iconMouse.containsMouse ? 2 : 0
                             border.color: accent
 
-                            PlasmaCore.IconItem {
+                            Image {
                                 anchors.centerIn: parent
                                 width: 72
                                 height: 72

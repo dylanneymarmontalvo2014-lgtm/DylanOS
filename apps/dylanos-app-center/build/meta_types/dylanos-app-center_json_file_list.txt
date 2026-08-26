@@ -1,0 +1,1 @@
+/home/dylan/DylanOS/apps/dylanos-app-center/build/dylanos-app-center_autogen/include/../UVLADIE3JM/moc_appmodel.cpp.json

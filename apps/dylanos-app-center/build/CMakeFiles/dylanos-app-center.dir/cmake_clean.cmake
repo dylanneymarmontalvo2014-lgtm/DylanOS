@@ -1,0 +1,42 @@
+file(REMOVE_RECURSE
+  ".qt/rcc/qrc_dylanos-app-center_raw_qml_0.cpp"
+  ".qt/rcc/qrc_qmake_DylanOS_AppCenter.cpp"
+  ".rcc/qmlcache/dylanos-app-center_qml/Main_qml.cpp"
+  ".rcc/qmlcache/dylanos-app-center_qml/Main_qml.cpp.aotstats"
+  ".rcc/qmlcache/dylanos-app-center_qmlcache_loader.cpp"
+  "CMakeFiles/dylanos-app-center.dir/link.d"
+  "CMakeFiles/dylanos-app-center_autogen.dir/AutogenUsed.txt"
+  "CMakeFiles/dylanos-app-center_autogen.dir/ParseCache.txt"
+  "dylanos-app-center_autogen"
+  "CMakeFiles/dylanos-app-center.dir/build/.qt/rcc/qrc_dylanos-app-center_raw_qml_0.cpp.o"
+  "CMakeFiles/dylanos-app-center.dir/build/.qt/rcc/qrc_dylanos-app-center_raw_qml_0.cpp.o.d"
+  "CMakeFiles/dylanos-app-center.dir/build/.qt/rcc/qrc_qmake_DylanOS_AppCenter.cpp.o"
+  "CMakeFiles/dylanos-app-center.dir/build/.qt/rcc/qrc_qmake_DylanOS_AppCenter.cpp.o.d"
+  "CMakeFiles/dylanos-app-center.dir/build/.rcc/qmlcache/dylanos-app-center_qml/Main_qml.cpp.o"
+  "CMakeFiles/dylanos-app-center.dir/build/.rcc/qmlcache/dylanos-app-center_qml/Main_qml.cpp.o.d"
+  "CMakeFiles/dylanos-app-center.dir/build/.rcc/qmlcache/dylanos-app-center_qmlcache_loader.cpp.o"
+  "CMakeFiles/dylanos-app-center.dir/build/.rcc/qmlcache/dylanos-app-center_qmlcache_loader.cpp.o.d"
+  "CMakeFiles/dylanos-app-center.dir/dylanos-app-center_autogen/mocs_compilation.cpp.o"
+  "CMakeFiles/dylanos-app-center.dir/dylanos-app-center_autogen/mocs_compilation.cpp.o.d"
+  "CMakeFiles/dylanos-app-center.dir/dylanos-app-center_qmltyperegistrations.cpp.o"
+  "CMakeFiles/dylanos-app-center.dir/dylanos-app-center_qmltyperegistrations.cpp.o.d"
+  "CMakeFiles/dylanos-app-center.dir/src/appmodel.cpp.o"
+  "CMakeFiles/dylanos-app-center.dir/src/appmodel.cpp.o.d"
+  "CMakeFiles/dylanos-app-center.dir/src/main.cpp.o"
+  "CMakeFiles/dylanos-app-center.dir/src/main.cpp.o.d"
+  "DylanOS/AppCenter/dylanos-app-center.qmltypes"
+  "dylanos-app-center"
+  "dylanos-app-center.pdb"
+  "dylanos-app-center_autogen/mocs_compilation.cpp"
+  "dylanos-app-center_autogen/timestamp"
+  "dylanos-app-center_qmltyperegistrations.cpp"
+  "meta_types/dylanos-app-center_json_file_list.txt"
+  "meta_types/dylanos-app-center_json_file_list.txt.timestamp"
+  "meta_types/qt6dylanos-app-center_metatypes.json"
+  "meta_types/qt6dylanos-app-center_metatypes.json.gen"
+)
+
+# Per-language clean rules from dependency scanning.
+foreach(lang CXX)
+  include(CMakeFiles/dylanos-app-center.dir/cmake_clean_${lang}.cmake OPTIONAL)
+endforeach()
