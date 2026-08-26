@@ -439,4 +439,22 @@ CMakeFiles/dylanos-app-center.dir/src/main.cpp.o: \
  /usr/include/KF6/KService/ksycocatype.h \
  /usr/include/x86_64-linux-gnu/qt6/QtCore/QDataStream \
  /usr/include/x86_64-linux-gnu/qt6/QtCore/qdatastream.h \
- /usr/include/x86_64-linux-gnu/qt6/QtCore/QExplicitlySharedDataPointer
+ /usr/include/x86_64-linux-gnu/qt6/QtCore/QExplicitlySharedDataPointer \
+ /home/dylan/DylanOS/apps/dylanos-app-center/src/iconprovider.h \
+ /usr/include/x86_64-linux-gnu/qt6/QtQuick/QQuickImageProvider \
+ /usr/include/x86_64-linux-gnu/qt6/QtQuick/qquickimageprovider.h \
+ /usr/include/x86_64-linux-gnu/qt6/QtQuick/qtquickglobal.h \
+ /usr/include/x86_64-linux-gnu/qt6/QtQuick/qtquick-config.h \
+ /usr/include/x86_64-linux-gnu/qt6/QtQuick/qtquickexports.h \
+ /usr/include/x86_64-linux-gnu/qt6/QtGui/qimage.h \
+ /usr/include/x86_64-linux-gnu/qt6/QtGui/qcolor.h \
+ /usr/include/x86_64-linux-gnu/qt6/QtGui/qrgb.h \
+ /usr/include/x86_64-linux-gnu/qt6/QtGui/qrgba64.h \
+ /usr/include/x86_64-linux-gnu/qt6/QtGui/qpaintdevice.h \
+ /usr/include/x86_64-linux-gnu/qt6/QtCore/qrect.h \
+ /usr/include/x86_64-linux-gnu/qt6/QtGui/qpixelformat.h \
+ /usr/include/x86_64-linux-gnu/qt6/QtGui/qtransform.h \
+ /usr/include/x86_64-linux-gnu/qt6/QtGui/qpolygon.h \
+ /usr/include/x86_64-linux-gnu/qt6/QtGui/qregion.h \
+ /usr/include/x86_64-linux-gnu/qt6/QtCore/qline.h \
+ /usr/include/x86_64-linux-gnu/qt6/QtGui/qpixmap.h

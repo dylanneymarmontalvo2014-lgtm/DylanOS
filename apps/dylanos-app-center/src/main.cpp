@@ -2,6 +2,7 @@
 #include <QQmlApplicationEngine>
 #include <QQmlContext>
 #include "appmodel.h"
+#include "iconprovider.h"
 
 int main(int argc, char *argv[])
 {
@@ -12,6 +13,7 @@ int main(int argc, char *argv[])
     AppModel appModel;
 
     QQmlApplicationEngine engine;
+    engine.addImageProvider("icon", new IconProvider());
     engine.rootContext()->setContextProperty("appModel", &appModel);
     engine.loadFromModule("DylanOS.AppCenter", "Main");
 
