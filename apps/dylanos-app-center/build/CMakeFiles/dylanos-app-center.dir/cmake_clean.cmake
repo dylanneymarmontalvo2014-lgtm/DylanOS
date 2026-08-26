@@ -22,6 +22,8 @@ file(REMOVE_RECURSE
   "CMakeFiles/dylanos-app-center.dir/dylanos-app-center_qmltyperegistrations.cpp.o.d"
   "CMakeFiles/dylanos-app-center.dir/src/appmodel.cpp.o"
   "CMakeFiles/dylanos-app-center.dir/src/appmodel.cpp.o.d"
+  "CMakeFiles/dylanos-app-center.dir/src/iconprovider.cpp.o"
+  "CMakeFiles/dylanos-app-center.dir/src/iconprovider.cpp.o.d"
   "CMakeFiles/dylanos-app-center.dir/src/main.cpp.o"
   "CMakeFiles/dylanos-app-center.dir/src/main.cpp.o.d"
   "DylanOS/AppCenter/dylanos-app-center.qmltypes"

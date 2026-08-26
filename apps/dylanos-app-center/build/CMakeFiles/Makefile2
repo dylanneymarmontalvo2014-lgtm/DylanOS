@@ -203,12 +203,12 @@ CMakeFiles/dylanos-app-center.dir/all: CMakeFiles/dylanos-app-center_autogen_tim
 CMakeFiles/dylanos-app-center.dir/all: CMakeFiles/dylanos-app-center_autogen.dir/all
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/dylanos-app-center.dir/build.make CMakeFiles/dylanos-app-center.dir/depend
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/dylanos-app-center.dir/build.make CMakeFiles/dylanos-app-center.dir/build
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --progress-dir=/home/dylan/DylanOS/apps/dylanos-app-center/build/CMakeFiles --progress-num=2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19 "Built target dylanos-app-center"
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --progress-dir=/home/dylan/DylanOS/apps/dylanos-app-center/build/CMakeFiles --progress-num=2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20 "Built target dylanos-app-center"
 .PHONY : CMakeFiles/dylanos-app-center.dir/all
 
 # Build rule for subdir invocation for target.
 CMakeFiles/dylanos-app-center.dir/rule: cmake_check_build_system
-	$(CMAKE_COMMAND) -E cmake_progress_start /home/dylan/DylanOS/apps/dylanos-app-center/build/CMakeFiles 22
+	$(CMAKE_COMMAND) -E cmake_progress_start /home/dylan/DylanOS/apps/dylanos-app-center/build/CMakeFiles 23
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 CMakeFiles/dylanos-app-center.dir/all
 	$(CMAKE_COMMAND) -E cmake_progress_start /home/dylan/DylanOS/apps/dylanos-app-center/build/CMakeFiles 0
 .PHONY : CMakeFiles/dylanos-app-center.dir/rule
@@ -221,7 +221,7 @@ dylanos-app-center: CMakeFiles/dylanos-app-center.dir/rule
 CMakeFiles/dylanos-app-center.dir/codegen: CMakeFiles/dylanos-app-center_qmlimportscan.dir/all
 CMakeFiles/dylanos-app-center.dir/codegen: CMakeFiles/dylanos-app-center_autogen_timestamp_deps.dir/all
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/dylanos-app-center.dir/build.make CMakeFiles/dylanos-app-center.dir/codegen
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --progress-dir=/home/dylan/DylanOS/apps/dylanos-app-center/build/CMakeFiles --progress-num=2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19 "Finished codegen for target dylanos-app-center"
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --progress-dir=/home/dylan/DylanOS/apps/dylanos-app-center/build/CMakeFiles --progress-num=2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20 "Finished codegen for target dylanos-app-center"
 .PHONY : CMakeFiles/dylanos-app-center.dir/codegen
 
 # clean rule for target.
@@ -236,7 +236,7 @@ CMakeFiles/dylanos-app-center.dir/clean:
 CMakeFiles/dylanos-app-center_qmltyperegistration.dir/all: CMakeFiles/dylanos-app-center_autogen_timestamp_deps.dir/all
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/dylanos-app-center_qmltyperegistration.dir/build.make CMakeFiles/dylanos-app-center_qmltyperegistration.dir/depend
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/dylanos-app-center_qmltyperegistration.dir/build.make CMakeFiles/dylanos-app-center_qmltyperegistration.dir/build
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --progress-dir=/home/dylan/DylanOS/apps/dylanos-app-center/build/CMakeFiles --progress-num=24,25,26,27,28 "Built target dylanos-app-center_qmltyperegistration"
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --progress-dir=/home/dylan/DylanOS/apps/dylanos-app-center/build/CMakeFiles --progress-num=25,26,27,28,29 "Built target dylanos-app-center_qmltyperegistration"
 .PHONY : CMakeFiles/dylanos-app-center_qmltyperegistration.dir/all
 
 # Build rule for subdir invocation for target.
@@ -253,7 +253,7 @@ dylanos-app-center_qmltyperegistration: CMakeFiles/dylanos-app-center_qmltypereg
 # codegen rule for target.
 CMakeFiles/dylanos-app-center_qmltyperegistration.dir/codegen: CMakeFiles/dylanos-app-center_autogen_timestamp_deps.dir/all
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/dylanos-app-center_qmltyperegistration.dir/build.make CMakeFiles/dylanos-app-center_qmltyperegistration.dir/codegen
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --progress-dir=/home/dylan/DylanOS/apps/dylanos-app-center/build/CMakeFiles --progress-num=24,25,26,27,28 "Finished codegen for target dylanos-app-center_qmltyperegistration"
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --progress-dir=/home/dylan/DylanOS/apps/dylanos-app-center/build/CMakeFiles --progress-num=25,26,27,28,29 "Finished codegen for target dylanos-app-center_qmltyperegistration"
 .PHONY : CMakeFiles/dylanos-app-center_qmltyperegistration.dir/codegen
 
 # clean rule for target.
@@ -492,7 +492,7 @@ CMakeFiles/all_qmllint_module.dir/clean:
 CMakeFiles/dylanos-app-center_copy_qml.dir/all:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/dylanos-app-center_copy_qml.dir/build.make CMakeFiles/dylanos-app-center_copy_qml.dir/depend
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/dylanos-app-center_copy_qml.dir/build.make CMakeFiles/dylanos-app-center_copy_qml.dir/build
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --progress-dir=/home/dylan/DylanOS/apps/dylanos-app-center/build/CMakeFiles --progress-num=21 "Built target dylanos-app-center_copy_qml"
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --progress-dir=/home/dylan/DylanOS/apps/dylanos-app-center/build/CMakeFiles --progress-num=22 "Built target dylanos-app-center_copy_qml"
 .PHONY : CMakeFiles/dylanos-app-center_copy_qml.dir/all
 
 # Build rule for subdir invocation for target.
@@ -509,7 +509,7 @@ dylanos-app-center_copy_qml: CMakeFiles/dylanos-app-center_copy_qml.dir/rule
 # codegen rule for target.
 CMakeFiles/dylanos-app-center_copy_qml.dir/codegen:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/dylanos-app-center_copy_qml.dir/build.make CMakeFiles/dylanos-app-center_copy_qml.dir/codegen
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --progress-dir=/home/dylan/DylanOS/apps/dylanos-app-center/build/CMakeFiles --progress-num=21 "Finished codegen for target dylanos-app-center_copy_qml"
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --progress-dir=/home/dylan/DylanOS/apps/dylanos-app-center/build/CMakeFiles --progress-num=22 "Finished codegen for target dylanos-app-center_copy_qml"
 .PHONY : CMakeFiles/dylanos-app-center_copy_qml.dir/codegen
 
 # clean rule for target.
@@ -524,7 +524,7 @@ CMakeFiles/dylanos-app-center_copy_qml.dir/clean:
 CMakeFiles/dylanos-app-center_copy_res.dir/all:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/dylanos-app-center_copy_res.dir/build.make CMakeFiles/dylanos-app-center_copy_res.dir/depend
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/dylanos-app-center_copy_res.dir/build.make CMakeFiles/dylanos-app-center_copy_res.dir/build
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --progress-dir=/home/dylan/DylanOS/apps/dylanos-app-center/build/CMakeFiles --progress-num=22 "Built target dylanos-app-center_copy_res"
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --progress-dir=/home/dylan/DylanOS/apps/dylanos-app-center/build/CMakeFiles --progress-num=23 "Built target dylanos-app-center_copy_res"
 .PHONY : CMakeFiles/dylanos-app-center_copy_res.dir/all
 
 # Build rule for subdir invocation for target.
@@ -541,7 +541,7 @@ dylanos-app-center_copy_res: CMakeFiles/dylanos-app-center_copy_res.dir/rule
 # codegen rule for target.
 CMakeFiles/dylanos-app-center_copy_res.dir/codegen:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/dylanos-app-center_copy_res.dir/build.make CMakeFiles/dylanos-app-center_copy_res.dir/codegen
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --progress-dir=/home/dylan/DylanOS/apps/dylanos-app-center/build/CMakeFiles --progress-num=22 "Finished codegen for target dylanos-app-center_copy_res"
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --progress-dir=/home/dylan/DylanOS/apps/dylanos-app-center/build/CMakeFiles --progress-num=23 "Finished codegen for target dylanos-app-center_copy_res"
 .PHONY : CMakeFiles/dylanos-app-center_copy_res.dir/codegen
 
 # clean rule for target.
@@ -557,7 +557,7 @@ CMakeFiles/module_dylanos-app-center_aotstats_target.dir/all: CMakeFiles/dylanos
 CMakeFiles/module_dylanos-app-center_aotstats_target.dir/all: CMakeFiles/dylanos-app-center_autogen_timestamp_deps.dir/all
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/module_dylanos-app-center_aotstats_target.dir/build.make CMakeFiles/module_dylanos-app-center_aotstats_target.dir/depend
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/module_dylanos-app-center_aotstats_target.dir/build.make CMakeFiles/module_dylanos-app-center_aotstats_target.dir/build
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --progress-dir=/home/dylan/DylanOS/apps/dylanos-app-center/build/CMakeFiles --progress-num=29,30 "Built target module_dylanos-app-center_aotstats_target"
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --progress-dir=/home/dylan/DylanOS/apps/dylanos-app-center/build/CMakeFiles --progress-num=30,31 "Built target module_dylanos-app-center_aotstats_target"
 .PHONY : CMakeFiles/module_dylanos-app-center_aotstats_target.dir/all
 
 # Build rule for subdir invocation for target.
@@ -575,7 +575,7 @@ module_dylanos-app-center_aotstats_target: CMakeFiles/module_dylanos-app-center_
 CMakeFiles/module_dylanos-app-center_aotstats_target.dir/codegen: CMakeFiles/dylanos-app-center_qmltyperegistration.dir/all
 CMakeFiles/module_dylanos-app-center_aotstats_target.dir/codegen: CMakeFiles/dylanos-app-center_autogen_timestamp_deps.dir/all
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/module_dylanos-app-center_aotstats_target.dir/build.make CMakeFiles/module_dylanos-app-center_aotstats_target.dir/codegen
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --progress-dir=/home/dylan/DylanOS/apps/dylanos-app-center/build/CMakeFiles --progress-num=29,30 "Finished codegen for target module_dylanos-app-center_aotstats_target"
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --progress-dir=/home/dylan/DylanOS/apps/dylanos-app-center/build/CMakeFiles --progress-num=30,31 "Finished codegen for target module_dylanos-app-center_aotstats_target"
 .PHONY : CMakeFiles/module_dylanos-app-center_aotstats_target.dir/codegen
 
 # clean rule for target.
@@ -624,7 +624,7 @@ CMakeFiles/all_aotstats.dir/clean:
 CMakeFiles/dylanos-app-center_qmlimportscan.dir/all:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/dylanos-app-center_qmlimportscan.dir/build.make CMakeFiles/dylanos-app-center_qmlimportscan.dir/depend
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/dylanos-app-center_qmlimportscan.dir/build.make CMakeFiles/dylanos-app-center_qmlimportscan.dir/build
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --progress-dir=/home/dylan/DylanOS/apps/dylanos-app-center/build/CMakeFiles --progress-num=23 "Built target dylanos-app-center_qmlimportscan"
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --progress-dir=/home/dylan/DylanOS/apps/dylanos-app-center/build/CMakeFiles --progress-num=24 "Built target dylanos-app-center_qmlimportscan"
 .PHONY : CMakeFiles/dylanos-app-center_qmlimportscan.dir/all
 
 # Build rule for subdir invocation for target.
@@ -641,7 +641,7 @@ dylanos-app-center_qmlimportscan: CMakeFiles/dylanos-app-center_qmlimportscan.di
 # codegen rule for target.
 CMakeFiles/dylanos-app-center_qmlimportscan.dir/codegen:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/dylanos-app-center_qmlimportscan.dir/build.make CMakeFiles/dylanos-app-center_qmlimportscan.dir/codegen
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --progress-dir=/home/dylan/DylanOS/apps/dylanos-app-center/build/CMakeFiles --progress-num=23 "Finished codegen for target dylanos-app-center_qmlimportscan"
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --progress-dir=/home/dylan/DylanOS/apps/dylanos-app-center/build/CMakeFiles --progress-num=24 "Finished codegen for target dylanos-app-center_qmlimportscan"
 .PHONY : CMakeFiles/dylanos-app-center_qmlimportscan.dir/codegen
 
 # clean rule for target.
@@ -690,7 +690,7 @@ CMakeFiles/dylanos-app-center_autogen_timestamp_deps.dir/clean:
 CMakeFiles/dylanos-app-center_autogen.dir/all: CMakeFiles/dylanos-app-center_autogen_timestamp_deps.dir/all
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/dylanos-app-center_autogen.dir/build.make CMakeFiles/dylanos-app-center_autogen.dir/depend
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/dylanos-app-center_autogen.dir/build.make CMakeFiles/dylanos-app-center_autogen.dir/build
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --progress-dir=/home/dylan/DylanOS/apps/dylanos-app-center/build/CMakeFiles --progress-num=20 "Built target dylanos-app-center_autogen"
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --progress-dir=/home/dylan/DylanOS/apps/dylanos-app-center/build/CMakeFiles --progress-num=21 "Built target dylanos-app-center_autogen"
 .PHONY : CMakeFiles/dylanos-app-center_autogen.dir/all
 
 # Build rule for subdir invocation for target.
@@ -707,7 +707,7 @@ dylanos-app-center_autogen: CMakeFiles/dylanos-app-center_autogen.dir/rule
 # codegen rule for target.
 CMakeFiles/dylanos-app-center_autogen.dir/codegen: CMakeFiles/dylanos-app-center_autogen_timestamp_deps.dir/all
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/dylanos-app-center_autogen.dir/build.make CMakeFiles/dylanos-app-center_autogen.dir/codegen
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --progress-dir=/home/dylan/DylanOS/apps/dylanos-app-center/build/CMakeFiles --progress-num=20 "Finished codegen for target dylanos-app-center_autogen"
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --progress-dir=/home/dylan/DylanOS/apps/dylanos-app-center/build/CMakeFiles --progress-num=21 "Finished codegen for target dylanos-app-center_autogen"
 .PHONY : CMakeFiles/dylanos-app-center_autogen.dir/codegen
 
 # clean rule for target.

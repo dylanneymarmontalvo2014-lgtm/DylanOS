@@ -16,6 +16,7 @@ set(CMAKE_DEPENDS_DEPENDENCY_FILES
   "/home/dylan/DylanOS/apps/dylanos-app-center/build/dylanos-app-center_autogen/mocs_compilation.cpp" "CMakeFiles/dylanos-app-center.dir/dylanos-app-center_autogen/mocs_compilation.cpp.o" "gcc" "CMakeFiles/dylanos-app-center.dir/dylanos-app-center_autogen/mocs_compilation.cpp.o.d"
   "/home/dylan/DylanOS/apps/dylanos-app-center/build/dylanos-app-center_qmltyperegistrations.cpp" "CMakeFiles/dylanos-app-center.dir/dylanos-app-center_qmltyperegistrations.cpp.o" "gcc" "CMakeFiles/dylanos-app-center.dir/dylanos-app-center_qmltyperegistrations.cpp.o.d"
   "/home/dylan/DylanOS/apps/dylanos-app-center/src/appmodel.cpp" "CMakeFiles/dylanos-app-center.dir/src/appmodel.cpp.o" "gcc" "CMakeFiles/dylanos-app-center.dir/src/appmodel.cpp.o.d"
+  "/home/dylan/DylanOS/apps/dylanos-app-center/src/iconprovider.cpp" "CMakeFiles/dylanos-app-center.dir/src/iconprovider.cpp.o" "gcc" "CMakeFiles/dylanos-app-center.dir/src/iconprovider.cpp.o.d"
   "/home/dylan/DylanOS/apps/dylanos-app-center/src/main.cpp" "CMakeFiles/dylanos-app-center.dir/src/main.cpp.o" "gcc" "CMakeFiles/dylanos-app-center.dir/src/main.cpp.o.d"
   "" "dylanos-app-center" "gcc" "CMakeFiles/dylanos-app-center.dir/link.d"
   )

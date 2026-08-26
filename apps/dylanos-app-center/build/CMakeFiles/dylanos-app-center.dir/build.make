@@ -188,10 +188,24 @@ CMakeFiles/dylanos-app-center.dir/src/appmodel.cpp.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Compiling CXX source to assembly CMakeFiles/dylanos-app-center.dir/src/appmodel.cpp.s"
 	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/dylan/DylanOS/apps/dylanos-app-center/src/appmodel.cpp -o CMakeFiles/dylanos-app-center.dir/src/appmodel.cpp.s
 
+CMakeFiles/dylanos-app-center.dir/src/iconprovider.cpp.o: CMakeFiles/dylanos-app-center.dir/flags.make
+CMakeFiles/dylanos-app-center.dir/src/iconprovider.cpp.o: /home/dylan/DylanOS/apps/dylanos-app-center/src/iconprovider.cpp
+CMakeFiles/dylanos-app-center.dir/src/iconprovider.cpp.o: CMakeFiles/dylanos-app-center.dir/compiler_depend.ts
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/dylan/DylanOS/apps/dylanos-app-center/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_13) "Building CXX object CMakeFiles/dylanos-app-center.dir/src/iconprovider.cpp.o"
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/dylanos-app-center.dir/src/iconprovider.cpp.o -MF CMakeFiles/dylanos-app-center.dir/src/iconprovider.cpp.o.d -o CMakeFiles/dylanos-app-center.dir/src/iconprovider.cpp.o -c /home/dylan/DylanOS/apps/dylanos-app-center/src/iconprovider.cpp
+
+CMakeFiles/dylanos-app-center.dir/src/iconprovider.cpp.i: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Preprocessing CXX source to CMakeFiles/dylanos-app-center.dir/src/iconprovider.cpp.i"
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/dylan/DylanOS/apps/dylanos-app-center/src/iconprovider.cpp > CMakeFiles/dylanos-app-center.dir/src/iconprovider.cpp.i
+
+CMakeFiles/dylanos-app-center.dir/src/iconprovider.cpp.s: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Compiling CXX source to assembly CMakeFiles/dylanos-app-center.dir/src/iconprovider.cpp.s"
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/dylan/DylanOS/apps/dylanos-app-center/src/iconprovider.cpp -o CMakeFiles/dylanos-app-center.dir/src/iconprovider.cpp.s
+
 CMakeFiles/dylanos-app-center.dir/dylanos-app-center_qmltyperegistrations.cpp.o: CMakeFiles/dylanos-app-center.dir/flags.make
 CMakeFiles/dylanos-app-center.dir/dylanos-app-center_qmltyperegistrations.cpp.o: dylanos-app-center_qmltyperegistrations.cpp
 CMakeFiles/dylanos-app-center.dir/dylanos-app-center_qmltyperegistrations.cpp.o: CMakeFiles/dylanos-app-center.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/dylan/DylanOS/apps/dylanos-app-center/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_13) "Building CXX object CMakeFiles/dylanos-app-center.dir/dylanos-app-center_qmltyperegistrations.cpp.o"
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/dylan/DylanOS/apps/dylanos-app-center/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_14) "Building CXX object CMakeFiles/dylanos-app-center.dir/dylanos-app-center_qmltyperegistrations.cpp.o"
 	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/dylanos-app-center.dir/dylanos-app-center_qmltyperegistrations.cpp.o -MF CMakeFiles/dylanos-app-center.dir/dylanos-app-center_qmltyperegistrations.cpp.o.d -o CMakeFiles/dylanos-app-center.dir/dylanos-app-center_qmltyperegistrations.cpp.o -c /home/dylan/DylanOS/apps/dylanos-app-center/build/dylanos-app-center_qmltyperegistrations.cpp
 
 CMakeFiles/dylanos-app-center.dir/dylanos-app-center_qmltyperegistrations.cpp.i: cmake_force
@@ -205,7 +219,7 @@ CMakeFiles/dylanos-app-center.dir/dylanos-app-center_qmltyperegistrations.cpp.s:
 CMakeFiles/dylanos-app-center.dir/build/.qt/rcc/qrc_qmake_DylanOS_AppCenter.cpp.o: CMakeFiles/dylanos-app-center.dir/flags.make
 CMakeFiles/dylanos-app-center.dir/build/.qt/rcc/qrc_qmake_DylanOS_AppCenter.cpp.o: .qt/rcc/qrc_qmake_DylanOS_AppCenter.cpp
 CMakeFiles/dylanos-app-center.dir/build/.qt/rcc/qrc_qmake_DylanOS_AppCenter.cpp.o: CMakeFiles/dylanos-app-center.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/dylan/DylanOS/apps/dylanos-app-center/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_14) "Building CXX object CMakeFiles/dylanos-app-center.dir/build/.qt/rcc/qrc_qmake_DylanOS_AppCenter.cpp.o"
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/dylan/DylanOS/apps/dylanos-app-center/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_15) "Building CXX object CMakeFiles/dylanos-app-center.dir/build/.qt/rcc/qrc_qmake_DylanOS_AppCenter.cpp.o"
 	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/dylanos-app-center.dir/build/.qt/rcc/qrc_qmake_DylanOS_AppCenter.cpp.o -MF CMakeFiles/dylanos-app-center.dir/build/.qt/rcc/qrc_qmake_DylanOS_AppCenter.cpp.o.d -o CMakeFiles/dylanos-app-center.dir/build/.qt/rcc/qrc_qmake_DylanOS_AppCenter.cpp.o -c /home/dylan/DylanOS/apps/dylanos-app-center/build/.qt/rcc/qrc_qmake_DylanOS_AppCenter.cpp
 
 CMakeFiles/dylanos-app-center.dir/build/.qt/rcc/qrc_qmake_DylanOS_AppCenter.cpp.i: cmake_force
@@ -219,7 +233,7 @@ CMakeFiles/dylanos-app-center.dir/build/.qt/rcc/qrc_qmake_DylanOS_AppCenter.cpp.
 CMakeFiles/dylanos-app-center.dir/build/.rcc/qmlcache/dylanos-app-center_qmlcache_loader.cpp.o: CMakeFiles/dylanos-app-center.dir/flags.make
 CMakeFiles/dylanos-app-center.dir/build/.rcc/qmlcache/dylanos-app-center_qmlcache_loader.cpp.o: .rcc/qmlcache/dylanos-app-center_qmlcache_loader.cpp
 CMakeFiles/dylanos-app-center.dir/build/.rcc/qmlcache/dylanos-app-center_qmlcache_loader.cpp.o: CMakeFiles/dylanos-app-center.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/dylan/DylanOS/apps/dylanos-app-center/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_15) "Building CXX object CMakeFiles/dylanos-app-center.dir/build/.rcc/qmlcache/dylanos-app-center_qmlcache_loader.cpp.o"
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/dylan/DylanOS/apps/dylanos-app-center/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_16) "Building CXX object CMakeFiles/dylanos-app-center.dir/build/.rcc/qmlcache/dylanos-app-center_qmlcache_loader.cpp.o"
 	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/dylanos-app-center.dir/build/.rcc/qmlcache/dylanos-app-center_qmlcache_loader.cpp.o -MF CMakeFiles/dylanos-app-center.dir/build/.rcc/qmlcache/dylanos-app-center_qmlcache_loader.cpp.o.d -o CMakeFiles/dylanos-app-center.dir/build/.rcc/qmlcache/dylanos-app-center_qmlcache_loader.cpp.o -c /home/dylan/DylanOS/apps/dylanos-app-center/build/.rcc/qmlcache/dylanos-app-center_qmlcache_loader.cpp
 
 CMakeFiles/dylanos-app-center.dir/build/.rcc/qmlcache/dylanos-app-center_qmlcache_loader.cpp.i: cmake_force
@@ -233,7 +247,7 @@ CMakeFiles/dylanos-app-center.dir/build/.rcc/qmlcache/dylanos-app-center_qmlcach
 CMakeFiles/dylanos-app-center.dir/build/.rcc/qmlcache/dylanos-app-center_qml/Main_qml.cpp.o: CMakeFiles/dylanos-app-center.dir/flags.make
 CMakeFiles/dylanos-app-center.dir/build/.rcc/qmlcache/dylanos-app-center_qml/Main_qml.cpp.o: .rcc/qmlcache/dylanos-app-center_qml/Main_qml.cpp
 CMakeFiles/dylanos-app-center.dir/build/.rcc/qmlcache/dylanos-app-center_qml/Main_qml.cpp.o: CMakeFiles/dylanos-app-center.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/dylan/DylanOS/apps/dylanos-app-center/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_16) "Building CXX object CMakeFiles/dylanos-app-center.dir/build/.rcc/qmlcache/dylanos-app-center_qml/Main_qml.cpp.o"
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/dylan/DylanOS/apps/dylanos-app-center/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_17) "Building CXX object CMakeFiles/dylanos-app-center.dir/build/.rcc/qmlcache/dylanos-app-center_qml/Main_qml.cpp.o"
 	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/dylanos-app-center.dir/build/.rcc/qmlcache/dylanos-app-center_qml/Main_qml.cpp.o -MF CMakeFiles/dylanos-app-center.dir/build/.rcc/qmlcache/dylanos-app-center_qml/Main_qml.cpp.o.d -o CMakeFiles/dylanos-app-center.dir/build/.rcc/qmlcache/dylanos-app-center_qml/Main_qml.cpp.o -c /home/dylan/DylanOS/apps/dylanos-app-center/build/.rcc/qmlcache/dylanos-app-center_qml/Main_qml.cpp
 
 CMakeFiles/dylanos-app-center.dir/build/.rcc/qmlcache/dylanos-app-center_qml/Main_qml.cpp.i: cmake_force
@@ -247,7 +261,7 @@ CMakeFiles/dylanos-app-center.dir/build/.rcc/qmlcache/dylanos-app-center_qml/Mai
 CMakeFiles/dylanos-app-center.dir/build/.qt/rcc/qrc_dylanos-app-center_raw_qml_0.cpp.o: CMakeFiles/dylanos-app-center.dir/flags.make
 CMakeFiles/dylanos-app-center.dir/build/.qt/rcc/qrc_dylanos-app-center_raw_qml_0.cpp.o: .qt/rcc/qrc_dylanos-app-center_raw_qml_0.cpp
 CMakeFiles/dylanos-app-center.dir/build/.qt/rcc/qrc_dylanos-app-center_raw_qml_0.cpp.o: CMakeFiles/dylanos-app-center.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/dylan/DylanOS/apps/dylanos-app-center/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_17) "Building CXX object CMakeFiles/dylanos-app-center.dir/build/.qt/rcc/qrc_dylanos-app-center_raw_qml_0.cpp.o"
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/dylan/DylanOS/apps/dylanos-app-center/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_18) "Building CXX object CMakeFiles/dylanos-app-center.dir/build/.qt/rcc/qrc_dylanos-app-center_raw_qml_0.cpp.o"
 	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/dylanos-app-center.dir/build/.qt/rcc/qrc_dylanos-app-center_raw_qml_0.cpp.o -MF CMakeFiles/dylanos-app-center.dir/build/.qt/rcc/qrc_dylanos-app-center_raw_qml_0.cpp.o.d -o CMakeFiles/dylanos-app-center.dir/build/.qt/rcc/qrc_dylanos-app-center_raw_qml_0.cpp.o -c /home/dylan/DylanOS/apps/dylanos-app-center/build/.qt/rcc/qrc_dylanos-app-center_raw_qml_0.cpp
 
 CMakeFiles/dylanos-app-center.dir/build/.qt/rcc/qrc_dylanos-app-center_raw_qml_0.cpp.i: cmake_force
@@ -263,6 +277,7 @@ dylanos__app__center_OBJECTS = \
 "CMakeFiles/dylanos-app-center.dir/dylanos-app-center_autogen/mocs_compilation.cpp.o" \
 "CMakeFiles/dylanos-app-center.dir/src/main.cpp.o" \
 "CMakeFiles/dylanos-app-center.dir/src/appmodel.cpp.o" \
+"CMakeFiles/dylanos-app-center.dir/src/iconprovider.cpp.o" \
 "CMakeFiles/dylanos-app-center.dir/dylanos-app-center_qmltyperegistrations.cpp.o" \
 "CMakeFiles/dylanos-app-center.dir/build/.qt/rcc/qrc_qmake_DylanOS_AppCenter.cpp.o" \
 "CMakeFiles/dylanos-app-center.dir/build/.rcc/qmlcache/dylanos-app-center_qmlcache_loader.cpp.o" \
@@ -275,6 +290,7 @@ dylanos__app__center_EXTERNAL_OBJECTS =
 dylanos-app-center: CMakeFiles/dylanos-app-center.dir/dylanos-app-center_autogen/mocs_compilation.cpp.o
 dylanos-app-center: CMakeFiles/dylanos-app-center.dir/src/main.cpp.o
 dylanos-app-center: CMakeFiles/dylanos-app-center.dir/src/appmodel.cpp.o
+dylanos-app-center: CMakeFiles/dylanos-app-center.dir/src/iconprovider.cpp.o
 dylanos-app-center: CMakeFiles/dylanos-app-center.dir/dylanos-app-center_qmltyperegistrations.cpp.o
 dylanos-app-center: CMakeFiles/dylanos-app-center.dir/build/.qt/rcc/qrc_qmake_DylanOS_AppCenter.cpp.o
 dylanos-app-center: CMakeFiles/dylanos-app-center.dir/build/.rcc/qmlcache/dylanos-app-center_qmlcache_loader.cpp.o
@@ -297,7 +313,7 @@ dylanos-app-center: /usr/lib/x86_64-linux-gnu/libQt6Qml.so.6.8.2
 dylanos-app-center: /usr/lib/x86_64-linux-gnu/libQt6Network.so.6.8.2
 dylanos-app-center: /usr/lib/x86_64-linux-gnu/libQt6Core.so.6.8.2
 dylanos-app-center: CMakeFiles/dylanos-app-center.dir/link.txt
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --bold --progress-dir=/home/dylan/DylanOS/apps/dylanos-app-center/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_18) "Linking CXX executable dylanos-app-center"
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --bold --progress-dir=/home/dylan/DylanOS/apps/dylanos-app-center/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_19) "Linking CXX executable dylanos-app-center"
 	$(CMAKE_COMMAND) -E cmake_link_script CMakeFiles/dylanos-app-center.dir/link.txt --verbose=$(VERBOSE)
 
 # Rule to build all files generated by this target.
