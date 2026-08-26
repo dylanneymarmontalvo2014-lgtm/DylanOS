@@ -11,3 +11,7 @@ Thumbs.db
 # Editor files
 .vscode/
 .idea/
+work/
+*.deb
+*.buildinfo
+*.changes
