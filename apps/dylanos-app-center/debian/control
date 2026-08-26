@@ -1,0 +1,12 @@
+Source: dylanos-app-center
+Section: x11
+Priority: optional
+Maintainer: Dylan Montalvo <dylan@dylanos.local>
+Build-Depends: debhelper-compat (= 13), cmake, extra-cmake-modules, qt6-base-dev, qt6-declarative-dev, libkf6service-dev, libkf6coreaddons-dev, libplasma-dev
+Standards-Version: 4.6.2
+
+Package: dylanos-app-center
+Architecture: any
+Depends: ${shlibs:Depends}, ${misc:Depends}
+Description: Centro de Aplicaciones de DylanOS
+ Launcher estilo Launchpad para DylanOS.
