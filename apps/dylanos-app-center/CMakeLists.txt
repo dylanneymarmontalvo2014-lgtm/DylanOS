@@ -9,7 +9,7 @@ find_package(ECM REQUIRED NO_MODULE)
 set(CMAKE_MODULE_PATH ${ECM_MODULE_PATH})
 
 find_package(Qt6 REQUIRED COMPONENTS Core Gui Qml Quick QuickControls2)
-find_package(KF6 REQUIRED COMPONENTS Service CoreAddons Plasma)
+find_package(KF6 REQUIRED COMPONENTS Service CoreAddons)
 
 qt_add_executable(dylanos-app-center
     src/main.cpp
@@ -24,7 +24,7 @@ qt_add_qml_module(dylanos-app-center
 
 target_link_libraries(dylanos-app-center PRIVATE
     Qt6::Core Qt6::Gui Qt6::Qml Qt6::Quick Qt6::QuickControls2
-    KF6::Service KF6::CoreAddons KF6::Plasma
+    KF6::Service KF6::CoreAddons
 )
 
 include(GNUInstallDirs)

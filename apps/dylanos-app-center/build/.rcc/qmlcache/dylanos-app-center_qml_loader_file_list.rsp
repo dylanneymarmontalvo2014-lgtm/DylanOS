@@ -1,0 +1,5 @@
+--resource
+/home/dylan/DylanOS/apps/dylanos-app-center/build/.qt/rcc/qmake_DylanOS_AppCenter.qrc
+--resource
+/home/dylan/DylanOS/apps/dylanos-app-center/build/.qt/rcc/dylanos-app-center_raw_qml_0.qrc
+/DylanOS/AppCenter/qml/Main.qml

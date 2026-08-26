@@ -1,0 +1,14 @@
+-rootPath
+/home/dylan/DylanOS/apps/dylanos-app-center
+-cmake-output
+-output-file
+/home/dylan/DylanOS/apps/dylanos-app-center/build/.qt/qml_imports/dylanos-app-center_conf.cmake
+-importPath
+/home/dylan/DylanOS/apps/dylanos-app-center/build/DylanOS/AppCenter
+-importPath
+/home/dylan/DylanOS/apps/dylanos-app-center/build
+-importPath
+/usr/lib/x86_64-linux-gnu/qt6/qml
+-qrcFiles
+/home/dylan/DylanOS/apps/dylanos-app-center/build/.qt/rcc/qmake_DylanOS_AppCenter.qrc
+/home/dylan/DylanOS/apps/dylanos-app-center/build/.qt/rcc/dylanos-app-center_raw_qml_0.qrc

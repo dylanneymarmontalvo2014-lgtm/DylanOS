@@ -1,0 +1,6 @@
+<RCC>
+  <qresource prefix="/DylanOS/AppCenter">
+    <file alias="qmldir">/home/dylan/DylanOS/apps/dylanos-app-center/build/DylanOS/AppCenter/qmldir</file>
+  </qresource>
+</RCC>
+

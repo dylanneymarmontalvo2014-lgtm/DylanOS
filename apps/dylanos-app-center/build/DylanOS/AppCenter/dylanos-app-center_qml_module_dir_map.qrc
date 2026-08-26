@@ -1,0 +1,6 @@
+<RCC>
+  <qresource prefix="/">
+    <file alias="/DylanOS/AppCenter">/home/dylan/DylanOS/apps/dylanos-app-center/build/DylanOS/AppCenter</file>
+
+  </qresource>
+</RCC>
