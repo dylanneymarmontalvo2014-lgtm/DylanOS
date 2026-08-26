@@ -576,6 +576,30 @@ src/appmodel.cpp.s:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/dylanos-app-center.dir/build.make CMakeFiles/dylanos-app-center.dir/src/appmodel.cpp.s
 .PHONY : src/appmodel.cpp.s
 
+src/iconprovider.o: src/iconprovider.cpp.o
+.PHONY : src/iconprovider.o
+
+# target to build an object file
+src/iconprovider.cpp.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/dylanos-app-center.dir/build.make CMakeFiles/dylanos-app-center.dir/src/iconprovider.cpp.o
+.PHONY : src/iconprovider.cpp.o
+
+src/iconprovider.i: src/iconprovider.cpp.i
+.PHONY : src/iconprovider.i
+
+# target to preprocess a source file
+src/iconprovider.cpp.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/dylanos-app-center.dir/build.make CMakeFiles/dylanos-app-center.dir/src/iconprovider.cpp.i
+.PHONY : src/iconprovider.cpp.i
+
+src/iconprovider.s: src/iconprovider.cpp.s
+.PHONY : src/iconprovider.s
+
+# target to generate assembly for a file
+src/iconprovider.cpp.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/dylanos-app-center.dir/build.make CMakeFiles/dylanos-app-center.dir/src/iconprovider.cpp.s
+.PHONY : src/iconprovider.cpp.s
+
 src/main.o: src/main.cpp.o
 .PHONY : src/main.o
 
@@ -652,6 +676,9 @@ help:
 	@echo "... src/appmodel.o"
 	@echo "... src/appmodel.i"
 	@echo "... src/appmodel.s"
+	@echo "... src/iconprovider.o"
+	@echo "... src/iconprovider.i"
+	@echo "... src/iconprovider.s"
 	@echo "... src/main.o"
 	@echo "... src/main.i"
 	@echo "... src/main.s"

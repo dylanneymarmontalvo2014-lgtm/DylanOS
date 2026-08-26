@@ -1,0 +1,6 @@
+/usr/local/bin/dylanos-app-center
+/usr/local/share/applications/dylanos-app-center.desktop
+/usr/local/share/icons/hicolor/512x512/apps/dylanos-app-center.png
+/usr/local/bin/dylanos-app-center
+/usr/local/share/applications/dylanos-app-center.desktop
+/usr/local/share/icons/hicolor/512x512/apps/dylanos-app-center.png

@@ -1,9 +1,8 @@
 [Desktop Entry]
-Type=Application
-Name=Centro de Aplicaciones
-Comment=Abre el Centro de Aplicaciones de DylanOS
-Exec=dylanos-app-center
-Icon=view-grid-symbolic
-Categories=System;
+Name=DylanOS App Center
+Comment=Centro de Aplicaciones de DylanOS
+Exec=/usr/local/bin/dylanos-app-center
+Icon=dylanos-app-center
 Terminal=false
-NoDisplay=false
+Type=Application
+Categories=Utility;
