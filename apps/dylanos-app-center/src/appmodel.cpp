@@ -1,6 +1,6 @@
 #include "appmodel.h"
 #include <KService>
-#include <KRun>
+#include <QProcess>
 #include <algorithm>
 
 AppModel::AppModel(QObject *parent) : QAbstractListModel(parent) { loadApps(); }
@@ -66,8 +66,15 @@ QVariantList AppModel::itemsForPage(int page, int pageSize) const
 
 void AppModel::launchApp(int index)
 {
-    if (index < 0 || index >= m_apps.count()) return;
-    KRun::runApplication(*m_apps.at(index), {}, nullptr);
+    if (index < 0 || index >= m_apps.count())
+        return;
+
+    const KService::Ptr &service = m_apps.at(index);
+
+    QProcess::startDetached(
+        QStringLiteral("sh"),
+        QStringList() << QStringLiteral("-c") << service->exec()
+    );
 }
 
 int AppModel::rowCount(const QModelIndex &p) const { return p.isValid() ? 0 : m_apps.count(); }

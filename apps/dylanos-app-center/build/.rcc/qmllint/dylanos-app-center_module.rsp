@@ -1,0 +1,10 @@
+-I
+/home/dylan/DylanOS/apps/dylanos-app-center/build
+-I
+/usr/lib/x86_64-linux-gnu/qt6/qml
+--resource
+/home/dylan/DylanOS/apps/dylanos-app-center/build/.qt/rcc/qmake_DylanOS_AppCenter.qrc
+--resource
+/home/dylan/DylanOS/apps/dylanos-app-center/build/.qt/rcc/dylanos-app-center_raw_qml_0.qrc
+--module
+DylanOS.AppCenter

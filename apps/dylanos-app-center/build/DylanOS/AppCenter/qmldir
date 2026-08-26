@@ -1,0 +1,5 @@
+module DylanOS.AppCenter
+typeinfo dylanos-app-center.qmltypes
+prefer :/DylanOS/AppCenter/
+Main 1.0 qml/Main.qml
+
