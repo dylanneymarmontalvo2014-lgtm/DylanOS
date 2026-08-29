@@ -1,0 +1,4 @@
+module com.dylanos.controlcenter
+singleton MockData 1.0 MockData.qml
+singleton SystemStatus 1.0 SystemStatus.qml
+
