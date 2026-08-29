@@ -1,0 +1,23 @@
+{
+    "KPackageStructure": "Plasma/Applet",
+    "KPlugin": {
+        "Authors": [
+            {
+                "Name": "Dylan Montalvo",
+                "Email": ""
+            }
+        ],
+        "Category": "System Information",
+        "Description": "Centro de Notificaciones y Centro de Control unificado de DylanOS",
+        "Description[es]": "Centro de Notificaciones y Centro de Control unificado de DylanOS",
+        "Icon": "preferences-system",
+        "Id": "com.dylanos.controlcenter",
+        "Name": "DylanOS Control Center",
+        "Name[es]": "Centro de Control DylanOS",
+        "ServiceTypes": [
+            "Plasma/Applet"
+        ],
+        "Version": "0.1.0"
+    },
+    "X-Plasma-API-Minimum-Version": "6.0"
+}
