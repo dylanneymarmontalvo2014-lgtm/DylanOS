@@ -1,0 +1,13 @@
+[Desktop Entry]
+Type=Application
+Name=Calculadora
+Name[es]=Calculadora
+GenericName=Calculadora
+GenericName[es]=Calculadora
+Comment=Calculadora de DylanOS
+Comment[es]=Calculadora de DylanOS
+Exec=dylanos-calculator
+Icon=com.dylanos.calculator
+Terminal=false
+StartupNotify=true
+Categories=Utility;Calculator;Qt;KDE;
