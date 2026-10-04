@@ -1,0 +1,15 @@
+[Settings]
+gtk-theme-name=DylanOS-Crimson
+gtk-icon-theme-name=Adwaita
+gtk-font-name=Sans 10
+gtk-font-name=Sans 10
+
+[Colors]
+class =
+  active: #DC143C
+  inactive: #40000000
+  text: #0A0A0A
+  button: #DC143C
+  light: #FFFFFF
+  dark: #0A0A0A
+  selection: #DC143C

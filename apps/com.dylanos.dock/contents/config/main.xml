@@ -36,7 +36,7 @@
             <max>48</max>
         </entry>
         <entry name="accentColor" type="Color">
-            <default>#0a84ff</default>
+            <default>#DC143C</default>
         </entry>
         <entry name="showIndicator" type="Bool">
             <default>true</default>

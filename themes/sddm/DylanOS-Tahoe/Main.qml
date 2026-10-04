@@ -31,7 +31,7 @@ Rectangle {
         // Avatar circular con la inicial del usuario (estilo macOS).
         Rectangle {
             width: 96; height: 96; radius: 48; anchors.horizontalCenter: parent.horizontalCenter
-            color: "#0a84ff"
+            color: "#DC143C"
             Label { anchors.centerIn: parent
                 text: user.currentText ? user.currentText.charAt(0).toUpperCase() : "?"
                 color: "white"; font.pixelSize: 44; font.weight: Font.Medium }
@@ -50,7 +50,7 @@ Rectangle {
         // Campo contraseña tipo píldora translúcida + botón flecha.
         Rectangle {
             width: 280; height: 38; radius: 19; anchors.horizontalCenter: parent.horizontalCenter
-            color: "#40ffffff"; border.color: password.activeFocus ? "#0a84ff" : "#55ffffff"; border.width: 1
+            color: "#40ffffff"; border.color: password.activeFocus ? "#DC143C" : "#55ffffff"; border.width: 1
 
             TextInput {
                 id: password
@@ -58,7 +58,7 @@ Rectangle {
                 anchors.right: arrow.left; anchors.rightMargin: 6
                 anchors.verticalCenter: parent.verticalCenter
                 echoMode: TextInput.Password; color: "white"; font.pixelSize: 14
-                selectionColor: "#0a84ff"
+                selectionColor: #DC143C
                 enabled: !root.authenticating; focus: true
                 onAccepted: arrow.doLogin()
                 Accessible.name: "Contraseña"
