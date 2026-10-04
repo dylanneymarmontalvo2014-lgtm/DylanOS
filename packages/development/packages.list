@@ -1,0 +1,38 @@
+# DylanOS — herramientas de desarrollo
+# Un paquete por línea. '#' inicia un comentario.
+# Requiere setup-repos.sh de este grupo (repo apt de VSCodium).
+
+# Control de versiones y acceso remoto
+git
+openssh-client
+
+# Toolchain C/C++ (gcc, g++, make, libc-dev)
+build-essential
+
+# Utilidades de red
+curl
+wget
+
+# Python
+python3
+python3-pip
+python3-venv
+python3-dev
+
+# JavaScript/TypeScript
+nodejs
+npm
+
+# Editor de código (VSCodium, repo externo)
+codium
+cmake
+ninja-build
+gdb
+pkg-config
+podman
+uidmap
+slirp4netns
+fuse-overlayfs
+jq
+ripgrep
+shellcheck

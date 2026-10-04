@@ -1,112 +1,111 @@
 #!/usr/bin/env bash
+# Build in an isolated mount namespace; the host desktop is never modified.
 set -euo pipefail
-
-trap cleanup EXIT
 ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
+if [[ ${1:-} != --inside ]]; then
+    exec sudo unshare --mount --propagation private bash "$0" --inside "$@"
+fi
+shift
+PROFILE=development
+RESUME=false
+for arg in "$@"; do
+    case "$arg" in
+        --resume) RESUME=true ;;
+        --minimal) PROFILE=default ;;
+        *) echo "Uso: $0 [--resume] [--minimal]" >&2; exit 2 ;;
+    esac
+done
 WORK="$ROOT/work"
 CHROOT="$WORK/chroot"
-
-cleanup() {
-    sudo umount -R "$CHROOT/dev" 2>/dev/null || true
-    sudo umount -R "$CHROOT/proc" 2>/dev/null || true
-    sudo umount -R "$CHROOT/sys" 2>/dev/null || true
-}
-
-trap cleanup EXIT
-
-echo "================================="
-echo "        DylanOS BUILD"
-echo "================================="
-
-sudo rm -rf "$WORK"
 mkdir -p "$WORK"
-
-echo "[1/6] Creando Debian Stable..."
-
-sudo debootstrap \
-    --variant=minbase \
-    --arch=amd64 \
-    stable \
-    "$CHROOT" \
-    http://deb.debian.org/debian
-
-echo "[2/6] Preparando chroot..."
-
-sudo mount --bind /dev "$CHROOT/dev"
-sudo mount --bind /dev/pts "$CHROOT/dev/pts"
-
-sudo cp /etc/resolv.conf "$CHROOT/etc/resolv.conf"
-
-sudo chroot "$CHROOT" /bin/bash <<'CHROOT'
-set -e
-
-export DEBIAN_FRONTEND=noninteractive
-
-apt update
-
-apt install -y \
-    linux-image-amd64 \
-    systemd-sysv \
-    kde-plasma-desktop \
-    sddm \
-    calamares \
-    sudo \
-    network-manager \
-    dolphin \
-    konsole
-
-systemctl enable sddm
-systemctl enable NetworkManager
-
-cat > /etc/os-release <<'EOF'
-PRETTY_NAME="DylanOS"
-NAME="DylanOS"
-ID=dylanos
-ID_LIKE=debian
-VERSION_ID="1.0"
-VERSION="1.0"
-HOME_URL="https://github.com/dylanneymarmontalvo2014-lgtm/DylanOS"
-EOF
-
-useradd -m -s /bin/bash dylan || true
-echo "dylan:dylan" | chpasswd
-usermod -aG sudo dylan
-
-apt clean
-rm -rf /var/lib/apt/lists/*
-CHROOT
-
-echo "[3/6] Integrando branding..."
-
-sudo mkdir -p "$CHROOT/usr/share/dylanos"
-sudo cp -a "$ROOT/branding/." "$CHROOT/usr/share/dylanos/" 2>/dev/null || true
-
-echo "[4/6] Integrando configuraciones..."
-
-sudo mkdir -p "$CHROOT/etc/dylanos"
-sudo cp -a "$ROOT/configs/." "$CHROOT/etc/dylanos/" 2>/dev/null || true
-
-echo "[5/6] Integrando Calamares..."
-
-sudo mkdir -p "$CHROOT/etc/calamares/branding/dylanos"
-
-sudo cp -a \
-    "$ROOT/installer/calamares/dylanos/." \
-    "$CHROOT/etc/calamares/branding/dylanos/" \
-    2>/dev/null || true
-
-if [ -f "$ROOT/installer/calamares/settings.conf" ]; then
-    sudo cp \
-        "$ROOT/installer/calamares/settings.conf" \
-        "$CHROOT/etc/calamares/settings.conf"
+exec 9>"$WORK/build.lock"
+flock -n 9 || { echo "Ya hay una construcción en marcha." >&2; exit 1; }
+for tool in debootstrap chroot mount python3; do
+    command -v "$tool" >/dev/null || { echo "Falta herramienta: $tool" >&2; exit 1; }
+done
+if [[ -e "$CHROOT" && $RESUME != true ]]; then
+    echo "Existe $CHROOT. Usa --resume para continuar; no se borrará automáticamente." >&2
+    exit 1
 fi
-
-echo "[6/6] Limpiando..."
-
-sudo umount "$CHROOT/dev/pts" 2>/dev/null || true
-sudo umount "$CHROOT/dev" 2>/dev/null || true
-
-echo
-echo "BUILD COMPLETADO"
-echo "Sistema preparado en:"
-echo "$WORK/chroot"
+rm -f "$WORK/build-complete"
+cleanup() {
+    umount -R "$CHROOT/dev" 2>/dev/null || true
+    umount "$CHROOT/proc" 2>/dev/null || true
+    umount -R "$CHROOT/sys" 2>/dev/null || true
+}
+trap cleanup EXIT
+if [[ ! -f "$CHROOT/etc/debian_version" ]]; then
+    gpg --batch --yes --dearmor -o "$WORK/debian-trixie.gpg" "$ROOT/configs/keys/debian-trixie.asc"
+    debootstrap --force-check-gpg --keyring="$WORK/debian-trixie.gpg" --variant=minbase --arch=amd64 trixie "$CHROOT" https://deb.debian.org/debian
+fi
+mount --rbind /dev "$CHROOT/dev"
+mount --make-rslave "$CHROOT/dev"
+mount -t proc proc "$CHROOT/proc"
+mount --rbind /sys "$CHROOT/sys"
+mount --make-rslave "$CHROOT/sys"
+cp -L /etc/resolv.conf "$CHROOT/etc/resolv.conf"
+cat > "$CHROOT/etc/apt/sources.list" <<'EOF'
+deb https://deb.debian.org/debian trixie main contrib non-free-firmware
+deb https://deb.debian.org/debian trixie-updates main contrib non-free-firmware
+deb https://security.debian.org/debian-security trixie-security main contrib non-free-firmware
+EOF
+mkdir -p "$CHROOT/tmp/dylanos-packages"
+printf '#!/bin/sh\nexit 101\n' > "$CHROOT/usr/sbin/policy-rc.d"
+chmod +x "$CHROOT/usr/sbin/policy-rc.d"
+# shellcheck source=scripts/lib/packages.sh
+. "$ROOT/scripts/lib/packages.sh"
+groups=(default build)
+if [[ "$PROFILE" == development ]]; then groups+=(development); fi
+rm -f "$CHROOT/tmp/dylanos-packages/"*.list "$CHROOT/tmp/dylanos-packages/"*.setup-repos.sh
+for group in "${groups[@]}"; do
+    parse_package_list "$ROOT/packages/$group/packages.list" > "$CHROOT/tmp/dylanos-packages/$group.list"
+    if [[ -f "$ROOT/packages/$group/setup-repos.sh" ]]; then
+        cp "$ROOT/packages/$group/setup-repos.sh" "$CHROOT/tmp/dylanos-packages/$group.setup-repos.sh"
+    fi
+done
+chroot "$CHROOT" /bin/bash <<'CHROOT_SCRIPT'
+set -euo pipefail
+export DEBIAN_FRONTEND=noninteractive
+apt-get -o Acquire::Retries=3 update
+for setup in /tmp/dylanos-packages/*.setup-repos.sh; do
+    if [[ -e "$setup" ]]; then bash "$setup"; fi
+done
+apt-get -o Acquire::Retries=3 update
+for list in /tmp/dylanos-packages/*.list; do
+    xargs -r -a "$list" apt-get -o Acquire::Retries=3 install -y
+done
+sed -i 's/^# es_ES.UTF-8 UTF-8/es_ES.UTF-8 UTF-8/; s/^# en_US.UTF-8 UTF-8/en_US.UTF-8 UTF-8/' /etc/locale.gen
+locale-gen
+update-locale LANG=es_ES.UTF-8
+systemctl enable sddm NetworkManager
+passwd -l root
+CHROOT_SCRIPT
+python3 "$ROOT/scripts/stage.py" "$CHROOT"
+mkdir -p "$CHROOT/tmp/dylanos-src"
+for app in calculator dylanos-app-center; do
+    mkdir -p "$CHROOT/tmp/dylanos-src/$app"
+    cp -a "$ROOT/apps/$app/CMakeLists.txt" "$ROOT/apps/$app/src" "$ROOT/apps/$app/qml" "$CHROOT/tmp/dylanos-src/$app/"
+    for extra in data icons dylanos-app-center.desktop; do
+        if [[ -e "$ROOT/apps/$app/$extra" ]]; then cp -a "$ROOT/apps/$app/$extra" "$CHROOT/tmp/dylanos-src/$app/"; fi
+    done
+    chroot "$CHROOT" cmake -S "/tmp/dylanos-src/$app" -B "/tmp/dylanos-src/$app/build" -GNinja -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX=/usr
+    chroot "$CHROOT" cmake --build "/tmp/dylanos-src/$app/build" --parallel 2
+    chroot "$CHROOT" cmake --install "/tmp/dylanos-src/$app/build"
+done
+chroot "$CHROOT" /bin/bash <<'CHROOT_SCRIPT'
+set -euo pipefail
+plymouth-set-default-theme dylanos
+update-initramfs -u -k all
+update-desktop-database /usr/share/applications
+apt-get clean
+rm -f /usr/sbin/policy-rc.d
+rm -rf /tmp/dylanos-packages /tmp/dylanos-src
+truncate -s 0 /etc/machine-id
+rm -f /var/lib/dbus/machine-id
+ln -s /etc/machine-id /var/lib/dbus/machine-id
+CHROOT_SCRIPT
+# shellcheck disable=SC2016
+chroot "$CHROOT" dpkg-query -W -f='${Package} ${Version}\n' > "$WORK/packages.manifest"
+printf '%s\n' "$PROFILE" > "$WORK/profile"
+touch "$WORK/build-complete"
+echo "Sistema construido: $CHROOT. Siguiente paso: bash scripts/iso.sh"

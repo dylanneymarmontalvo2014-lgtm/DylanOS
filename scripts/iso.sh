@@ -1,62 +1,55 @@
 #!/usr/bin/env bash
 set -euo pipefail
-
+if [[ $EUID -ne 0 ]]; then exec sudo bash "$0" "$@"; fi
 ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 WORK="$ROOT/work"
 CHROOT="$WORK/chroot"
-ISO="$ROOT/iso"
-
-echo "================================="
-echo "        DylanOS ISO"
-echo "================================="
-
-if [ ! -d "$CHROOT" ]; then
-    echo "ERROR: Primero ejecuta scripts/build.sh"
+IMAGE="$WORK/iso"
+OUTPUT="$ROOT/DylanOS-1.0-beta-amd64.iso"
+[[ -f "$WORK/build-complete" ]] || { echo 'Primero completa scripts/build.sh' >&2; exit 1; }
+exec 9>"$WORK/build.lock"
+flock -n 9 || { echo 'La construcción del sistema todavía está en marcha.' >&2; exit 1; }
+for tool in mksquashfs grub-mkrescue xorriso; do
+    command -v "$tool" >/dev/null || { echo "Falta herramienta: $tool" >&2; exit 1; }
+done
+if findmnt -rn -o TARGET | grep -q "^$CHROOT/"; then
+    echo 'El chroot tiene montajes activos. Desmóntalos antes de generar la ISO.' >&2
     exit 1
 fi
-
-rm -rf "$ISO"
-mkdir -p "$ISO/live"
-
-echo "[1/4] Creando filesystem..."
-
-sudo mksquashfs \
-    "$CHROOT" \
-    "$ISO/live/filesystem.squashfs" \
-    -e boot \
-    -comp xz \
-    -b 1M
-
-echo "[2/4] Copiando kernel..."
-
-KERNEL=$(find "$CHROOT/boot" -name 'vmlinuz-*' | head -1)
-INITRD=$(find "$CHROOT/boot" -name 'initrd.img-*' | head -1)
-
-sudo cp "$KERNEL" "$ISO/live/vmlinuz"
-sudo cp "$INITRD" "$ISO/live/initrd.img"
-
-echo "[3/4] Creando estructura ISO..."
-
-mkdir -p "$ISO/boot/grub"
-
-cat > "$ISO/boot/grub/grub.cfg" <<'EOF'
-set timeout=5
+mkdir -p "$IMAGE/live" "$IMAGE/boot/grub"
+# Keep /boot in the filesystem: the installed system needs its own kernel.
+sudo mksquashfs "$CHROOT" "$IMAGE/live/filesystem.squashfs.new" -noappend -comp zstd -Xcompression-level 15 -processors 2 -e dev proc sys run tmp
+sudo mv "$IMAGE/live/filesystem.squashfs.new" "$IMAGE/live/filesystem.squashfs"
+KERNEL="$(find "$CHROOT/boot" -maxdepth 1 -name 'vmlinuz-*' -printf '%f\n' | sort -V | tail -1)"
+[[ -n "$KERNEL" ]] || { echo 'No se encontró el kernel.' >&2; exit 1; }
+INITRD="initrd.img-${KERNEL#vmlinuz-}"
+[[ -f "$CHROOT/boot/$INITRD" ]] || { echo "Falta initrd para $KERNEL" >&2; exit 1; }
+install -m 0644 "$CHROOT/boot/$KERNEL" "$IMAGE/live/vmlinuz"
+install -m 0644 "$CHROOT/boot/$INITRD" "$IMAGE/live/initrd.img"
+cp "$WORK/packages.manifest" "$IMAGE/live/filesystem.packages"
+mkdir -p "$IMAGE/boot/grub/themes/dylanos" "$IMAGE/.disk"
+cp -a "$CHROOT/usr/share/grub/themes/dylanos/." "$IMAGE/boot/grub/themes/dylanos/"
+printf 'DylanOS 1.0 Beta amd64\n' > "$IMAGE/.disk/info"
+cat > "$IMAGE/boot/grub/grub.cfg" <<'EOF'
+set timeout=8
 set default=0
-
-menuentry "DylanOS" {
-    linux /live/vmlinuz boot=live
+insmod all_video
+insmod png
+insmod gfxterm
+loadfont /boot/grub/fonts/unicode.pf2
+terminal_output gfxterm
+set theme=/boot/grub/themes/dylanos/theme.txt
+export theme
+menuentry "Probar e instalar DylanOS 1.0 Beta" {
+    linux /live/vmlinuz boot=live components username=dylan hostname=dylanos locales=es_ES.UTF-8 keyboard-layouts=latam quiet splash
+    initrd /live/initrd.img
+}
+menuentry "DylanOS · gráficos seguros" {
+    linux /live/vmlinuz boot=live components username=dylan hostname=dylanos locales=es_ES.UTF-8 keyboard-layouts=latam nomodeset
     initrd /live/initrd.img
 }
 EOF
-
-echo "[4/4] Generando ISO..."
-
-grub-mkrescue \
-    -o "$ROOT/DylanOS-1.0-amd64.iso" \
-    "$ISO"
-
-echo
-echo "================================="
-echo "ISO GENERADA"
-echo "================================="
-ls -lh "$ROOT/DylanOS-1.0-amd64.iso"
+grub-mkrescue -o "$OUTPUT.partial" "$IMAGE"
+mv "$OUTPUT.partial" "$OUTPUT"
+(cd "$ROOT" && sha256sum "$(basename "$OUTPUT")" > "$(basename "$OUTPUT").sha256")
+echo "ISO creada: $OUTPUT"

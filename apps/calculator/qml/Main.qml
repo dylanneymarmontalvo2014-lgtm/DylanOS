@@ -20,7 +20,7 @@ ApplicationWindow {
     readonly property color keyDark: "#1c1c1c"
 
     function formatNumber(n) {
-        if (isNaN(n)) return "Error"
+        if (!isFinite(n)) return "Error"
         if (n === Math.floor(n) && Math.abs(n) < 1e15)
             return Math.floor(n).toString()
         return parseFloat(n.toFixed(8)).toString()
@@ -60,6 +60,7 @@ ApplicationWindow {
     }
 
     function setOperator(op) {
+        if (display.text === "Error") return
         if (pendingOperator !== "" && !resetOnNextDigit) {
             compute()
         } else {
@@ -67,6 +68,23 @@ ApplicationWindow {
         }
         pendingOperator = op
         resetOnNextDigit = true
+    }
+
+    Item {
+        focus: true
+        Keys.onPressed: function(event) {
+            if (/^[0-9]$/.test(event.text)) root.inputDigit(event.text)
+            else if (event.text === "." || event.text === ",") root.inputDecimal()
+            else if (event.text === "+" || event.text === "-") root.setOperator(event.text)
+            else if (event.text === "*") root.setOperator("×")
+            else if (event.text === "/") root.setOperator("÷")
+            else if (event.text === "%") root.applyPercent()
+            else if (event.key === Qt.Key_Return || event.key === Qt.Key_Enter || event.text === "=") root.compute()
+            else if (event.key === Qt.Key_Escape || event.key === Qt.Key_Delete) root.clearAll()
+            else if (event.key === Qt.Key_Backspace) { display.text = display.text.slice(0, -1) || "0" }
+            else return
+            event.accepted = true
+        }
     }
 
     function compute() {
@@ -96,6 +114,7 @@ ApplicationWindow {
 
         Text {
             id: display
+            objectName: "display"
             text: "0"
             color: "#ffffff"
             font.pixelSize: 56

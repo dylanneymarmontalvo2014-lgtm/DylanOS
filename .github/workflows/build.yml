@@ -1,14 +1,23 @@
-name: Build
-
+name: Build beta ISO
 on:
-  push:
-    branches: [main]
-  pull_request:
-
+  workflow_dispatch:
+permissions:
+  contents: read
 jobs:
   build:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
+    timeout-minutes: 180
     steps:
       - uses: actions/checkout@v4
-      - name: Placeholder build step
-        run: echo "Build workflow placeholder"
+      - run: sudo apt-get update && sudo apt-get install -y debootstrap gnupg squashfs-tools xorriso grub-pc-bin grub-efi-amd64-bin mtools dosfstools
+      - run: bash scripts/build.sh
+      - run: bash scripts/iso.sh
+      - run: bash scripts/test.sh
+      - uses: actions/upload-artifact@v4
+        with:
+          name: DylanOS-1.0-beta-amd64
+          compression-level: 0
+          path: |
+            DylanOS-1.0-beta-amd64.iso
+            DylanOS-1.0-beta-amd64.iso.sha256
+            work/packages.manifest

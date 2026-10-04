@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<kcfg xmlns="http://www.kde.org/standards/kcfg/1.0"
+      xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+      xsi:schemaLocation="http://www.kde.org/standards/kcfg/1.0
+      http://www.kde.org/standards/kcfg/1.0/kcfg.xsd">
+    <kcfgfile name=""/>
+    <group name="General">
+        <entry name="iconSize" type="Int">
+            <default>48</default>
+            <min>24</min>
+            <max>96</max>
+        </entry>
+        <entry name="hoverSize" type="Int">
+            <default>72</default>
+            <min>24</min>
+            <max>140</max>
+        </entry>
+        <entry name="iconSpacing" type="Int">
+            <default>4</default>
+            <min>0</min>
+            <max>32</max>
+        </entry>
+        <entry name="dockPadding" type="Int">
+            <default>16</default>
+            <min>0</min>
+            <max>64</max>
+        </entry>
+        <entry name="backgroundOpacity" type="Double">
+            <default>0.55</default>
+            <min>0.0</min>
+            <max>1.0</max>
+        </entry>
+        <entry name="cornerRadius" type="Int">
+            <default>22</default>
+            <min>0</min>
+            <max>48</max>
+        </entry>
+        <entry name="accentColor" type="Color">
+            <default>#0a84ff</default>
+        </entry>
+        <entry name="showIndicator" type="Bool">
+            <default>true</default>
+        </entry>
+    </group>
+</kcfg>

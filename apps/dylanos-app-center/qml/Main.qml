@@ -263,7 +263,8 @@ ApplicationWindow {
                                 modelData.globalIndex
                             )
 
-                            Qt.quit()
+                            // Allow the asynchronous desktop launcher job to finish.
+                            // Closing the window remains an explicit user action.
                         }
                     }
                 }

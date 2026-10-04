@@ -15,11 +15,13 @@ find_package(Qt6 REQUIRED COMPONENTS
     Qml
     Quick
     QuickControls2
+    Widgets
 )
 
 find_package(KF6 REQUIRED COMPONENTS
     Service
     CoreAddons
+    KIO
 )
 
 # ─────────────────────────────────────────
@@ -54,9 +56,12 @@ target_link_libraries(dylanos-app-center PRIVATE
     Qt6::Qml
     Qt6::Quick
     Qt6::QuickControls2
+    Qt6::Widgets
 
     KF6::Service
     KF6::CoreAddons
+    KF6::KIOGui
+    KF6::KIOWidgets
 )
 
 # ─────────────────────────────────────────
