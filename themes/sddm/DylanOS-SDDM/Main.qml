@@ -472,10 +472,7 @@ Column {
                         layer.effect: OpacityMask {
                             maskSource: mask
                         }
-                        source: "/var/lib/AccountsService/icons/" + lastNameUser
-                        onStatusChanged: {
-                            if (status == Image.Error)
-                                return source = "images/.face.icon"
+                        source: "images/profile.png"
                         }
                          MouseArea {
                            anchors.fill: ava

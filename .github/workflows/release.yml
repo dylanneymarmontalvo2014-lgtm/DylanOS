@@ -1,14 +1,17 @@
-name: Release
-
+name: Validate release tag
 on:
   push:
-    tags:
-      - 'v*'
-
+    tags: ['v*']
+permissions:
+  contents: read
 jobs:
-  release:
-    runs-on: ubuntu-latest
+  validate:
+    runs-on: ubuntu-24.04
     steps:
       - uses: actions/checkout@v4
-      - name: Placeholder release step
-        run: echo "Release workflow placeholder"
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - run: sudo apt-get update && sudo apt-get install -y shellcheck desktop-file-utils libegl1 libopengl0 libxkbcommon0
+      - run: pip install -r apps/workspace/requirements-dev.txt
+      - run: bash scripts/check.sh

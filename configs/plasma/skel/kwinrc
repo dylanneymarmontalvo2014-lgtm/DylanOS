@@ -1,0 +1,14 @@
+[org.kde.kdecoration2]
+library=org.kde.kwin.aurorae
+theme=__aurorae__svg__DylanOS-Tahoe
+ButtonsOnLeft=XIA
+ButtonsOnRight=
+BorderSize=Tiny
+
+[Plugins]
+blurEnabled=true
+contrastEnabled=false
+slideEnabled=true
+
+[Desktops]
+Number=2

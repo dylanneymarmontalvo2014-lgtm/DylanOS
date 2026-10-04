@@ -1,6 +1,8 @@
 #include "appmodel.h"
 #include <KService>
 #include <QProcess>
+#include <KIO/ApplicationLauncherJob>
+#include <KIO/JobUiDelegateFactory>
 #include <algorithm>
 
 AppModel::AppModel(QObject *parent) : QAbstractListModel(parent) { loadApps(); }
@@ -71,10 +73,9 @@ void AppModel::launchApp(int index)
 
     const KService::Ptr &service = m_apps.at(index);
 
-    QProcess::startDetached(
-        QStringLiteral("sh"),
-        QStringList() << QStringLiteral("-c") << service->exec()
-    );
+    auto *job = new KIO::ApplicationLauncherJob(service);
+    job->setUiDelegate(KIO::createDefaultJobUiDelegate(KJobUiDelegate::AutoHandlingEnabled, nullptr));
+    job->start();
 }
 
 int AppModel::rowCount(const QModelIndex &p) const { return p.isValid() ? 0 : m_apps.count(); }

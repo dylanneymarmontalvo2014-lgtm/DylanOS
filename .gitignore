@@ -16,3 +16,8 @@ work/
 *.buildinfo
 *.changes
 build/
+iso/
+__pycache__/
+*.pyc
+.venv/
+artifacts/

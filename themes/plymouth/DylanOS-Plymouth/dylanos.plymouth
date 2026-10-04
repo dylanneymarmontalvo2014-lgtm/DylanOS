@@ -1,0 +1,8 @@
+[Plymouth Theme]
+Name=DylanOS
+Description=DylanOS 1.0 Beta
+ModuleName=script
+
+[script]
+ImageDir=/usr/share/plymouth/themes/dylanos
+ScriptFile=/usr/share/plymouth/themes/dylanos/dylanos.script

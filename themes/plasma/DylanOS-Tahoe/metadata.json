@@ -1,0 +1,13 @@
+{
+  "KPlugin": {
+    "Id": "DylanOS-Tahoe",
+    "Name": "DylanOS Tahoe",
+    "Version": "1.0.0",
+    "License": "GPL-3.0-or-later",
+    "Authors": [
+      {
+        "Name": "DylanOS"
+      }
+    ]
+  }
+}

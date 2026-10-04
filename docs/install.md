@@ -1,44 +1,54 @@
-# Instalación de DylanOS
+# Instalación y pruebas de DylanOS 1.0 Beta
 
-## Requisitos mínimos
+## Primero en una máquina virtual
 
-| Componente | Requisito |
-|------------|-----------|
-| Procesador | x86_64 de 2 núcleos |
-| Memoria RAM | 4 GB |
-| Almacenamiento | 32 GB |
-| USB | 8 GB o superior |
+Verifica el SHA-256 y usa una VM con 4 GB de RAM, 2 CPU y un disco virtual de 32 GB.
+No uses tu disco físico para la primera prueba. La imagen ofrece arranque BIOS y
+UEFI sin Secure Boot. No se anuncia soporte de Secure Boot hasta validarlo.
 
-## Descarga
+```sh
+bash scripts/test.sh
+qemu-img create -f qcow2 work/dylanos-test.qcow2 32G
+qemu-system-x86_64 -enable-kvm -m 4096 -smp 2 \
+  -cdrom DylanOS-1.0-beta-amd64.iso -boot d \
+  -drive file=work/dylanos-test.qcow2,format=qcow2 -vga virtio
+```
 
-La imagen ISO estará disponible en la sección **Releases** del repositorio de GitHub.
+Sin `/dev/kvm`, quita `-enable-kvm`; la emulación será bastante más lenta.
+Para UEFI usa una copia escribible de OVMF_VARS y OVMF_CODE de tu distribución.
 
-## Crear un USB booteable
+Selecciona «Probar e instalar DylanOS». El modo live usa el usuario `dylan`,
+creado por live-config, con entrada automática. Si solicitas autenticación en
+la sesión live, la contraseña predeterminada de live-config es `live`.
+Esta cuenta temporal no sustituye al usuario que crearás en Calamares.
+Abre el instalador desde el menú de aplicaciones. Revisa su resumen antes de
+confirmar el particionado del disco virtual.
 
-Puedes utilizar cualquiera de las siguientes herramientas:
+## Comprobaciones de aceptación
 
-- Rufus (Windows)
-- Balena Etcher
-- Ventoy
+1. Arrancar por BIOS y UEFI; comprobar el menú y el splash.
+2. Verificar panel superior, menú global, ventanas, iconos y fondo con un usuario nuevo.
+3. Abrir todas las apps propias desde el menú; probar claro y oscuro.
+4. Crear/copiar/renombrar un archivo, enviarlo a papelera y recuperarlo en Dolphin.
+5. Crear una nota, cerrar la app y comprobar que permanece al abrirla.
+6. Crear proyectos Python/web/C++; abrirlos en editor/terminal y ejecutarlos.
+7. Probar Discover, actualizaciones, Wi-Fi, Bluetooth, audio, suspensión y pantalla.
+8. Instalar en el disco virtual, reiniciar sin la ISO y verificar la cuenta creada.
+9. Repetir red/audio/suspensión en los equipos físicos que se vayan a soportar.
 
-## Instalación
+Una carga QML o un checksum correcto no sustituyen estas pruebas.
 
-1. Descargar la ISO de DylanOS.
-2. Crear un USB booteable.
-3. Iniciar el computador desde el USB.
-4. Seleccionar **Instalar DylanOS**.
-5. Seguir las instrucciones del instalador.
-6. Reiniciar el equipo al finalizar.
+## Desarrollo local
 
-## Primer inicio
+`bash scripts/check.sh` comprueba sintaxis, ShellCheck, parser de paquetes,
+operaciones de datos, puente Qt, calculadora y persistencia desde QML, staging y
+carga de cada pantalla. Define `DYLANOS_PYTHON` para usar tu entorno virtual.
 
-Después de instalar DylanOS podrás:
+```sh
+python3 scripts/stage.py /tmp/dylanos-stage
+QT_QPA_PLATFORM=offscreen QT_QUICK_BACKEND=software \
+  .venv/bin/python apps/workspace/main.py --page dev --screenshot /tmp/desarrollo.png
+```
 
-- Crear tu usuario.
-- Configurar la red.
-- Personalizar el sistema.
-- Instalar aplicaciones adicionales.
-
-## Versiones
-
-Actualmente DylanOS se encuentra en fase **Alpha**, por lo que pueden existir errores o funciones incompletas.
+Para regenerar los fondos y SVG propios: `.venv/bin/python scripts/lib/generate-theme.py`.
+La compilación se puede retomar con `bash scripts/build.sh --resume`.
