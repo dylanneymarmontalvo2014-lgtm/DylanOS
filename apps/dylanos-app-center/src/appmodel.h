@@ -15,7 +15,7 @@ public:
     QVariant data(const QModelIndex &index, int role) const override;
     QHash<int, QByteArray> roleNames() const override;
 
-    Q_INVOKABLE void launchApp(int index);
+    Q_INVOKABLE void launchApp(const QString &desktopId);
     Q_INVOKABLE void refresh();
     Q_INVOKABLE int pageCount(int pageSize) const;
     Q_INVOKABLE QVariantList itemsForPage(int page, int pageSize) const;

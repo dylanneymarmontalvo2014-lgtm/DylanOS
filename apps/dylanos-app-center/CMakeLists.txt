@@ -87,24 +87,3 @@ install(
     FILES icons/dylanos-app-center.png
     DESTINATION ${CMAKE_INSTALL_DATADIR}/icons/hicolor/512x512/apps
 )
-
-# ─────────────────────────────────────────
-# Despliegue de QML
-# ─────────────────────────────────────────
-
-include(GNUInstallDirs)
-
-install(
-    TARGETS dylanos-app-center
-    DESTINATION ${CMAKE_INSTALL_BINDIR}
-)
-
-install(
-    FILES dylanos-app-center.desktop
-    DESTINATION ${CMAKE_INSTALL_DATADIR}/applications
-)
-
-install(
-    FILES icons/dylanos-app-center.png
-    DESTINATION ${CMAKE_INSTALL_DATADIR}/icons/hicolor/512x512/apps
-)

@@ -11,7 +11,7 @@ ApplicationWindow {
     color: "#e60a0a0a"
     visibility: Window.FullScreen
 
-    readonly property color accent: "#e11d2a"
+    readonly property color accent: "#DC143C"
     readonly property int pageSize: 10
 
     property int currentPage: 0
@@ -258,14 +258,7 @@ ApplicationWindow {
 
                         hoverEnabled: true
 
-                        onClicked: {
-                            appModel.launchApp(
-                                modelData.globalIndex
-                            )
-
-                            // Allow the asynchronous desktop launcher job to finish.
-                            // Closing the window remains an explicit user action.
-                        }
+                        onClicked: appModel.launchApp(modelData.desktopId)
                     }
                 }
             }
