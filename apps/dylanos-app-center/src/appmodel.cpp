@@ -37,7 +37,7 @@ QList<KService::Ptr> AppModel::visibleApps() const
     return result;
 }
 
-void AppModel::setFilter(const QString &text) { m_filter = text; }
+void AppModel::setFilter(const QString &text) { m_filter = text.trimmed(); }
 
 int AppModel::pageCount(int pageSize) const
 {
@@ -60,21 +60,26 @@ QVariantList AppModel::itemsForPage(int page, int pageSize) const
         item["name"] = s->name();
         item["icon"] = s->icon();
         item["desktopId"] = s->storageId();
-        item["globalIndex"] = m_apps.indexOf(s);
         result.append(item);
     }
     return result;
 }
 
-void AppModel::launchApp(int index)
+void AppModel::launchApp(const QString &desktopId)
 {
-    if (index < 0 || index >= m_apps.count())
+    if (desktopId.isEmpty())
         return;
 
-    const KService::Ptr &service = m_apps.at(index);
+    const auto it = std::find_if(m_apps.cbegin(), m_apps.cend(),
+                                 [&desktopId](const KService::Ptr &service) {
+                                     return service->storageId() == desktopId;
+                                 });
+    if (it == m_apps.cend())
+        return;
 
-    auto *job = new KIO::ApplicationLauncherJob(service);
-    job->setUiDelegate(KIO::createDefaultJobUiDelegate(KJobUiDelegate::AutoHandlingEnabled, nullptr));
+    auto *job = new KIO::ApplicationLauncherJob(*it);
+    job->setUiDelegate(KIO::createDefaultJobUiDelegate(
+        KJobUiDelegate::AutoHandlingEnabled, nullptr));
     job->start();
 }
 
