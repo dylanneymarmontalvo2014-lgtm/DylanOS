@@ -30,7 +30,7 @@ def stage(destination):
 
     for source, target in [
         ("apps/workspace", "/usr/share/dylanos/workspace"),
-        ("branding/logo.svg", "/usr/share/icons/hicolor/scalable/apps/distributor-logo-dylanos.svg"),
+        ("branding/logo.png", "/usr/share/icons/hicolor/512x512/apps/distributor-logo-dylanos.png"),
         ("branding/wallpapers/DylanOS-Dark.png", "/usr/share/wallpapers/DylanOS/DylanOS-Dark.png"),
         ("branding/wallpapers/DylanOS-Light.png", "/usr/share/wallpapers/DylanOS/DylanOS-Light.png"),
         ("themes/colors", "/usr/share/color-schemes"),
@@ -85,7 +85,11 @@ fi
     write("/usr/share/applications/calamares-install-debian.desktop", "[Desktop Entry]\nType=Application\nName=Instalar DylanOS\nComment=Instalar DylanOS 1.0 Beta en un disco\nExec=calamares-install-debian\nIcon=distributor-logo-dylanos\nTerminal=false\nCategories=System;\nStartupWMClass=calamares\nStartupNotify=true\n")
     write("/etc/calamares/modules/welcome.conf", "---\nshowSupportUrl: true\nshowKnownIssuesUrl: true\nshowReleaseNotesUrl: true\nrequirements:\n  requiredStorage: 25\n  requiredRam: 2.0\n  check: [storage, ram, power, root]\n  required: [storage, ram, root]\n")
     copy("installer/calamares/beta", "/etc/calamares/branding/dylanos")
-    copy("branding/logo.svg", "/etc/calamares/branding/dylanos/logo.svg")
+    copy("branding/logo.png", "/etc/calamares/branding/dylanos/logo.png")
+    branding_desc = dest / "etc/calamares/branding/dylanos/branding.desc"
+    branding_content = branding_desc.read_text(encoding="utf-8")
+    branding_content = re.sub(r"(?m)^(\s*product(?:Logo|Icon):\s*)\S+\s*$", r"\1logo.png", branding_content)
+    branding_desc.write_text(branding_content, encoding="utf-8")
     copy("branding/wallpapers/DylanOS-Dark.png", "/etc/calamares/branding/dylanos/background.png")
     write("/etc/calamares/modules/unpackfs.conf", '---\nunpack:\n  - source: /run/live/medium/live/filesystem.squashfs\n    sourcefs: squashfs\n    destination: ""\n')
     write("/etc/calamares/modules/displaymanager.conf", '---\ndisplaymanagers: [sddm]\nbasicSetup: false\n')
