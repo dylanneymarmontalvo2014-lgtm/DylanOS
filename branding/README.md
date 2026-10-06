@@ -4,11 +4,17 @@
 
 | Nombre | HEX | Uso |
 |---|---|---|
-| DylanOS Red | #E50914 | Color principal, acciones y acentos |
+| DylanOS Crimson | #DC143C | Color principal, acciones y acentos |
 | DylanOS Black | #0A0A0A | Fondo principal |
 | DylanOS White | #FFFFFF | Texto principal |
 | DylanOS Gray | #1A1A1A | Superficies y paneles |
 | DylanOS Light Gray | #B3B3B3 | Texto secundario |
+
+## Logo
+
+El logotipo reutilizable es `branding/logo.png`. El staging lo instala como
+icono PNG de hicolor (`512x512`) y lo adapta al nombre `logo.png` que declara el
+branding de Calamares; no se modifica ningún archivo del instalador fuente.
 
 ## Wallpaper
 

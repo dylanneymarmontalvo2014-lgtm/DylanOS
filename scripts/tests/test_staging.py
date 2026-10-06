@@ -23,14 +23,22 @@ class StagingTest(unittest.TestCase):
             (root / "etc/calamares/settings.conf").write_text("branding: debian\nsequence: keep\n")
             module.stage(root)
             paths = ["usr/bin/dylanos", "usr/share/dylanos/workspace/qml/Main.qml",
+                     "usr/share/icons/hicolor/512x512/apps/distributor-logo-dylanos.png",
                      "usr/share/aurorae/themes/DylanOS-Tahoe/DylanOS-Tahoerc",
                      "usr/share/aurorae/themes/DylanOS-Tahoe-Light/DylanOS-Tahoe-Lightrc",
                      "usr/share/wallpapers/DylanOS/DylanOS-Dark.png",
+                     "usr/share/wallpapers/DylanOS/DylanOS-Light.png",
                      "usr/share/sddm/themes/DylanOS-Tahoe/Main.qml",
                      "usr/share/grub/themes/dylanos/theme.txt",
                      "usr/share/plymouth/themes/dylanos/dylanos.script",
-                     "usr/share/plasma/lookandfeel/org.dylanos.tahoe/contents/layouts/org.kde.plasma.desktop-layout.js"]
+                     "usr/share/plasma/lookandfeel/org.dylanos.tahoe/contents/layouts/org.kde.plasma.desktop-layout.js",
+                     "etc/calamares/branding/dylanos/branding.desc",
+                     "etc/calamares/branding/dylanos/logo.png"]
             for path in paths: self.assertTrue((root / path).is_file(), path)
+            branding_desc = (root / "etc/calamares/branding/dylanos/branding.desc").read_text()
+            self.assertIn("productLogo: logo.png", branding_desc)
+            self.assertIn("productIcon: logo.png", branding_desc)
+            self.assertNotIn("logo.svg", branding_desc)
             original = (root / "etc/skel/.config/kdeglobals").read_text()
             module.stage(root)
             self.assertEqual((root / "etc/skel/.config/kdeglobals").read_text(), original)
