@@ -15,5 +15,8 @@ El botón «Abrir en Dolphin» abre la carpeta actual.
 
 `qml/Main.qml` y `assets/` conservan el prototipo anterior sin alteraciones.
 Ese prototipo contiene un árbol de ejemplo: no es la implementación que ejecuta
-la beta. Las etiquetas, columnas y favoritos personalizados del prototipo aún
-no están conectados a disco y no se anuncian en la aplicación nueva.
+la beta. `main.py` no carga `qml/Main.qml`; el prototipo conserva datos
+simulados únicamente como referencia visual y cualquier cambio funcional debe
+hacerse en Workspace. Las etiquetas, columnas y favoritos personalizados del
+prototipo aún no están conectados a disco y no se anuncian en la aplicación
+nueva.
