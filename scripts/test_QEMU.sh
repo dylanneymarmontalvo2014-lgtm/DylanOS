@@ -166,6 +166,12 @@ echo "    - Memoria RAM host:     $TOTAL_MEM_MB MB -> Asignados a la VM: $VM_RAM
 # ------------------------------------------------------------------------------
 # 4. Aceleración por Hardware (KVM)
 # ------------------------------------------------------------------------------
+if [[ ! -e /dev/kvm ]]; then
+    sudo modprobe kvm 2>/dev/null || true
+    sudo modprobe kvm_intel 2>/dev/null || true
+    sudo modprobe kvm_amd 2>/dev/null || true
+fi
+
 KVM_FLAGS=()
 if [[ -r /dev/kvm && -w /dev/kvm ]]; then
     echo "[+] Aceleración por hardware KVM disponible y activa (/dev/kvm)."
