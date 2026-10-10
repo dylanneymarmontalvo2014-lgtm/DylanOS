@@ -1,6 +1,7 @@
 # Build artifacts
 *.iso
 *.img
+*.qcow2
 *.tar.gz
 *.zip
 
@@ -23,3 +24,4 @@ __pycache__/
 .venv/
 artifacts/
 .claude/
+.qemu/
