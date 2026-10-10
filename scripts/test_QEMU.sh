@@ -228,6 +228,7 @@ DEVICE_FLAGS=(
     "-smp" "$VM_CORES"
     "-vga" "virtio"
     "-display" "default,show-cursor=on"
+    "-usb"
     "-device" "usb-tablet"
     "-netdev" "user,id=net0"
     "-device" "virtio-net-pci,netdev=net0"
