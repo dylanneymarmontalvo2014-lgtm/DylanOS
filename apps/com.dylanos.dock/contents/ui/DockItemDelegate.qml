@@ -96,9 +96,9 @@ Item {
                 if (!menuEntry.enabled)
                     return "transparent"
                 if (menuEntry.down)
-                    return "#bd1823"
+                    return "#B01030"
                 if (menuEntry.hovered || menuEntry.highlighted)
-                    return "#e11d2a"
+                    return "#DC143C"
                 return "transparent"
             }
             Behavior on color {

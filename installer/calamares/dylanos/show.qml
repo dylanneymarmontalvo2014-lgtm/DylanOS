@@ -1,77 +1,108 @@
-/* === This file is part of Calamares - <https://calamares.io> ===
- *
- *   SPDX-FileCopyrightText: 2015 Teo Mrnjavac <teo@kde.org>
- *   SPDX-FileCopyrightText: 2018 Adriaan de Groot <groot@kde.org>
- *   SPDX-License-Identifier: GPL-3.0-or-later
- *
- *   Calamares is Free Software: see the License-Identifier above.
- *
- */
+/* Slideshow del instalador DylanOS 1.0 Beta (Calamares, API 2).
+ * Identidad Crimson sobre negro, tipografía minimalista. */
 
 import QtQuick 2.0;
 import calamares.slideshow 1.0;
 
-Presentation
-{
+Presentation {
     id: presentation
 
-    function nextSlide() {
-        console.log("QML Component (default slideshow) Next slide");
-        presentation.goToNextSlide();
-    }
-
+    /* Avance automático suave entre diapositivas (fallback). */
     Timer {
         id: advanceTimer
-        interval: 1000
+        interval: 7000
         running: presentation.activatedInCalamares
         repeat: true
-        onTriggered: nextSlide()
+        onTriggered: presentation.goToNextSlide()
     }
 
-    Slide {
+    /* Fondo negro DylanOS detrás de todas las diapositivas. */
+    Rectangle {
+        anchors.fill: parent
+        color: "#0A0A0A"
+        z: -1
+    }
 
-        Image {
-            id: background
-            source: "squid.png"
-            width: 200; height: 200
-            fillMode: Image.PreserveAspectFit
-            anchors.centerIn: parent
+    /* Puntos de progreso en la parte inferior. */
+    Row {
+        anchors.horizontalCenter: parent.horizontalCenter
+        anchors.bottom: parent.bottom
+        anchors.bottomMargin: 36
+        spacing: 10
+
+        Repeater {
+            model: 6 /* Número estándar de diapositivas de Calamares */
+            delegate: Rectangle {
+                width: 8
+                height: 8
+                radius: 4
+                color: index === presentation.currentSlide ? "#DC143C" : "#2E2E33"
+
+                Behavior on color { ColorAnimation { duration: 200 } }
+            }
         }
+    }
+
+    /* Estilo común para el contenido de las diapositivas */
+    component SlideContent: Column {
+        id: content
+        property string title: ""
+        property string body: ""
+
+        anchors.centerIn: parent
+        spacing: 18
+        width: Math.min(parent.width * 0.7, 620)
+
         Text {
-            anchors.horizontalCenter: background.horizontalCenter
-            anchors.top: background.bottom
-            text: "This is a customizable QML slideshow.<br/>"+
-                  "Distributions should provide their own slideshow and list it in <br/>"+
-                  "their custom branding.desc file.<br/>"+
-                  "To create a Calamares presentation in QML, import calamares.slideshow,<br/>"+
-                  "define a Presentation element with as many Slide elements as needed."
+            text: content.title
+            color: "#F5F5F7"
+            font.family: "Inter"
+            font.pixelSize: 34
+            font.weight: Font.DemiBold
+            horizontalAlignment: Text.AlignHCenter
+            anchors.horizontalCenter: parent.horizontalCenter
             wrapMode: Text.WordWrap
-            width: presentation.width
-            horizontalAlignment: Text.Center
+            width: parent.width
+        }
+
+        Text {
+            text: content.body
+            color: "#98989F"
+            font.family: "Inter"
+            font.pixelSize: 18
+            font.weight: Font.Light
+            horizontalAlignment: Text.AlignHCenter
+            anchors.horizontalCenter: parent.horizontalCenter
+            wrapMode: Text.WordWrap
+            width: parent.width
         }
     }
 
+    /* Las diapositivas serán pobladas por Calamares a través de API 2 */
     Slide {
-        centeredText: qsTr("This is a second Slide element.")
+        SlideContent { title: "Bienvenido a DylanOS"; body: "Un sistema operativo moderno, rápido y elegante basado en Debian." }
+    }
+    Slide {
+        SlideContent { title: "Tu espacio de trabajo"; body: "Workspace integra archivos, notas, desarrollo y monitoreo en una sola app." }
+    }
+    Slide {
+        SlideContent { title: "Diseñado para ti"; body: "Interfaz oscura con acentos Crimson. Moderna, limpia y sin distracciones." }
+    }
+    Slide {
+        SlideContent { title: "Software al alcance"; body: "Instala aplicaciones fácilmente desde el App Center de DylanOS." }
+    }
+    Slide {
+        SlideContent { title: "Potenciado por Debian"; body: "Estabilidad y seguridad de Debian 13 Trixie como base sólida." }
+    }
+    Slide {
+        SlideContent { title: "¡Casi listo!"; body: "Tu nuevo sistema se está instalando. En unos minutos podrás disfrutarlo." }
     }
 
-    Slide {
-        centeredText: qsTr("This is a third Slide element.")
-    }
-
-    // When this slideshow is loaded as a V1 slideshow, only
-    // activatedInCalamares is set, which starts the timer (see above).
-    //
-    // In V2, also the onActivate() and onLeave() methods are called.
-    // These example functions log a message (and re-start the slides
-    // from the first).
+    /* API 2: el slideshow se activa y desactiva con la página de progreso. */
     function onActivate() {
-        console.log("QML Component (default slideshow) activated");
         presentation.currentSlide = 0;
     }
 
     function onLeave() {
-        console.log("QML Component (default slideshow) deactivated");
     }
-
 }

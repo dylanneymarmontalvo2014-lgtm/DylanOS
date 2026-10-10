@@ -7,7 +7,7 @@
             }
         ],
         "Category": "System Information",
-        "Description": "Dock estilo macOS para DylanOS: iconos redondeados, magnificacion, indicador de apps abiertas y apps fijadas",
+        "Description": "Dock para DylanOS: iconos redondeados, magnificacion, indicador de apps abiertas y apps fijadas",
         "Icon": "user-desktop",
         "Id": "com.dylanos.dock",
         "Name": "DylanOS Dock",

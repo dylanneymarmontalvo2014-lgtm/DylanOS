@@ -40,12 +40,12 @@ loadfont /boot/grub/fonts/unicode.pf2
 terminal_output gfxterm
 set theme=/boot/grub/themes/dylanos/theme.txt
 export theme
-menuentry "Probar e instalar DylanOS 1.0 Beta" {
-    linux /live/vmlinuz boot=live components username=dylan hostname=dylanos locales=es_ES.UTF-8 keyboard-layouts=latam quiet splash
+menuentry "Instalar DylanOS 1.0 Beta" {
+    linux /live/vmlinuz boot=live components hostname=dylanos locales=es_ES.UTF-8 keyboard-layouts=latam quiet splash
     initrd /live/initrd.img
 }
-menuentry "DylanOS · gráficos seguros" {
-    linux /live/vmlinuz boot=live components username=dylan hostname=dylanos locales=es_ES.UTF-8 keyboard-layouts=latam nomodeset
+menuentry "Instalar DylanOS · gráficos seguros" {
+    linux /live/vmlinuz boot=live components hostname=dylanos locales=es_ES.UTF-8 keyboard-layouts=latam nomodeset
     initrd /live/initrd.img
 }
 EOF

@@ -1,0 +1,11 @@
+[SddmGreeterTheme]
+Name=DylanOS Crimson
+Description=DylanOS 1.0 Beta login
+Author=DylanOS
+License=GPL-3.0-or-later
+Type=sddm-theme
+Version=1.0
+MainScript=Main.qml
+ConfigFile=theme.conf
+Theme-Id=DylanOS-Crimson
+QtVersion=6

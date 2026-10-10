@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Genera previews del shell macOS-like de DylanOS 1.0 Beta."""
+"""Genera previews del shell de DylanOS 1.0 Beta."""
 from pathlib import Path
 from xml.sax.saxutils import escape
 
@@ -111,5 +111,5 @@ files = {
 for name, content in files.items():
     (OUT / f"{name}.svg").write_text(content, encoding="utf-8")
 
-index = f'''<svg xmlns="http://www.w3.org/2000/svg" width="{W}" height="{H}" viewBox="0 0 {W} {H}"><rect width="{W}" height="{H}" fill="{BLACK}"/><path d="M0 760 C300 560 500 840 800 620 S1170 410 1440 560 L1440 900 L0 900Z" fill="{RED_DARK}"/><rect x="90" y="94" width="1260" height="650" rx="30" fill="#111111" stroke="#3A3A3A"/><circle cx="148" cy="160" r="28" fill="{RED}"/><text x="148" y="170" fill="{WHITE}" font-family="Inter,Arial" font-size="26" font-weight="750" text-anchor="middle">D</text>{t(202,170,"DylanOS 1.0 Beta",34,WHITE,700)}{t(202,210,"Propuesta visual · 90% macOS Tahoe · 10% DylanOS",16,MUTED)}{t(150,310,"Rojo",18,WHITE,600)}{t(520,310,"Negro",18,WHITE,600)}{t(890,310,"Blanco",18,WHITE,600)}{r(150,340,250,150,RED,28)}{r(520,340,250,150,BLACK,28,stroke="#555555")}{r(890,340,250,150,WHITE,28)}{t(275,425,"#E50914",18,WHITE,650,"middle")}{t(645,425,"#050505",18,WHITE,650,"middle")}{t(1015,425,"#F7F7F7",18,BLACK,650,"middle")}{t(150,620,"Barra superior · ventanas flotantes · iconos macOS libres · dock inferior",17,WHITE,550)}{t(150,660,"Calamares se conserva estándar: solo reemplaza el instalador Debian.",15,MUTED,500)}</svg>'''
+index = f'''<svg xmlns="http://www.w3.org/2000/svg" width="{W}" height="{H}" viewBox="0 0 {W} {H}"><rect width="{W}" height="{H}" fill="{BLACK}"/><path d="M0 760 C300 560 500 840 800 620 S1170 410 1440 560 L1440 900 L0 900Z" fill="{RED_DARK}"/><rect x="90" y="94" width="1260" height="650" rx="30" fill="#111111" stroke="#3A3A3A"/><circle cx="148" cy="160" r="28" fill="{RED}"/><text x="148" y="170" fill="{WHITE}" font-family="Inter,Arial" font-size="26" font-weight="750" text-anchor="middle">D</text>{t(202,170,"DylanOS 1.0 Beta",34,WHITE,700)}{t(202,210,"Propuesta visual · 100% DylanOS",16,MUTED)}{t(150,310,"Rojo",18,WHITE,600)}{t(520,310,"Negro",18,WHITE,600)}{t(890,310,"Blanco",18,WHITE,600)}{r(150,340,250,150,RED,28)}{r(520,340,250,150,BLACK,28,stroke="#555555")}{r(890,340,250,150,WHITE,28)}{t(275,425,"#E50914",18,WHITE,650,"middle")}{t(645,425,"#050505",18,WHITE,650,"middle")}{t(1015,425,"#F7F7F7",18,BLACK,650,"middle")}{t(150,620,"Barra superior · ventanas flotantes · dock inferior",17,WHITE,550)}{t(150,660,"Calamares se conserva estándar: solo reemplaza el instalador Debian.",15,MUTED,500)}</svg>'''
 (OUT / "00-indice.svg").write_text(index, encoding="utf-8")

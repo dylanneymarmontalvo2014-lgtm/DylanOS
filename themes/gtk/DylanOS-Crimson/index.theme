@@ -1,0 +1,12 @@
+[Desktop Entry]
+Type=X-GNOME-Metatheme
+Name=DylanOS Crimson
+Comment=Tema GTK de DylanOS Crimson
+Encoding=UTF-8
+
+[X-GNOME-Metatheme]
+GtkTheme=DylanOS-Crimson
+MetacityTheme=DylanOS-Crimson
+IconTheme=breeze-dark
+CursorTheme=breeze_cursors
+ButtonLayout=close,minimize,maximize:menu

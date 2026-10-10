@@ -1,7 +1,7 @@
 # DylanOS 1.0 Beta
 
 Distribución de escritorio basada en **Debian 13 (trixie), KDE Plasma 6 y Qt 6**,
-con una apariencia propia inspirada en macOS Tahoe. Barra superior, controles de
+con una apariencia propia inspirada en DylanOS Crimson. Barra superior, controles de
 ventana a la izquierda, esquemas claro/oscuro y fondos originales.
 
 ## Aplicaciones

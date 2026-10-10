@@ -24,14 +24,19 @@ class StagingTest(unittest.TestCase):
             module.stage(root)
             paths = ["usr/bin/dylanos", "usr/share/dylanos/workspace/qml/Main.qml",
                      "usr/share/icons/hicolor/512x512/apps/distributor-logo-dylanos.png",
-                     "usr/share/aurorae/themes/DylanOS-Tahoe/DylanOS-Tahoerc",
-                     "usr/share/aurorae/themes/DylanOS-Tahoe-Light/DylanOS-Tahoe-Lightrc",
+                     "usr/share/aurorae/themes/DylanOS-Crimson/DylanOS-Crimsonrc",
+                     "usr/share/aurorae/themes/DylanOS-Crimson-Light/DylanOS-Crimson-Lightrc",
                      "usr/share/wallpapers/DylanOS/DylanOS-Dark.png",
                      "usr/share/wallpapers/DylanOS/DylanOS-Light.png",
-                     "usr/share/sddm/themes/DylanOS-Tahoe/Main.qml",
+                     "usr/share/sddm/themes/DylanOS-Crimson/Main.qml",
                      "usr/share/grub/themes/dylanos/theme.txt",
                      "usr/share/plymouth/themes/dylanos/dylanos.script",
-                     "usr/share/plasma/lookandfeel/org.dylanos.tahoe/contents/layouts/org.kde.plasma.desktop-layout.js",
+                     "usr/share/plasma/lookandfeel/org.dylanos.crimson/contents/layouts/org.kde.plasma.desktop-layout.js",
+                     "usr/share/themes/DylanOS-Crimson/gtk-3.0/gtk.css",
+                     "usr/share/themes/DylanOS-Crimson/gtk-4.0/gtk.css",
+                     "usr/share/themes/DylanOS-Crimson/index.theme",
+                     "etc/skel/.config/gtk-3.0/settings.ini",
+                     "etc/skel/.config/gtk-4.0/settings.ini",
                      "etc/calamares/branding/dylanos/branding.desc",
                      "etc/calamares/branding/dylanos/logo.png"]
             for path in paths: self.assertTrue((root / path).is_file(), path)
@@ -39,6 +44,10 @@ class StagingTest(unittest.TestCase):
             self.assertIn("productLogo: logo.png", branding_desc)
             self.assertIn("productIcon: logo.png", branding_desc)
             self.assertNotIn("logo.svg", branding_desc)
+            for gtk_version in ("gtk-3.0", "gtk-4.0"):
+                settings_ini = (root / "etc/skel/.config" / gtk_version / "settings.ini").read_text()
+                self.assertIn("gtk-theme-name=DylanOS-Crimson", settings_ini)
+                self.assertIn("gtk-application-prefer-dark-theme=1", settings_ini)
             original = (root / "etc/skel/.config/kdeglobals").read_text()
             module.stage(root)
             self.assertEqual((root / "etc/skel/.config/kdeglobals").read_text(), original)
@@ -47,7 +56,7 @@ class StagingTest(unittest.TestCase):
             self.assertFalse(list(root.rglob("*.otf")))
 
     def test_aurorae_required_svg_elements(self):
-        for variant in ("DylanOS-Tahoe", "DylanOS-Tahoe-Light"):
+        for variant in ("DylanOS-Crimson", "DylanOS-Crimson-Light"):
             root = ROOT / "themes/aurorae" / variant
             for button in ("close", "minimize", "maximize", "restore"):
                 tree = ET.parse(root / (button + ".svg"))

@@ -3,7 +3,7 @@
 - Fondos `DylanOS-Dark.png` y `DylanOS-Light.png`, esquemas de color, SVG de Plasma
   y Aurorae, QML de Workspace y nuevo login: creados para este repositorio,
   bajo GPL-3.0-or-later. Generador: `scripts/lib/generate-theme.py`.
-- Logo de DylanOS: recurso preexistente `branding/logo.svg`, conservado.
+- Logo de DylanOS: recurso preexistente `branding/logo.png`, conservado.
 - Inter, Breeze, cursores, aplicaciones y firmware: paquetes oficiales de Debian;
   sus licencias se incluyen en `/usr/share/doc/<paquete>/copyright` en la imagen.
 - VSCodium se obtiene de su repositorio externo con `Signed-By` independiente.

@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """DylanOS Workspace entry point; also supports isolated rendering for QA."""
 import argparse
-import os
+
 from pathlib import Path
 import sys
 

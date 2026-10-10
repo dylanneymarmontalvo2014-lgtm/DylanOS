@@ -1,11 +1,11 @@
 """Filesystem services for DylanOS. No shell commands or GUI dependencies."""
 from datetime import datetime, timezone
-import json
+
 import os
 from pathlib import Path
 import re
 import shutil
-import tempfile
+
 import uuid
 
 
