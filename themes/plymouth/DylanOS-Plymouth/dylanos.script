@@ -8,9 +8,31 @@ if (!logo.image) {
 logo.sprite = Sprite(logo.image);
 logo.sprite.SetPosition(Window.GetWidth() / 2 - logo.image.GetWidth() / 2, Window.GetHeight() / 2 - logo.image.GetHeight() / 2 - 25, 1);
 
-title.image = Image.Text("DylanOS 1.0 Beta", 0.96, 0.96, 0.98);
-title.sprite = Sprite(title.image);
-title.sprite.SetPosition(Window.GetWidth() / 2 - title.image.GetWidth() / 2, Window.GetHeight() / 2 + 50, 1);
+# Animated spinner below the logo (30 frames)
+spinner.frames = 30;
+for (i = 1; i <= spinner.frames; i++) {
+    if (i < 10)
+        spinner.images[i] = Image("throbber-000" + i + ".png");
+    else
+        spinner.images[i] = Image("throbber-00" + i + ".png");
+}
+
+spinner.sprite = Sprite();
+spinner.current_frame = 1;
+
+fun refresh_callback() {
+    spinner.current_frame = (spinner.current_frame % spinner.frames) + 1;
+    if (spinner.images[spinner.current_frame]) {
+        spinner.sprite.SetImage(spinner.images[spinner.current_frame]);
+        spinner.sprite.SetPosition(
+            Window.GetWidth() / 2 - spinner.images[spinner.current_frame].GetWidth() / 2,
+            Window.GetHeight() / 2 + 40,
+            1
+        );
+    }
+}
+
+Plymouth.SetRefreshFunction(refresh_callback);
 
 message.sprite = Sprite();
 fun message_callback(text) {

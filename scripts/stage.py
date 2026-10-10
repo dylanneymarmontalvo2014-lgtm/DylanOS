@@ -115,6 +115,19 @@ fi
             'LIVE_SESSION="plasmax11.desktop"',
         )
         sddm_hook.write_text(hook_text, encoding="utf-8")
+    # SDDM override: explicitly conflict with plymouth-quit-wait and quit plymouth
+    # so SDDM never hangs behind Plymouth on physical hardware or QEMU.
+    write(
+        "/etc/systemd/system/sddm.service.d/override.conf",
+        "[Unit]\nConflicts=plymouth-quit-wait.service\nAfter=plymouth-start.service\nOnFailure=plymouth-quit.service\n\n[Service]\nExecStartPre=-/usr/bin/plymouth quit\n",
+    )
+    sddm_target_link = dest / "etc/systemd/system/graphical.target.wants/sddm.service"
+    if not sddm_target_link.exists():
+        sddm_target_link.parent.mkdir(parents=True, exist_ok=True)
+        try:
+            sddm_target_link.symlink_to("/lib/systemd/system/sddm.service")
+        except FileExistsError:
+            pass
     write("/etc/hostname", "dylanos\n")
     write("/etc/hosts", "127.0.0.1 localhost\n127.0.1.1 dylanos\n::1 localhost ip6-localhost ip6-loopback\n")
     write("/etc/dylanos-release", "DylanOS 1.0 Beta\nBase: Debian 13 (trixie)\n")
