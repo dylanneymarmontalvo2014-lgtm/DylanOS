@@ -25,6 +25,8 @@ def stage(destination):
     def write(target, text, mode=0o644):
         target = dest / target.lstrip("/")
         target.parent.mkdir(parents=True, exist_ok=True)
+        if target.exists():
+            target.chmod(0o644)
         target.write_text(text, encoding="utf-8")
         target.chmod(mode)
 
@@ -42,6 +44,7 @@ def stage(destination):
         ("themes/sddm/DylanOS-Crimson", "/usr/share/sddm/themes/DylanOS-Crimson"),
         ("themes/grub/DylanOS-Grub", "/usr/share/grub/themes/dylanos"),
         ("themes/plymouth/DylanOS-Plymouth", "/usr/share/plymouth/themes/dylanos"),
+        ("branding/logo.png", "/usr/share/plymouth/themes/dylanos/logo.png"),
         ("configs/plasma/skel", "/etc/skel/.config"),
         ("branding/wallpapers/DylanOS-Dark.png", "/usr/share/grub/themes/dylanos/background.png"),
     ]:
@@ -62,6 +65,7 @@ def stage(destination):
     ]:
         write(f"/usr/share/applications/org.dylanos.{key}.desktop", f"[Desktop Entry]\nType=Application\nName={name}\nExec=dylanos --page {key}\nIcon={icon}\nTerminal=false\nCategories={category};\nStartupNotify=true\n")
     write("/etc/xdg/autostart/dylanos-welcome.desktop", "[Desktop Entry]\nType=Application\nName=Bienvenido a DylanOS\nExec=dylanos-welcome\nIcon=distributor-logo-dylanos\nOnlyShowIn=KDE;\n")
+    write("/etc/xdg/autostart/calamares-install-dylanos.desktop", "[Desktop Entry]\nType=Application\nName=Instalar DylanOS\nComment=Iniciar instalador Calamares en el entorno Live\nExec=sh -c 'sleep 3 && /usr/bin/calamares-install-debian'\nIcon=distributor-logo-dylanos\nTerminal=false\nCategories=System;\nOnlyShowIn=KDE;\n")
     write("/usr/bin/dylanos-welcome", '''#!/bin/sh
 state="${XDG_STATE_HOME:-$HOME/.local/state}/dylanos"
 if [ ! -e "$state/welcome-seen" ]; then
@@ -69,8 +73,35 @@ if [ ! -e "$state/welcome-seen" ]; then
     if dylanos --page welcome; then touch "$state/welcome-seen"; fi
 fi
 ''', 0o755)
-    write("/etc/sddm.conf.d/10-dylanos.conf", "[Theme]\nCurrent=DylanOS-Crimson\nCursorTheme=breeze_cursors\n\n[General]\nInputMethod=\n")
+    write("/etc/sddm.conf.d/10-dylanos.conf", "[Theme]\nCurrent=DylanOS-Crimson\nCursorTheme=breeze_cursors\n\n[General]\nInputMethod=\n\n[Autologin]\nUser=dylan\nSession=plasma.desktop\nRelogin=false\n")
     write("/etc/default/grub.d/dylanos.cfg", 'GRUB_DISTRIBUTOR="DylanOS"\nGRUB_THEME="/usr/share/grub/themes/dylanos/theme.txt"\nGRUB_CMDLINE_LINUX_DEFAULT="quiet splash"\n')
+    write("/etc/sudoers.d/dylan", "dylan ALL=(ALL) NOPASSWD: ALL\n", 0o440)
+    passwd_path = dest / "etc/passwd"
+    if passwd_path.exists() and "dylan:" not in passwd_path.read_text(encoding="utf-8"):
+        with passwd_path.open("a", encoding="utf-8") as f:
+            f.write("dylan:x:1000:1000:DylanOS Live:/home/dylan:/bin/bash\n")
+    shadow_path = dest / "etc/shadow"
+    if shadow_path.exists() and "dylan:" not in shadow_path.read_text(encoding="utf-8"):
+        with shadow_path.open("a", encoding="utf-8") as f:
+            f.write("dylan::19700:0:99999:7:::\n")
+    group_path = dest / "etc/group"
+    if group_path.exists():
+        grp_content = group_path.read_text(encoding="utf-8")
+        if "dylan:" not in grp_content:
+            grp_content += "dylan:x:1000:\n"
+        for grp in ["sudo", "audio", "video", "render", "netdev", "plugdev", "input", "users"]:
+            grp_content = re.sub(rf"(?m)^({grp}:x:\d+:)(.*)$", lambda m: f"{m.group(1)}{m.group(2) + ',' if m.group(2) and not m.group(2).endswith(',') else m.group(2)}dylan" if "dylan" not in m.group(2) else m.group(0), grp_content)
+        group_path.write_text(grp_content, encoding="utf-8")
+    home_dylan = dest / "home/dylan"
+    home_dylan.mkdir(parents=True, exist_ok=True)
+    if (dest / "etc/skel").exists():
+        shutil.copytree(dest / "etc/skel", home_dylan, dirs_exist_ok=True)
+    xsessions_dir = dest / "usr/share/xsessions"
+    if (xsessions_dir / "plasmax11.desktop").exists() and not (xsessions_dir / "plasma.desktop").exists():
+        try:
+            (xsessions_dir / "plasma.desktop").symlink_to("plasmax11.desktop")
+        except FileExistsError:
+            pass
     write("/etc/hostname", "dylanos\n")
     write("/etc/hosts", "127.0.0.1 localhost\n127.0.1.1 dylanos\n::1 localhost ip6-localhost ip6-loopback\n")
     write("/etc/dylanos-release", "DylanOS 1.0 Beta\nBase: Debian 13 (trixie)\n")

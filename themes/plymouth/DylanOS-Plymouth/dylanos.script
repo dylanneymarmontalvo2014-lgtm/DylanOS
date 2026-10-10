@@ -1,13 +1,22 @@
-Window.SetBackgroundTopColor(0.06, 0.07, 0.11);
-Window.SetBackgroundBottomColor(0.12, 0.08, 0.14);
-logo.image = Image.Text("DylanOS", 0.96, 0.96, 0.98);
+Window.SetBackgroundTopColor(0.039, 0.039, 0.039);
+Window.SetBackgroundBottomColor(0.039, 0.039, 0.039);
+
+logo.image = Image("logo.png");
+if (!logo.image) {
+    logo.image = Image.Text("DylanOS", 0.86, 0.08, 0.24);
+}
 logo.sprite = Sprite(logo.image);
-logo.sprite.SetPosition(Window.GetWidth() / 2 - logo.image.GetWidth() / 2, Window.GetHeight() / 2 - 30, 1);
+logo.sprite.SetPosition(Window.GetWidth() / 2 - logo.image.GetWidth() / 2, Window.GetHeight() / 2 - logo.image.GetHeight() / 2 - 25, 1);
+
+title.image = Image.Text("DylanOS 1.0 Beta", 0.96, 0.96, 0.98);
+title.sprite = Sprite(title.image);
+title.sprite.SetPosition(Window.GetWidth() / 2 - title.image.GetWidth() / 2, Window.GetHeight() / 2 + 50, 1);
+
 message.sprite = Sprite();
 fun message_callback(text) {
-    message.image = Image.Text(text, 0.8, 0.8, 0.86);
+    message.image = Image.Text(text, 0.70, 0.70, 0.70);
     message.sprite.SetImage(message.image);
-    message.sprite.SetPosition(Window.GetWidth() / 2 - message.image.GetWidth() / 2, Window.GetHeight() / 2 + 35, 1);
+    message.sprite.SetPosition(Window.GetWidth() / 2 - message.image.GetWidth() / 2, Window.GetHeight() / 2 + 85, 1);
 }
 fun password_callback(prompt, bullets) {
     text = prompt + " ";
