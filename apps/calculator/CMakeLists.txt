@@ -31,7 +31,7 @@ target_link_libraries(dylanos-calculator PRIVATE
 
 install(TARGETS dylanos-calculator DESTINATION ${CMAKE_INSTALL_BINDIR})
 install(FILES data/org.dylanos.calculator.desktop DESTINATION ${CMAKE_INSTALL_DATADIR}/applications)
-install(FILES icons/com.dylanos.calculator.svg
+install(FILES icons/org.dylanos.calculator.svg
     DESTINATION ${CMAKE_INSTALL_DATADIR}/icons/hicolor/scalable/apps
-    RENAME com.dylanos.calculator.svg
+    RENAME org.dylanos.calculator.svg
 )

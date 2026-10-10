@@ -1,6 +1,6 @@
 [org.kde.kdecoration2]
 library=org.kde.kwin.aurorae
-theme=__aurorae__svg__DylanOS-Tahoe
+theme=__aurorae__svg__DylanOS-Crimson
 ButtonsOnLeft=XIA
 ButtonsOnRight=
 BorderSize=Tiny

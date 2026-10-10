@@ -1,0 +1,547 @@
+/* DylanOS Crimson — tema GTK 3.
+ * Identidad negro + crimson (#DC143C) sobre superficies neutras,
+ * botones píldora, esquinas 10px y controles de ventana a la izquierda. */
+
+@define-color theme_bg_color #0A0A0A;
+@define-color theme_fg_color #F5F5F7;
+@define-color theme_base_color #161618;
+@define-color theme_text_color #F5F5F7;
+@define-color theme_selected_bg_color #DC143C;
+@define-color theme_selected_fg_color #FFFFFF;
+@define-color theme_unfocused_bg_color #0A0A0A;
+@define-color theme_unfocused_fg_color #98989F;
+@define-color theme_unfocused_base_color #121214;
+@define-color theme_unfocused_text_color #98989F;
+@define-color theme_unfocused_selected_bg_color #232326;
+@define-color theme_unfocused_selected_fg_color #F5F5F7;
+@define-color insensitive_bg_color #141416;
+@define-color insensitive_fg_color #5A5A5F;
+@define-color borders #2E2E33;
+@define-color unfocused_borders #26262B;
+@define-color link_color #E86A80;
+@define-color placeholder_color #6E6E73;
+@define-color wm_title #F5F5F7;
+@define-color wm_bg #0A0A0A;
+
+/* Tokens propios de DylanOS */
+@define-color accent_color #DC143C;
+@define-color accent_hover #E8375D;
+@define-color accent_pressed #B01030;
+@define-color surface #1C1C1E;
+@define-color elevated #232326;
+@define-color traffic_close #FF5F57;
+@define-color traffic_min #FEBC2E;
+@define-color traffic_max #28C840;
+
+/***************
+ * Base general *
+ ***************/
+
+* {
+  -GtkToolbar-space-between-icons: 4;
+  outline-color: alpha(@accent_color, 0.45);
+  outline-style: dashed;
+  outline-offset: -3px;
+  outline-width: 1px;
+  -gtk-outline-radius: 8px;
+}
+
+window, dialog, .background {
+  background-color: @theme_bg_color;
+  color: @theme_fg_color;
+}
+
+.view, textview, textview text, iconview {
+  background-color: @theme_base_color;
+  color: @theme_text_color;
+}
+
+selection, .view selection, textview text selection, label selection, entry selection {
+  background-color: @theme_selected_bg_color;
+  color: @theme_selected_fg_color;
+}
+
+decoration {
+  border-radius: 10px;
+  box-shadow: 0 18px 44px alpha(#000000, 0.55), 0 0 0 1px alpha(#000000, 0.35);
+  margin: 12px;
+}
+
+decoration:backdrop { box-shadow: 0 10px 30px alpha(#000000, 0.45), 0 0 0 1px alpha(#000000, 0.3); }
+
+paned > separator {
+  background-color: transparent;
+  background-image: linear-gradient(to bottom, transparent 4px, @borders 4px, @borders calc(100% - 4px), transparent calc(100% - 4px));
+  min-width: 1px;
+  min-height: 1px;
+}
+
+separator { background-color: @borders; min-width: 1px; min-height: 1px; }
+separator.horizontal { min-height: 1px; min-width: 0; }
+separator.vertical { min-width: 1px; min-height: 0; }
+
+/***********
+ * Barras  *
+ ***********/
+
+headerbar, .titlebar {
+  background-color: shade(@theme_bg_color, 1.12);
+  background-image: none;
+  border-bottom: 1px solid alpha(#FFFFFF, 0.06);
+  border-radius: 10px 10px 0 0;
+  min-height: 46px;
+  padding: 0 8px;
+}
+
+headerbar:backdrop, .titlebar:backdrop { background-color: @theme_bg_color; }
+
+headerbar .title { font-weight: 600; letter-spacing: 0.1px; }
+
+toolbar, .toolbar {
+  background-color: @theme_bg_color;
+  border-bottom: 1px solid @borders;
+  padding: 4px;
+}
+
+.searchbar, actionbar, .search-bar { background-color: @theme_bg_color; border-bottom: 1px solid @borders; }
+
+/************************
+ * Controles de ventana *
+ ************************/
+
+button.titlebutton, headerbar button.titlebutton {
+  border-radius: 9999px;
+  min-width: 13px;
+  min-height: 13px;
+  padding: 0;
+  margin: 4px;
+  border: 1px solid alpha(#000000, 0.25);
+  background-image: none;
+  background-size: 0 0;   /* icono oculto: el color habla por sí solo */
+  color: transparent;
+}
+
+button.titlebutton.close { background-color: @traffic_close; }
+button.titlebutton.minimize { background-color: @traffic_min; }
+button.titlebutton.maximize { background-color: @traffic_max; }
+
+button.titlebutton:backdrop { background-color: #3A3A3F; }
+button.titlebutton:hover { filter: brightness(1.15); }
+
+/*************
+ * Botones   *
+ *************/
+
+button, .button {
+  background-color: #1F1F22;
+  background-image: none;
+  border: 1px solid @borders;
+  border-radius: 8px;
+  color: @theme_fg_color;
+  padding: 6px 14px;
+  min-height: 30px;
+  font-weight: 500;
+  box-shadow: none;
+  transition: all 140ms ease-out;
+}
+
+button:hover { background-color: #26262A; border-color: #3A3A3F; }
+button:active, button:checked { background-color: #1A1A1D; border-color: #454549; }
+button:disabled { opacity: 0.45; }
+
+/* Botón principal (acción sugerida) estilo píldora */
+button.suggested-action, .button.suggested-action {
+  background-color: @accent_color;
+  border-color: transparent;
+  border-radius: 9999px;
+  color: #FFFFFF;
+  font-weight: 600;
+}
+
+button.suggested-action:hover { background-color: @accent_hover; }
+button.suggested-action:active { background-color: @accent_pressed; }
+
+button.destructive-action {
+  background-color: @traffic_close;
+  border-color: transparent;
+  border-radius: 9999px;
+  color: #FFFFFF;
+  font-weight: 600;
+}
+
+button.flat, button.text-button.flat, button.image-button.flat {
+  background-color: transparent;
+  border-color: transparent;
+}
+
+button.flat:hover { background-color: alpha(#FFFFFF, 0.07); border-color: transparent; }
+button.flat:active, button.flat:checked { background-color: alpha(#FFFFFF, 0.12); }
+
+button.circular, button.rounded { border-radius: 9999px; }
+
+button.link { color: @link_color; background: none; border: none; }
+
+/*************
+ * Entradas  *
+ *************/
+
+entry, .entry {
+  background-color: @theme_base_color;
+  border: 1px solid @borders;
+  border-radius: 8px;
+  color: @theme_text_color;
+  min-height: 30px;
+  padding: 4px 10px;
+  caret-color: @accent_color;
+  transition: border-color 140ms ease-out;
+}
+
+entry:focus, .entry:focus { border-color: @accent_color; box-shadow: inset 0 0 0 1px alpha(@accent_color, 0.35); }
+entry:disabled { background-color: @insensitive_bg_color; color: @insensitive_fg_color; }
+entry selection { background-color: @theme_selected_bg_color; color: @theme_selected_fg_color; }
+entry image { color: @placeholder_color; }
+entry image:hover { color: @theme_fg_color; }
+entry.progressbar { background-color: @accent_color; border-radius: 9999px; }
+
+searchbar entry, search entry {
+  border-radius: 9999px;
+  padding: 4px 14px;
+}
+
+spinbutton {
+  background-color: @theme_base_color;
+  border: 1px solid @borders;
+  border-radius: 8px;
+}
+
+spinbutton:focus { border-color: @accent_color; }
+spinbutton entry { border: none; background: none; border-radius: 8px 0 0 8px; min-width: 42px; }
+spinbutton button { border: none; background: none; border-radius: 0; min-height: 0; padding: 6px; }
+spinbutton button:hover { background-color: alpha(#FFFFFF, 0.08); }
+spinbutton button:active { background-color: alpha(@accent_color, 0.35); color: #FFFFFF; }
+
+/***********
+ * Listas  *
+ ***********/
+
+treeview.view, .treeview {
+  background-color: @theme_base_color;
+  color: @theme_text_color;
+  border-left-color: @borders;
+  border-top-color: @borders;
+}
+
+treeview.view:selected, treeview.view:selected:focus { background-color: alpha(@accent_color, 0.85); color: #FFFFFF; border-radius: 6px; }
+treeview.view:hover { background-color: alpha(#FFFFFF, 0.05); }
+treeview.view header button {
+  background-color: @surface;
+  border: none;
+  border-bottom: 1px solid @borders;
+  border-radius: 0;
+  font-weight: 600;
+  color: @theme_unfocused_fg_color;
+  padding: 5px 8px;
+}
+
+list, listbox, .list, .sidebar list {
+  background-color: transparent;
+  color: @theme_fg_color;
+}
+
+list row, listbox row {
+  border-radius: 6px;
+  margin: 1px 4px;
+  padding: 5px 8px;
+  transition: background-color 120ms ease-out;
+}
+
+list row:hover, listbox row:hover { background-color: alpha(#FFFFFF, 0.06); }
+list row:active, listbox row:active { background-color: alpha(#FFFFFF, 0.10); }
+list row:selected, listbox row:selected { background-color: alpha(@accent_color, 0.85); color: #FFFFFF; }
+
+/***********
+ * Menús   *
+ ***********/
+
+menu, .menu, menubar {
+  background-color: @surface;
+  border: 1px solid @borders;
+  border-radius: 12px;
+  padding: 6px;
+}
+
+menu menuitem, .menu menuitem {
+  border-radius: 6px;
+  min-height: 30px;
+  padding: 4px 10px;
+  color: @theme_fg_color;
+  transition: background-color 100ms ease-out;
+}
+
+menu menuitem:hover, .menu menuitem:hover { background-color: @accent_color; color: #FFFFFF; }
+menu menuitem:disabled { color: @insensitive_fg_color; }
+menu separator, .menu separator { background-color: alpha(#FFFFFF, 0.08); margin: 6px 8px; min-height: 1px; }
+
+menubar { background-color: @theme_bg_color; border: none; border-radius: 0; padding: 0 6px; }
+menubar item { border-radius: 6px; padding: 4px 10px; }
+menubar item:hover { background-color: alpha(#FFFFFF, 0.08); }
+
+popover.background {
+  background-color: @surface;
+  border: 1px solid @borders;
+  border-radius: 12px;
+  padding: 6px;
+  box-shadow: 0 12px 28px alpha(#000000, 0.5);
+}
+
+popover.background list, popover.background listbox { background: none; }
+
+tooltip, .tooltip, tooltip.background {
+  background-color: #E9E9EC;
+  color: #1D1D1F;
+  border-radius: 8px;
+  padding: 6px 10px;
+  box-shadow: none;
+  border: none;
+}
+
+tooltip decoration { background-color: transparent; box-shadow: none; border-radius: 8px; }
+
+/***************
+ * Controles   *
+ ***************/
+
+checkbutton, radiobutton { padding: 3px; }
+
+checkbutton check, radiobutton radio {
+  border: 1.5px solid #4A4A4F;
+  background-color: transparent;
+  min-width: 18px;
+  min-height: 18px;
+  transition: all 120ms ease-out;
+}
+
+checkbutton check { border-radius: 5px; }
+radiobutton radio { border-radius: 9999px; }
+
+checkbutton check:checked, radiobutton radio:checked {
+  background-color: @accent_color;
+  border-color: @accent_color;
+  color: #FFFFFF;
+}
+
+checkbutton check:disabled, radiobutton radio:disabled { opacity: 0.45; }
+
+switch {
+  background-color: #2A2A2E;
+  border-radius: 9999px;
+  border: none;
+  min-width: 44px;
+  min-height: 26px;
+  transition: background-color 150ms ease-out;
+}
+
+switch:checked { background-color: @traffic_max; }
+switch:disabled { opacity: 0.45; }
+
+switch slider {
+  background-color: #FFFFFF;
+  border-radius: 9999px;
+  min-width: 22px;
+  min-height: 22px;
+  margin: 2px;
+  box-shadow: 0 1px 3px alpha(#000000, 0.4);
+}
+
+progressbar {
+  background-color: transparent;
+  color: @theme_unfocused_fg_color;
+  font-size: smaller;
+}
+
+progressbar trough { background-color: #232326; border: none; border-radius: 9999px; min-height: 6px; min-width: 6px; }
+progressbar progress { background-color: @accent_color; border: none; border-radius: 9999px; min-height: 6px; min-width: 6px; }
+
+levelbar block { border: none; border-radius: 9999px; min-height: 6px; }
+levelbar block.filled { background-color: @accent_color; }
+levelbar block.high { background-color: @traffic_max; }
+levelbar block.low { background-color: @traffic_min; }
+levelbar block.empty { background-color: #232326; }
+
+scale {
+  padding: 8px;
+  color: @theme_fg_color;
+}
+
+scale trough {
+  background-color: #232326;
+  border: none;
+  border-radius: 9999px;
+  min-height: 6px;
+  min-width: 6px;
+}
+
+scale highlight { background-color: @accent_color; border-radius: 9999px; }
+
+scale slider {
+  background-color: #FFFFFF;
+  border: none;
+  border-radius: 9999px;
+  min-width: 18px;
+  min-height: 18px;
+  margin: -6px;
+  box-shadow: 0 1px 4px alpha(#000000, 0.5);
+}
+
+scale slider:hover { box-shadow: 0 0 0 6px alpha(@accent_color, 0.20), 0 1px 4px alpha(#000000, 0.5); }
+
+/*************
+ * Selectores *
+ *************/
+
+combobox arrow {
+  -gtk-icon-source: -gtk-icontheme("pan-down-symbolic");
+  color: @placeholder_color;
+  min-height: 16px;
+  min-width: 16px;
+}
+
+combobox button.combo, combobox box button {
+  background-color: #1F1F22;
+  border: 1px solid @borders;
+  border-radius: 8px;
+  min-height: 30px;
+  padding: 4px 10px;
+  color: @theme_fg_color;
+}
+
+combobox button.combo:hover { background-color: #26262A; }
+
+/**************
+ * Pestañas   *
+ **************/
+
+notebook > header {
+  background-color: @theme_bg_color;
+  border: none;
+}
+
+notebook > header.top { border-bottom: 1px solid @borders; }
+notebook > header.bottom { border-top: 1px solid @borders; }
+
+notebook > header tabs tab {
+  background-color: transparent;
+  border: none;
+  border-radius: 6px;
+  padding: 5px 16px;
+  margin: 4px 2px;
+  color: @theme_unfocused_fg_color;
+  font-weight: 500;
+  transition: all 130ms ease-out;
+}
+
+notebook > header tabs tab:hover { background-color: alpha(#FFFFFF, 0.06); color: @theme_fg_color; }
+notebook > header tabs tab:checked { background-color: @elevated; color: @theme_fg_color; }
+notebook > stack { background-color: @theme_base_color; border-radius: 0 0 8px 8px; }
+
+/*****************
+ * Barra lateral *
+ *****************/
+
+.sidebar, placessidebar, .sidebar list, placessidebar list, scrolledwindow.sidebar {
+  background-color: #121214;
+  color: @theme_fg_color;
+}
+
+.sidebar row, placessidebar row {
+  border-radius: 6px;
+  margin: 1px 6px;
+  padding: 4px 8px;
+  min-height: 30px;
+  transition: background-color 120ms ease-out;
+}
+
+.sidebar row:hover, placessidebar row:hover { background-color: alpha(#FFFFFF, 0.06); }
+.sidebar row:selected, placessidebar row:selected { background-color: alpha(@accent_color, 0.85); color: #FFFFFF; }
+placessidebar row image { color: @accent_color; }
+
+/**************
+ * Scrollbars *
+ **************/
+
+scrollbar {
+  background-color: transparent;
+  border: none;
+  transition: all 200ms ease-out;
+}
+
+scrollbar.vertical { background-image: linear-gradient(to right, transparent 11px, alpha(#000000, 0.25) 11px); }
+scrollbar.horizontal { background-image: linear-gradient(to bottom, transparent 11px, alpha(#000000, 0.25) 11px); }
+
+scrollbar slider {
+  background-color: alpha(#B3B3B8, 0.55);
+  border: none;
+  border-radius: 9999px;
+  min-width: 7px;
+  min-height: 7px;
+  margin: 3px;
+}
+
+scrollbar.vertical slider { min-height: 36px; }
+scrollbar.horizontal slider { min-width: 36px; }
+scrollbar slider:hover { background-color: alpha(#FFFFFF, 0.75); }
+scrollbar.overlay-indicator:not(.hovering) slider { background-color: alpha(#FFFFFF, 0.35); }
+
+/************
+ * Diálogos *
+ ************/
+
+dialog.background, messagedialog.background {
+  background-color: @theme_bg_color;
+}
+
+dialog .dialog-action-area button {
+  border-radius: 8px;
+  min-height: 32px;
+  padding: 6px 18px;
+  font-weight: 600;
+}
+
+messagedialog .titlebar { background: none; border: none; min-height: 0; }
+
+filechooser paned > separator { min-width: 1px; }
+filechooser actionbar { border-top: 1px solid @borders; }
+
+/*************
+ * Diversos  *
+ *************/
+
+label { color: inherit; }
+label.dim-label, label:disabled { color: @insensitive_fg_color; }
+label.error { color: @traffic_close; }
+
+.frame { border: 1px solid @borders; border-radius: 10px; }
+actionbar button, .inline-toolbar button { border-radius: 8px; }
+
+treeview.view.expander { -gtk-icon-source: -gtk-icontheme("pan-end-symbolic"); color: @placeholder_color; }
+treeview.view.expander:checked { -gtk-icon-source: -gtk-icontheme("pan-down-symbolic"); }
+
+statusbar { border-top: 1px solid @borders; padding: 4px 8px; }
+
+.linked > button { border-radius: 0; border-left-width: 0; }
+.linked > button:first-child { border-radius: 8px 0 0 8px; border-left-width: 1px; }
+.linked > button:last-child { border-radius: 0 8px 8px 0; }
+.linked > button:only-child { border-radius: 8px; }
+
+.linked:not(.vertical) > entry { border-radius: 0; border-left-width: 0; }
+.linked:not(.vertical) > entry:first-child { border-radius: 8px 0 0 8px; border-left-width: 1px; }
+.linked:not(.vertical) > entry:last-child { border-radius: 0 8px 8px 0; }
+
+modelbutton {
+  border-radius: 6px;
+  min-height: 28px;
+  padding: 3px 10px;
+  color: @theme_fg_color;
+}
+
+modelbutton:hover { background-color: @accent_color; color: #FFFFFF; }

@@ -16,7 +16,7 @@ ApplicationWindow {
     property string pendingOperator: ""
     property bool resetOnNextDigit: true
 
-    readonly property color accentRed: "#e11d2a"
+    readonly property color accentRed: "#DC143C"
     readonly property color keyDark: "#1c1c1c"
 
     function formatNumber(n) {

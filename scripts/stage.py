@@ -34,11 +34,12 @@ def stage(destination):
         ("branding/wallpapers/DylanOS-Dark.png", "/usr/share/wallpapers/DylanOS/DylanOS-Dark.png"),
         ("branding/wallpapers/DylanOS-Light.png", "/usr/share/wallpapers/DylanOS/DylanOS-Light.png"),
         ("themes/colors", "/usr/share/color-schemes"),
-        ("themes/plasma/DylanOS-Tahoe", "/usr/share/plasma/desktoptheme/DylanOS-Tahoe"),
-        ("themes/aurorae/DylanOS-Tahoe", "/usr/share/aurorae/themes/DylanOS-Tahoe"),
-        ("themes/aurorae/DylanOS-Tahoe-Light", "/usr/share/aurorae/themes/DylanOS-Tahoe-Light"),
-        ("themes/lookandfeel/org.dylanos.tahoe", "/usr/share/plasma/lookandfeel/org.dylanos.tahoe"),
-        ("themes/sddm/DylanOS-Tahoe", "/usr/share/sddm/themes/DylanOS-Tahoe"),
+        ("themes/gtk/DylanOS-Crimson", "/usr/share/themes/DylanOS-Crimson"),
+        ("themes/plasma/DylanOS-Crimson", "/usr/share/plasma/desktoptheme/DylanOS-Crimson"),
+        ("themes/aurorae/DylanOS-Crimson", "/usr/share/aurorae/themes/DylanOS-Crimson"),
+        ("themes/aurorae/DylanOS-Crimson-Light", "/usr/share/aurorae/themes/DylanOS-Crimson-Light"),
+        ("themes/lookandfeel/org.dylanos.crimson", "/usr/share/plasma/lookandfeel/org.dylanos.crimson"),
+        ("themes/sddm/DylanOS-Crimson", "/usr/share/sddm/themes/DylanOS-Crimson"),
         ("themes/grub/DylanOS-Grub", "/usr/share/grub/themes/dylanos"),
         ("themes/plymouth/DylanOS-Plymouth", "/usr/share/plymouth/themes/dylanos"),
         ("configs/plasma/skel", "/etc/skel/.config"),
@@ -68,7 +69,7 @@ if [ ! -e "$state/welcome-seen" ]; then
     if dylanos --page welcome; then touch "$state/welcome-seen"; fi
 fi
 ''', 0o755)
-    write("/etc/sddm.conf.d/10-dylanos.conf", "[Theme]\nCurrent=DylanOS-Tahoe\nCursorTheme=breeze_cursors\n\n[General]\nInputMethod=\n")
+    write("/etc/sddm.conf.d/10-dylanos.conf", "[Theme]\nCurrent=DylanOS-Crimson\nCursorTheme=breeze_cursors\n\n[General]\nInputMethod=\n")
     write("/etc/default/grub.d/dylanos.cfg", 'GRUB_DISTRIBUTOR="DylanOS"\nGRUB_THEME="/usr/share/grub/themes/dylanos/theme.txt"\nGRUB_CMDLINE_LINUX_DEFAULT="quiet splash"\n')
     write("/etc/hostname", "dylanos\n")
     write("/etc/hosts", "127.0.0.1 localhost\n127.0.1.1 dylanos\n::1 localhost ip6-localhost ip6-loopback\n")

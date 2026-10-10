@@ -1,0 +1,11 @@
+{
+    "KPackageStructure": "Plasma/LookAndFeel",
+    "KPlugin": {
+        "Id": "org.dylanos.crimson",
+        "Name": "DylanOS Crimson",
+        "Description": "DylanOS 1.0 Beta · un espacio para tus ideas",
+        "Version": "1.0.0",
+        "License": "GPL-3.0-or-later",
+        "Authors": [{"Name": "DylanOS"}]
+    }
+}

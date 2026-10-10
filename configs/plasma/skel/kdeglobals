@@ -8,7 +8,7 @@ toolBarFont=Inter,10,-1,5,50,0,0,0,0,0
 menuFont=Inter,10,-1,5,50,0,0,0,0,0
 
 [KDE]
-LookAndFeelPackage=org.dylanos.tahoe
+LookAndFeelPackage=org.dylanos.crimson
 SingleClick=false
 widgetStyle=Breeze
 

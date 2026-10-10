@@ -1,0 +1,10 @@
+[Desktop Entry]
+Name=DylanOS Crimson
+X-KDE-PluginInfo-Name=DylanOS-Crimson
+X-KDE-PluginInfo-License=GPL-3.0-or-later
+
+[ContrastEffect]
+enabled=false
+
+[BlurBehindEffect]
+enabled=true
