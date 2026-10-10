@@ -12,9 +12,16 @@ import org.kde.notificationmanager as NotificationManager
 Rectangle {
     id: root
 
-    color: "#0d0d0f"
+    readonly property color cBlack:      "#0A0A0A"
+    readonly property color cGray:       "#1A1A1A"
+    readonly property color cCrimson:    "#DC143C"
+    readonly property color cWhite:      "#FFFFFF"
+    readonly property color cLightGray:  "#B3B3B3"
+    readonly property color cCardBorder: Qt.rgba(1, 1, 1, 0.08)
+
+    color: cBlack
     radius: 22
-    border.color: "#2a1618"
+    border.color: cCardBorder
     border.width: 1
 
     layer.enabled: true
@@ -46,30 +53,30 @@ Rectangle {
             Kirigami.Icon {
                 source: "notifications"; isMask: true
                 Layout.preferredWidth: 22; Layout.preferredHeight: 22
-                color: "#f5f5f5"
+                color: cWhite
             }
             QQC2.Label {
                 text: "Notificaciones"
-                font.pixelSize: 20; font.bold: true; color: "#f5f5f5"
+                font.pixelSize: 20; font.bold: true; color: cWhite
             }
             Rectangle {
                 width: 24; height: 24; radius: 12
-                color: "#e11d2e"
+                color: cCrimson
                 visible: notificationsModel.count > 0
 
                 layer.enabled: true
                 layer.effect: MultiEffect {
-                    shadowEnabled: true; shadowColor: "#e11d2e"
+                    shadowEnabled: true; shadowColor: cCrimson
                     shadowOpacity: 0.7; shadowBlur: 0.6
                 }
                 QQC2.Label {
                     anchors.centerIn: parent
                     text: notificationsModel.count
-                    color: "white"; font.pixelSize: 12; font.bold: true
+                    color: cWhite; font.pixelSize: 12; font.bold: true
                 }
             }
             Item { Layout.fillWidth: true }
-            QQC2.ToolButton { icon.name: "overflow-menu"; icon.color: "#c4c4c4"; flat: true }
+            QQC2.ToolButton { icon.name: "overflow-menu"; icon.color: cLightGray; flat: true }
         }
 
         // ----- Modo "No molestar" activo: no mostramos la lista -----
@@ -86,7 +93,7 @@ Rectangle {
             }
             QQC2.Label {
                 text: "No molestar activado"
-                color: "#9a9a9a"; font.pixelSize: 13
+                color: cLightGray; font.pixelSize: 13
                 Layout.alignment: Qt.AlignHCenter
             }
             Item { Layout.fillHeight: true }
@@ -105,8 +112,8 @@ Rectangle {
                 width: ListView.view.width
                 height: notifLayout.implicitHeight + 24
                 radius: 14
-                color: "#1a1414"
-                border.color: "#2a1618"
+                color: cGray
+                border.color: cCardBorder
                 border.width: 1
 
                 RowLayout {
@@ -117,12 +124,12 @@ Rectangle {
 
                     Rectangle {
                         Layout.preferredWidth: 38; Layout.preferredHeight: 38; radius: 19
-                        color: "#e11d2e"
+                        color: cCrimson
                         Kirigami.Icon {
                             anchors.centerIn: parent
                             width: 20; height: 20
                             source: model.iconName || model.desktopEntry || "dialog-information"
-                            isMask: true; color: "white"
+                            isMask: true; color: cWhite
                         }
                     }
 
@@ -134,17 +141,17 @@ Rectangle {
                             Layout.fillWidth: true
                             QQC2.Label {
                                 text: model.summary || model.applicationName || "Notificación"
-                                color: "#f5f5f5"; font.pixelSize: 14; font.bold: true
+                                color: cWhite; font.pixelSize: 14; font.bold: true
                                 Layout.fillWidth: true; elide: Text.ElideRight
                             }
                             QQC2.Label {
                                 text: model.updated ? Qt.formatTime(model.updated, "hh:mm") : ""
-                                color: "#9a9a9a"; font.pixelSize: 11
+                                color: cLightGray; font.pixelSize: 11
                             }
                         }
                         QQC2.Label {
                             text: model.body || ""
-                            color: "#c4c4c4"; font.pixelSize: 12
+                            color: cLightGray; font.pixelSize: 12
                             wrapMode: Text.WordWrap
                             Layout.fillWidth: true
                         }
@@ -165,7 +172,7 @@ Rectangle {
             Layout.fillWidth: true
             text: "Borrar todo"
             icon.name: "edit-clear-all"
-            icon.color: "#c4c4c4"
+            icon.color: cLightGray
             flat: true
             visible: !SystemStatus.doNotDisturb
             onClicked: {

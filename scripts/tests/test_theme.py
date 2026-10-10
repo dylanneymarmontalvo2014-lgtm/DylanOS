@@ -53,11 +53,17 @@ class ColorSchemeTest(unittest.TestCase):
 
 class StagedAppsUseCrimsonTest(unittest.TestCase):
     def test_no_legacy_accent_left_in_qml(self):
-        legacy = ("#e11d2a", "#e3485b", "#E50914")
+        legacy = ("#e11d2a", "#e3485b", "#E50914", "#e11d2e")
         for relative in ("apps/calculator/qml/Main.qml",
                          "apps/calculator/icons/org.dylanos.calculator.svg",
                          "themes/sddm/DylanOS-Crimson/Main.qml",
-                         "apps/com.dylanos.dock/contents/ui/DockItemDelegate.qml"):
+                         "apps/com.dylanos.dock/contents/ui/DockItemDelegate.qml",
+                         "apps/dylanos-control-center/contents/ui/ControlCenterPanel.qml",
+                         "apps/dylanos-control-center/contents/ui/NotificationsPanel.qml",
+                         "apps/workspace/qml/Main.qml",
+                         "apps/workspace/qml/SettingsPage.qml",
+                         "apps/workspace/qml/ActionButton.qml",
+                         "themes/sddm/DylanOS-SDDM/components/Clock.qml"):
             content = (ROOT / relative).read_text(encoding="utf-8")
             for color in legacy:
                 self.assertNotIn(color, content, (relative, color))

@@ -11,7 +11,13 @@ ScrollView {
             Layout.fillWidth: true
             RowLayout {
                 width: parent.width; spacing: 20
-                Rectangle { width: 64; height: 64; radius: 20; color: "#e3485b"; Label { anchors.centerIn: parent; text: "D"; color: "white"; font.pixelSize: 43; font.weight: Font.DemiBold } }
+                Image {
+                    Layout.preferredWidth: 64; Layout.preferredHeight: 64
+                    source: "../../branding/logo.png"
+                    fillMode: Image.PreserveAspectFit
+                    smooth: true
+                    mipmap: true
+                }
                 ColumnLayout {
                     Layout.fillWidth: true
                     Label { text: "DylanOS 1.0 Beta"; font.pixelSize: 24; font.weight: Font.DemiBold }
