@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 """Install DylanOS into an explicit staging root, never the host."""
 import argparse
+import os
 from pathlib import Path
 import shutil
 import re
@@ -72,7 +73,7 @@ if [ ! -e "$state/welcome-seen" ]; then
     if dylanos --page welcome; then touch "$state/welcome-seen"; fi
 fi
 ''', 0o755)
-    write("/etc/sddm.conf.d/10-dylanos.conf", "[Theme]\nCurrent=DylanOS-Crimson\nCursorTheme=breeze_cursors\n\n[General]\nInputMethod=\n\n[Autologin]\nUser=dylan\nSession=plasma.desktop\nRelogin=false\n")
+    write("/etc/sddm.conf.d/10-dylanos.conf", "[Theme]\nCurrent=DylanOS-Crimson\nCursorTheme=breeze_cursors\n\n[General]\nInputMethod=\n\n[Autologin]\nUser=dylan\nSession=plasmax11.desktop\nRelogin=false\n")
     write("/etc/default/grub.d/dylanos.cfg", 'GRUB_DISTRIBUTOR="DylanOS"\nGRUB_THEME="/usr/share/grub/themes/dylanos/theme.txt"\nGRUB_CMDLINE_LINUX_DEFAULT="quiet splash"\n')
     write("/etc/sudoers.d/dylan", "dylan ALL=(ALL) NOPASSWD: ALL\n", 0o440)
     passwd_path = dest / "etc/passwd"
@@ -95,12 +96,25 @@ fi
     home_dylan.mkdir(parents=True, exist_ok=True)
     if (dest / "etc/skel").exists():
         shutil.copytree(dest / "etc/skel", home_dylan, dirs_exist_ok=True)
+    for p in [home_dylan] + list(home_dylan.rglob("*")):
+        os.chown(p, 1000, 1000)
     xsessions_dir = dest / "usr/share/xsessions"
     if (xsessions_dir / "plasmax11.desktop").exists() and not (xsessions_dir / "plasma.desktop").exists():
         try:
             (xsessions_dir / "plasma.desktop").symlink_to("plasmax11.desktop")
         except FileExistsError:
             pass
+    # Patch live-config's 0085-sddm to use plasmax11.desktop explicitly for
+    # Plasma 6 on Trixie.  The default "plasma.desktop" resolves to the Wayland
+    # session first, which fails on VMs without GPU acceleration (TCG).
+    sddm_hook = dest / "lib/live/config/0085-sddm"
+    if sddm_hook.exists():
+        hook_text = sddm_hook.read_text(encoding="utf-8")
+        hook_text = hook_text.replace(
+            'LIVE_SESSION="plasma.desktop"',
+            'LIVE_SESSION="plasmax11.desktop"',
+        )
+        sddm_hook.write_text(hook_text, encoding="utf-8")
     write("/etc/hostname", "dylanos\n")
     write("/etc/hosts", "127.0.0.1 localhost\n127.0.1.1 dylanos\n::1 localhost ip6-localhost ip6-loopback\n")
     write("/etc/dylanos-release", "DylanOS 1.0 Beta\nBase: Debian 13 (trixie)\n")
