@@ -12,7 +12,7 @@ import QtQuick
  */
 QtObject {
     readonly property var secondaryActions: [
-        { id: "airdrop", icon: "emblem-shared", label: "Compartir" },
+        { id: "kdeconnect", icon: "kdeconnect", label: "KDE Connect" },
         { id: "project", icon: "video-display", label: "Proyectar" },
         { id: "powersave", icon: "battery-profile-powersave", label: "Ahorro de energía" }
     ]

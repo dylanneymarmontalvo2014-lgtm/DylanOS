@@ -70,7 +70,7 @@ ColumnLayout {
 
             text: Qt.formatDateTime(new Date(), "h:mm")
 
-            color: "#E50914"
+            color: "#DC143C"
             opacity: 0.95
 
             font.family: fontbold.name

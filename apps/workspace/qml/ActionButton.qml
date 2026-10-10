@@ -17,8 +17,8 @@ Button {
     }
     background: Rectangle {
         radius: 10
-        color: control.primary ? (control.down ? "#b82f41" : "#e3485b") : (control.hovered ? control.palette.mid : control.palette.button)
-        border.color: control.primary ? "#ff7383" : control.palette.mid
+        color: control.primary ? (control.down ? "#B01030" : "#DC143C") : (control.hovered ? control.palette.mid : control.palette.button)
+        border.color: control.primary ? Qt.lighter("#DC143C", 1.25) : control.palette.mid
         opacity: control.enabled ? 1 : 0.5
     }
 }

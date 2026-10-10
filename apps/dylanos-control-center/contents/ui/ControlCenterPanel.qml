@@ -9,9 +9,16 @@ import org.kde.kirigami as Kirigami
 Rectangle {
     id: root
 
-    color: "#0d0d0f"
+    readonly property color cBlack:      "#0A0A0A"
+    readonly property color cGray:       "#1A1A1A"
+    readonly property color cCrimson:    "#DC143C"
+    readonly property color cWhite:      "#FFFFFF"
+    readonly property color cLightGray:  "#B3B3B3"
+    readonly property color cCardBorder: Qt.rgba(1, 1, 1, 0.08)
+
+    color: cBlack
     radius: 22
-    border.color: "#2a1618"
+    border.color: cCardBorder
     border.width: 1
 
     layer.enabled: true
@@ -36,17 +43,17 @@ Rectangle {
             Kirigami.Icon {
                 source: "configure"; isMask: true
                 Layout.preferredWidth: 22; Layout.preferredHeight: 22
-                color: "#f5f5f5"
+                color: cWhite
             }
             QQC2.Label {
                 text: "Centro de control"
-                font.pixelSize: 20; font.bold: true; color: "#f5f5f5"
+                font.pixelSize: 20; font.bold: true; color: cWhite
             }
             Item { Layout.fillWidth: true }
-            QQC2.ToolButton { icon.name: "document-edit"; icon.color: "#c4c4c4"; flat: true }
+            QQC2.ToolButton { icon.name: "document-edit"; icon.color: cLightGray; flat: true }
         }
 
-        // Grid 2x2 — TODO real
+        // Grid 2x2 — Conectado a SystemStatus
         GridLayout {
             Layout.fillWidth: true
             columns: 2
@@ -58,14 +65,14 @@ Rectangle {
                 Layout.fillWidth: true
                 Layout.preferredHeight: 90
                 radius: 16
-                color: SystemStatus.wifiPowered ? "#e11d2e" : "#1a1414"
-                border.color: SystemStatus.wifiPowered ? "#ff4d5a" : "#2a1618"
+                color: SystemStatus.wifiPowered ? cCrimson : cGray
+                border.color: SystemStatus.wifiPowered ? Qt.lighter(cCrimson, 1.25) : cCardBorder
                 border.width: 1
                 opacity: SystemStatus.wifiAvailable ? 1.0 : 0.5
 
                 layer.enabled: SystemStatus.wifiPowered
                 layer.effect: MultiEffect {
-                    shadowEnabled: true; shadowColor: "#e11d2e"
+                    shadowEnabled: true; shadowColor: cCrimson
                     shadowOpacity: 0.5; shadowBlur: 0.8
                 }
 
@@ -79,20 +86,20 @@ Rectangle {
                     anchors.fill: parent; anchors.margins: 12; spacing: 4
                     Kirigami.Icon {
                         source: "network-wireless"; isMask: true
-                        color: SystemStatus.wifiPowered ? "white" : "#c4c4c4"
+                        color: SystemStatus.wifiPowered ? cWhite : cLightGray
                         Layout.preferredWidth: 22; Layout.preferredHeight: 22
                     }
                     Item { Layout.fillHeight: true }
                     QQC2.Label {
                         text: "Wi-Fi"
-                        color: SystemStatus.wifiPowered ? "white" : "#f5f5f5"
+                        color: cWhite
                         font.pixelSize: 13; font.bold: true
                     }
                     QQC2.Label {
                         text: !SystemStatus.wifiAvailable ? "No detectado"
                               : SystemStatus.wifiPowered ? (SystemStatus.wifiSsid || "Conectado")
                               : "Desactivado"
-                        color: SystemStatus.wifiPowered ? "#ffd7da" : "#9a9a9a"
+                        color: SystemStatus.wifiPowered ? Qt.rgba(1, 1, 1, 0.85) : cLightGray
                         font.pixelSize: 11
                     }
                 }
@@ -103,14 +110,14 @@ Rectangle {
                 Layout.fillWidth: true
                 Layout.preferredHeight: 90
                 radius: 16
-                color: SystemStatus.bluetoothPowered ? "#e11d2e" : "#1a1414"
-                border.color: SystemStatus.bluetoothPowered ? "#ff4d5a" : "#2a1618"
+                color: SystemStatus.bluetoothPowered ? cCrimson : cGray
+                border.color: SystemStatus.bluetoothPowered ? Qt.lighter(cCrimson, 1.25) : cCardBorder
                 border.width: 1
                 opacity: SystemStatus.bluetoothAvailable ? 1.0 : 0.5
 
                 layer.enabled: SystemStatus.bluetoothPowered
                 layer.effect: MultiEffect {
-                    shadowEnabled: true; shadowColor: "#e11d2e"
+                    shadowEnabled: true; shadowColor: cCrimson
                     shadowOpacity: 0.5; shadowBlur: 0.8
                 }
 
@@ -124,19 +131,19 @@ Rectangle {
                     anchors.fill: parent; anchors.margins: 12; spacing: 4
                     Kirigami.Icon {
                         source: "preferences-system-bluetooth"; isMask: true
-                        color: SystemStatus.bluetoothPowered ? "white" : "#c4c4c4"
+                        color: SystemStatus.bluetoothPowered ? cWhite : cLightGray
                         Layout.preferredWidth: 22; Layout.preferredHeight: 22
                     }
                     Item { Layout.fillHeight: true }
                     QQC2.Label {
                         text: "Bluetooth"
-                        color: SystemStatus.bluetoothPowered ? "white" : "#f5f5f5"
+                        color: cWhite
                         font.pixelSize: 13; font.bold: true
                     }
                     QQC2.Label {
                         text: !SystemStatus.bluetoothAvailable ? "No detectado"
                               : SystemStatus.bluetoothPowered ? "Activo" : "Desactivado"
-                        color: SystemStatus.bluetoothPowered ? "#ffd7da" : "#9a9a9a"
+                        color: SystemStatus.bluetoothPowered ? Qt.rgba(1, 1, 1, 0.85) : cLightGray
                         font.pixelSize: 11
                     }
                 }
@@ -147,13 +154,13 @@ Rectangle {
                 Layout.fillWidth: true
                 Layout.preferredHeight: 90
                 radius: 16
-                color: SystemStatus.doNotDisturb ? "#e11d2e" : "#1a1414"
-                border.color: SystemStatus.doNotDisturb ? "#ff4d5a" : "#2a1618"
+                color: SystemStatus.doNotDisturb ? cCrimson : cGray
+                border.color: SystemStatus.doNotDisturb ? Qt.lighter(cCrimson, 1.25) : cCardBorder
                 border.width: 1
 
                 layer.enabled: SystemStatus.doNotDisturb
                 layer.effect: MultiEffect {
-                    shadowEnabled: true; shadowColor: "#e11d2e"
+                    shadowEnabled: true; shadowColor: cCrimson
                     shadowOpacity: 0.5; shadowBlur: 0.8
                 }
 
@@ -163,18 +170,18 @@ Rectangle {
                     anchors.fill: parent; anchors.margins: 12; spacing: 4
                     Kirigami.Icon {
                         source: "notifications-disabled"; isMask: true
-                        color: SystemStatus.doNotDisturb ? "white" : "#c4c4c4"
+                        color: SystemStatus.doNotDisturb ? cWhite : cLightGray
                         Layout.preferredWidth: 22; Layout.preferredHeight: 22
                     }
                     Item { Layout.fillHeight: true }
                     QQC2.Label {
                         text: "No molestar"
-                        color: SystemStatus.doNotDisturb ? "white" : "#f5f5f5"
+                        color: cWhite
                         font.pixelSize: 13; font.bold: true
                     }
                     QQC2.Label {
                         text: SystemStatus.doNotDisturb ? "Activado" : "Desactivado"
-                        color: SystemStatus.doNotDisturb ? "#ffd7da" : "#9a9a9a"
+                        color: SystemStatus.doNotDisturb ? Qt.rgba(1, 1, 1, 0.85) : cLightGray
                         font.pixelSize: 11
                     }
                 }
@@ -185,13 +192,13 @@ Rectangle {
                 Layout.fillWidth: true
                 Layout.preferredHeight: 90
                 radius: 16
-                color: SystemStatus.darkModeActive ? "#e11d2e" : "#1a1414"
-                border.color: SystemStatus.darkModeActive ? "#ff4d5a" : "#2a1618"
+                color: SystemStatus.darkModeActive ? cCrimson : cGray
+                border.color: SystemStatus.darkModeActive ? Qt.lighter(cCrimson, 1.25) : cCardBorder
                 border.width: 1
 
                 layer.enabled: SystemStatus.darkModeActive
                 layer.effect: MultiEffect {
-                    shadowEnabled: true; shadowColor: "#e11d2e"
+                    shadowEnabled: true; shadowColor: cCrimson
                     shadowOpacity: 0.5; shadowBlur: 0.8
                 }
 
@@ -201,18 +208,18 @@ Rectangle {
                     anchors.fill: parent; anchors.margins: 12; spacing: 4
                     Kirigami.Icon {
                         source: "weather-clear-night"; isMask: true
-                        color: SystemStatus.darkModeActive ? "white" : "#c4c4c4"
+                        color: SystemStatus.darkModeActive ? cWhite : cLightGray
                         Layout.preferredWidth: 22; Layout.preferredHeight: 22
                     }
                     Item { Layout.fillHeight: true }
                     QQC2.Label {
                         text: "Modo oscuro"
-                        color: SystemStatus.darkModeActive ? "white" : "#f5f5f5"
+                        color: cWhite
                         font.pixelSize: 13; font.bold: true
                     }
                     QQC2.Label {
                         text: SystemStatus.darkModeActive ? "Activado" : "Desactivado"
-                        color: SystemStatus.darkModeActive ? "#ffd7da" : "#9a9a9a"
+                        color: SystemStatus.darkModeActive ? Qt.rgba(1, 1, 1, 0.85) : cLightGray
                         font.pixelSize: 11
                     }
                 }
@@ -224,7 +231,7 @@ Rectangle {
             Layout.fillWidth: true
             spacing: 10
             Kirigami.Icon {
-                source: "display-brightness"; isMask: true; color: "#c4c4c4"
+                source: "display-brightness"; isMask: true; color: cLightGray
                 Layout.preferredWidth: 20; Layout.preferredHeight: 20
             }
             QQC2.Slider {
@@ -244,16 +251,16 @@ Rectangle {
                     x: brightnessSlider.leftPadding
                     y: brightnessSlider.topPadding + brightnessSlider.availableHeight / 2 - height / 2
                     width: brightnessSlider.availableWidth; height: 6; radius: 3
-                    color: "#2a2a2a"
+                    color: cGray
                     Rectangle {
                         width: brightnessSlider.visualPosition * parent.width
-                        height: parent.height; radius: 3; color: "#e11d2e"
+                        height: parent.height; radius: 3; color: cCrimson
                     }
                 }
                 handle: Rectangle {
                     x: brightnessSlider.leftPadding + brightnessSlider.visualPosition * (brightnessSlider.availableWidth - width)
                     y: brightnessSlider.topPadding + brightnessSlider.availableHeight / 2 - height / 2
-                    width: 18; height: 18; radius: 9; color: "white"
+                    width: 18; height: 18; radius: 9; color: cWhite
                 }
             }
         }
@@ -263,7 +270,7 @@ Rectangle {
             Layout.fillWidth: true
             spacing: 10
             Kirigami.Icon {
-                source: "audio-volume-high"; isMask: true; color: "#c4c4c4"
+                source: "audio-volume-high"; isMask: true; color: cLightGray
                 Layout.preferredWidth: 20; Layout.preferredHeight: 20
             }
             QQC2.Slider {
@@ -283,21 +290,21 @@ Rectangle {
                     x: volumeSlider.leftPadding
                     y: volumeSlider.topPadding + volumeSlider.availableHeight / 2 - height / 2
                     width: volumeSlider.availableWidth; height: 6; radius: 3
-                    color: "#2a2a2a"
+                    color: cGray
                     Rectangle {
                         width: volumeSlider.visualPosition * parent.width
-                        height: parent.height; radius: 3; color: "#e11d2e"
+                        height: parent.height; radius: 3; color: cCrimson
                     }
                 }
                 handle: Rectangle {
                     x: volumeSlider.leftPadding + volumeSlider.visualPosition * (volumeSlider.availableWidth - width)
                     y: volumeSlider.topPadding + volumeSlider.availableHeight / 2 - height / 2
-                    width: 18; height: 18; radius: 9; color: "white"
+                    width: 18; height: 18; radius: 9; color: cWhite
                 }
             }
         }
 
-        // Accesos secundarios (siguen mockup — no forman parte de este bloque)
+        // Accesos secundarios (datos de MockData)
         RowLayout {
             Layout.fillWidth: true
             spacing: 10
@@ -307,20 +314,20 @@ Rectangle {
                     Layout.fillWidth: true
                     Layout.preferredHeight: 70
                     radius: 14
-                    color: "#1a1414"
-                    border.color: "#2a1618"
+                    color: cGray
+                    border.color: cCardBorder
                     border.width: 1
                     ColumnLayout {
                         anchors.centerIn: parent
                         spacing: 4
                         Kirigami.Icon {
-                            source: modelData.icon; isMask: true; color: "#c4c4c4"
+                            source: modelData.icon; isMask: true; color: cLightGray
                             Layout.preferredWidth: 20; Layout.preferredHeight: 20
                             Layout.alignment: Qt.AlignHCenter
                         }
                         QQC2.Label {
                             text: modelData.label
-                            color: "#c4c4c4"; font.pixelSize: 11
+                            color: cLightGray; font.pixelSize: 11
                             Layout.alignment: Qt.AlignHCenter
                         }
                     }
@@ -333,8 +340,8 @@ Rectangle {
             Layout.fillWidth: true
             Layout.preferredHeight: 90
             radius: 16
-            color: "#1a1414"
-            border.color: "#2a1618"
+            color: cGray
+            border.color: cCardBorder
             border.width: 1
 
             RowLayout {
@@ -342,17 +349,17 @@ Rectangle {
 
                 Rectangle {
                     Layout.preferredWidth: 60; Layout.preferredHeight: 60; radius: 10
-                    color: "#e11d2e"
+                    color: cCrimson
                     visible: SystemStatus.mprisAvailable
 
                     layer.enabled: true
                     layer.effect: MultiEffect {
-                        shadowEnabled: true; shadowColor: "#e11d2e"
+                        shadowEnabled: true; shadowColor: cCrimson
                         shadowOpacity: 0.55; shadowBlur: 0.7
                     }
                 }
                 Kirigami.Icon {
-                    source: "audio-x-generic"; isMask: true; color: "#6a6a6a"
+                    source: "audio-x-generic"; isMask: true; color: cLightGray
                     Layout.preferredWidth: 40; Layout.preferredHeight: 40
                     visible: !SystemStatus.mprisAvailable
                 }
@@ -362,28 +369,28 @@ Rectangle {
                     spacing: 2
                     QQC2.Label {
                         text: SystemStatus.mprisAvailable ? SystemStatus.mprisTitle : "Sin reproducción activa"
-                        color: "#f5f5f5"; font.pixelSize: 14; font.bold: true
+                        color: cWhite; font.pixelSize: 14; font.bold: true
                         elide: Text.ElideRight; Layout.fillWidth: true
                     }
                     QQC2.Label {
                         text: SystemStatus.mprisArtist
-                        color: "#9a9a9a"; font.pixelSize: 12
+                        color: cLightGray; font.pixelSize: 12
                         visible: SystemStatus.mprisAvailable
                     }
                     RowLayout {
                         spacing: 16
                         visible: SystemStatus.mprisAvailable
                         QQC2.ToolButton {
-                            icon.name: "media-skip-backward"; icon.color: "#f5f5f5"; flat: true
+                            icon.name: "media-skip-backward"; icon.color: cWhite; flat: true
                             onClicked: SystemStatus.mprisPrevious()
                         }
                         QQC2.ToolButton {
                             icon.name: SystemStatus.mprisPlaying ? "media-playback-pause" : "media-playback-start"
-                            icon.color: "#f5f5f5"; flat: true
+                            icon.color: cWhite; flat: true
                             onClicked: SystemStatus.mprisPlayPause()
                         }
                         QQC2.ToolButton {
-                            icon.name: "media-skip-forward"; icon.color: "#f5f5f5"; flat: true
+                            icon.name: "media-skip-forward"; icon.color: cWhite; flat: true
                             onClicked: SystemStatus.mprisNext()
                         }
                     }
@@ -395,7 +402,7 @@ Rectangle {
             Layout.fillWidth: true
             text: "Configuración rápida"
             icon.name: "configure"
-            icon.color: "#c4c4c4"
+            icon.color: cLightGray
             flat: true
             onClicked: {}
         }

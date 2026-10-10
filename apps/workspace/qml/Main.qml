@@ -31,7 +31,7 @@ ApplicationWindow {
     palette.base: dark ? "#1d1f28" : "#ffffff"
     palette.button: dark ? "#2a2d38" : "#e9eaf0"
     palette.mid: dark ? "#383b49" : "#d8dae3"
-    palette.highlight: "#e3485b"
+    palette.highlight: "#DC143C"
     palette.highlightedText: "white"
     palette.placeholderText: dark ? "#a1a5b8" : "#636879"
     Settings { id: preferences; property bool dark: true }
@@ -64,9 +64,12 @@ ApplicationWindow {
                 anchors.fill: parent; anchors.margins: 20; spacing: 8
                 RowLayout {
                     Layout.topMargin: 15; Layout.bottomMargin: 25; spacing: 11
-                    Rectangle {
-                        width: 37; height: 37; radius: 12; color: "#e3485b"
-                        Text { anchors.centerIn: parent; text: "D"; color: "white"; font.pixelSize: 25; font.weight: Font.DemiBold }
+                    Image {
+                        Layout.preferredWidth: 37; Layout.preferredHeight: 37
+                        source: "../../branding/logo.png"
+                        fillMode: Image.PreserveAspectFit
+                        smooth: true
+                        mipmap: true
                     }
                     Column {
                         Text { text: "DylanOS"; color: win.palette.text; font.pixelSize: 21; font.weight: Font.DemiBold; font.letterSpacing: -0.7 }

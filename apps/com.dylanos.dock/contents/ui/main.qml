@@ -35,11 +35,11 @@ PlasmoidItem {
         // Apps fijadas por defecto. Ajustar/quitar segun lo que exista en DylanOS:
         //   find /usr/share/applications ~/.local/share/applications -iname "*dylanos*"
         launcherList: [
-            "applications:com.dylanos.appcenter.desktop",   // TODO: confirmar id real del App Center
+            "applications:dylanos-app-center.desktop",
+            "applications:org.dylanos.calculator.desktop",
             "applications:org.kde.dolphin.desktop",
             "applications:org.kde.konsole.desktop",
             "applications:org.kde.kate.desktop",
-            "applications:org.kde.discover.desktop",
             "applications:systemsettings.desktop"
         ]
     }
