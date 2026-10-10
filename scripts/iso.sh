@@ -34,46 +34,12 @@ if [[ -f "$CHROOT/usr/share/grub/unicode.pf2" ]]; then
 fi
 printf 'DylanOS 1.0 Beta amd64\n' > "$IMAGE/.disk/info"
 cat > "$IMAGE/boot/grub/grub.cfg" <<'EOF'
-set timeout=10
 set default=0
+set timeout=0
 
-insmod all_video
-insmod png
-insmod gfxterm
-
-if [ -f /boot/grub/fonts/unicode.pf2 ]; then
-    loadfont /boot/grub/fonts/unicode.pf2
-fi
-
-terminal_output gfxterm
-
-if [ -f /boot/grub/themes/dylanos/theme.txt ]; then
-    set theme=/boot/grub/themes/dylanos/theme.txt
-    export theme
-fi
-
-menuentry "Instalar DylanOS 1.0 Beta" --class dylanos --class gnu-linux --class os {
+menuentry "Instalar DylanOS 1.0 Beta" {
     linux /live/vmlinuz boot=live components hostname=dylanos username=dylan user-fullname="DylanOS Live" locales=es_ES.UTF-8 keyboard-layouts=latam quiet splash
     initrd /live/initrd.img
-}
-
-menuentry "Instalar DylanOS 1.0 Beta (Gráficos seguros / Safe Graphics)" --class dylanos --class gnu-linux --class os {
-    linux /live/vmlinuz boot=live components hostname=dylanos username=dylan user-fullname="DylanOS Live" locales=es_ES.UTF-8 keyboard-layouts=latam nomodeset vga=normal quiet splash
-    initrd /live/initrd.img
-}
-
-menuentry "DylanOS 1.0 Beta (Modo depuración / Verbose boot)" --class dylanos --class gnu-linux --class os {
-    linux /live/vmlinuz boot=live components hostname=dylanos username=dylan user-fullname="DylanOS Live" locales=es_ES.UTF-8 keyboard-layouts=latam systemd.debug_shell=1
-    initrd /live/initrd.img
-}
-
-submenu "Opciones avanzadas de energía" {
-    menuentry "Reiniciar equipo" {
-        reboot
-    }
-    menuentry "Apagar equipo" {
-        halt
-    }
 }
 EOF
 grub-mkrescue -o "$OUTPUT.partial" "$IMAGE"

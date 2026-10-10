@@ -54,6 +54,10 @@ Al arrancar la máquina virtual de pruebas con QEMU mediante `./test_QEMU`, el s
 - **Autostart de Calamares:**
   - Creación de `/etc/xdg/autostart/calamares-install-dylanos.desktop` para disparar el instalador Calamares automáticamente en cuanto la sesión gráfica termine de cargar.
 
+### D. Arranque Directo al Instalador Calamares (Zero-Delay)
+- **GRUB Instantáneo:** Se configuró `set default=0` y `set timeout=0` en [`scripts/iso.sh`](file:///home/dylan/DylanOS/scripts/iso.sh). De este modo, la ISO no se detiene en ningún menú ni requiere intervención del usuario: arranca inmediatamente al kernel con parámetros optimizados.
+- **Lanzamiento Directo:** Al finalizar el arranque e iniciar la sesión gráfica, Calamares se ejecuta directamente sin intermediarios ni pantallas secundarias de bienvenida previas, presentando el asistente de instalación de DylanOS de forma inmediata y sin fricción.
+
 ---
 
 ## 3. Pruebas y Verificación
@@ -61,4 +65,5 @@ Al arrancar la máquina virtual de pruebas con QEMU mediante `./test_QEMU`, el s
 - **Pruebas Unitarias:** Ejecutadas 25 pruebas con `python3 -m unittest discover -s scripts/tests -v`. Resultado: 100% aprobadas (20 passed, 5 skipped por dependencia opcional PySide6).
 - **Staging de Chroot:** Ejecutado `sudo python3 scripts/stage.py work/chroot`, validando la persistencia de usuarios, symlinks y configuración de SDDM.
 - **Generación de ISO:** Recompilación completa de `DylanOS-1.0-beta-amd64.iso` mediante `sudo bash scripts/iso.sh`.
+
 
