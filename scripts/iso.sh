@@ -27,26 +27,53 @@ INITRD="initrd.img-${KERNEL#vmlinuz-}"
 install -m 0644 "$CHROOT/boot/$KERNEL" "$IMAGE/live/vmlinuz"
 install -m 0644 "$CHROOT/boot/$INITRD" "$IMAGE/live/initrd.img"
 cp "$WORK/packages.manifest" "$IMAGE/live/filesystem.packages"
-mkdir -p "$IMAGE/boot/grub/themes/dylanos" "$IMAGE/.disk"
+mkdir -p "$IMAGE/boot/grub/themes/dylanos" "$IMAGE/boot/grub/fonts" "$IMAGE/.disk"
 cp -a "$CHROOT/usr/share/grub/themes/dylanos/." "$IMAGE/boot/grub/themes/dylanos/"
+if [[ -f "$CHROOT/usr/share/grub/unicode.pf2" ]]; then
+    cp "$CHROOT/usr/share/grub/unicode.pf2" "$IMAGE/boot/grub/fonts/unicode.pf2"
+fi
 printf 'DylanOS 1.0 Beta amd64\n' > "$IMAGE/.disk/info"
 cat > "$IMAGE/boot/grub/grub.cfg" <<'EOF'
-set timeout=8
+set timeout=10
 set default=0
+
 insmod all_video
 insmod png
 insmod gfxterm
-loadfont /boot/grub/fonts/unicode.pf2
+
+if [ -f /boot/grub/fonts/unicode.pf2 ]; then
+    loadfont /boot/grub/fonts/unicode.pf2
+fi
+
 terminal_output gfxterm
-set theme=/boot/grub/themes/dylanos/theme.txt
-export theme
-menuentry "Instalar DylanOS 1.0 Beta" {
-    linux /live/vmlinuz boot=live components hostname=dylanos locales=es_ES.UTF-8 keyboard-layouts=latam quiet splash
+
+if [ -f /boot/grub/themes/dylanos/theme.txt ]; then
+    set theme=/boot/grub/themes/dylanos/theme.txt
+    export theme
+fi
+
+menuentry "Instalar DylanOS 1.0 Beta" --class dylanos --class gnu-linux --class os {
+    linux /live/vmlinuz boot=live components hostname=dylanos username=dylan user-fullname="DylanOS Live" locales=es_ES.UTF-8 keyboard-layouts=latam quiet splash
     initrd /live/initrd.img
 }
-menuentry "Instalar DylanOS · gráficos seguros" {
-    linux /live/vmlinuz boot=live components hostname=dylanos locales=es_ES.UTF-8 keyboard-layouts=latam nomodeset
+
+menuentry "Instalar DylanOS 1.0 Beta (Gráficos seguros / Safe Graphics)" --class dylanos --class gnu-linux --class os {
+    linux /live/vmlinuz boot=live components hostname=dylanos username=dylan user-fullname="DylanOS Live" locales=es_ES.UTF-8 keyboard-layouts=latam nomodeset vga=normal quiet splash
     initrd /live/initrd.img
+}
+
+menuentry "DylanOS 1.0 Beta (Modo depuración / Verbose boot)" --class dylanos --class gnu-linux --class os {
+    linux /live/vmlinuz boot=live components hostname=dylanos username=dylan user-fullname="DylanOS Live" locales=es_ES.UTF-8 keyboard-layouts=latam systemd.debug_shell=1
+    initrd /live/initrd.img
+}
+
+submenu "Opciones avanzadas de energía" {
+    menuentry "Reiniciar equipo" {
+        reboot
+    }
+    menuentry "Apagar equipo" {
+        halt
+    }
 }
 EOF
 grub-mkrescue -o "$OUTPUT.partial" "$IMAGE"

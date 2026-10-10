@@ -1,24 +1,24 @@
 title-text: "DylanOS 1.0 Beta"
-title-color: "#f5f5f7"
-desktop-color: "#151924"
+title-color: "#FFFFFF"
+desktop-color: "#0A0A0A"
 desktop-image: "background.png"
 terminal-font: "Unifont Regular 16"
 + boot_menu {
-    left = 22%
-    top = 38%
-    width = 56%
-    height = 35%
-    item_color = "#d8dae5"
-    selected_item_color = "#ff899a"
-    item_height = 40
+    left = 20%
+    top = 36%
+    width = 60%
+    height = 38%
+    item_color = "#B3B3B3"
+    selected_item_color = "#DC143C"
+    item_height = 42
     item_padding = 12
-    item_spacing = 8
+    item_spacing = 10
 }
 + label {
-    top = 85%
+    top = 84%
     left = 0
     width = 100%
     align = "center"
-    color = "#e2dce9"
-    text = "Un espacio para tus ideas."
+    color = "#B3B3B3"
+    text = "DylanOS 1.0 Beta · Crimson Edition"
 }
