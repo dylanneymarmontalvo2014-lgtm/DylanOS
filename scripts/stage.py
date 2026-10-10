@@ -64,8 +64,7 @@ def stage(destination):
         ("settings", "Ajustes DylanOS", "preferences-system", "Settings"),
     ]:
         write(f"/usr/share/applications/org.dylanos.{key}.desktop", f"[Desktop Entry]\nType=Application\nName={name}\nExec=dylanos --page {key}\nIcon={icon}\nTerminal=false\nCategories={category};\nStartupNotify=true\n")
-    write("/etc/xdg/autostart/dylanos-welcome.desktop", "[Desktop Entry]\nType=Application\nName=Bienvenido a DylanOS\nExec=dylanos-welcome\nIcon=distributor-logo-dylanos\nOnlyShowIn=KDE;\n")
-    write("/etc/xdg/autostart/calamares-install-dylanos.desktop", "[Desktop Entry]\nType=Application\nName=Instalar DylanOS\nComment=Iniciar instalador Calamares en el entorno Live\nExec=sh -c 'sleep 3 && /usr/bin/calamares-install-debian'\nIcon=distributor-logo-dylanos\nTerminal=false\nCategories=System;\nOnlyShowIn=KDE;\n")
+    write("/etc/xdg/autostart/calamares-install-dylanos.desktop", "[Desktop Entry]\nType=Application\nName=Instalar DylanOS\nComment=Iniciar instalador Calamares automáticamente\nExec=/usr/bin/calamares-install-debian\nIcon=distributor-logo-dylanos\nTerminal=false\nCategories=System;\nOnlyShowIn=KDE;\n")
     write("/usr/bin/dylanos-welcome", '''#!/bin/sh
 state="${XDG_STATE_HOME:-$HOME/.local/state}/dylanos"
 if [ ! -e "$state/welcome-seen" ]; then
