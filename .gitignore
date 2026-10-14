@@ -21,6 +21,7 @@ build/
 iso/
 __pycache__/
 *.pyc
+node_modules/
 .venv/
 artifacts/
 .claude/

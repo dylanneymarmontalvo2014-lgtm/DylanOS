@@ -85,11 +85,11 @@ separator.vertical { min-width: 1px; min-height: 0; }
  ***********/
 
 headerbar, .titlebar {
-  background-color: shade(@theme_bg_color, 1.12);
-  background-image: none;
+  background-color: @surface;
+  background-image: linear-gradient(to bottom, alpha(#FFFFFF, 0.045), alpha(#FFFFFF, 0));
   border-bottom: 1px solid alpha(#FFFFFF, 0.06);
-  border-radius: 10px 10px 0 0;
-  min-height: 46px;
+  border-radius: 16px 16px 0 0;
+  min-height: 48px;
   padding: 0 8px;
 }
 
@@ -126,7 +126,7 @@ button.titlebutton.minimize { background-color: @traffic_min; }
 button.titlebutton.maximize { background-color: @traffic_max; }
 
 button.titlebutton:backdrop { background-color: #3A3A3F; }
-button.titlebutton:hover { filter: brightness(1.15); }
+button.titlebutton:hover { box-shadow: inset 0 0 0 1px alpha(#FFFFFF, 0.35); color: #24181C; }
 
 /*************
  * Botones   *
@@ -490,7 +490,7 @@ scrollbar slider {
 scrollbar.vertical slider { min-height: 36px; }
 scrollbar.horizontal slider { min-width: 36px; }
 scrollbar slider:hover { background-color: alpha(#FFFFFF, 0.75); }
-scrollbar.overlay-indicator:not(.hovering) slider { background-color: alpha(#FFFFFF, 0.35); }
+scrollbar.overlay-indicator slider { background-color: alpha(#FFFFFF, 0.35); }
 
 /************
  * Diálogos *
@@ -545,3 +545,18 @@ modelbutton {
 }
 
 modelbutton:hover { background-color: @accent_color; color: #FFFFFF; }
+
+/* Crimson glass: translucent chrome, readable content and visible keyboard focus. */
+headerbar { box-shadow: inset 0 1px alpha(#FFFFFF, 0.08); padding: 4px 12px; }
+headerbar button:not(.titlebutton) { border-radius: 18px; }
+button:focus { outline-style: solid; outline-width: 2px; outline-color: alpha(@accent_color, 0.8); }
+button:backdrop { color: @theme_unfocused_fg_color; }
+.sidebar, placessidebar { background-image: linear-gradient(to bottom, alpha(@accent_color, 0.055), transparent); }
+.sidebar row, placessidebar row { border-radius: 10px; margin: 3px 8px; padding: 6px 10px; }
+.sidebar row:selected, placessidebar row:selected { background-color: alpha(@accent_color, 0.23); color: @theme_fg_color; box-shadow: inset 0 0 0 1px alpha(@accent_color, 0.25); }
+button { border-radius: 12px; box-shadow: inset 0 1px alpha(#FFFFFF, 0.045); }
+entry { border-radius: 12px; }
+popover.background { border-radius: 18px; }
+window.maximized headerbar, window.fullscreen headerbar { border-radius: 0; }
+checkbutton check:checked { -gtk-icon-source: -gtk-icontheme("object-select-symbolic"); }
+radiobutton radio:checked { background-image: radial-gradient(circle at center, white 0, white 3px, transparent 4px); }

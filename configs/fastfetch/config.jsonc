@@ -1,0 +1,38 @@
+{
+  "$schema": "https://github.com/fastfetch-cli/fastfetch/raw/dev/doc/json_schema.json",
+  "logo": {
+    "source": "/usr/share/dylanos/fastfetch/logo.txt",
+    "color": { "1": "196", "2": "245" },
+    "padding": { "top": 1, "left": 2, "right": 4 }
+  },
+  "display": {
+    "separator": " ",
+    "color": { "keys": "196", "title": "255" }
+  },
+  "modules": [
+    "break",
+    { "type": "custom", "format": "{#31}─── DylanOS · Resumen del sistema{#} ─────────────" },
+    {
+      "type": "title",
+      "format": "{user} {#90}en{#} {host}"
+    },
+    { "type": "custom", "format": "{#90}──────────────────────────────────────" },
+    { "type": "os", "key": "  Sistema" },
+    { "type": "host", "key": "  Equipo" },
+    { "type": "kernel", "key": "  Kernel" },
+    { "type": "uptime", "key": "  Encendido" },
+    { "type": "packages", "key": "  Paquetes" },
+    { "type": "shell", "key": "  Consola" },
+    { "type": "de", "key": "  Escritorio" },
+    { "type": "wm", "key": "  Ventanas" },
+    { "type": "terminal", "key": "  Terminal" },
+    { "type": "cpu", "key": "  Procesador" },
+    { "type": "gpu", "key": "  Gráficos" },
+    { "type": "memory", "key": "  Memoria" },
+    { "type": "swap", "key": "  Swap" },
+    { "type": "disk", "key": "  Disco" },
+    { "type": "locale", "key": "  Idioma" },
+    { "type": "custom", "format": "{#90}──────────────────────────────────────" },
+    "break"
+  ]
+}

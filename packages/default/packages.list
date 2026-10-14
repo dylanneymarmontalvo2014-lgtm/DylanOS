@@ -12,8 +12,9 @@ dolphin
 konsole
 systemsettings
 
-# Instalador
-calamares
+# Instalador propio DylanOS (dylanos-installer)
+parted
+squashfs-tools
 
 # Sistema
 sudo
@@ -25,7 +26,6 @@ live-config
 live-config-systemd
 live-tools
 initramfs-tools
-calamares-settings-debian
 grub-pc-bin
 grub-efi-amd64-bin
 grub2-common
@@ -37,9 +37,13 @@ os-prober
 plymouth
 plymouth-themes
 fonts-inter
+# Terminal DylanOS: fastfetch con logo propio
+fastfetch
 breeze-icon-theme
 kde-style-breeze
 breeze-gtk-theme
+kde-config-gtk-style
+gsettings-desktop-schemas
 kwin-addons
 plasma-nm
 plasma-pa
@@ -63,6 +67,10 @@ python3-pyside6.qtgui
 python3-pyside6.qtqml
 python3-pyside6.qtquick
 python3-pyside6.qtquickcontrols2
+# Instalador nativo: ventana Qt WebEngine propia (sin navegador externo)
+python3-pyside6.qtwidgets
+python3-pyside6.qtwebenginecore
+python3-pyside6.qtwebenginewidgets
 python3-psutil
 qml6-module-qtquick
 qml6-module-qtquick-controls

@@ -1,0 +1,7 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+@import 'tailwindcss';
+@import './styles/colors.css';
+@import './styles/spacing.css';
+@import './styles/typography.css';
+@import './styles/borders.css';
+@import './styles/effects.css';

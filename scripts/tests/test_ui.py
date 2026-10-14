@@ -58,6 +58,7 @@ class UiTest(unittest.TestCase):
         self.assertEqual(display.property("text"), "20")
         window.setOperator("÷")
         window.inputDigit("0")
+        window.inputDigit("0")
         window.compute()
         self.assertEqual(display.property("text"), "Error")
         window.inputDigit("7")

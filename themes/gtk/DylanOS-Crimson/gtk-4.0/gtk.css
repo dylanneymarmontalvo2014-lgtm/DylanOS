@@ -74,7 +74,7 @@ headerbar, .top-bar {
   background-color: alpha(#1A1A1E, 0.98);
   border-bottom: 1px solid alpha(#FFFFFF, 0.06);
   padding: 4px 8px;
-  min-height: 46px;
+  min-height: 48px;
 }
 
 headerbar .title, headerbar windowtitle .title { font-weight: 600; }
@@ -421,7 +421,7 @@ scrollbar slider, scrollbar > range > trough > slider {
 }
 
 scrollbar.vertical slider, scrollbar > range > trough > slider { min-height: 36px; }
-scrollbar.horizontal slider, scrollbar > range > trough > slider:horizontal { min-width: 36px; }
+scrollbar.horizontal slider, scrollbar.horizontal > range > trough > slider { min-width: 36px; }
 scrollbar slider:hover, scrollbar > range > trough > slider:hover { background-color: alpha(#FFFFFF, 0.75); }
 
 /************
@@ -460,3 +460,37 @@ actionbar > revealer > box { border-top: 1px solid @borders; }
 statusbar { border-top: 1px solid @borders; padding: 4px 8px; }
 
 shortcuts section { background-color: @theme_bg_color; }
+
+/* Crimson glass: translucent chrome, readable content and visible keyboard focus. */
+headerbar { box-shadow: inset 0 1px alpha(#FFFFFF, 0.08); padding: 4px 12px; }
+headerbar button:not(.titlebutton) { border-radius: 18px; }
+button:focus { outline-style: solid; outline-width: 2px; outline-color: alpha(@accent_color, 0.8); }
+button:backdrop { color: @theme_unfocused_fg_color; }
+.sidebar, placessidebar { background-image: linear-gradient(to bottom, alpha(@accent_color, 0.055), transparent); }
+.sidebar row, placessidebar row { border-radius: 10px; margin: 3px 8px; padding: 6px 10px; }
+.sidebar row:selected, placessidebar row:selected { background-color: alpha(@accent_color, 0.23); color: @theme_fg_color; box-shadow: inset 0 0 0 1px alpha(@accent_color, 0.25); }
+button { border-radius: 12px; box-shadow: inset 0 1px alpha(#FFFFFF, 0.045); }
+entry { border-radius: 12px; }
+popover.background { border-radius: 18px; }
+window.maximized headerbar, window.fullscreen headerbar { border-radius: 0; }
+checkbutton check:checked { -gtk-icon-source: -gtk-icontheme("object-select-symbolic"); }
+radiobutton radio:checked { background-image: radial-gradient(circle at center, white 0, white 3px, transparent 4px); }
+
+/* GTK 4 header controls and common libadwaita color roles. */
+@define-color window_bg_color @theme_bg_color;
+@define-color window_fg_color @theme_fg_color;
+@define-color view_bg_color @theme_base_color;
+@define-color view_fg_color @theme_text_color;
+@define-color headerbar_bg_color @surface;
+@define-color headerbar_fg_color @theme_fg_color;
+@define-color card_bg_color @elevated;
+@define-color card_fg_color @theme_fg_color;
+@define-color dialog_bg_color @surface;
+@define-color dialog_fg_color @theme_fg_color;
+@define-color accent_bg_color #DC143C;
+@define-color accent_fg_color #FFFFFF;
+windowcontrols button { border-radius: 999px; min-width: 14px; min-height: 14px; padding: 2px; margin: 4px; color: transparent; }
+windowcontrols button.close { background-color: #FF5F57; }
+windowcontrols button.minimize { background-color: #FEBC2E; }
+windowcontrols button.maximize { background-color: #28C840; }
+windowcontrols button:hover { color: #24181C; }

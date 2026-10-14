@@ -13,7 +13,7 @@ ScrollView {
                 width: parent.width; spacing: 20
                 Image {
                     Layout.preferredWidth: 64; Layout.preferredHeight: 64
-                    source: "../../branding/logo.png"
+                    source: "../assets/logo.png"
                     fillMode: Image.PreserveAspectFit
                     smooth: true
                     mipmap: true
@@ -21,7 +21,9 @@ ScrollView {
                 ColumnLayout {
                     Layout.fillWidth: true
                     Label { text: "DylanOS 1.0 Beta"; font.pixelSize: 24; font.weight: Font.DemiBold }
-                    Label { text: backend.stats.host + " · " + backend.stats.kernel; font.pixelSize: 11; color: palette.placeholderText }
+                    // Elide para que una cadena host·kernel larga no empuje el
+                    // botón de acción sobre el logotipo de la fila.
+                    Label { text: backend.stats.host + " · " + backend.stats.kernel; font.pixelSize: 11; color: palette.placeholderText; elide: Text.ElideRight; Layout.fillWidth: true }
                 }
                 ActionButton { text: "Actualizar"; onClicked: backend.action("updates") }
             }

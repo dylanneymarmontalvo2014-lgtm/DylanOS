@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" width="512" height="512" viewBox="0 0 512 512">
+  <!-- DylanOS Store · logo oficial (crimson #DC143C sobre #1A1A1A/#0A0A0A) -->
+  <defs>
+    <linearGradient id="fondo" x1="0" y1="0" x2="0" y2="512" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#1A1A1A"/>
+      <stop offset="1" stop-color="#0A0A0A"/>
+    </linearGradient>
+    <radialGradient id="brillo" cx="256" cy="132" r="340" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#DC143C" stop-opacity="0.20"/>
+      <stop offset="1" stop-color="#DC143C" stop-opacity="0"/>
+    </radialGradient>
+    <linearGradient id="bolsa" x1="0" y1="216" x2="0" y2="408" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#ff2a54"/>
+      <stop offset="0.45" stop-color="#DC143C"/>
+      <stop offset="1" stop-color="#9c0b28"/>
+    </linearGradient>
+    <linearGradient id="asa" x1="0" y1="112" x2="0" y2="216" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#ff5274"/>
+      <stop offset="1" stop-color="#DC143C"/>
+    </linearGradient>
+    <linearGradient id="letra" x1="0" y1="254" x2="0" y2="370" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#FFFFFF"/>
+      <stop offset="1" stop-color="#E8E8E8"/>
+    </linearGradient>
+  </defs>
+
+  <!-- Base del icono -->
+  <rect x="0" y="0" width="512" height="512" rx="118" fill="url(#fondo)"/>
+  <rect x="0" y="0" width="512" height="512" rx="118" fill="url(#brillo)"/>
+  <rect x="6" y="6" width="500" height="500" rx="112" fill="none" stroke="#ff5274" stroke-opacity="0.22" stroke-width="3"/>
+
+  <!-- Línea especular superior (liquid glass) -->
+  <rect x="64" y="26" width="384" height="14" rx="7" fill="#FFFFFF" fill-opacity="0.10"/>
+
+  <!-- Asa de la bolsa -->
+  <path d="M 186 216 A 70 96 0 0 1 326 216" fill="none" stroke="url(#asa)" stroke-width="30" stroke-linecap="round"/>
+
+  <!-- Sombra suave de la bolsa -->
+  <rect x="116" y="228" width="280" height="192" rx="48" fill="#000000" fill-opacity="0.45"/>
+
+  <!-- Cuerpo de la bolsa -->
+  <rect x="116" y="216" width="280" height="192" rx="48" fill="url(#bolsa)"/>
+  <rect x="116" y="216" width="280" height="192" rx="48" fill="none" stroke="#ff5274" stroke-opacity="0.55" stroke-width="3"/>
+
+  <!-- Reflejo especular de la bolsa -->
+  <rect x="140" y="228" width="232" height="10" rx="5" fill="#FFFFFF" fill-opacity="0.28"/>
+
+  <!-- Letra D de DylanOS -->
+  <path fill-rule="evenodd" fill="url(#letra)"
+        d="M 204 254 h 46 a 58 58 0 0 1 0 116 h -46 z
+           M 234 282 h 12 a 30 30 0 0 1 0 60 h -12 z"/>
+</svg>

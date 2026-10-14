@@ -8,7 +8,7 @@ int main(int argc, char *argv[])
     app.setApplicationName(QStringLiteral("Calculadora"));
     app.setOrganizationName(QStringLiteral("DylanOS"));
     app.setDesktopFileName(QStringLiteral("org.dylanos.calculator"));
-    app.setWindowIcon(QIcon::fromTheme(QStringLiteral("com.dylanos.calculator")));
+    app.setWindowIcon(QIcon::fromTheme(QStringLiteral("org.dylanos.calculator")));
 
     QQmlApplicationEngine engine;
     QObject::connect(

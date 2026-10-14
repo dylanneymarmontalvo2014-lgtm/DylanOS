@@ -24,9 +24,26 @@ class AppCenterContractTest(unittest.TestCase):
         self.assertEqual(CMAKE.count("FILES icons/dylanos-app-center.png"), 1)
         self.assertEqual(CMAKE.count("include(GNUInstallDirs)"), 1)
 
+    def test_bundled_entry_point_resolves_resource(self):
+        main = (ROOT / "apps/dylanos-app-center/src/main.cpp").read_text()
+        self.assertIn('qrc:/DylanOS/AppCenter/qml/Main.qml', main)
+        self.assertIn('RESOURCE_PREFIX /', CMAKE)
+
     def test_desktop_uses_path_resolved_executable(self):
         self.assertIn("Exec=dylanos-app-center", DESKTOP)
         self.assertNotIn("/usr/local/bin", DESKTOP)
+        # El lanzador usa el icono propio del App Center (franjas roja/negra con
+        # el logotipo de DylanOS), instalado por CMake en hicolor 512x512.
+        self.assertIn("Icon=dylanos-app-center", DESKTOP)
+
+    def test_keyboard_navigation_keeps_focus_visible(self):
+        # El desplazamiento por teclado debe seguir al elemento enfocado: al
+        # mover la selección con flechas o AvPág/RePág, la cuadrícula pide
+        # desplazar el Flickable para que la celda nunca quede fuera de vista.
+        self.assertIn("function revealCell(index)", QML)
+        self.assertIn("onCurrentIndexChanged: window.revealCell(currentIndex)", QML)
+        self.assertIn("itemAtIndex", QML)
+        self.assertIn("scroller.contentY", QML)
 
 
 if __name__ == "__main__":

@@ -19,3 +19,10 @@ ButtonsOnRight=
 
 [kcminputrc][Mouse]
 cursorTheme=breeze_cursors
+
+[Wallpaper]
+Image=/usr/share/wallpapers/DylanOS/dylanos-default.png
+
+[KSplash]
+Theme=org.dylanos.crimson
+Engine=KSplashQML

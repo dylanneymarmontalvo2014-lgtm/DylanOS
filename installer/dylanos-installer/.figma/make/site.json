@@ -1,0 +1,10 @@
+{
+  "description": "Easily extract and manage prompts from PDF files alongside reference images, streamlining the creative process for designers and content creators.",
+  "robots": {
+    "index": false
+  },
+  "accessibility": {
+    "addBypassLinks": false,
+    "ignoreReducedMotion": false
+  }
+}

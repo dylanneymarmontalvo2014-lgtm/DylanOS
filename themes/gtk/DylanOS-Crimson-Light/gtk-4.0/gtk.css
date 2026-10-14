@@ -1,0 +1,496 @@
+/* DylanOS Crimson — tema GTK 4.
+ * Identidad negro + crimson (#DC143C) sobre superficies neutras,
+ * botones píldora, esquinas 10px y controles de ventana a la izquierda. */
+
+@define-color accent_color #DC143C;
+@define-color accent_bg_color #DC143C;
+@define-color accent_fg_color #FFFFFF;
+@define-color destructive_bg_color #FF5F57;
+@define-color destructive_fg_color #FFFFFF;
+@define-color success_bg_color #28C840;
+@define-color warning_bg_color #FEBC2E;
+@define-color error_bg_color #FF5F57;
+
+@define-color theme_bg_color #F5F5F7;
+@define-color theme_fg_color #232327;
+@define-color theme_base_color #FFFFFF;
+@define-color theme_text_color #232327;
+@define-color theme_selected_bg_color #DC143C;
+@define-color theme_selected_fg_color #FFFFFF;
+@define-color theme_unfocused_bg_color #F5F5F7;
+@define-color theme_unfocused_fg_color #656571;
+@define-color theme_unfocused_base_color #EEEEF3;
+@define-color theme_unfocused_text_color #656571;
+@define-color theme_unfocused_selected_bg_color #E5E5ED;
+@define-color theme_unfocused_selected_fg_color #232327;
+@define-color insensitive_bg_color #ECECF1;
+@define-color insensitive_fg_color #85858E;
+@define-color borders #D6D6E0;
+@define-color unfocused_borders #E0E0E7;
+@define-color link_color #E86A80;
+@define-color placeholder_color #71717C;
+
+/* Tokens propios de DylanOS */
+@define-color surface #F3F3F7;
+@define-color elevated #E5E5ED;
+@define-color traffic_close #FF5F57;
+@define-color traffic_min #FEBC2E;
+@define-color traffic_max #28C840;
+
+/***************
+ * Base general *
+ ***************/
+
+window, dialog, .background {
+  background-color: @theme_bg_color;
+  color: @theme_fg_color;
+}
+
+window {
+  border-radius: 10px;
+}
+
+.view, textview, textview text, iconview, gridview {
+  background-color: @theme_base_color;
+  color: @theme_text_color;
+}
+
+selection, .view selection, textview text selection, label selection, entry selection {
+  background-color: @accent_bg_color;
+  color: @accent_fg_color;
+}
+
+windowhandle, windowcontents { background: none; }
+
+separator { background-color: @borders; min-width: 1px; min-height: 1px; }
+separator.horizontal { min-height: 1px; min-width: 0; }
+separator.vertical { min-width: 1px; min-height: 0; }
+
+/***********
+ * Barras  *
+ ***********/
+
+headerbar, .top-bar {
+  background-color: alpha(#1A1A1E, 0.98);
+  border-bottom: 1px solid alpha(#FFFFFF, 0.06);
+  padding: 4px 8px;
+  min-height: 48px;
+}
+
+headerbar .title, headerbar windowtitle .title { font-weight: 600; }
+
+toolbar { background-color: @theme_bg_color; }
+searchbar, actionbar { background-color: @theme_bg_color; border-top: 1px solid @borders; }
+
+/************************
+ * Controles de ventana *
+ ************************/
+
+windowcontrols > button {
+  border-radius: 9999px;
+  min-width: 13px;
+  min-height: 13px;
+  padding: 0;
+  margin: 4px;
+  border: 1px solid alpha(#000000, 0.25);
+  background-color: #CCCCD5;
+  box-shadow: none;
+}
+
+windowcontrols > button > image { -gtk-icon-size: 0; color: transparent; }
+windowcontrols > button.close { background-color: @traffic_close; }
+windowcontrols > button.minimize { background-color: @traffic_min; }
+windowcontrols > button.maximize { background-color: @traffic_max; }
+windowcontrols > button:backdrop { background-color: #CCCCD5; }
+windowcontrols > button:hover { filter: brightness(1.15); }
+
+/*************
+ * Botones   *
+ *************/
+
+button {
+  background-color: #F9F9FB;
+  border: 1px solid @borders;
+  border-radius: 8px;
+  color: @theme_fg_color;
+  padding: 6px 14px;
+  min-height: 30px;
+  font-weight: 500;
+  box-shadow: none;
+  transition: all 140ms ease-out;
+}
+
+button:hover { background-color: #E9E9F0; border-color: #CCCCD5; }
+button:active { background-color: #E2E2EB; border-color: #BDBDC8; }
+button:checked { background-color: alpha(@accent_bg_color, 0.85); border-color: transparent; color: #FFFFFF; }
+button:disabled { opacity: 0.45; filter: none; }
+
+button.suggested-action {
+  background-color: @accent_bg_color;
+  border-color: transparent;
+  border-radius: 9999px;
+  color: @accent_fg_color;
+  font-weight: 600;
+}
+
+button.suggested-action:hover { background-color: shade(@accent_bg_color, 1.12); }
+button.suggested-action:active { background-color: shade(@accent_bg_color, 0.85); }
+
+button.destructive-action {
+  background-color: @destructive_bg_color;
+  border-color: transparent;
+  border-radius: 9999px;
+  color: @destructive_fg_color;
+  font-weight: 600;
+}
+
+button.flat { background: none; border-color: transparent; box-shadow: none; }
+button.flat:hover { background-color: alpha(#FFFFFF, 0.07); }
+button.flat:active, button.flat:checked { background-color: alpha(#FFFFFF, 0.12); }
+
+button.circular { border-radius: 9999px; }
+
+menubutton > button, dropdown > button, combobox > button {
+  background-color: #F9F9FB;
+  border: 1px solid @borders;
+  border-radius: 8px;
+  padding: 6px 10px;
+  min-height: 30px;
+}
+
+menubutton > button:hover, dropdown > button:hover, combobox > button:hover { background-color: #E9E9F0; }
+
+/*************
+ * Entradas  *
+ *************/
+
+entry, textview text {
+  background-color: @theme_base_color;
+  border: 1px solid @borders;
+  border-radius: 8px;
+  color: @theme_text_color;
+  min-height: 30px;
+  padding: 4px 10px;
+  caret-color: @accent_bg_color;
+  transition: border-color 140ms ease-out;
+}
+
+entry:focus-within { border-color: @accent_bg_color; box-shadow: inset 0 0 0 1px alpha(@accent_bg_color, 0.35); }
+entry:disabled { background-color: @insensitive_bg_color; color: @insensitive_fg_color; }
+entry > text > selection { background-color: @accent_bg_color; color: @accent_fg_color; }
+entry > placeholder, entry > text > placeholder { color: @placeholder_color; }
+entry > image { color: @placeholder_color; }
+
+searchbar entry, search entry { border-radius: 9999px; padding: 4px 14px; }
+
+spinbutton {
+  background-color: @theme_base_color;
+  border: 1px solid @borders;
+  border-radius: 8px;
+}
+
+spinbutton:focus-within { border-color: @accent_bg_color; }
+spinbutton > text { border: none; background: none; min-width: 42px; }
+spinbutton > button { border: none; background: none; border-radius: 0; min-height: 0; padding: 6px; }
+spinbutton > button:hover { background-color: alpha(#FFFFFF, 0.08); }
+spinbutton > button:active { background-color: alpha(@accent_bg_color, 0.35); color: #FFFFFF; }
+
+/***********
+ * Listas  *
+ ***********/
+
+listview, columnview, gridview > child {
+  background-color: transparent;
+  color: @theme_fg_color;
+}
+
+listview > row, listview > row.selected, columnview > header > button {
+  border-radius: 6px;
+  transition: background-color 120ms ease-out;
+}
+
+listview > row:hover, columnview > row:hover { background-color: alpha(#FFFFFF, 0.05); }
+listview > row:selected, columnview > row:selected { background-color: alpha(@accent_bg_color, 0.85); color: #FFFFFF; }
+
+columnview > header > button {
+  background-color: @surface;
+  border: none;
+  border-bottom: 1px solid @borders;
+  border-radius: 0;
+  font-weight: 600;
+  color: @theme_unfocused_fg_color;
+  padding: 5px 8px;
+}
+
+treeview.view > header > button { background-color: @surface; border-bottom: 1px solid @borders; border-radius: 0; color: @theme_unfocused_fg_color; }
+
+/***********
+ * Menús   *
+ ***********/
+
+popover > contents, .popover > contents {
+  background-color: @surface;
+  border: 1px solid @borders;
+  border-radius: 12px;
+  padding: 6px;
+  box-shadow: 0 12px 28px alpha(#000000, 0.5);
+}
+
+popover.menu > contents {
+  background-color: @surface;
+  border: 1px solid @borders;
+  border-radius: 12px;
+  padding: 6px;
+}
+
+popover.menu modelbutton, popover.menu > contents modelbutton {
+  border-radius: 6px;
+  min-height: 30px;
+  padding: 4px 10px;
+  color: @theme_fg_color;
+  transition: background-color 100ms ease-out;
+}
+
+popover.menu modelbutton:hover, popover.menu modelbutton:selected { background-color: @accent_bg_color; color: #FFFFFF; }
+popover.menu modelbutton:disabled { color: @insensitive_fg_color; }
+popover.menu separator { background-color: alpha(#FFFFFF, 0.08); margin: 6px 8px; }
+
+popover.menu check, popover.menu radio {
+  background-color: transparent;
+  border: 1.5px solid #B2B2BF;
+  border-radius: 5px;
+  min-width: 18px;
+  min-height: 18px;
+  padding: 0;
+}
+
+popover.menu check:checked, popover.menu radio:checked { background-color: @accent_bg_color; border-color: @accent_bg_color; color: #FFFFFF; }
+popover.menu radio { border-radius: 9999px; }
+
+tooltip {
+  background-color: #E9E9EC;
+  color: #1D1D1F;
+  border-radius: 8px;
+  padding: 6px 10px;
+  border: none;
+}
+
+/***************
+ * Controles   *
+ ***************/
+
+checkbutton, radiobutton { padding: 3px; }
+
+checkbutton > check, radiobutton > radio {
+  border: 1.5px solid #B2B2BF;
+  background-color: transparent;
+  min-width: 18px;
+  min-height: 18px;
+  transition: all 120ms ease-out;
+}
+
+checkbutton > check { border-radius: 5px; }
+radiobutton > radio { border-radius: 9999px; }
+
+checkbutton > check:checked, radiobutton > radio:checked {
+  background-color: @accent_bg_color;
+  border-color: @accent_bg_color;
+  color: #FFFFFF;
+}
+
+checkbutton:disabled, radiobutton:disabled { opacity: 0.45; }
+
+switch {
+  background-color: #CCCCD6;
+  border-radius: 9999px;
+  border: none;
+  min-width: 44px;
+  min-height: 26px;
+  transition: background-color 150ms ease-out;
+}
+
+switch:checked { background-color: @success_bg_color; }
+switch:disabled { opacity: 0.45; }
+
+switch > slider {
+  background-color: #FFFFFF;
+  border-radius: 9999px;
+  min-width: 22px;
+  min-height: 22px;
+  margin: 2px;
+  box-shadow: 0 1px 3px alpha(#000000, 0.4);
+}
+
+progressbar {
+  background-color: transparent;
+  color: @theme_unfocused_fg_color;
+  font-size: smaller;
+}
+
+progressbar > trough { background-color: #E5E5ED; border: none; border-radius: 9999px; min-height: 6px; }
+progressbar > trough > progress { background-color: @accent_bg_color; border: none; border-radius: 9999px; }
+
+levelbar > trough > block { border: none; border-radius: 9999px; min-height: 6px; }
+levelbar > trough > block.filled { background-color: @accent_bg_color; }
+levelbar > trough > block.high { background-color: @success_bg_color; }
+levelbar > trough > block.low { background-color: @warning_bg_color; }
+levelbar > trough > block.empty { background-color: #E5E5ED; }
+
+scale {
+  padding: 8px;
+  color: @theme_fg_color;
+}
+
+scale > trough { background-color: #E5E5ED; border: none; border-radius: 9999px; min-height: 6px; }
+scale > trough > highlight { background-color: @accent_bg_color; border-radius: 9999px; }
+
+scale > trough > slider {
+  background-color: #FFFFFF;
+  border: none;
+  border-radius: 9999px;
+  min-width: 18px;
+  min-height: 18px;
+  margin: -6px;
+  box-shadow: 0 1px 4px alpha(#000000, 0.5);
+}
+
+scale > trough > slider:hover { box-shadow: 0 0 0 6px alpha(@accent_bg_color, 0.20), 0 1px 4px alpha(#000000, 0.5); }
+
+/**************
+ * Pestañas   *
+ **************/
+
+notebook > header {
+  background-color: @theme_bg_color;
+  border: none;
+}
+
+notebook > header.top { border-bottom: 1px solid @borders; }
+notebook > header.bottom { border-top: 1px solid @borders; }
+
+notebook > header > tabs > tab {
+  background-color: transparent;
+  border: none;
+  border-radius: 6px;
+  padding: 5px 16px;
+  margin: 4px 2px;
+  color: @theme_unfocused_fg_color;
+  font-weight: 500;
+  transition: all 130ms ease-out;
+}
+
+notebook > header > tabs > tab:hover { background-color: alpha(#FFFFFF, 0.06); color: @theme_fg_color; }
+notebook > header > tabs > tab:checked { background-color: @elevated; color: @theme_fg_color; }
+notebook > stack { background-color: @theme_base_color; border-radius: 0 0 8px 8px; }
+
+/*****************
+ * Barra lateral *
+ *****************/
+
+.navigation-sidebar, .sidebar-pane, placessidebar {
+  background-color: #EEEEF3;
+  color: @theme_fg_color;
+}
+
+.navigation-sidebar > row, placessidebar > row {
+  border-radius: 6px;
+  margin: 1px 6px;
+  padding: 5px 8px;
+  min-height: 30px;
+  transition: background-color 120ms ease-out;
+}
+
+.navigation-sidebar > row:hover, placessidebar > row:hover { background-color: alpha(#FFFFFF, 0.06); }
+.navigation-sidebar > row:selected, placessidebar > row:selected { background-color: alpha(@accent_bg_color, 0.85); color: #FFFFFF; }
+
+/**************
+ * Scrollbars *
+ **************/
+
+scrollbar { background-color: transparent; border: none; }
+
+scrollbar > range > trough { background: none; border: none; }
+
+scrollbar slider, scrollbar > range > trough > slider {
+  background-color: alpha(#B3B3B8, 0.55);
+  border: none;
+  border-radius: 9999px;
+  min-width: 7px;
+  min-height: 7px;
+  margin: 3px;
+}
+
+scrollbar.vertical slider, scrollbar > range > trough > slider { min-height: 36px; }
+scrollbar.horizontal slider, scrollbar.horizontal > range > trough > slider { min-width: 36px; }
+scrollbar slider:hover, scrollbar > range > trough > slider:hover { background-color: alpha(#FFFFFF, 0.75); }
+
+/************
+ * Diálogos *
+ ************/
+
+dialog.background, messagedialog {
+  background-color: @theme_bg_color;
+}
+
+messagedialog {
+  border-radius: 12px;
+}
+
+messagedialog .titlebar { background: none; border: none; min-height: 0; }
+
+/*************
+ * Diversos  *
+ ************/
+
+label.dim-label, label:disabled { color: @insensitive_fg_color; }
+
+.frame { border: 1px solid @borders; border-radius: 10px; }
+
+actionbar > revealer > box { border-top: 1px solid @borders; }
+
+.linked > button { border-radius: 0; border-left-width: 0; }
+.linked > button:first-child { border-radius: 8px 0 0 8px; border-left-width: 1px; }
+.linked > button:last-child { border-radius: 0 8px 8px 0; }
+.linked > button:only-child { border-radius: 8px; }
+
+.linked:not(.vertical) > entry { border-radius: 0; border-left-width: 0; }
+.linked:not(.vertical) > entry:first-child { border-radius: 8px 0 0 8px; border-left-width: 1px; }
+.linked:not(.vertical) > entry:last-child { border-radius: 0 8px 8px 0; }
+
+statusbar { border-top: 1px solid @borders; padding: 4px 8px; }
+
+shortcuts section { background-color: @theme_bg_color; }
+
+/* Crimson glass: translucent chrome, readable content and visible keyboard focus. */
+headerbar { box-shadow: inset 0 1px alpha(#FFFFFF, 0.08); padding: 4px 12px; }
+headerbar button:not(.titlebutton) { border-radius: 18px; }
+button:focus { outline-style: solid; outline-width: 2px; outline-color: alpha(@accent_color, 0.8); }
+button:backdrop { color: @theme_unfocused_fg_color; }
+.sidebar, placessidebar { background-image: linear-gradient(to bottom, alpha(@accent_color, 0.055), transparent); }
+.sidebar row, placessidebar row { border-radius: 10px; margin: 3px 8px; padding: 6px 10px; }
+.sidebar row:selected, placessidebar row:selected { background-color: alpha(@accent_color, 0.23); color: @theme_fg_color; box-shadow: inset 0 0 0 1px alpha(@accent_color, 0.25); }
+button { border-radius: 12px; box-shadow: inset 0 1px alpha(#FFFFFF, 0.045); }
+entry { border-radius: 12px; }
+popover.background { border-radius: 18px; }
+window.maximized headerbar, window.fullscreen headerbar { border-radius: 0; }
+checkbutton check:checked { -gtk-icon-source: -gtk-icontheme("object-select-symbolic"); }
+radiobutton radio:checked { background-image: radial-gradient(circle at center, white 0, white 3px, transparent 4px); }
+
+/* GTK 4 header controls and common libadwaita color roles. */
+@define-color window_bg_color @theme_bg_color;
+@define-color window_fg_color @theme_fg_color;
+@define-color view_bg_color @theme_base_color;
+@define-color view_fg_color @theme_text_color;
+@define-color headerbar_bg_color @surface;
+@define-color headerbar_fg_color @theme_fg_color;
+@define-color card_bg_color @elevated;
+@define-color card_fg_color @theme_fg_color;
+@define-color dialog_bg_color @surface;
+@define-color dialog_fg_color @theme_fg_color;
+@define-color accent_bg_color #DC143C;
+@define-color accent_fg_color #FFFFFF;
+windowcontrols button { border-radius: 999px; min-width: 14px; min-height: 14px; padding: 2px; margin: 4px; color: transparent; }
+windowcontrols button.close { background-color: #FF5F57; }
+windowcontrols button.minimize { background-color: #FEBC2E; }
+windowcontrols button.maximize { background-color: #28C840; }
+windowcontrols button:hover { color: #24181C; }

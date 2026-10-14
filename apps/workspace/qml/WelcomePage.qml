@@ -8,7 +8,7 @@ ScrollView {
     ColumnLayout {
         width: page.availableWidth; spacing: 22
         Rectangle {
-            Layout.fillWidth: true; implicitHeight: 280; radius: 22; clip: true
+            Layout.fillWidth: true; implicitHeight: 270; radius: 22; clip: true
             gradient: Gradient {
                 orientation: Gradient.Horizontal
                 GradientStop { position: 0; color: "#442138" }
@@ -23,7 +23,7 @@ ScrollView {
                 Label { text: "Todo empieza\ncon una idea."; color: "#fff6f8"; font.pixelSize: 42; font.weight: Font.DemiBold; font.letterSpacing: -1.7; lineHeight: 0.95 }
                 Label { text: "Un escritorio tranquilo. Herramientas para ir más lejos."; color: "#e5cbd5"; font.pixelSize: 13 }
                 Item { Layout.fillHeight: true }
-                ActionButton { text: "Explorar mis archivos  →"; primary: true; onClicked: win.changePage("files") }
+                ActionButton { text: "Explorar mis archivos  →"; primary: true; onClicked: backend.openApp("files") }
             }
         }
         RowLayout {
@@ -47,7 +47,7 @@ ScrollView {
                         Label { text: modelData.icon; color: modelData.color; font.pixelSize: 30 }
                         Label { text: modelData.title; font.pixelSize: 15; font.weight: Font.DemiBold }
                         Label { text: modelData.detail; font.pixelSize: 12; color: palette.placeholderText; lineHeight: 1.4 }
-                        ActionButton { text: "Abrir  ↗"; Layout.topMargin: 5; onClicked: win.changePage(modelData.target) }
+                        ActionButton { text: "Abrir  ↗"; Layout.topMargin: 5; onClicked: backend.openApp(modelData.target) }
                     }
                 }
             }

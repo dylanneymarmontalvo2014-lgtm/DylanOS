@@ -1,0 +1,56 @@
+::-webkit-scrollbar {
+  width: 4px;
+}
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 2px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: rgba(255, 255, 255, 0.18);
+}
+
+.dylan-input {
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  color: #fff;
+  padding: 10px 14px;
+  font-size: 14px;
+  font-family: 'Inter', sans-serif;
+  outline: none;
+  transition: border-color 0.15s;
+  width: 100%;
+}
+.dylan-input:focus {
+  border-color: var(--red);
+}
+.dylan-input::placeholder {
+  color: var(--text-muted);
+}
+
+.dylan-select {
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  color: #fff;
+  padding: 10px 14px;
+  font-size: 14px;
+  font-family: 'Inter', sans-serif;
+  outline: none;
+  cursor: pointer;
+  appearance: none;
+  transition: border-color 0.15s;
+}
+.dylan-select:focus {
+  border-color: var(--red);
+}
+.dylan-select option {
+  background: #1a1a1a;
+  color: #fff;
+}
+
+.dylan-input[aria-invalid="true"], .dylan-select[aria-invalid="true"] { border-color: var(--red); box-shadow: 0 0 0 1px rgba(220,38,38,0.12); }
+.dylan-field-error { color: var(--red); font-size: 12px; margin-top: 6px; }

@@ -55,6 +55,29 @@ class BackendTest(unittest.TestCase):
             time.sleep(.005)
         self.assertFalse(self.backend.busy, "Background operation timed out")
 
+    def test_independent_apps_and_monitor_lifecycle(self):
+        from unittest.mock import patch
+        import sys
+        isolated = Backend(page="dev")
+        self.assertFalse(isolated.timer.isActive())
+        self.assertFalse(isolated.watcher.directories())
+        self.assertEqual(isolated.stats["processes"], [])
+        with patch.object(isolated, "launch") as launch:
+            isolated.openApp("monitor")
+            args = launch.call_args.args[0]
+            self.assertEqual(args[0], sys.executable)
+            self.assertEqual(args[-2:], ["--page", "monitor"])
+            isolated.openApp("invalid")
+            self.assertEqual(launch.call_count, 1)
+        self.backend.pauseMonitor(True)
+        self.assertFalse(self.backend.timer.isActive())
+        self.backend.pauseMonitor(False)
+        self.assertTrue(self.backend.timer.isActive())
+        self.assertTrue(self.backend.stats["cpuHistory"])
+        self.assertLessEqual(len(self.backend.stats["cpuHistory"]), 60)
+        isolated.notes_store.db.close()
+        isolated.deleteLater()
+
     def test_navigation_failure_preserves_current_folder_and_history(self):
         self.backend.newFolder("sub")
         self.wait()

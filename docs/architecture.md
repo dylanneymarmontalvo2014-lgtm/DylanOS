@@ -1,6 +1,7 @@
 # Arquitectura
 
-DylanOS 1.0 Beta usa Debian 13 trixie amd64, Plasma 6, SDDM y Calamares.
+DylanOS 1.0 Beta usa Debian 13 trixie amd64, Plasma 6, SDDM y el instalador
+propio `dylanos-installer`.
 
 ## Componentes
 
@@ -31,17 +32,26 @@ renombrar. La papelera usa `QFile.moveToTrash`, no borrado permanente. Una carpe
 se abre en aplicaciones mediante URLs locales; los comandos no pasan por un shell.
 La creación de proyectos no instala dependencias ni ejecuta código de plantillas.
 
-Discover/PackageKit y los módulos de KDE gestionan las operaciones privilegiadas.
+DylanOS Store (sobre PackageKit) y los módulos de KDE gestionan las operaciones privilegiadas.
 No se guardan contraseñas, tokens ni una cuenta instalada con clave predeterminada.
 El usuario `dylan` pertenece a la sesión live creada por live-config.
 
 ## Integración y límites
 
-Se usa la configuración de Calamares distribuida por Debian, con sus jobs de particionado, usuarios y arranque. Se cambian el branding y la
-fuente squashfs. Se omiten los jobs de APT del medio live-build y de instalación
-de GRUB: la imagen ya incluye ambos destinos de GRUB y cryptsetup-initramfs,
-y conserva los repositorios configurados para permitir la instalación offline. El instalador sigue
-siendo responsable de particionar, crear el usuario y configurar el arranque.
+El instalador propio (`installer/dylanos-installer`) sustituye por completo a
+Calamares. La aplicación nativa (`installer/native/main.py`, lanzada por
+`/usr/bin/dylanos-installer`) abre su propia ventana de escritorio Qt WebEngine,
+con icono, título y entrada de escritorio propios, y arranca el backend Python
+con privilegios (con `sudo -n` cuando la sesión no es root), que enumera los
+discos con `lsblk`, particiona con `parted` (GPT con ESP + ext4 en modo
+automático, o particiones existentes en modo manual), extrae
+`filesystem.squashfs` con `unsquashfs` midiendo el progreso real, escribe
+`/etc/fstab` con UUIDs, crea el usuario con `useradd`/`chpasswd` (las claves van
+por stdin, nunca en la línea de comandos), aplica el locale y el teclado XKB
+elegidos, depura los componentes del medio live, regenera el initramfs e
+instala GRUB para UEFI y BIOS. La interfaz React del prototipo Figma se muestra
+en esa ventana nativa sin modificar su estilo y habla con el backend por REST en
+127.0.0.1:8088; nunca se abre un navegador externo.
 
 El dock experimental y el antiguo centro de control permanecen en el repositorio,
 pero la imagen usa el panel superior y los controles nativos de Plasma.
