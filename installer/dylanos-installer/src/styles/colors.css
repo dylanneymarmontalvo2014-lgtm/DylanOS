@@ -1,0 +1,14 @@
+:root {
+  --red: #dc2626;
+  --red-hover: #ef4444;
+  --red-dark: #991b1b;
+  --bg: #0d0d0d;
+  --sidebar-bg: #080808;
+  --card-bg: rgba(255, 255, 255, 0.04);
+  --card-bg-hover: rgba(255, 255, 255, 0.07);
+  --border: rgba(255, 255, 255, 0.08);
+  --border-focus: rgba(220, 38, 38, 0.5);
+  --text: #ffffff;
+  --text-secondary: #9ca3af;
+  --text-muted: #6b7280;
+}

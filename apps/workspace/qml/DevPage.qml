@@ -6,14 +6,31 @@ ScrollView {
     id: devPage
     contentWidth: availableWidth
     property string lastProject: ""
+    property string toolFilter: ""
     Connections {
         target: backend
         function onProjectCreated(path) { devPage.lastProject = path }
     }
     ColumnLayout {
         width: devPage.availableWidth; spacing: 20
-        Label { text: "De la idea al código."; font.pixelSize: 33; font.weight: Font.DemiBold; font.letterSpacing: -1 }
-        Label { text: "Tu entorno de desarrollo, listo para empezar."; color: palette.placeholderText; Layout.bottomMargin: 6 }
+        Rectangle {
+            Layout.fillWidth: true; implicitHeight: 140; radius: 22
+            gradient: Gradient {
+                orientation: Gradient.Horizontal
+                GradientStop { position: 0; color: "#452333" }
+                GradientStop { position: 1; color: "#262334" }
+            }
+            RowLayout {
+                anchors.fill: parent; anchors.margins: 26
+                ColumnLayout {
+                    Layout.fillWidth: true; spacing: 8
+                    Label { text: "CREA ALGO TUYO"; color: "#f6a5b8"; font.pixelSize: 10; font.letterSpacing: 2 }
+                    Label { text: "De la idea al código."; color: "#fff6fa"; font.pixelSize: 30; font.weight: Font.DemiBold; font.letterSpacing: -1 }
+                    Label { text: "Tu entorno de desarrollo, listo para empezar."; color: "#d2becd"; font.pixelSize: 12 }
+                }
+                Label { text: "</>"; color: "#b8849e"; font.pixelSize: 52; font.family: "DejaVu Sans Mono" }
+            }
+        }
         RowLayout {
             Layout.fillWidth: true; spacing: 10
             ActionButton { text: "⌘  VSCodium"; primary: true; onClicked: backend.action("editor") }
@@ -44,11 +61,16 @@ ScrollView {
                 }
             }
         }
-        Label { text: "Herramientas en este equipo"; font.pixelSize: 19; font.weight: Font.DemiBold }
+        RowLayout {
+            Layout.fillWidth: true
+            Label { text: "Herramientas en este equipo"; font.pixelSize: 19; font.weight: Font.DemiBold; Layout.fillWidth: true }
+            Label { text: backend.tools.filter(t => t.installed).length + " / " + backend.tools.length + " disponibles"; color: palette.placeholderText; font.pixelSize: 12 }
+            Field { placeholderText: "Filtrar herramientas"; onTextChanged: devPage.toolFilter = text; Layout.preferredWidth: 200 }
+        }
         GridLayout {
             Layout.fillWidth: true; columns: 2; columnSpacing: 12; rowSpacing: 10
             Repeater {
-                model: backend.tools
+                model: backend.tools.filter(t => t.name.toLowerCase().includes(devPage.toolFilter.toLowerCase()))
                 delegate: Surface {
                     required property var modelData
                     Layout.fillWidth: true; Layout.preferredWidth: 300; padding: 15

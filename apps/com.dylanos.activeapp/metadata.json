@@ -1,0 +1,18 @@
+{
+    "KPlugin": {
+        "Authors": [
+            {
+                "Name": "DylanOS Team"
+            }
+        ],
+        "Category": "Windows and Tasks",
+        "Description": "Muestra el nombre de la aplicación activa en la barra superior estilo macOS Tahoe",
+        "Icon": "preferences-desktop-display",
+        "Id": "com.dylanos.activeapp",
+        "Name": "DylanOS Active App Title",
+        "Version": "1.0"
+    },
+    "KPackageStructure": "Plasma/Applet",
+    "X-Plasma-API-Minimum-Version": "6.0"
+}
+

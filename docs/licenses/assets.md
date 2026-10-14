@@ -23,3 +23,10 @@ La clave `configs/keys/debian-trixie.asc` se obtuvo de
 https://ftp-master.debian.org/keys/archive-key-13.asc. Huella primaria verificada:
 `04B54C3CDCA79751B16BC6B5225629DF75B188BD`.
 Fuente de la huella: https://ftp-master.debian.org/keys.html.
+
+- Banner y mapa del instalador: recursos aportados por el usuario en
+  `DylanOS instalador calamares.zip`; procedencia y hash en
+  `installer/calamares/beta/PROTOTYPE.md`. La adaptación no incorpora React ni
+  bibliotecas web del ZIP.
+- Fondo predeterminado: recurso preexistente `branding/wallpapers/dylanos-default.png`,
+  copiado sin regenerarlo ni alterarlo.

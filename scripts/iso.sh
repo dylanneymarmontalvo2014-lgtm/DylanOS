@@ -18,7 +18,10 @@ if findmnt -rn -o TARGET | grep -q "^$CHROOT/"; then
 fi
 mkdir -p "$IMAGE/live" "$IMAGE/boot/grub"
 # Keep /boot in the filesystem: the installed system needs its own kernel.
-sudo mksquashfs "$CHROOT" "$IMAGE/live/filesystem.squashfs.new" -noappend -comp zstd -Xcompression-level 15 -processors 2 -e dev proc sys run tmp
+# Excluir solo el CONTENIDO de los dirs virtuales: el root fusionado necesita
+# /dev /proc /sys /run /tmp como puntos de montaje o /init muere en panic
+# (ver docs/auditoria-boot-hang-initramfs.md).
+sudo mksquashfs "$CHROOT" "$IMAGE/live/filesystem.squashfs.new" -noappend -comp zstd -Xcompression-level 15 -processors 2 -wildcards -e 'dev/*' 'proc/*' 'sys/*' 'run/*' 'tmp/*'
 sudo mv "$IMAGE/live/filesystem.squashfs.new" "$IMAGE/live/filesystem.squashfs"
 KERNEL="$(find "$CHROOT/boot" -maxdepth 1 -name 'vmlinuz-*' -printf '%f\n' | sort -V | tail -1)"
 [[ -n "$KERNEL" ]] || { echo 'No se encontró el kernel.' >&2; exit 1; }
@@ -37,8 +40,19 @@ cat > "$IMAGE/boot/grub/grub.cfg" <<'EOF'
 set default=0
 set timeout=0
 
-menuentry "Instalar DylanOS 1.0 Beta" {
+# Sesión live DylanOS: arranque directo al escritorio Plasma en X11 (vista
+# previa del sistema). El instalador oficial queda como ejecutable en el
+# escritorio (~/Desktop y ~/Escritorio) y en el menú, pero NO se abre solo:
+# el usuario decide cuándo instalar. live-config inicia la sesión gráfica con
+# SDDM → plasmax11.desktop.
+menuentry "DylanOS 1.0 Beta — Sesión live (probar o instalar)" {
     linux /live/vmlinuz boot=live components hostname=dylanos username=dylan user-fullname="DylanOS Live" locales=es_ES.UTF-8 keyboard-layouts=latam quiet splash
+    initrd /live/initrd.img
+}
+
+# Modo gráficos seguros: desactiva aceleración de hardware (QEMU/hardware antiguo)
+menuentry "DylanOS 1.0 Beta — Sesión live, gráficos seguros" {
+    linux /live/vmlinuz boot=live components hostname=dylanos username=dylan user-fullname="DylanOS Live" locales=es_ES.UTF-8 keyboard-layouts=latam nomodeset vga=normal quiet splash
     initrd /live/initrd.img
 }
 EOF

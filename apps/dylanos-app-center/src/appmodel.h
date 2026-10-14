@@ -21,6 +21,10 @@ public:
     Q_INVOKABLE QVariantList itemsForPage(int page, int pageSize) const;
     Q_INVOKABLE void setFilter(const QString &text);
 
+signals:
+    void launchSucceeded();
+    void launchFailed(const QString &message);
+
 private:
     void loadApps();
     QList<KService::Ptr> visibleApps() const;

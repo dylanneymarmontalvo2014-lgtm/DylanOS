@@ -2,6 +2,8 @@
 Name=DylanOS App Center
 Comment=Centro de Aplicaciones de DylanOS
 Exec=dylanos-app-center
+# Icono propio del App Center: fondo partido en dos franjas (izquierda roja
+# DylanOS Crimson, derecha negra DylanOS Black) con el logotipo de DylanOS.
 Icon=dylanos-app-center
 Terminal=false
 Type=Application

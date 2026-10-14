@@ -229,11 +229,18 @@ fi
 # ------------------------------------------------------------------------------
 # 6. Parámetros de Dispositivos y Periféricos
 # ------------------------------------------------------------------------------
+# Elegir backend de display: GTK si X11 disponible, si no VNC
+if [[ -n "${DISPLAY:-}" ]]; then
+    DISPLAY_FLAGS=("-display" "gtk,show-cursor=on")
+else
+    DISPLAY_FLAGS=("-display" "none" "-vnc" ":0")
+fi
+
 DEVICE_FLAGS=(
     "-m" "${VM_RAM_MB}M"
     "-smp" "$VM_CORES"
     "-vga" "virtio"
-    "-display" "default,show-cursor=on"
+    "${DISPLAY_FLAGS[@]}"
     "-usb"
     "-device" "usb-tablet"
     "-netdev" "user,id=net0"

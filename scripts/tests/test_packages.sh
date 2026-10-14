@@ -106,15 +106,24 @@ default_pkgs="$(parse_package_list "$DEFAULT_LIST" 2>/dev/null || true)"
 dev_pkgs="$(parse_package_list "$DEV_LIST" 2>/dev/null || true)"
 
 # Paquetes del sistema base migrados del build.sh original
-for p in linux-image-amd64 systemd-sysv kde-plasma-desktop sddm calamares \
-    sudo network-manager dolphin konsole; do
+for p in linux-image-amd64 systemd-sysv kde-plasma-desktop sddm parted \
+    squashfs-tools fastfetch sudo network-manager dolphin konsole; do
     assert_contains_line "default contiene $p" "$default_pkgs" "$p"
 done
+
+# Calamares quedó eliminado: el instalador propio debe ocupar su lugar.
+assert_eq "default ya no contiene calamares" "no" \
+    "$(printf '%s' "$default_pkgs" | grep -qx calamares && echo si || echo no)"
 
 # Apps declaradas en configs/default-apps.conf deben instalarse por defecto
 conf_apps="$(grep -vE '^\[|^$|^[[:space:]]*[#;]' "$ROOT/configs/default-apps.conf")"
 while IFS= read -r app; do
     [ -n "$app" ] || continue
+    # In-tree applications are compiled by build.sh, not downloaded by APT.
+    if [ "$app" = dylanos-calculator ]; then
+        assert_eq "calculadora se compila en build" "si" "$(grep -q 'for app in calculator dylanos-app-center' "$ROOT/scripts/build.sh" && echo si || echo no)"
+        continue
+    fi
     assert_contains_line "default-apps.conf: $app está en la lista default" \
         "$default_pkgs" "$app"
 done <<< "$conf_apps"

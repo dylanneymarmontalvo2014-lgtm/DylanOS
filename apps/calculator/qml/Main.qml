@@ -5,16 +5,18 @@ import QtQuick.Layouts
 ApplicationWindow {
     id: root
     visible: true
-    width: 320
-    height: 480
+    width: 360
+    height: 570
     minimumWidth: 280
-    minimumHeight: 420
+    minimumHeight: 540
     title: "Calculadora"
-    color: "#0a0a0a"
+    color: "#19171e"
+    font.family: "Inter"
 
     property real storedValue: 0
     property string pendingOperator: ""
     property bool resetOnNextDigit: true
+    property string lastExpression: ""
 
     readonly property color accentRed: "#DC143C"
     readonly property color keyDark: "#1c1c1c"
@@ -49,6 +51,7 @@ ApplicationWindow {
 
     function clearAll() {
         display.text = "0"
+        lastExpression = ""
         storedValue = 0
         pendingOperator = ""
         resetOnNextDigit = true
@@ -70,27 +73,30 @@ ApplicationWindow {
         resetOnNextDigit = true
     }
 
-    Item {
-        focus: true
-        Keys.onPressed: function(event) {
-            if (/^[0-9]$/.test(event.text)) root.inputDigit(event.text)
-            else if (event.text === "." || event.text === ",") root.inputDecimal()
-            else if (event.text === "+" || event.text === "-") root.setOperator(event.text)
-            else if (event.text === "*") root.setOperator("×")
-            else if (event.text === "/") root.setOperator("÷")
-            else if (event.text === "%") root.applyPercent()
-            else if (event.key === Qt.Key_Return || event.key === Qt.Key_Enter || event.text === "=") root.compute()
-            else if (event.key === Qt.Key_Escape || event.key === Qt.Key_Delete) root.clearAll()
-            else if (event.key === Qt.Key_Backspace) { display.text = display.text.slice(0, -1) || "0" }
-            else return
-            event.accepted = true
+    // Window shortcuts keep working after clicking or tabbing between keys.
+    Repeater {
+        model: ["0", "1", "2", "3", "4", "5", "6", "7", "8", "9"]
+        delegate: Item {
+            id: keyBinding
+            required property string modelData
+            Shortcut { sequence: keyBinding.modelData; onActivated: root.inputDigit(keyBinding.modelData) }
         }
     }
+    Shortcut { sequences: [".", ","]; onActivated: root.inputDecimal() }
+    Shortcut { sequence: "+"; onActivated: root.setOperator("+") }
+    Shortcut { sequence: "-"; onActivated: root.setOperator("-") }
+    Shortcut { sequence: "*"; onActivated: root.setOperator("×") }
+    Shortcut { sequence: "/"; onActivated: root.setOperator("÷") }
+    Shortcut { sequence: "%"; onActivated: root.applyPercent() }
+    Shortcut { sequences: ["Return", "Enter", "="]; onActivated: root.compute() }
+    Shortcut { sequences: ["Escape", "Delete"]; onActivated: root.clearAll() }
+    Shortcut { sequence: "Backspace"; onActivated: { display.text = display.text.slice(0, -1) || "0" } }
 
     function compute() {
         if (pendingOperator === "") return
         var current = parseFloat(display.text)
         var result = current
+        lastExpression = formatNumber(storedValue) + " " + pendingOperator + " " + display.text + " ="
 
         switch (pendingOperator) {
             case "+": result = storedValue + current; break
@@ -108,9 +114,16 @@ ApplicationWindow {
     ColumnLayout {
         anchors.fill: parent
         anchors.margins: 20
-        spacing: 20
+        spacing: 14
 
+        RowLayout {
+            Layout.fillWidth: true
+            Text { text: "DYLANOS"; color: "#b4a9bb"; font.pixelSize: 10; font.letterSpacing: 2 }
+            Item { Layout.fillWidth: true }
+            Text { text: "Calculadora"; color: "#f0dde6"; font.pixelSize: 13 }
+        }
         Item { Layout.fillHeight: true }
+        Text { text: root.lastExpression; color: "#b9acbf"; Layout.fillWidth: true; horizontalAlignment: Text.AlignRight; font.pixelSize: 15; elide: Text.ElideLeft }
 
         Text {
             id: display
@@ -126,8 +139,8 @@ ApplicationWindow {
 
         GridLayout {
             columns: 4
-            rowSpacing: 12
-            columnSpacing: 12
+            rowSpacing: 10
+            columnSpacing: 10
             Layout.fillWidth: true
 
             CalcButton { label: "AC"; bgColor: root.keyDark; onClicked: root.clearAll() }
@@ -152,7 +165,7 @@ ApplicationWindow {
                 label: "="
                 bgColor: root.accentRed
                 Layout.rowSpan: 2
-                Layout.preferredHeight: 140
+                Layout.preferredHeight: 132
                 onClicked: root.compute()
             }
 

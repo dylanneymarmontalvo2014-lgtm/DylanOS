@@ -2,4 +2,4 @@
 name=DylanOS-Crimson
 
 [Wallpapers]
-usersWallpapers=/usr/share/wallpapers/DylanOS/DylanOS-Dark.png,/usr/share/wallpapers/DylanOS/DylanOS-Light.png
+usersWallpapers=/usr/share/wallpapers/DylanOS/dylanos-default.png,/usr/share/wallpapers/DylanOS/DylanOS-Dark.png,/usr/share/wallpapers/DylanOS/DylanOS-Light.png

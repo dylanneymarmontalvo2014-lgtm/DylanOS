@@ -17,12 +17,17 @@ qemu-system-x86_64 -enable-kvm -m 4096 -smp 2 \
 Sin `/dev/kvm`, quita `-enable-kvm`; la emulación será bastante más lenta.
 Para UEFI usa una copia escribible de OVMF_VARS y OVMF_CODE de tu distribución.
 
-Selecciona «Probar e instalar DylanOS». El modo live usa el usuario `dylan`,
-creado por live-config, con entrada automática. Si solicitas autenticación en
-la sesión live, la contraseña predeterminada de live-config es `live`.
-Esta cuenta temporal no sustituye al usuario que crearás en Calamares.
-Abre el instalador desde el menú de aplicaciones. Revisa su resumen antes de
-confirmar el particionado del disco virtual.
+Selecciona «DylanOS 1.0 Beta — Sesión live (probar o instalar)». El modo live
+arranca el escritorio Plasma en X11 con el usuario `dylan`, creado por
+live-config, con entrada automática. Si solicitas autenticación en la sesión
+live, la contraseña predeterminada de live-config es `live`. Esta cuenta
+temporal no sustituye al usuario que crearás en el instalador de DylanOS.
+
+El instalador oficial aparece como ejecutable en el escritorio (`~/Desktop` y
+`~/Escritorio`, porque el nombre de la carpeta depende del idioma) y en el menú
+de aplicaciones. **No se abre solo**: la sesión live es un escritorio de vista
+previa para que pruebes DylanOS y lances la instalación cuando quieras. Revisa
+su resumen antes de confirmar el particionado del disco virtual.
 
 ## Comprobaciones de aceptación
 
@@ -32,7 +37,7 @@ confirmar el particionado del disco virtual.
 4. Crear/copiar/renombrar un archivo, enviarlo a papelera y recuperarlo en Dolphin.
 5. Crear una nota, cerrar la app y comprobar que permanece al abrirla.
 6. Crear proyectos Python/web/C++; abrirlos en editor/terminal y ejecutarlos.
-7. Probar Discover, actualizaciones, Wi-Fi, Bluetooth, audio, suspensión y pantalla.
+7. Probar DylanOS Store, actualizaciones, Wi-Fi, Bluetooth, audio, suspensión y pantalla.
 8. Instalar en el disco virtual, reiniciar sin la ISO y verificar la cuenta creada.
 9. Repetir red/audio/suspensión en los equipos físicos que se vayan a soportar.
 

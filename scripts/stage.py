@@ -30,42 +30,113 @@ def stage(destination):
             target.chmod(0o644)
         target.write_text(text, encoding="utf-8")
         target.chmod(mode)
+    def remove(target):
+        """Borra un artefacto obsoleto del staging anterior, si existe.
+
+        El staging debe ser idempotente sobre un chroot reutilizado
+        (`build.sh --resume`): solo escribir no basta, porque los archivos de
+        versiones anteriores permanecerían y provocarían el comportamiento
+        viejo (por ejemplo, un autostart del instalador ya eliminado).
+        """
+        target_path = dest / target.lstrip("/")
+        if target_path.is_symlink() or target_path.is_file():
+            target_path.unlink()
+        elif target_path.is_dir():
+            shutil.rmtree(target_path, ignore_errors=True)
+
+
 
     for source, target in [
         ("apps/workspace", "/usr/share/dylanos/workspace"),
+        ("branding/logo.png", "/usr/share/dylanos/workspace/assets/logo.png"),
         ("branding/logo.png", "/usr/share/icons/hicolor/512x512/apps/distributor-logo-dylanos.png"),
+        ("branding/icons/dylanos-store.png", "/usr/share/icons/hicolor/512x512/apps/dylanos-store.png"),
+        ("branding/wallpapers/dylanos-default.png", "/usr/share/wallpapers/DylanOS/dylanos-default.png"),
         ("branding/wallpapers/DylanOS-Dark.png", "/usr/share/wallpapers/DylanOS/DylanOS-Dark.png"),
         ("branding/wallpapers/DylanOS-Light.png", "/usr/share/wallpapers/DylanOS/DylanOS-Light.png"),
         ("themes/colors", "/usr/share/color-schemes"),
+        ("themes/gtk/DylanOS-Crimson-Light", "/usr/share/themes/DylanOS-Crimson-Light"),
         ("themes/gtk/DylanOS-Crimson", "/usr/share/themes/DylanOS-Crimson"),
         ("themes/plasma/DylanOS-Crimson", "/usr/share/plasma/desktoptheme/DylanOS-Crimson"),
         ("themes/aurorae/DylanOS-Crimson", "/usr/share/aurorae/themes/DylanOS-Crimson"),
         ("themes/aurorae/DylanOS-Crimson-Light", "/usr/share/aurorae/themes/DylanOS-Crimson-Light"),
-        ("themes/lookandfeel/org.dylanos.crimson", "/usr/share/plasma/lookandfeel/org.dylanos.crimson"),
+        ("themes/lookandfeel/org.dylanos.crimson", "/usr/share/plasma/look-and-feel/org.dylanos.crimson"),
         ("themes/sddm/DylanOS-Crimson", "/usr/share/sddm/themes/DylanOS-Crimson"),
         ("themes/grub/DylanOS-Grub", "/usr/share/grub/themes/dylanos"),
         ("themes/plymouth/DylanOS-Plymouth", "/usr/share/plymouth/themes/dylanos"),
         ("branding/logo.png", "/usr/share/plymouth/themes/dylanos/logo.png"),
         ("configs/plasma/skel", "/etc/skel/.config"),
         ("branding/wallpapers/DylanOS-Dark.png", "/usr/share/grub/themes/dylanos/background.png"),
+        ("apps/dylanos-spotlight", "/usr/share/dylanos/spotlight"),
+        ("apps/com.dylanos.activeapp", "/usr/share/plasma/plasmoids/com.dylanos.activeapp"),
+        ("apps/com.dylanos.dock", "/usr/share/plasma/plasmoids/com.dylanos.dock"),
+        ("installer/dylanos-installer/dist", "/usr/share/dylanos/installer/dist"),
+        ("installer/dylanos-installer/backend", "/usr/share/dylanos/installer/backend"),
+        ("installer/dylanos-installer/native", "/usr/share/dylanos/installer/native"),
+        ("configs/konsole", "/etc/skel/.local/share/konsole"),
+        ("configs/fastfetch", "/etc/skel/.config/fastfetch"),
+        ("configs/fastfetch/logo.txt", "/usr/share/dylanos/fastfetch/logo.txt"),
+        ("configs/bash/dylanos.bashrc", "/etc/skel/.bashrc"),
     ]:
         copy(source, target)
+    legacy_lf = dest / "usr/share/plasma/lookandfeel/org.dylanos.crimson"
+    if legacy_lf.is_dir() and not legacy_lf.is_symlink():
+        shutil.rmtree(legacy_lf)
+    if not legacy_lf.exists() and not legacy_lf.is_symlink():
+        legacy_lf.parent.mkdir(parents=True, exist_ok=True)
+        try:
+            legacy_lf.symlink_to("../look-and-feel/org.dylanos.crimson")
+        except FileExistsError:
+            pass
     globals_path = dest / "etc/skel/.config/kdeglobals"
     scheme = (ROOT / "themes/colors/DylanOSDark.colors").read_text()
     with globals_path.open("a") as handle:
         handle.write("\n" + scheme[scheme.index("[Colors:"):])
     write("/usr/bin/dylanos", '#!/bin/sh\nexec /usr/bin/python3 /usr/share/dylanos/workspace/main.py "$@"\n', 0o755)
+    write("/usr/bin/dylanos-spotlight", '#!/bin/sh\nexec /usr/bin/python3 /usr/share/dylanos/spotlight/main.py "$@"\n', 0o755)
+    write("/usr/share/applications/org.dylanos.spotlight.desktop", "[Desktop Entry]\nType=Application\nName=DylanOS Spotlight\nGenericName=Búsqueda rápida\nComment=Buscar aplicaciones, proyectos, archivos y cálculos\nExec=dylanos-spotlight\nIcon=system-search\nTerminal=false\nCategories=Utility;\nStartupNotify=false\n")
+    write("/usr/bin/dylanos-installer", '''#!/bin/sh
+# Instalador nativo de DylanOS: ventana propia de escritorio (Qt WebEngine).
+# Ejecuta la aplicación nativa, que arranca su propio backend REST local;
+# nunca se abre un navegador externo.
+exec /usr/bin/python3 /usr/share/dylanos/installer/native/main.py "$@"
+''', 0o755)
+    write("/usr/share/applications/dylanos-installer.desktop", "[Desktop Entry]\nType=Application\nName=Instalar DylanOS\nComment=Asistente oficial de instalación de DylanOS\nExec=/usr/bin/dylanos-installer\nTryExec=/usr/bin/dylanos-installer\nIcon=distributor-logo-dylanos\nTerminal=false\nCategories=System;\nStartupNotify=true\nStartupWMClass=dylanos-installer\n")
+    # Acceso directo en el escritorio live: Plasma muestra los archivos de
+    # XDG_DESKTOP_DIR como iconos de escritorio. Permisos 0o755 para que Plasma
+    # lo marque como lanzador de confianza y el usuario pueda hacer doble clic
+    # sin el diálogo "¿Ejecutar o mostrar?".
+    #
+    # La sesión live es un escritorio de vista previa (X11), NO un arranque
+    # directo al instalador: por eso el ejecutable queda en el escritorio y NO
+    # se añade ninguna entrada a /etc/xdg/autostart. La carpeta de escritorio
+    # depende del idioma (xdg-user-dirs: ~/Desktop o ~/Escritorio según el
+    # locale), así que el lanzador se escribe en ambas.
+    installer_shortcut = (
+        "[Desktop Entry]\nType=Application\nName=Instalar DylanOS\n"
+        "Comment=Haz doble clic para instalar DylanOS en tu equipo\n"
+        "Exec=/usr/bin/dylanos-installer\nTryExec=/usr/bin/dylanos-installer\n"
+        "Icon=distributor-logo-dylanos\nTerminal=false\nCategories=System;\n"
+        "StartupNotify=true\nStartupWMClass=dylanos-installer\n"
+        "X-KDE-SubstituteUID=false\n"
+    )
+    write("/etc/skel/Desktop/instalar-dylanos.desktop", installer_shortcut, 0o755)
+    write("/etc/skel/Escritorio/instalar-dylanos.desktop", installer_shortcut, 0o755)
+    # El instalador ya NO se autoejecuta en la sesión live (es un escritorio de
+    # vista previa). Se elimina la entrada de autostart de builds anteriores:
+    # sin este borrado, un chroot reutilizado la conservaría y el instalador
+    # seguiría abriéndose solo.
+    remove("/etc/xdg/autostart/dylanos-installer.desktop")
     for key, name, icon, category in [
         ("welcome", "Bienvenido a DylanOS", "distributor-logo-dylanos", "Utility"),
         ("files", "Archivos", "system-file-manager", "System;FileTools;FileManager"),
         ("notes", "Notas", "accessories-text-editor", "Utility;TextEditor"),
         ("dev", "Desarrollo DylanOS", "applications-development", "Development"),
         ("monitor", "Monitor DylanOS", "utilities-system-monitor", "System;Monitor"),
-        ("store", "Software DylanOS", "system-software-install", "Settings;PackageManager"),
+        ("store", "DylanOS Store", "dylanos-store", "Settings;PackageManager"),
         ("settings", "Ajustes DylanOS", "preferences-system", "Settings"),
     ]:
-        write(f"/usr/share/applications/org.dylanos.{key}.desktop", f"[Desktop Entry]\nType=Application\nName={name}\nExec=dylanos --page {key}\nIcon={icon}\nTerminal=false\nCategories={category};\nStartupNotify=true\n")
-    write("/etc/xdg/autostart/calamares-install-dylanos.desktop", "[Desktop Entry]\nType=Application\nName=Instalar DylanOS\nComment=Iniciar instalador Calamares automáticamente\nExec=/usr/bin/calamares-install-debian\nIcon=distributor-logo-dylanos\nTerminal=false\nCategories=System;\nOnlyShowIn=KDE;\n")
+        write(f"/usr/share/applications/org.dylanos.{key}.desktop", f"[Desktop Entry]\nType=Application\nName={name}\nExec=dylanos --page {key}\nStartupWMClass=org.dylanos.{key}\nIcon={icon}\nTerminal=false\nCategories={category};\nStartupNotify=true\n")
     write("/usr/bin/dylanos-welcome", '''#!/bin/sh
 state="${XDG_STATE_HOME:-$HOME/.local/state}/dylanos"
 if [ ! -e "$state/welcome-seen" ]; then
@@ -132,25 +203,9 @@ fi
     write("/etc/hosts", "127.0.0.1 localhost\n127.0.1.1 dylanos\n::1 localhost ip6-localhost ip6-loopback\n")
     write("/etc/dylanos-release", "DylanOS 1.0 Beta\nBase: Debian 13 (trixie)\n")
     write("/usr/lib/os-release", 'PRETTY_NAME="DylanOS 1.0 Beta"\nNAME="DylanOS"\nID=dylanos\nID_LIKE=debian\nVERSION_ID="1.0"\nVERSION="1.0 Beta (trixie)"\nVERSION_CODENAME=trixie\nHOME_URL="https://github.com/dylanneymarmontalvo2014-lgtm/DylanOS"\n')
-    calamares = dest / "etc/calamares/settings.conf"
-    if calamares.exists():
-        content = re.sub(r"(?m)^branding:.*$", "branding: dylanos", calamares.read_text())
-        # The image already contains both GRUB targets and cryptsetup. Debian's
-        # media jobs expect a live-build APT mirror, which this ISO does not have.
-        content = re.sub(r"(?m)^\s+- (sources-media|sources-media-unmount|sources-final|bootloader-config)\s*$", "", content)
-        calamares.write_text(content)
+    # DylanOS usa su instalador propio (installer/dylanos-installer);
+    # Calamares ya no forma parte de la imagen.
     write("/etc/initramfs-tools/conf.d/dylanos-permissions", "UMASK=0077\n")
-    write("/usr/share/applications/calamares-install-debian.desktop", "[Desktop Entry]\nType=Application\nName=Instalar DylanOS\nComment=Instalar DylanOS 1.0 Beta en un disco\nExec=calamares-install-debian\nIcon=distributor-logo-dylanos\nTerminal=false\nCategories=System;\nStartupWMClass=calamares\nStartupNotify=true\n")
-    write("/etc/calamares/modules/welcome.conf", "---\nshowSupportUrl: true\nshowKnownIssuesUrl: true\nshowReleaseNotesUrl: true\nrequirements:\n  requiredStorage: 25\n  requiredRam: 2.0\n  check: [storage, ram, power, root]\n  required: [storage, ram, root]\n")
-    copy("installer/calamares/beta", "/etc/calamares/branding/dylanos")
-    copy("branding/logo.png", "/etc/calamares/branding/dylanos/logo.png")
-    branding_desc = dest / "etc/calamares/branding/dylanos/branding.desc"
-    branding_content = branding_desc.read_text(encoding="utf-8")
-    branding_content = re.sub(r"(?m)^(\s*product(?:Logo|Icon):\s*)\S+\s*$", r"\1logo.png", branding_content)
-    branding_desc.write_text(branding_content, encoding="utf-8")
-    copy("branding/wallpapers/DylanOS-Dark.png", "/etc/calamares/branding/dylanos/background.png")
-    write("/etc/calamares/modules/unpackfs.conf", '---\nunpack:\n  - source: /run/live/medium/live/filesystem.squashfs\n    sourcefs: squashfs\n    destination: ""\n')
-    write("/etc/calamares/modules/displaymanager.conf", '---\ndisplaymanagers: [sddm]\nbasicSetup: false\n')
     write("/etc/dpkg/origins/dylanos", "Vendor: DylanOS\nVendor-URL: https://github.com/dylanneymarmontalvo2014-lgtm/DylanOS\nParent: Debian\n")
     print(f"Payload DylanOS instalado en {dest}")
 

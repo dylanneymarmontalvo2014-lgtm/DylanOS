@@ -5,6 +5,8 @@ import platform
 import shutil
 import time
 import subprocess
+import sys
+import configparser
 
 import psutil
 from PySide6.QtCore import QObject, Property, Signal, Slot, QTimer, QUrl, QProcess, QStandardPaths, QFile, QFileSystemWatcher, QRunnable, QThreadPool
@@ -38,26 +40,33 @@ class Backend(QObject):
     message = Signal(str)
     projectCreated = Signal(str)
 
-    def __init__(self):
+    def __init__(self, page=None):
         super().__init__()
+        self._page = page
         self._path = str(Path.home())
         self._files, self._history, self._cursor = [], [self._path], 0
         self._hidden, self._busy = False, False
         self._clipboard = ""
         self._stats = {}
         self._tools = []
-        data = QStandardPaths.writableLocation(QStandardPaths.AppDataLocation)
-        self.notes_store = Notes(Path(data))
+        # Preserve the existing Workspace notes location across separate app identities.
+        data = Path(QStandardPaths.writableLocation(QStandardPaths.GenericDataLocation)) / "DylanOS" / "Workspace"
+        self.notes_store = Notes(data)
         self.pool = QThreadPool(self)
         self.pool.setMaxThreadCount(1)
         self.watcher = QFileSystemWatcher(self)
         self.watcher.directoryChanged.connect(self.refresh)
         self.timer = QTimer(self)
         self.timer.timeout.connect(self.updateStats)
-        self.timer.start(2500)
+        self._cpu_history = []
+        self._memory_history = []
+        if page in (None, "monitor"):
+            self.timer.start(2500)
         self.updateStats()
-        self.refresh()
-        self.scanTools()
+        if page in (None, "files"):
+            self.refresh()
+        if page in (None, "dev"):
+            self.scanTools()
 
     @Property(str, notify=filesChanged)
     def folder(self): return self._path
@@ -230,13 +239,30 @@ class Backend(QObject):
         self.work(lambda: str(create_project(parent, name, template)), self.projectCreated.emit)
 
     def launch(self, args):
+        friendly = {"plasma-discover": "DylanOS Store", "plasma-systemmonitor": "Monitor del sistema",
+                    "systemsettings": "Ajustes del sistema", "konsole": "Terminal", "dolphin": "Archivos"}
         if not shutil.which(args[0]):
-            self.message.emit(f"{args[0]} no está instalado. Puedes instalarlo desde Software.")
+            self.message.emit(f"{friendly.get(args[0], args[0])} no está instalado. Puedes instalarlo desde DylanOS Store.")
             return False
         ok, _ = QProcess.startDetached(args[0], args[1:])
         if not ok:
-            self.message.emit("No se pudo iniciar " + args[0])
+            self.message.emit("No se pudo iniciar " + friendly.get(args[0], args[0]))
         return ok
+
+    @Slot(str)
+    def openApp(self, page):
+        if page == "files":
+            self.action("files")
+        elif page in ("welcome", "notes", "dev", "monitor", "store", "settings"):
+            self.launch([sys.executable, str(Path(__file__).with_name("main.py")), "--page", page])
+
+    @Slot(bool)
+    def pauseMonitor(self, paused):
+        if paused:
+            self.timer.stop()
+        else:
+            self.updateStats()
+            self.timer.start(2500)
 
     @Slot(str)
     def action(self, name):
@@ -284,7 +310,31 @@ class Backend(QObject):
                 result = subprocess.run(command, capture_output=True, text=True, timeout=20)
                 if result.returncode:
                     raise OSError("No se completó el cambio de apariencia: " + result.stderr.strip()[:300])
-        self.work(apply, lambda _: self.message.emit("Apariencia del escritorio actualizada."))
+            # Persist both GTK versions without clobbering other user settings.
+            gtk_theme = "DylanOS-Crimson" + ("-Light" if variant == "Light" else "")
+            config_root = Path(os.environ.get("XDG_CONFIG_HOME", str(Path.home() / ".config")))
+            for version in ("gtk-3.0", "gtk-4.0"):
+                settings_path = config_root / version / "settings.ini"
+                settings = configparser.ConfigParser(interpolation=None)
+                settings.optionxform = str
+                settings.read(settings_path)
+                if not settings.has_section("Settings"):
+                    settings.add_section("Settings")
+                settings.set("Settings", "gtk-theme-name", gtk_theme)
+                settings.set("Settings", "gtk-icon-theme-name", "breeze-dark" if variant == "Dark" else "breeze")
+                settings.set("Settings", "gtk-application-prefer-dark-theme", "1" if variant == "Dark" else "0")
+                settings_path.parent.mkdir(parents=True, exist_ok=True)
+                temporary = settings_path.with_suffix(".ini.dylanos-tmp")
+                with temporary.open("w") as handle:
+                    settings.write(handle, space_around_delimiters=False)
+                temporary.replace(settings_path)
+            # GTK's desktop portal/color preference is published by Plasma.
+            if shutil.which("gsettings"):
+                for key, value in (("gtk-theme", gtk_theme), ("color-scheme", "prefer-dark" if variant == "Dark" else "prefer-light")):
+                    result = subprocess.run(["gsettings", "set", "org.gnome.desktop.interface", key, value], capture_output=True, text=True, timeout=10)
+                    if result.returncode:
+                        raise OSError("El tema se guardó, pero no se pudo notificar a GTK: " + result.stderr.strip()[:200])
+        self.work(apply, lambda _: self.message.emit("Apariencia actualizada. Algunas apps GTK requieren volver a abrirse."))
 
     @Slot()
     def scanTools(self):
@@ -297,22 +347,42 @@ class Backend(QObject):
 
     @Slot()
     def updateStats(self):
-        memory, disk = psutil.virtual_memory(), psutil.disk_usage(str(Path.home()))
-        battery = psutil.sensors_battery()
-        processes = []
-        for proc in psutil.process_iter(["pid", "name", "memory_info", "username"]):
-            try:
-                info = proc.info
-                if info["memory_info"]:
-                    processes.append(dict(pid=info["pid"], name=info["name"] or "Proceso",
-                                          memory=human_size(info["memory_info"].rss), rss=info["memory_info"].rss))
-            except (psutil.Error, OSError):
-                continue
-        self._stats = dict(cpu=round(psutil.cpu_percent()), memory=round(memory.percent),
+        try:
+            memory = psutil.virtual_memory()
+            disk = psutil.disk_usage(str(Path.home()))
+            battery = psutil.sensors_battery()
+            boot = psutil.boot_time()
+            cpu = round(psutil.cpu_percent())
+            processes = []
+            for proc in (psutil.process_iter(["pid", "name", "memory_info"]) if self._page in (None, "monitor") else []):
+                try:
+                    info = proc.info
+                    if info.get("memory_info"):
+                        processes.append(dict(pid=info["pid"], name=info["name"] or "Proceso",
+                                              memory=human_size(info["memory_info"].rss), rss=info["memory_info"].rss))
+                except (psutil.Error, OSError, KeyError):
+                    continue
+        except (psutil.Error, OSError):
+            class _FallbackMem:
+                percent = 0; used = 0; total = 1024 * 1024 * 1024
+            class _FallbackDisk:
+                percent = 0; free = 10 * 1024 * 1024 * 1024
+            memory = _FallbackMem()
+            disk = _FallbackDisk()
+            battery = None
+            boot = time.time()
+            cpu = 0
+            processes = []
+
+        self._cpu_history = (self._cpu_history + [cpu])[-60:]
+        self._memory_history = (self._memory_history + [round(memory.percent)])[-60:]
+        self._stats = dict(cpu=cpu, memory=round(memory.percent),
+                           cpuHistory=self._cpu_history, memoryHistory=self._memory_history,
+                           processCount=len(processes),
                            memoryText=f"{human_size(memory.used)} de {human_size(memory.total)}",
                            disk=round(disk.percent), free=human_size(disk.free),
-                           uptime=f"{int((time.time() - psutil.boot_time()) / 3600)} h",
+                           uptime=f"{int((time.time() - boot) / 3600)} h",
                            battery=f"{round(battery.percent)} %" if battery else "Sin batería",
                            host=platform.node(), kernel=platform.release(),
-                           processes=sorted(processes, key=lambda p: p["rss"], reverse=True)[:30])
+                           processes=sorted(processes, key=lambda p: p["rss"], reverse=True))
         self.statsChanged.emit()

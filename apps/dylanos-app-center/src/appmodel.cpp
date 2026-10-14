@@ -32,7 +32,7 @@ QList<KService::Ptr> AppModel::visibleApps() const
     if (m_filter.isEmpty()) return m_apps;
     QList<KService::Ptr> result;
     for (const auto &s : m_apps)
-        if (s->name().contains(m_filter, Qt::CaseInsensitive))
+        if ((s->name().contains(m_filter, Qt::CaseInsensitive) || s->comment().contains(m_filter, Qt::CaseInsensitive)))
             result.append(s);
     return result;
 }
@@ -80,6 +80,10 @@ void AppModel::launchApp(const QString &desktopId)
     auto *job = new KIO::ApplicationLauncherJob(*it);
     job->setUiDelegate(KIO::createDefaultJobUiDelegate(
         KJobUiDelegate::AutoHandlingEnabled, nullptr));
+    connect(job, &KJob::result, this, [this](KJob *finished) {
+        if (finished->error()) emit launchFailed(finished->errorString());
+        else emit launchSucceeded();
+    });
     job->start();
 }
 
