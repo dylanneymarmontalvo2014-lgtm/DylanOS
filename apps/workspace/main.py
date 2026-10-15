@@ -14,7 +14,7 @@ from backend import Backend
 
 def main():
     parser = argparse.ArgumentParser()
-    parser.add_argument("--page", default="welcome", choices=["welcome", "files", "notes", "monitor", "dev", "store", "settings"])
+    parser.add_argument("--page", default="welcome", choices=["welcome", "files", "notes", "monitor", "dev", "settings"])
     parser.add_argument("--screenshot", type=Path)
     parser.add_argument("--smoke", action="store_true")
     parser.add_argument("--appearance", choices=["dark", "light"])

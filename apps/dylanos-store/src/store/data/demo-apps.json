@@ -1,0 +1,598 @@
+{
+  "store": {
+    "name": "DylanOS Store",
+    "version": "x.y.z"
+  },
+  "categories": [
+    {
+      "id": "dev",
+      "label": "Desarrollo",
+      "icon": "Code2",
+      "desc": "Editores, compiladores, motores y herramientas para programar."
+    },
+    {
+      "id": "net",
+      "label": "Internet y comunicación",
+      "icon": "Globe",
+      "desc": "Navegadores, correo y mensajería."
+    },
+    {
+      "id": "media",
+      "label": "Multimedia",
+      "icon": "Music",
+      "desc": "Reproducción, edición de audio y vídeo."
+    },
+    {
+      "id": "gfx",
+      "label": "Gráficos y fotografía",
+      "icon": "Palette",
+      "desc": "Dibujo, retoque, modelado 3D y diseño vectorial."
+    },
+    {
+      "id": "games",
+      "label": "Juegos",
+      "icon": "Gamepad2",
+      "desc": "Lanzadores, emuladores y juegos nativos."
+    },
+    {
+      "id": "office",
+      "label": "Oficina y productividad",
+      "icon": "Briefcase",
+      "desc": "Documentos, notas y gestión de tareas."
+    },
+    {
+      "id": "edu",
+      "label": "Educación",
+      "icon": "GraduationCap",
+      "desc": "Aprendizaje, idiomas y material didáctico."
+    },
+    {
+      "id": "sci",
+      "label": "Ciencia",
+      "icon": "FlaskConical",
+      "desc": "Cálculo, simulación y análisis de datos."
+    },
+    {
+      "id": "sys",
+      "label": "Sistema y utilidades",
+      "icon": "Wrench",
+      "desc": "Copias de seguridad, discos y monitorización."
+    },
+    {
+      "id": "acc",
+      "label": "Accesorios",
+      "icon": "Calculator",
+      "desc": "Pequeñas herramientas del día a día."
+    },
+    {
+      "id": "sec",
+      "label": "Seguridad y privacidad",
+      "icon": "ShieldCheck",
+      "desc": "Contraseñas, cifrado y cortafuegos."
+    },
+    {
+      "id": "custom",
+      "label": "Personalización",
+      "icon": "Paintbrush",
+      "desc": "Temas, iconos y ajustes del escritorio."
+    },
+    {
+      "id": "creator",
+      "label": "Creadores de contenido",
+      "icon": "Clapperboard",
+      "desc": "Streaming, grabación y publicación."
+    }
+  ],
+  "apps": [
+    {
+      "id": "code",
+      "name": "Code Studio",
+      "glyph": "‹/›",
+      "color": "#1f8cf0",
+      "cat": "dev",
+      "short": "Edita, depura y construye mejores aplicaciones.",
+      "long": "Texto de demostración. Sustituir por [DESCRIPCION_COMPLETA] del paquete. Editor de código con depurador integrado, terminal y soporte para extensiones.",
+      "dev": "Desarrollador de demostración",
+      "license": "MIT",
+      "nv": "1.4.0",
+      "size": "98 MB",
+      "date": "2026-09-28",
+      "initial": "none",
+      "tags": [
+        "editor",
+        "programar"
+      ]
+    },
+    {
+      "id": "fox",
+      "name": "Foxfire",
+      "glyph": "F",
+      "color": "#ff7a1a",
+      "cat": "net",
+      "short": "Navegador web rápido y respetuoso con la privacidad.",
+      "long": "Texto de demostración. Sustituir por [DESCRIPCION_COMPLETA] del paquete. Navegador con bloqueo de rastreadores y sincronización opcional.",
+      "dev": "Fundación de demostración",
+      "license": "MPL-2.0",
+      "v": "128.2",
+      "nv": "129.0",
+      "size": "74 MB",
+      "date": "2026-10-02",
+      "installedOn": "2026-08-14",
+      "initial": "update",
+      "changes": [
+        "Mejoras de rendimiento en la carga de pestañas",
+        "Corrección de errores de seguridad",
+        "Nuevo panel de privacidad"
+      ],
+      "tags": [
+        "navegador",
+        "web"
+      ]
+    },
+    {
+      "id": "mail",
+      "name": "Thundermail",
+      "glyph": "T",
+      "color": "#2a6fdb",
+      "cat": "net",
+      "short": "Cliente de correo con calendario y contactos.",
+      "long": "Texto de demostración. Sustituir por [DESCRIPCION_COMPLETA] del paquete. Gestiona varias cuentas de correo, calendarios y libretas de direcciones.",
+      "dev": "Equipo de demostración",
+      "license": "MPL-2.0",
+      "v": "115.4",
+      "nv": "115.6",
+      "size": "61 MB",
+      "date": "2026-09-30",
+      "installedOn": "2026-07-02",
+      "initial": "update",
+      "changes": [
+        "Corrección de fallos al importar contactos"
+      ],
+      "tags": [
+        "correo",
+        "email"
+      ]
+    },
+    {
+      "id": "tele",
+      "name": "Telegraph",
+      "glyph": "T",
+      "color": "#27a7e7",
+      "cat": "net",
+      "short": "Mensajería instantánea multiplataforma.",
+      "long": "Texto de demostración. Sustituir por [DESCRIPCION_COMPLETA] del paquete. Chats, grupos y envío de archivos.",
+      "dev": "Desarrollador de demostración",
+      "license": "GPL-3.0",
+      "size": "45 MB",
+      "date": "2026-09-20",
+      "initial": "none",
+      "tags": [
+        "chat",
+        "mensajería"
+      ]
+    },
+    {
+      "id": "vlc",
+      "name": "ConeMedia",
+      "glyph": "▶",
+      "color": "#f58a00",
+      "cat": "media",
+      "short": "Reproductor multimedia para casi cualquier formato.",
+      "long": "Texto de demostración. Sustituir por [DESCRIPCION_COMPLETA] del paquete. Reproduce vídeo, audio, discos y flujos de red sin códecs adicionales.",
+      "dev": "Proyecto de demostración",
+      "license": "GPL-2.0",
+      "v": "3.0.20",
+      "size": "40 MB",
+      "date": "2026-08-11",
+      "installedOn": "2026-06-18",
+      "initial": "installed",
+      "tags": [
+        "vídeo",
+        "música"
+      ]
+    },
+    {
+      "id": "obs",
+      "name": "Broadcaster",
+      "glyph": "◉",
+      "color": "#3a3a44",
+      "cat": "creator",
+      "short": "Graba y retransmite vídeo con escenas y fuentes.",
+      "long": "Texto de demostración. Sustituir por [DESCRIPCION_COMPLETA] del paquete. Captura de pantalla, mezcla de audio y emisión en directo.",
+      "dev": "Proyecto de demostración",
+      "license": "GPL-2.0",
+      "size": "120 MB",
+      "date": "2026-09-12",
+      "initial": "none",
+      "tags": [
+        "streaming",
+        "grabar"
+      ]
+    },
+    {
+      "id": "kden",
+      "name": "CutLine",
+      "glyph": "✂",
+      "color": "#e0422b",
+      "cat": "media",
+      "short": "Editor de vídeo no lineal.",
+      "long": "Texto de demostración. Sustituir por [DESCRIPCION_COMPLETA] del paquete. Línea de tiempo multipista, efectos y renderizado.",
+      "dev": "Comunidad de demostración",
+      "license": "GPL-3.0",
+      "size": "210 MB",
+      "date": "2026-09-05",
+      "initial": "none",
+      "tags": [
+        "vídeo",
+        "edición"
+      ]
+    },
+    {
+      "id": "audio",
+      "name": "Waveform",
+      "glyph": "∿",
+      "color": "#2f62c9",
+      "cat": "media",
+      "short": "Grabación y edición de audio.",
+      "long": "Texto de demostración. Sustituir por [DESCRIPCION_COMPLETA] del paquete. Edita pistas, aplica efectos y exporta a varios formatos.",
+      "dev": "Comunidad de demostración",
+      "license": "GPL-3.0",
+      "v": "3.5.1",
+      "size": "38 MB",
+      "date": "2026-07-22",
+      "installedOn": "2026-05-30",
+      "initial": "installed",
+      "tags": [
+        "audio",
+        "podcast"
+      ]
+    },
+    {
+      "id": "gimp",
+      "name": "Pixelforge",
+      "glyph": "P",
+      "color": "#8a6a3b",
+      "cat": "gfx",
+      "short": "Retoque fotográfico y composición de imágenes.",
+      "long": "Texto de demostración. Sustituir por [DESCRIPCION_COMPLETA] del paquete. Capas, máscaras, filtros y soporte para formatos habituales.",
+      "dev": "Comunidad de demostración",
+      "license": "GPL-3.0",
+      "v": "2.10.36",
+      "size": "150 MB",
+      "date": "2026-08-30",
+      "installedOn": "2026-04-10",
+      "initial": "installed",
+      "tags": [
+        "fotos",
+        "editor"
+      ]
+    },
+    {
+      "id": "krita",
+      "name": "Brushwork",
+      "glyph": "B",
+      "color": "#c14ad1",
+      "cat": "gfx",
+      "short": "Pintura digital para ilustradores.",
+      "long": "Texto de demostración. Sustituir por [DESCRIPCION_COMPLETA] del paquete. Pinceles personalizables, animación 2D y gestión de color.",
+      "dev": "Fundación de demostración",
+      "license": "GPL-3.0",
+      "size": "132 MB",
+      "date": "2026-09-18",
+      "initial": "none",
+      "tags": [
+        "dibujo",
+        "pintura"
+      ]
+    },
+    {
+      "id": "ink",
+      "name": "Vectorine",
+      "glyph": "V",
+      "color": "#2b2b33",
+      "cat": "gfx",
+      "short": "Diseño vectorial profesional.",
+      "long": "Texto de demostración. Sustituir por [DESCRIPCION_COMPLETA] del paquete. Trazados, formas y exportación a SVG y PDF.",
+      "dev": "Comunidad de demostración",
+      "license": "GPL-3.0",
+      "size": "88 MB",
+      "date": "2026-08-25",
+      "initial": "none",
+      "tags": [
+        "svg",
+        "logotipos"
+      ]
+    },
+    {
+      "id": "blend",
+      "name": "Meshworks",
+      "glyph": "M",
+      "color": "#ea7600",
+      "cat": "gfx",
+      "short": "Modelado, animación y renderizado 3D.",
+      "long": "Texto de demostración. Sustituir por [DESCRIPCION_COMPLETA] del paquete. Suite 3D completa con motor de render y simulación.",
+      "dev": "Fundación de demostración",
+      "license": "GPL-3.0",
+      "size": "280 MB",
+      "date": "2026-09-25",
+      "initial": "none",
+      "tags": [
+        "3d",
+        "animación"
+      ]
+    },
+    {
+      "id": "office",
+      "name": "OpenSheet Suite",
+      "glyph": "O",
+      "color": "#2bb673",
+      "cat": "office",
+      "short": "Documentos, hojas de cálculo y presentaciones.",
+      "long": "Texto de demostración. Sustituir por [DESCRIPCION_COMPLETA] del paquete. Compatible con los formatos de oficina más extendidos.",
+      "dev": "Fundación de demostración",
+      "license": "MPL-2.0",
+      "v": "24.2",
+      "size": "320 MB",
+      "date": "2026-08-02",
+      "installedOn": "2026-03-21",
+      "initial": "installed",
+      "tags": [
+        "documentos",
+        "excel",
+        "word"
+      ]
+    },
+    {
+      "id": "notes",
+      "name": "Notekeep",
+      "glyph": "N",
+      "color": "#6b6bdd",
+      "cat": "office",
+      "short": "Notas en Markdown con enlaces entre documentos.",
+      "long": "Texto de demostración. Sustituir por [DESCRIPCION_COMPLETA] del paquete. Organiza ideas con etiquetas y búsqueda instantánea.",
+      "dev": "Desarrollador de demostración",
+      "license": "Privativa",
+      "size": "110 MB",
+      "date": "2026-09-27",
+      "initial": "none",
+      "tags": [
+        "notas",
+        "markdown"
+      ]
+    },
+    {
+      "id": "godot",
+      "name": "Gamekit Engine",
+      "glyph": "G",
+      "color": "#478cbf",
+      "cat": "dev",
+      "short": "Motor para crear juegos 2D y 3D.",
+      "long": "Texto de demostración. Sustituir por [DESCRIPCION_COMPLETA] del paquete. Editor integrado, scripting y exportación multiplataforma.",
+      "dev": "Fundación de demostración",
+      "license": "MIT",
+      "size": "66 MB",
+      "date": "2026-09-15",
+      "initial": "none",
+      "failsOnce": "deps",
+      "tags": [
+        "juegos",
+        "motor"
+      ]
+    },
+    {
+      "id": "steam",
+      "name": "Launchpad Games",
+      "glyph": "L",
+      "color": "#1b4f72",
+      "cat": "games",
+      "short": "Biblioteca y lanzador de juegos.",
+      "long": "Texto de demostración. Sustituir por [DESCRIPCION_COMPLETA] del paquete. Instala y gestiona juegos desde un único lugar.",
+      "dev": "Empresa de demostración",
+      "license": "Privativa",
+      "size": "2.4 GB",
+      "date": "2026-10-01",
+      "initial": "none",
+      "failsOnce": "space",
+      "tags": [
+        "juegos"
+      ]
+    },
+    {
+      "id": "kee",
+      "name": "KeyVault",
+      "glyph": "🔑",
+      "color": "#4aa361",
+      "cat": "sec",
+      "short": "Gestor de contraseñas sin conexión.",
+      "long": "Texto de demostración. Sustituir por [DESCRIPCION_COMPLETA] del paquete. Bases de datos cifradas y generador de contraseñas.",
+      "dev": "Comunidad de demostración",
+      "license": "GPL-3.0",
+      "v": "2.7.9",
+      "size": "24 MB",
+      "date": "2026-07-14",
+      "installedOn": "2026-05-02",
+      "initial": "installed",
+      "tags": [
+        "contraseñas",
+        "seguridad"
+      ]
+    },
+    {
+      "id": "time",
+      "name": "Rewind Backup",
+      "glyph": "↺",
+      "color": "#0f8f9e",
+      "cat": "sys",
+      "short": "Instantáneas del sistema para restaurar en un clic.",
+      "long": "Texto de demostración. Sustituir por [DESCRIPCION_COMPLETA] del paquete. Programa copias de seguridad y restaura el sistema.",
+      "dev": "Equipo de demostración",
+      "license": "GPL-2.0",
+      "v": "24.06",
+      "nv": "24.08",
+      "size": "12 MB",
+      "date": "2026-09-29",
+      "installedOn": "2026-02-15",
+      "initial": "update",
+      "changes": [
+        "Soporte para sistemas de archivos Btrfs",
+        "Interfaz más clara al restaurar"
+      ],
+      "tags": [
+        "copias",
+        "backup"
+      ]
+    },
+    {
+      "id": "part",
+      "name": "DiskLayout",
+      "glyph": "▤",
+      "color": "#8a8a95",
+      "cat": "sys",
+      "short": "Particiones y discos sin complicaciones.",
+      "long": "Texto de demostración. Sustituir por [DESCRIPCION_COMPLETA] del paquete. Crea, redimensiona y formatea particiones.",
+      "dev": "Comunidad de demostración",
+      "license": "GPL-2.0",
+      "v": "—",
+      "size": "6 MB",
+      "date": "2026-06-01",
+      "initial": "installed",
+      "unknown": true,
+      "tags": [
+        "discos",
+        "particiones"
+      ]
+    },
+    {
+      "id": "calc",
+      "name": "Quickcalc",
+      "glyph": "÷",
+      "color": "#555566",
+      "cat": "acc",
+      "short": "Calculadora científica sencilla.",
+      "long": "Texto de demostración. Sustituir por [DESCRIPCION_COMPLETA] del paquete. Modo básico, científico y conversión de unidades.",
+      "dev": "Equipo de demostración",
+      "license": "GPL-3.0",
+      "v": "1.0",
+      "size": "3 MB",
+      "date": "2026-05-10",
+      "installedOn": "2026-01-10",
+      "initial": "installed",
+      "tags": [
+        "calculadora"
+      ]
+    },
+    {
+      "id": "sci",
+      "name": "Plotbench",
+      "glyph": "σ",
+      "color": "#9b5de5",
+      "cat": "sci",
+      "short": "Análisis y visualización de datos.",
+      "long": "Texto de demostración. Sustituir por [DESCRIPCION_COMPLETA] del paquete. Cuadernos interactivos para análisis estadístico.",
+      "dev": "Comunidad de demostración",
+      "license": "BSD-3",
+      "size": "190 MB",
+      "date": "2026-09-02",
+      "initial": "none",
+      "tags": [
+        "datos",
+        "estadística"
+      ]
+    },
+    {
+      "id": "lang",
+      "name": "Lingua",
+      "glyph": "A文",
+      "color": "#e85d75",
+      "cat": "edu",
+      "short": "Aprende idiomas con repetición espaciada.",
+      "long": "Texto de demostración. Sustituir por [DESCRIPCION_COMPLETA] del paquete. Tarjetas de estudio y seguimiento del progreso.",
+      "dev": "Equipo de demostración",
+      "license": "GPL-3.0",
+      "size": "55 MB",
+      "date": "2026-08-19",
+      "initial": "none",
+      "tags": [
+        "idiomas"
+      ]
+    },
+    {
+      "id": "theme",
+      "name": "Crimson Themes",
+      "glyph": "✦",
+      "color": "#c0181f",
+      "cat": "custom",
+      "short": "Temas e iconos para DylanOS Crimson.",
+      "long": "Texto de demostración. Sustituir por [DESCRIPCION_COMPLETA] del paquete. Paquete de temas de escritorio.",
+      "dev": "DylanOS",
+      "license": "CC-BY-SA",
+      "size": "18 MB",
+      "date": "2026-09-10",
+      "initial": "none",
+      "tags": [
+        "temas",
+        "iconos"
+      ]
+    }
+  ],
+  "featured": [
+    "code",
+    "blend",
+    "krita"
+  ],
+  "popular": [
+    "tele",
+    "vlc",
+    "fox",
+    "gimp",
+    "obs"
+  ],
+  "newest": [
+    "notes",
+    "theme",
+    "sci",
+    "blend"
+  ],
+  "essential": [
+    "fox",
+    "office",
+    "vlc",
+    "kee",
+    "time"
+  ],
+  "recommended": [
+    "notes",
+    "krita",
+    "tele",
+    "ink",
+    "obs"
+  ],
+  "collections": [
+    {
+      "name": "Para crear",
+      "desc": "Ilustración, vídeo y 3D",
+      "ids": [
+        "krita",
+        "blend",
+        "kden"
+      ]
+    },
+    {
+      "name": "Desarrollo web y juegos",
+      "desc": "Editor y motor",
+      "ids": [
+        "code",
+        "godot"
+      ]
+    },
+    {
+      "name": "Privacidad",
+      "desc": "Navegador, correo y contraseñas",
+      "ids": [
+        "fox",
+        "mail",
+        "kee"
+      ]
+    }
+  ]
+}

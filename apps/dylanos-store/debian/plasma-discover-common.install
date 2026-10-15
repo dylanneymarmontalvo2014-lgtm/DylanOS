@@ -1,0 +1,5 @@
+usr/share/icons/hicolor/*/apps/plasmadiscover.*
+usr/share/kxmlgui5/plasmadiscover/plasmadiscoverui.rc
+usr/share/libdiscover/categories/packagekit-backend-categories.xml
+usr/share/locale/
+usr/share/qlogging-categories6/discover.categories

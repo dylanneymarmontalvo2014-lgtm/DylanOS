@@ -92,11 +92,24 @@ for app in calculator dylanos-app-center; do
     chroot "$CHROOT" cmake --build "/tmp/dylanos-src/$app/build" --parallel 2
     chroot "$CHROOT" cmake --install "/tmp/dylanos-src/$app/build"
 done
+# DylanOS Store: fork nativo de Discover (libdiscover + UI del prototipo).
+mkdir -p "$CHROOT/tmp/dylanos-src/dylanos-store"
+cp -a "$ROOT/apps/dylanos-store/src/." "$CHROOT/tmp/dylanos-src/dylanos-store/"
+chroot "$CHROOT" cmake -S /tmp/dylanos-src/dylanos-store -B /tmp/dylanos-src/dylanos-store/build -GNinja -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX=/usr
+chroot "$CHROOT" cmake --build /tmp/dylanos-src/dylanos-store/build --parallel 2
+chroot "$CHROOT" ctest --test-dir /tmp/dylanos-src/dylanos-store/build --output-on-failure
+chroot "$CHROOT" cmake --install /tmp/dylanos-src/dylanos-store/build
 chroot "$CHROOT" /bin/bash <<'CHROOT_SCRIPT'
 set -euo pipefail
 plymouth-set-default-theme dylanos
 update-initramfs -u -k all
 update-desktop-database /usr/share/applications
+# Los -dev exclusivos de la DylanOS Store no se envían en el ISO.
+apt-get -y purge libflatpak-dev libostree-dev libappstreamqt-dev libpackagekitqt6-dev \
+    qcoro-qt6-dev kirigami-addons-dev libkirigami-dev libkf6xmlgui-dev \
+    libkf6idletime-dev libkf6statusnotifieritem-dev libkf6notifications-dev \
+    libkf6crash-dev libkf6dbusaddons-dev libkf6archive-dev qt6-svg-dev \
+    libkf6iconthemes-dev libkf6auth-dev
 apt-get clean
 rm -f /usr/sbin/policy-rc.d
 rm -rf /tmp/dylanos-packages /tmp/dylanos-src

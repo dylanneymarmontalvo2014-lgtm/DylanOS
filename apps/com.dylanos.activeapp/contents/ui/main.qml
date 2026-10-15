@@ -5,7 +5,10 @@ import org.kde.taskmanager as TaskManager
 
 PlasmoidItem {
     id: root
-    readonly property int maxTitleWidth: 200
+    // 400 px cubre los nombres de aplicación reales más largos sin que un
+    // título patológico consuma todo el panel; antes con 200 px el nombre
+    // de la app activa salía cortado con puntos suspensivos.
+    readonly property int maxTitleWidth: 400
 
     Layout.fillWidth: false
     Layout.fillHeight: true

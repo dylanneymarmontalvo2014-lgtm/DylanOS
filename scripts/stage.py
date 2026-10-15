@@ -127,6 +127,15 @@ exec /usr/bin/python3 /usr/share/dylanos/installer/native/main.py "$@"
     # sin este borrado, un chroot reutilizado la conservaría y el instalador
     # seguiría abriéndose solo.
     remove("/etc/xdg/autostart/dylanos-installer.desktop")
+    # La tienda nativa (dylanos-store) reemplaza a plasma-discover: los
+    # chroots reutilizados pueden conservar entradas obsoletas de Discover.
+    remove("/usr/share/applications/org.kde.discover.desktop")
+    remove("/usr/share/applications/org.kde.discover.urlhandler.desktop")
+    remove("/usr/share/applications/org.kde.discover.snap.desktop")
+    remove("/usr/share/applications/org.kde.discover.apt.urlhandler.desktop")
+    remove("/usr/share/applications/org.kde.discover.notifier.desktop")
+    remove("/usr/share/applications/plasma-discover.desktop")
+    remove("/etc/xdg/autostart/org.kde.discover.notifier.desktop")
     for key, name, icon, category in [
         ("welcome", "Bienvenido a DylanOS", "distributor-logo-dylanos", "Utility"),
         ("files", "Archivos", "system-file-manager", "System;FileTools;FileManager"),
@@ -136,7 +145,10 @@ exec /usr/bin/python3 /usr/share/dylanos/installer/native/main.py "$@"
         ("store", "DylanOS Store", "dylanos-store", "Settings;PackageManager"),
         ("settings", "Ajustes DylanOS", "preferences-system", "Settings"),
     ]:
-        write(f"/usr/share/applications/org.dylanos.{key}.desktop", f"[Desktop Entry]\nType=Application\nName={name}\nExec=dylanos --page {key}\nStartupWMClass=org.dylanos.{key}\nIcon={icon}\nTerminal=false\nCategories={category};\nStartupNotify=true\n")
+        if key == "store":
+            write("/usr/share/applications/org.dylanos.store.desktop", f"[Desktop Entry]\nType=Application\nName={name}\nComment=Descubre e instala aplicaciones\nExec=dylanos-store\nStartupWMClass=dylanos-store\nIcon={icon}\nTerminal=false\nCategories={category};\nStartupNotify=true\n")
+        else:
+            write(f"/usr/share/applications/org.dylanos.{key}.desktop", f"[Desktop Entry]\nType=Application\nName={name}\nExec=dylanos --page {key}\nStartupWMClass=org.dylanos.{key}\nIcon={icon}\nTerminal=false\nCategories={category};\nStartupNotify=true\n")
     write("/usr/bin/dylanos-welcome", '''#!/bin/sh
 state="${XDG_STATE_HOME:-$HOME/.local/state}/dylanos"
 if [ ! -e "$state/welcome-seen" ]; then

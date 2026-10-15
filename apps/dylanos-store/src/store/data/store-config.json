@@ -1,0 +1,25 @@
+{
+  "categories": [
+    { "id": "dev", "label": "Desarrollo", "icon": "Code2", "desc": "Editores, compiladores, motores y herramientas para programar." },
+    { "id": "net", "label": "Internet y comunicación", "icon": "Globe", "desc": "Navegadores, correo y mensajería." },
+    { "id": "media", "label": "Multimedia", "icon": "Music", "desc": "Reproducción, edición de audio y vídeo." },
+    { "id": "gfx", "label": "Gráficos y fotografía", "icon": "Palette", "desc": "Dibujo, retoque, modelado 3D y diseño vectorial." },
+    { "id": "games", "label": "Juegos", "icon": "Gamepad2", "desc": "Lanzadores, emuladores y juegos nativos." },
+    { "id": "office", "label": "Oficina y productividad", "icon": "Briefcase", "desc": "Documentos, notas y gestión de tareas." },
+    { "id": "edu", "label": "Educación", "icon": "GraduationCap", "desc": "Aprendizaje, idiomas y material didáctico." },
+    { "id": "sci", "label": "Ciencia", "icon": "FlaskConical", "desc": "Cálculo, simulación y análisis de datos." },
+    { "id": "sys", "label": "Sistema y utilidades", "icon": "Wrench", "desc": "Copias de seguridad, discos y monitorización." },
+    { "id": "acc", "label": "Accesorios", "icon": "Calculator", "desc": "Pequeñas herramientas del día a día." },
+    { "id": "sec", "label": "Seguridad y privacidad", "icon": "ShieldCheck", "desc": "Contraseñas, cifrado y cortafuegos." },
+    { "id": "custom", "label": "Personalización", "icon": "Paintbrush", "desc": "Temas, iconos y ajustes del escritorio." }
+  ],
+  "featured": ["org.kde.krita.desktop", "org.blender.Blender.desktop", "org.gimp.GIMP.desktop", "org.mozilla.firefox.esr.desktop", "org.videolan.vlc.desktop"],
+  "popular": ["org.videolan.vlc.desktop", "org.mozilla.firefox.esr.desktop", "org.gimp.GIMP.desktop", "org.libreoffice.LibreOffice.desktop", "org.kde.krita.desktop", "org.inkscape.Inkscape.desktop"],
+  "essential": ["org.kde.kate.desktop", "org.kde.konsole.desktop", "org.kde.okular.desktop", "org.kde.dolphin.desktop", "org.kde.gwenview.desktop"],
+  "recommended": ["org.kde.kdenlive.desktop", "org.audacity.Audacity.desktop", "org.godotengine.Godot.desktop", "org.inkscape.Inkscape.desktop", "org.kde.gwenview.desktop", "org.kde.okular.desktop", "org.kde.kate.desktop", "org.blender.Blender.desktop", "org.kde.krita.desktop", "org.libreoffice.LibreOffice.desktop", "org.videolan.vlc.desktop", "org.mozilla.Thunderbird.desktop"],
+  "collections": [
+    { "name": "Para crear", "desc": "Dibujo, modelado, vídeo y audio", "ids": ["org.kde.krita.desktop", "org.blender.Blender.desktop", "org.gimp.GIMP.desktop", "org.inkscape.Inkscape.desktop", "org.kde.kdenlive.desktop", "org.audacity.Audacity.desktop"] },
+    { "name": "Desarrollo y juegos", "desc": "Editores, terminal y motores de juego", "ids": ["org.godotengine.Godot.desktop", "org.kde.kate.desktop", "org.kde.konsole.desktop"] },
+    { "name": "Privacidad y comunicación", "desc": "Navega, escribe y protege tus claves", "ids": ["org.mozilla.firefox.esr.desktop", "org.mozilla.Thunderbird.desktop", "org.keepassxc.KeePassXC.desktop"] }
+  ]
+}

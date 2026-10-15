@@ -1,0 +1,22 @@
+--- a/libdiscover/backends/CMakeLists.txt
++++ b/libdiscover/backends/CMakeLists.txt
+@@ -50,8 +50,8 @@
+     message(WARNING "BUILD_FlatpakBackend enabled but Flatpak=${Flatpak_FOUND} or AppStreamQt=${AppStreamQt_FOUND} not found")
+ endif()
+ 
+-find_package(Snapd 1.65)
+-set_package_properties(Snapd PROPERTIES
++find_package(SnapdQt6 1.65)
++set_package_properties(SnapdQt6 PROPERTIES
+     DESCRIPTION "Library that exposes Snapd"
+     URL "https://www.snapcraft.io"
+     PURPOSE "Required to build the Snap backend"
+@@ -64,7 +64,7 @@
+ endif()
+ 
+ option(BUILD_SnapBackend "Build Snap support." "ON")
+-if (BUILD_SnapBackend AND AppStreamQt_FOUND AND Snapd_FOUND)
++if (BUILD_SnapBackend AND AppStreamQt_FOUND AND SnapdQt6_FOUND)
+     add_subdirectory(SnapBackend)
+ endif()
+ 

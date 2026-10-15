@@ -1,0 +1,558 @@
+Format: https://www.debian.org/doc/packaging-manuals/copyright-format/1.0/
+Upstream-Name: discover
+Upstream-Contact: Aleix Pol Gonzalez <aleixpol@kde.org>
+Source: https://invent.kde.org/plasma/discover
+
+Files: *
+Copyright: 2018, Abhijeet Sharma <sharma.abhijeet2096@gmail.com>
+           2012-2024, Aleix Pol Gonzalez <aleixpol@kde.org>
+           2020, Alexey Minnekhanov <alexey.min@gmail.com>
+           2019, Carl Schwan <carl@carlschwan.eu>
+           2023-2024, Harald Sitter <sitter@kde.org>
+           2024, ivan tkachenko <me@ratijas.tk>
+           2017, Jan Grulich <jgrulich@redhat.com>
+           2022, Jeremy Whiting <jeremy.whiting@collabora.com>
+           2010-2012, Jonathan Thomas <echidnaman@kubuntu.org>
+           2013, Lukas Appelhans <l.appelhans@gmx.de>
+           2021, Mariam Fahmy Sobhy <mariamfahmy66@gmail.com>
+           2022, Suhaas Joshi <joshiesuhaas0@gmail.com>
+           2022, Timothée Ravier <tim@siosm.fr>
+License: GPL-2.0-only OR GPL-3.0-only OR LicenseRef-KDE-Accepted-GPL
+
+Files: discover/DiscoverDeclarativePlugin.cpp
+       discover/DiscoverDeclarativePlugin.h
+       discover/DiscoverObject.cpp
+       discover/DiscoverObject.h
+       discover/LimitedRowCountProxyModel.cpp
+       discover/LimitedRowCountProxyModel.h
+       discover/main.cpp
+       discover/qml/AboutPage.qml
+       discover/qml/AddonsView.qml
+       discover/qml/AddSourceDialog.qml
+       discover/qml/ApplicationDelegate.qml
+       discover/qml/ApplicationPage.qml
+       discover/qml/ApplicationResourceButton.qml
+       discover/qml/ApplicationsListPage.qml
+       discover/qml/BasicAbstractCard.qml
+       discover/qml/BrowsingPage.qml
+       discover/qml/CarouselAbstractMaximizedView.qml
+       discover/qml/CarouselDelegate.qml
+       discover/qml/CarouselFullScreenMaximizedView.qml
+       discover/qml/CarouselInlineView.qml
+       discover/qml/CarouselMaximizedViewContent.qml
+       discover/qml/CarouselMaximizedViewController.qml
+       discover/qml/CarouselNavigationButton.qml
+       discover/qml/CarouselNavigationButtonsListViewAdapter.qml
+       discover/qml/CarouselNavigationButtons.qml
+       discover/qml/CarouselOverlayMaximizedView.qml
+       discover/qml/CarouselPageIndicator.qml
+       discover/qml/ConvertDiscoverAction.qml
+       discover/qml/DiscoverPage.qml
+       discover/qml/GridApplicationDelegate.qml
+       discover/qml/Navigation.qml
+       discover/qml/Rating.qml
+       discover/qml/ReviewDelegate.qml
+       discover/qml/ReviewsStats.qml
+       discover/qml/TopLevelPageData.qml
+       discover/qml/TransactionProgressIndicator.qml
+       discover/ReadFile.cpp
+       discover/ReadFile.h
+       DiscoverVersion.h.in
+       exporter/DiscoverExporter.cpp
+       exporter/DiscoverExporter.h
+       exporter/main.cpp
+       libdiscover/backends/PackageKitBackend/qml/DependenciesButton.qml
+       libdiscover/backends/SnapBackend/qml/ChannelsButton.qml
+       libdiscover/backends/SnapBackend/qml/PermissionsButton.qml
+       libdiscover/backends/SteamOSBackend/dbushelpers.cpp
+       libdiscover/backends/SteamOSBackend/dbushelpers.h
+       libdiscover/resources/StandardBackendUpdater.cpp
+       libdiscover/resources/StandardBackendUpdater.h
+       libdiscover/tests/CategoriesTest.cpp
+       notifier/main.cpp
+       update/DiscoverUpdate.cpp
+       update/DiscoverUpdate.h
+       update/main.cpp
+Copyright: 2012-2023, Aleix Pol Gonzalez <aleixpol@blue-systems.com>
+           2020-2022, Aleix Pol Gonzalez <aleixpol@kde.org>
+           2020, Aleix Pol Gonzalez <aleixpolkde.org>
+           2020, Carl Schwan <carl@carlschwan.eu>
+           2021, Carl Schwan <carlschwan@kde.org>
+           2024, Harald Sitter <sitter@kde.org>
+           2022-2024, ivan tkachenko <me@ratijas.tk>
+           2018-2019, Jan Grulich <jgrulich@redhat.com>
+           2023, Marco Martin <mart@kde.org>
+           2018-2022, Nate Graham <nate@kde.org>
+           2018-2019, Red Hat Inc
+License: LGPL-2.0-or-later
+
+Files: appiumtests/CMakeLists.txt
+       appiumtests/flatpak.py
+       cmake/FindPackageKitQt2.cmake
+       kcm/CMakeLists.txt
+Copyright: 2020, Aleix Pol Gonzalzez <aleixpol@kde.org>
+           2010, Harald Sitter <apachelogger@ubuntu.com>
+           2022-2023, Harald Sitter <sitter@kde.org>
+           2013, Lukas Appelhans <l.appelhans@gmx.de>
+           2010, Mehrdad Momeny <mehrdad.momeny@gmail.com>
+License: BSD-3-Clause
+
+Files: discover/UnityLauncher.cpp
+       discover/UnityLauncher.h
+Copyright: 2016, Kai Uwe Broulik <kde@privat.broulik.de>
+License: LGPL-2.1-only OR LGPL-3.0-only OR LicenseRef-KDE-Accepted-LGPL
+
+Files: libdiscover/backends/PackageKitBackend/pk-offline-private.h
+Copyright: 2014, Richard Hughes <richard@hughsie.com>
+License: GPL-2.0-or-later
+
+Files: discover/PowerManagementInterface.cpp
+       discover/PowerManagementInterface.h
+Copyright: 2019, (c) Matthieu Gallien <matthieu_gallien@yahoo.fr>
+License: LGPL-3.0-or-later
+
+Files: .gitlab-ci.yml
+       .kde-ci.yml
+       discover/org.kde.discover.appdata.xml
+       libdiscover/backends/FlatpakBackend/org.kde.discover.flatpak.appdata.xml
+       libdiscover/backends/PackageKitBackend/org.kde.discover.packagekit.appdata.xml
+       libdiscover/backends/SnapBackend/org.kde.discover.snap.appdata.xml
+Copyright: Aleix Pol Gonzalzez <aleixpol@kde.org>
+License: CC0-1.0
+
+Files: libdiscover/backends/SteamOSBackend/com.steampowered.Atomupd1.xml
+Copyright: 2021-2022 Collabora Ltd.
+License: MIT
+
+Files: po/ar/kcm_updates.po
+       po/ar/libdiscover.po
+       po/ar/plasma-discover-notifier.po
+       po/ar/plasma-discover.po
+       po/ast/kcm_updates.po
+       po/ast/libdiscover.po
+       po/ast/plasma-discover.po
+       po/az/kcm_updates.po
+       po/az/libdiscover.po
+       po/az/plasma-discover-notifier.po
+       po/az/plasma-discover.po
+       po/bg/kcm_updates.po
+       po/bg/libdiscover.po
+       po/bg/plasma-discover-notifier.po
+       po/bg/plasma-discover.po
+       po/ca/libdiscover.po
+       po/ca/plasma-discover-notifier.po
+       po/ca/plasma-discover.po
+       po/ca@valencia/libdiscover.po
+       po/ca@valencia/plasma-discover-notifier.po
+       po/ca@valencia/plasma-discover.po
+       po/cs/kcm_updates.po
+       po/cs/libdiscover.po
+       po/cs/plasma-discover-notifier.po
+       po/cs/plasma-discover.po
+       po/de/libdiscover.po
+       po/de/plasma-discover-notifier.po
+       po/de/plasma-discover.po
+       po/el/kcm_updates.po
+       po/el/libdiscover.po
+       po/el/plasma-discover-notifier.po
+       po/el/plasma-discover.po
+       po/en_GB/kcm_updates.po
+       po/en_GB/libdiscover.po
+       po/en_GB/plasma-discover-notifier.po
+       po/en_GB/plasma-discover.po
+       po/es/kcm_updates.po
+       po/es/libdiscover.po
+       po/es/plasma-discover-notifier.po
+       po/es/plasma-discover.po
+       po/eu/kcm_updates.po
+       po/eu/libdiscover.po
+       po/eu/plasma-discover-notifier.po
+       po/eu/plasma-discover.po
+       po/fi/libdiscover.po
+       po/fi/plasma-discover-notifier.po
+       po/fi/plasma-discover.po
+       po/fr/kcm_updates.po
+       po/fr/libdiscover.po
+       po/fr/plasma-discover-notifier.po
+       po/fr/plasma-discover.po
+       po/gl/kcm_updates.po
+       po/gl/libdiscover.po
+       po/gl/plasma-discover-notifier.po
+       po/gl/plasma-discover.po
+       po/he/libdiscover.po
+       po/he/plasma-discover-notifier.po
+       po/he/plasma-discover.po
+       po/hi/plasma-discover-notifier.po
+       po/hu/kcm_updates.po
+       po/hu/libdiscover.po
+       po/hu/plasma-discover-notifier.po
+       po/hu/plasma-discover.po
+       po/ia/libdiscover.po
+       po/ia/plasma-discover-notifier.po
+       po/ia/plasma-discover.po
+       po/id/kcm_updates.po
+       po/id/libdiscover.po
+       po/id/plasma-discover-notifier.po
+       po/id/plasma-discover.po
+       po/is/kcm_updates.po
+       po/is/libdiscover.po
+       po/is/plasma-discover.po
+       po/it/kcm_updates.po
+       po/it/libdiscover.po
+       po/it/plasma-discover-notifier.po
+       po/it/plasma-discover.po
+       po/ja/kcm_updates.po
+       po/ja/libdiscover.po
+       po/ja/plasma-discover-notifier.po
+       po/ja/plasma-discover.po
+       po/ko/libdiscover.po
+       po/ko/plasma-discover-notifier.po
+       po/ko/plasma-discover.po
+       po/lv/kcm_updates.po
+       po/lv/libdiscover.po
+       po/lv/plasma-discover-notifier.po
+       po/lv/plasma-discover.po
+       po/nl/kcm_updates.po
+       po/nl/libdiscover.po
+       po/nl/plasma-discover-notifier.po
+       po/nl/plasma-discover.po
+       po/pa/kcm_updates.po
+       po/pa/libdiscover.po
+       po/pa/plasma-discover-notifier.po
+       po/pa/plasma-discover.po
+       po/pl/libdiscover.po
+       po/pl/plasma-discover-notifier.po
+       po/pl/plasma-discover.po
+       po/pt_BR/kcm_updates.po
+       po/pt_BR/libdiscover.po
+       po/pt_BR/plasma-discover-notifier.po
+       po/pt_BR/plasma-discover.po
+       po/ru/kcm_updates.po
+       po/ru/libdiscover.po
+       po/ru/plasma-discover-notifier.po
+       po/ru/plasma-discover.po
+       po/sa/libdiscover.po
+       po/sa/plasma-discover-notifier.po
+       po/sa/plasma-discover.po
+       po/sk/kcm_updates.po
+       po/sk/libdiscover.po
+       po/sk/plasma-discover-notifier.po
+       po/sk/plasma-discover.po
+       po/sl/kcm_updates.po
+       po/sl/libdiscover.po
+       po/sl/plasma-discover.po
+       po/sv/kcm_updates.po
+       po/sv/libdiscover.po
+       po/sv/plasma-discover-notifier.po
+       po/sv/plasma-discover.po
+       po/ta/kcm_updates.po
+       po/ta/libdiscover.po
+       po/ta/plasma-discover-notifier.po
+       po/ta/plasma-discover.po
+       po/tr/kcm_updates.po
+       po/tr/libdiscover.po
+       po/tr/plasma-discover-notifier.po
+       po/tr/plasma-discover.po
+       po/zh_TW/libdiscover.po
+       po/zh_TW/plasma-discover-notifier.po
+       po/zh_TW/plasma-discover.po
+Copyright: 2016-2024, A S Alam <aalam@fedoraproject.org>
+           2021-2024, A S Alam <aalam@satluj.org>
+           2012-2024, A S Alam <aalam@users.sf.net>
+           2023-2025, Adrián Chaves (Gallaecio)
+           2018-2024, Alexander Yavorsky <kekcuha@gmail.com>
+           2024, Antonis Geralis <capoiosct@gmail.com>
+           2012-2025, Eloy Cuadra <ecuadra@eloihr.net>
+           2022-2025, Emir SARI <emir_sari@icloud.com>
+           2023-2024, Enol P. <enolp@softastur.org>
+           2012-2024, Freek de Kruijf <freekdekruijf@kde.nl>
+           2023, George Stefanakis <george.stefanakis@gmail.com>
+           2023-2025, Geraldo Simiao <geraldosimiao@fedoraproject.org>
+           2017-2025, giovanni <g.sora@tiscali.it>
+           2016-2024, Giovanni Sora <g.sora@tiscali.it>
+           2025, Guilherme Marçal Silva <guimarcalsilva@gmail.com>
+           2023-2024, Guðmundur Erlingsson <gudmundure@gmail.com>
+           2023-2024, Johannes Obermayr <johannesobermayr@gmx.de>
+           2011-2024, Josep M. Ferrer <txemaq@gmail.com>
+           2024, Jure Repinc <jlp@holodeck1.com>
+           2024, kali <shreekantkalwar@gmail.com>
+           2024, kali <skkalwar999@gmail.com>
+           2023-2025, KDE euskaratzeko proiektuko arduraduna <xalba@ni.eus>
+           2024, Kheyyam Godjayev <xxmn77@gmail.com>
+           2020-2024, Kheyyam Gojayev <xxmn77@gmail.com>
+           2024, Kimmo Kujansuu <mrkujansuu@gmail.com>
+           2010-2012, Kira J. Fernandez <kirajfdez@gmail.com>
+           2022-2024, Kisaragi Hiu <mail@kisaragi-hiu.com>
+           2021-2025, Kishore G <kishore96@gmail.com>
+           2018-2024, Kristof Kiszel <kiszel.kristof@gmail.com>
+           2021-2025, Kristof Kiszel <ulysses@fsf.hu>
+           2011-2024, Lasse Liehu <lasse.liehu@gmail.com>
+           2022-2024, Linerly <linerly@protonmail.com>
+           2019-2023, Matej Mrenica <matejm98mthw@gmail.com>
+           2020-2024, Matjaž Jeran <matjaz.jeran@amis.net>
+           2022-2024, Mincho Kondarev <mkondarev@yahoo.de>
+           2022-2024, Olesya Gerasimenko <translation-team@basealt.ru>
+           2024, Petros Vidalis <pvidalis@gmail.com>
+           2024, pieter <pieterkristensen@gmail.com>
+           2013, Rafael Belmonte <eaglescreen@gmail.com>
+           2013-2014, Rocio Gallego <traducciones@rociogallego.com>
+           2012-2023, Roman Paholik <wizzardsk@gmail.com>
+           2022-2024, Ryuichi Yamada <ryuichi_ya220@outlook.jp>
+           2015-2024, Shinjo Park <kde@peremen.name>
+           2023-2024, Shreekant <skkalwar999@gmail.com>
+           2012-2024, Stefan Asserhäll <stefan.asserhall@gmail.com>
+           2014-2024, Steve Allewell <steve.allewell@gmail.com>
+           2024, Theofilos Intzoglou <int.teo@gmail.com>
+           2011-2025, Tommi Nieminen <translator@legisign.org>
+           2023-2024, Toms Trasuns <toms.trasuns@posteo.net>
+           2015-2025, Vincenzo Reale <smart2128vr@gmail.com>
+           2012-2024, Vit Pelcak <vit@pelcak.org>
+           2010-2024, Vít Pelčák <vit@pelcak.org>
+           2016-2024, Wantoyo <wantoyek@gmail.com>
+           2024, X əyyam
+           2020-2025, Xavier Besnard <xavier.besnard@kde.org>
+           2024, Xəyyam Qocayev <xxmn77@gmail.com>
+           2023-2025, Yaron Shahrabani <sh.yaron@gmail.com>
+           2021-2025, Zayed Al-Saidi <zayed.alsaidi@gmail.com>
+           2011-2025, Łukasz Wojniłowicz <lukasz.wojnilowicz@gmail.com>
+License: GPL-2.0-only OR GPL-3.0-only OR LicenseRef-KDE-Accepted-GPL
+
+Files: debian/*
+Copyright: 2016-2018, Matthias Klumpp <mak@debian.org>
+           2015, Jonathan Riddell <jr@jriddell.org>
+           2010, Jonathan Thomas <echidnaman@kubuntu.org>
+           2025, Patrick Franz <deltaone@debian.org>
+License: GPL-3+
+
+License: GPL-2.0-only
+ This program is free software; you can redistribute it and/or modify
+ it under the terms of the GNU General Public License as published by
+ the Free Software Foundation; version 2.
+ .
+ This program is distributed in the hope that it will be useful, but
+ WITHOUT ANY WARRANTY; without even the implied warranty of
+ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ General Public License for more details.
+ .
+ You should have received a copy of the GNU General Public License
+ along with this program. If not, see <http://www.gnu.org/licenses/>.
+ .
+ On Debian systems, the complete text of the GNU General Public
+ License version 2 can be found in
+ `/usr/share/common-licenses/GPL-2’.
+
+License: GPL-3.0-only
+ This program is free software: you can redistribute it and/or modify
+ it under the terms of the GPL License as published by the Free
+ Software Foundation, version 3.
+ .
+ This package is distributed in the hope that it will be useful, but
+ WITHOUT ANY WARRANTY; without even the implied warranty of
+ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ General Public License for more details.
+ .
+ You should have received a copy of the GNU General Public License
+ along with this program. If not, see <http://www.gnu.org/licenses/>.
+ .
+ On Debian systems, the complete text of the GNU General Public
+ License version 3 can be found in
+ `/usr/share/common-licenses/GPL-3’.
+
+License: LicenseRef-KDE-Accepted-GPL
+ This library is free software; you can redistribute it and/or modify
+ it under the terms of the GNU General Public License as published by
+ the Free Software Foundation; either version 3 of the license or (at
+ your option) at any later version that is accepted by the membership
+ of KDE e.V. (or its successor approved by the membership of KDE
+ e.V.), which shall act as a proxy as defined in Section 14 of
+ version 3 of the license.
+ .
+ This program is distributed in the hope that it will be useful, but
+ WITHOUT ANY WARRANTY; without even the implied warranty of
+ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ General Public License for more details.
+
+License: LGPL-2.0-or-later
+ This library is free software; you can redistribute it and/or modify
+ it under the terms of the GNU Library General Public License as
+ published by the Free Software Foundation; either version 2 of the
+ License, or (at your option)  any later version.
+ .
+ This library is distributed in the hope that it will be useful, but
+ WITHOUT ANY WARRANTY; without even the implied warranty of
+ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+ Library General Public License for more details.
+ .
+ You should have received a copy of the GNU Library General Public
+ License along with this library. If not, see <http://www.gnu.org/licenses/
+ .
+ On Debian systems, the complete text of the GNU Library General
+ Public License version 2 can be found in
+ `/usr/share/common-licenses/LGPL-2’.
+
+License: BSD-3-Clause
+ Redistribution and use in source and binary forms, with or without
+ modification, are permitted provided that the following conditions
+ are met:
+ .
+ 1. Redistributions of source code must retain the above copyright
+    notice, this list of conditions and the following disclaimer.
+ .
+ 2. Redistributions in binary form must reproduce the above copyright
+    notice, this list of conditions and the following disclaimer in
+    the documentation and/or other materials provided with the
+    distribution.
+ .
+ 3. Neither the name of the copyright holder nor the names of its
+    contributors may be used to endorse or promote products derived
+    from this software without specific prior written permission.
+ .
+ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
+ "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
+ LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS
+ FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE
+ COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT,
+ INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING,
+ BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
+ LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER
+ CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT
+ LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN
+ ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
+ POSSIBILITY OF SUCH DAMAGE.
+
+License: LGPL-2.1-only
+ This library is free software; you can redistribute it and/or modify
+ it under the terms of the GNU Lesser General Public License version
+ 2.1 as published by the Free Software Foundation.
+ .
+ This library is distributed in the hope that it will be useful, but
+ WITHOUT ANY WARRANTY; without even the implied warranty of
+ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+ Lesser General Public License for more details.
+ .
+ You should have received a copy of the GNU Lesser General Public
+ License along with this library. If not, see <http://www.gnu.org/licenses/>.
+ .
+ On Debian systems, the complete text of the GNU Lesser General
+ Public License version 2.1 can be found in
+ `/usr/share/common-licenses/LGPL-2.1’.
+
+License: LGPL-3.0-only
+ This library is free software; you can redistribute it and/or modify
+ it under the terms of the GNU Lesser General Public License version
+ 3 as published by the Free Software Foundation.
+ .
+ This library is distributed in the hope that it will be useful, but
+ WITHOUT ANY WARRANTY; without even the implied warranty of
+ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+ Lesser General Public License for more details.
+ .
+ You should have received a copy of the GNU Lesser General Public
+ License along with this library.  If not, see
+ <http://www.gnu.org/licenses/>.
+ .
+ On Debian systems, the complete text of the GNU Lesser General
+ Public License version 3 can be found in
+ `/usr/share/common-licenses/LGPL-3’.
+
+License: LicenseRef-KDE-Accepted-LGPL
+ This library is free software; you can redistribute it and/or modify
+ it under the terms of the GNU Lesser General Public License as
+ published by the Free Software Foundation; either version 3 of the
+ license or (at your option) any later version that is accepted by
+ the membership of KDE e.V. (or its successor approved by the
+ membership of KDE e.V.), which shall act as a proxy as defined in
+ Section 6 of version 3 of the license.
+ .
+ This program is distributed in the hope that it will be useful, but
+ WITHOUT ANY WARRANTY; without even the implied warranty of
+ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ General Public License for more details.
+
+License: GPL-2.0-or-later
+ This program is free software; you can redistribute it and/or modify
+ it under the terms of the GNU General Public License as published by
+ the Free Software Foundation; either version 2 of the License, or
+ (at your option) any later version.
+ .
+ This program is distributed in the hope that it will be useful, but
+ WITHOUT ANY WARRANTY; without even the implied warranty of
+ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ General Public License for more details.
+ .
+ You should have received a copy of the GNU General Public License
+ along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ .
+ On Debian systems, the complete text of the GNU General Public
+ License version 2 can be found in
+ `/usr/share/common-licenses/GPL-2’.
+
+License: MIT
+ Permission is hereby granted, free of charge, to any person
+ obtaining a copy of this software and associated documentation files
+ (the "Software"), to deal in the Software without restriction,
+ including without limitation the rights to use, copy, modify, merge,
+ publish, distribute, sublicense, and/or sell copies of the Software,
+ and to permit persons to whom the Software is furnished to do so,
+ subject to the following conditions:
+ .
+ The above copyright notice and this permission notice shall be
+ included in all copies or substantial portions of the Software.
+ .
+ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
+ EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
+ MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
+ NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS
+ BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN
+ ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
+ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+ SOFTWARE.
+
+License: GPL-3+
+ This program is free software; you can redistribute it and/or modify
+ it under the terms of the GNU General Public License as published by
+ the Free Software Foundation; either version 3 of the License, or
+ (at your option) any later version.
+ .
+ This program is distributed in the hope that it will be useful,
+ but WITHOUT ANY WARRANTY; without even the implied warranty of
+ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ GNU General Public License for more details.
+ .
+ You should have received a copy of the GNU General Public License
+ along with this program. If not, see <http://www.gnu.org/licenses/>.
+ .
+ On Debian systems, the full text of the GNU General Public License
+ version 3 can be found in the file `/usr/share/common-licenses/GPL-3'.
+
+License: CC0-1.0
+ To the extent possible under law, the author(s) have dedicated all
+ copyright and related and neighboring rights to this software to the
+ public domain worldwide. This software is distributed without any
+ warranty.
+ .
+ You should have received a copy of the CC0 Public Domain Dedication
+ along with this software. If not, see
+ <https://creativecommons.org/publicdomain/zero/1.0/>.
+ .
+ On Debian systems, the complete text of the CC0 Public Domain
+ Dedication can be found in `/usr/share/common-licenses/CC0-1.0’.
+
+License: LGPL-3.0-or-later
+ This library is free software; you can redistribute it and/or modify
+ it under the terms of the GNU Lesser General Public License as
+ published by the Free Software Foundation; either version 3 of the
+ License, or (at your option) any later version.
+ .
+ This library is distributed in the hope that it will be useful, but
+ WITHOUT ANY WARRANTY; without even the implied warranty of
+ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+ Lesser General Public License for more details.
+ .
+ You should have received a copy of the GNU Lesser General Public
+ License along with this library. If not, see
+ <http://www.gnu.org/licenses/>.
+ .
+ On Debian systems, the complete text of the GNU Lesser General
+ Public License version 3 can be found in
+ `/usr/share/common-licenses/LGPL-3’.

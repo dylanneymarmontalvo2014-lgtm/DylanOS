@@ -13,9 +13,9 @@ ApplicationWindow {
     color: dark ? "#151519" : "#f5f5f7"
     property string page: initialPage
     property bool dark: preferences.dark
-    readonly property var names: ({welcome:"Bienvenido", files:"Archivos", notes:"Notas", store:"DylanOS Store", dev:"Desarrollo", monitor:"Monitor", settings:"Ajustes"})
+    readonly property var names: ({welcome:"Bienvenido", files:"Archivos", notes:"Notas", dev:"Desarrollo", monitor:"Monitor", settings:"Ajustes"})
     readonly property string pageTitle: names[page] || "DylanOS"
-    readonly property var symbols: ({welcome:"✦", files:"▤", notes:"▥", store:"⊞", dev:"⌘", monitor:"◴", settings:"⚙"})
+    readonly property var symbols: ({welcome:"✦", files:"▤", notes:"▥", dev:"⌘", monitor:"◴", settings:"⚙"})
     palette.window: win.color
     palette.windowText: dark ? "#f5f5f7" : "#202024"
     palette.text: dark ? "#f5f5f7" : "#202024"
@@ -75,7 +75,7 @@ ApplicationWindow {
     Loader {
         id: content
         anchors.fill: parent; anchors.margins: 28
-        source: ({welcome:"WelcomePage.qml", files:"FilesPage.qml", notes:"NotesPage.qml", store:"StorePage.qml", dev:"DevPage.qml", monitor:"MonitorPage.qml", settings:"SettingsPage.qml"})[win.page]
+        source: ({welcome:"WelcomePage.qml", files:"FilesPage.qml", notes:"NotesPage.qml", dev:"DevPage.qml", monitor:"MonitorPage.qml", settings:"SettingsPage.qml"})[win.page]
         onLoaded: reveal.restart()
         NumberAnimation { id: reveal; target: content; property: "opacity"; from: 0; to: 1; duration: 180 }
     }

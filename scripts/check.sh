@@ -6,7 +6,13 @@ PYTHON="${DYLANOS_PYTHON:-python3}"
 while IFS= read -r script; do bash -n "$script"; done < <(find scripts packages -name '*.sh' -type f)
 shellcheck scripts/build.sh scripts/iso.sh scripts/test.sh scripts/check.sh scripts/lib/packages.sh packages/development/setup-repos.sh
 bash scripts/tests/test_packages.sh
-"$PYTHON" -m unittest discover -s scripts/tests -p 'test_*.py' -v
+# Cada módulo de unittest corre en su propio proceso: las suites QML
+# (workspace, app-center) comparten un solo QApplication y mezclarlas en un
+# proceso único provocaba destrucciones fuera de fase (segfault intermitente).
+for t in scripts/tests/test_*.py; do
+    echo "── unittest $(basename "$t" .py)"
+    QT_QPA_PLATFORM=offscreen QT_QUICK_BACKEND=software "$PYTHON" -m unittest "scripts.tests.$(basename "$t" .py)"
+done
 "$PYTHON" -m compileall -q apps/workspace scripts/stage.py scripts/lib/generate-theme.py
 staging="$(mktemp -d)"
 trap 'rm -rf "$staging"' EXIT
@@ -15,7 +21,7 @@ find "$staging/root/usr/share/applications" -name '*.desktop' -exec desktop-file
 if "$PYTHON" -c 'import PySide6, psutil' 2>/dev/null; then
     mkdir -p "$staging/home" "$staging/config" "$staging/data" "$staging/runtime"
     chmod 700 "$staging/runtime"
-    for page in welcome files notes dev monitor store settings; do
+    for page in welcome files notes dev monitor settings; do
         HOME="$staging/home" XDG_CONFIG_HOME="$staging/config" XDG_DATA_HOME="$staging/data" XDG_RUNTIME_DIR="$staging/runtime" \
         QT_QPA_PLATFORM=offscreen QT_QUICK_BACKEND=software \
         "$PYTHON" apps/workspace/main.py --page "$page" --smoke 2>"$staging/$page.log"
