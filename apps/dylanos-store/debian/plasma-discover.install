@@ -1,0 +1,15 @@
+etc/xdg/autostart/org.kde.discover.notifier.desktop
+usr/bin/plasma-discover
+usr/bin/plasma-discover-update
+usr/lib/*/libexec/DiscoverNotifier
+usr/lib/*/plasma-discover/
+usr/lib/*/qt6/plugins/discover-notifier/DiscoverPackageKitNotifier.so
+usr/lib/*/qt6/plugins/discover/kns-backend.so
+usr/lib/*/qt6/plugins/discover/packagekit-backend.so
+usr/share/applications/org.kde.discover.apt.urlhandler.desktop
+usr/share/applications/org.kde.discover.desktop
+usr/share/applications/org.kde.discover.notifier.desktop
+usr/share/applications/org.kde.discover.urlhandler.desktop
+usr/share/knotifications6/discoverabstractnotifier.notifyrc
+usr/share/metainfo/org.kde.discover.appdata.xml
+usr/share/metainfo/org.kde.discover.packagekit.appdata.xml

@@ -100,6 +100,10 @@ class StagingTest(unittest.TestCase):
             # el applet de la barra superior no admite un ancho menor que su título.
             activeapp = (root / "usr/share/plasma/plasmoids/com.dylanos.activeapp/contents/ui/main.qml").read_text()
             self.assertIn("Layout.minimumWidth: Layout.preferredWidth", activeapp)
+            # El tope de ancho del título debe cubrir nombres largos: con el
+            # límite anterior (200 px) el nombre salía cortado con elipsis.
+            self.assertIn("maxTitleWidth: 400", activeapp)
+            self.assertNotIn("maxTitleWidth: 200", activeapp)
             # La ventana del instalador abre con los botones de menú nativos
             # (minimizar/maximizar/cerrar); la pantalla completa es opcional.
             installer_native = (root / "usr/share/dylanos/installer/native/main.py").read_text()
@@ -137,16 +141,32 @@ class StagingTest(unittest.TestCase):
             for key in ("monitor", "dev", "notes"):
                 launcher = (root / f"usr/share/applications/org.dylanos.{key}.desktop").read_text()
                 self.assertIn(f"StartupWMClass=org.dylanos.{key}", launcher)
+            # La tienda es la app nativa dylanos-store (fork de Discover),
+            # ya no una página del workspace que lance plasma-discover.
+            store = (root / "usr/share/applications/org.dylanos.store.desktop").read_text()
+            self.assertIn("Exec=dylanos-store", store)
+            self.assertIn("StartupWMClass=dylanos-store", store)
+            self.assertIn("Icon=dylanos-store", store)
+            self.assertNotIn("plasma-discover", store)
             # Re-staging sobre un root existente: debe limpiar artefactos
-            # obsoletos (autostart del instalador) sin sobrescribir la
-            # configuración existente del usuario.
+            # obsoletos (autostart del instalador y restos de Discover) sin
+            # sobrescribir la configuración existente del usuario.
             stale_autostart = root / "etc/xdg/autostart/dylanos-installer.desktop"
             stale_autostart.parent.mkdir(parents=True, exist_ok=True)
             stale_autostart.write_text("[Desktop Entry]\nType=Application\n")
+            stale_discover = root / "usr/share/applications/org.kde.discover.desktop"
+            stale_discover.write_text("[Desktop Entry]\nType=Application\n")
+            stale_notifier = root / "etc/xdg/autostart/org.kde.discover.notifier.desktop"
+            stale_notifier.parent.mkdir(parents=True, exist_ok=True)
+            stale_notifier.write_text("[Desktop Entry]\nType=Application\n")
             original = (root / "etc/skel/.config/kdeglobals").read_text()
             module.stage(root)
             self.assertFalse(stale_autostart.exists(),
                              "stage() debe borrar el autostart obsoleto del instalador")
+            self.assertFalse(stale_discover.exists(),
+                             "stage() debe borrar los restos de plasma-discover")
+            self.assertFalse(stale_notifier.exists(),
+                             "stage() debe borrar el autostart obsoleto del notifier de Discover")
             self.assertEqual((root / "etc/skel/.config/kdeglobals").read_text(), original)
             self.assertEqual(len(list((root / "usr/share/applications").glob("org.dylanos.*.desktop"))), 8)
             self.assertFalse(list(root.rglob("*.otf")))

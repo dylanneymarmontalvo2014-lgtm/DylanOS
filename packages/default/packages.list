@@ -51,8 +51,10 @@ powerdevil
 bluedevil
 bluez
 pipewire-audio
-plasma-discover
-plasma-discover-backend-flatpak
+# La tienda es la app propia dylanos-store (compilada en build.sh).
+# Runtime del fork (libdiscover + backend PackageKit/Flatpak):
+appstream
+libpackagekitqt6-1
 flatpak
 packagekit
 plasma-systemmonitor

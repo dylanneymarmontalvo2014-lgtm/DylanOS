@@ -1,0 +1,226 @@
+# Copyright (C) YEAR This_file_is_part_of_KDE
+# This file is distributed under the same license as the muon package.
+# SPDX-FileCopyrightText: 2015, 2019, 2020, 2021, 2022, 2023, 2024, 2025 Vincenzo Reale <smart2128vr@gmail.com>
+# Paolo Zamponi <feus73@gmail.com>, 2018, 2019.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: muon-notifier\n"
+"Report-Msgid-Bugs-To: https://bugs.kde.org\n"
+"POT-Creation-Date: 2025-03-22 02:31+0000\n"
+"PO-Revision-Date: 2024-08-18 16:31+0200\n"
+"Last-Translator: Vincenzo Reale <smart2128vr@gmail.com>\n"
+"Language-Team: Italian <kde-i18n-it@kde.org>\n"
+"Language: it\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+"X-Generator: Lokalize 24.12.3\n"
+
+#: notifier/DiscoverNotifier.cpp:184
+#, kde-format
+msgid "View Updates"
+msgstr "Visualizza aggiornamenti"
+
+#: notifier/DiscoverNotifier.cpp:303
+#, kde-format
+msgid "Security updates available"
+msgstr "Aggiornamenti di sicurezza disponibili"
+
+#: notifier/DiscoverNotifier.cpp:305
+#, kde-format
+msgid "Updates available"
+msgstr "Aggiornamenti disponibili"
+
+#: notifier/DiscoverNotifier.cpp:307
+#, kde-format
+msgid "System up to date"
+msgstr "Sistema aggiornato"
+
+#: notifier/DiscoverNotifier.cpp:309
+#, kde-format
+msgid "Computer needs to restart"
+msgstr "Il computer deve essere riavviato"
+
+#: notifier/DiscoverNotifier.cpp:311
+#, kde-format
+msgid "Offline"
+msgstr "Non in linea"
+
+#: notifier/DiscoverNotifier.cpp:313
+#, kde-format
+msgid "Applying unattended updates…"
+msgstr "Applicazione automatica degli aggiornamenti..."
+
+#: notifier/DiscoverNotifier.cpp:338
+#, kde-format
+msgid "Restart is required"
+msgstr "È necessario un riavvio"
+
+#: notifier/DiscoverNotifier.cpp:339
+#, kde-format
+msgid "The system needs to be restarted for the updates to take effect."
+msgstr ""
+"Il sistema deve essere riavviato affinché gli aggiornamenti abbiano effetto."
+
+#: notifier/DiscoverNotifier.cpp:344
+#, kde-format
+msgctxt "@action:button"
+msgid "Update and Restart"
+msgstr "Aggiorna e riavvia"
+
+#: notifier/DiscoverNotifier.cpp:345
+#, kde-format
+msgctxt "@action:button"
+msgid "Update and Shut Down"
+msgstr "Aggiorna e spegni"
+
+#: notifier/DiscoverNotifier.cpp:389
+#, kde-format
+msgid "Upgrade available"
+msgstr "Aggiornamento disponibile"
+
+#: notifier/DiscoverNotifier.cpp:390
+#, kde-format
+msgctxt "A new distro release (name and version) is available for upgrade"
+msgid "%1 is now available."
+msgstr "%1 non è disponibile."
+
+#: notifier/DiscoverNotifier.cpp:393
+#, kde-format
+msgctxt "@action:button"
+msgid "Upgrade"
+msgstr "Aggiorna"
+
+#: notifier/main.cpp:39
+#, kde-format
+msgid "Discover Notifier"
+msgstr "Notifiche di Discover"
+
+#: notifier/main.cpp:41
+#, kde-format
+msgid "System update status notifier"
+msgstr "Notifiche sullo stato di aggiornamento del sistema"
+
+#: notifier/main.cpp:43
+#, kde-format
+msgid "© 2010-2024 Plasma Development Team"
+msgstr "© 2010-2024 La squadra di sviluppo di Plasma"
+
+#: notifier/main.cpp:47
+#, kde-format
+msgctxt "NAME OF TRANSLATORS"
+msgid "Your names"
+msgstr "Vincenzo Reale"
+
+#: notifier/main.cpp:47
+#, kde-format
+msgctxt "EMAIL OF TRANSLATORS"
+msgid "Your emails"
+msgstr "smart2128vr@gmail.com"
+
+#: notifier/main.cpp:52
+#, kde-format
+msgid "Replace an existing instance"
+msgstr "Sostituisci un'istanza esistente"
+
+#: notifier/main.cpp:56
+#, kde-format
+msgid "Do not show the notifier"
+msgstr "Non mostrare le notifiche"
+
+#: notifier/main.cpp:56
+#, kde-format
+msgid "hidden"
+msgstr "nascosto"
+
+#: notifier/NotifierItem.cpp:22 notifier/NotifierItem.cpp:23
+#, kde-format
+msgid "Updates"
+msgstr "Aggiornamenti"
+
+#: notifier/NotifierItem.cpp:35
+#, kde-format
+msgid "Open Discover…"
+msgstr "Apri Discover..."
+
+#: notifier/NotifierItem.cpp:40
+#, kde-format
+msgid "See Updates…"
+msgstr "Vedi aggiornamenti..."
+
+#: notifier/NotifierItem.cpp:45
+#, kde-format
+msgid "Refresh…"
+msgstr "Aggiorna..."
+
+#: notifier/NotifierItem.cpp:51
+#, kde-format
+msgid "Install Updates and Restart…"
+msgstr "Installa gli aggiornamenti e riavvia…"
+
+#: notifier/NotifierItem.cpp:54
+#, kde-format
+msgid "Install Updates and Shut Down…"
+msgstr "Installa gli aggiornamenti e spegni…"
+
+#: notifier/NotifierItem.cpp:59
+#, kde-format
+msgid "Restart to apply installed updates"
+msgstr "Riavvia per applicare gli aggiornamenti installati"
+
+#: notifier/NotifierItem.cpp:60
+#, kde-format
+msgid "Click to restart the device"
+msgstr "Fai clic per riavviare il dispositivo"
+
+#~ msgctxt "@action:button"
+#~ msgid "Restart"
+#~ msgstr "Riavvia"
+
+#~ msgid "New version: %1"
+#~ msgstr "Nuova versione: %1"
+
+#~ msgid "Restart..."
+#~ msgstr "Riavvia..."
+
+#~ msgid "Update"
+#~ msgstr "Aggiornamento"
+
+#~ msgid "Open Software Center..."
+#~ msgstr "Apri Software Center..."
+
+#~ msgctxt "First part of '%1, %2'"
+#~ msgid "1 package to update"
+#~ msgid_plural "%1 packages to update"
+#~ msgstr[0] "Un pacchetto da aggiornare"
+#~ msgstr[1] "%1 pacchetti da aggiornare"
+
+#~ msgctxt "Second part of '%1, %2'"
+#~ msgid "of which 1 is security update"
+#~ msgid_plural "of which %1 are security updates"
+#~ msgstr[0] "di cui un aggiornamento di sicurezza"
+#~ msgstr[1] "di cui %1 aggiornamenti di sicurezza"
+
+#~ msgctxt ""
+#~ "%1 is '%1 packages to update' and %2 is 'of which %1 is security updates'"
+#~ msgid "%1, %2"
+#~ msgstr "%1, %2"
+
+#~ msgid "1 package to update"
+#~ msgid_plural "%1 packages to update"
+#~ msgstr[0] "Un pacchetto da aggiornare"
+#~ msgstr[1] "%1 pacchetti da aggiornare"
+
+#~ msgid "1 security update"
+#~ msgid_plural "%1 security updates"
+#~ msgstr[0] "Un aggiornamento di sicurezza"
+#~ msgstr[1] "%1 aggiornamenti di sicurezza"
+
+#~ msgid "No packages to update"
+#~ msgstr "Nessun pacchetto da aggiornare"
+
+#~ msgid "%1 packages to update, of which %2 are security updates"
+#~ msgstr ""
+#~ "%1 pacchetti da aggiornare, di cui %2 sono aggiornamenti di sicurezza"

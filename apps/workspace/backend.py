@@ -239,7 +239,7 @@ class Backend(QObject):
         self.work(lambda: str(create_project(parent, name, template)), self.projectCreated.emit)
 
     def launch(self, args):
-        friendly = {"plasma-discover": "DylanOS Store", "plasma-systemmonitor": "Monitor del sistema",
+        friendly = {"dylanos-store": "DylanOS Store", "plasma-systemmonitor": "Monitor del sistema",
                     "systemsettings": "Ajustes del sistema", "konsole": "Terminal", "dolphin": "Archivos"}
         if not shutil.which(args[0]):
             self.message.emit(f"{friendly.get(args[0], args[0])} no está instalado. Puedes instalarlo desde DylanOS Store.")
@@ -253,7 +253,7 @@ class Backend(QObject):
     def openApp(self, page):
         if page == "files":
             self.action("files")
-        elif page in ("welcome", "notes", "dev", "monitor", "store", "settings"):
+        elif page in ("welcome", "notes", "dev", "monitor", "settings"):
             self.launch([sys.executable, str(Path(__file__).with_name("main.py")), "--page", page])
 
     @Slot(bool)
@@ -273,7 +273,7 @@ class Backend(QObject):
             "display": ["systemsettings", "kcm_kscreen"], "power": ["systemsettings", "kcm_powerdevilprofilesconfig"],
             "keyboard": ["systemsettings", "kcm_keyboard"], "users": ["systemsettings", "kcm_users"],
             "appearance": ["systemsettings", "kcm_lookandfeel"],
-            "store": ["plasma-discover"], "updates": ["plasma-discover", "--mode", "Update"],
+            "store": ["dylanos-store"], "updates": ["dylanos-store", "--mode", "Update"],
             "calculator": ["dylanos-calculator"], "monitor": ["plasma-systemmonitor"],
             "screenshot": ["spectacle"], "documents": ["libreoffice"], "files": ["dolphin"],
         }
@@ -290,7 +290,7 @@ class Backend(QObject):
         elif app == "files": QDesktopServices.openUrl(QUrl.fromLocalFile(path))
 
     @Slot(str)
-    def findSoftware(self, query): self.launch(["plasma-discover", "--search", query])
+    def findSoftware(self, query): self.launch(["dylanos-store", "--search", query])
 
     @Slot(str)
     def theme(self, variant):

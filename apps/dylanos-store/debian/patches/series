@@ -1,0 +1,4 @@
+use-debian-snapd-qt6-package.patch
+upstream_af0084b6_Improvements-to-the-reliability-of-auto-updates.patch
+upstream_1e71f6c7_Respect-systemwide-default-search-engine.patch
+upstream_ac955439_SearchField-trim-all-whitespace-from-search-text.patch

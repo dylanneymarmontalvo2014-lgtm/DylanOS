@@ -1,0 +1,2 @@
+# systemsettings executable is provided by the systemsettings dependency
+kde-config-updates: desktop-command-not-in-package systemsettings [usr/share/applications/kcm_updates.desktop]

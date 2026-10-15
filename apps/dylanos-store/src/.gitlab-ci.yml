@@ -1,0 +1,11 @@
+# SPDX-FileCopyrightText: None
+# SPDX-License-Identifier: CC0-1.0
+
+include:
+  - project: sysadmin/ci-utilities
+    file:
+     - /gitlab-templates/linux-qt6.yml
+     - /gitlab-templates/alpine-qt6.yml # For the apk backend
+
+# Commented out because they don't support appstreamqt yet, and it's probably fine
+#     - /gitlab-templates/freebsd-qt6.yml

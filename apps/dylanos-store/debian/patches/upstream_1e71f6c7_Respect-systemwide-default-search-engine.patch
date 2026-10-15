@@ -1,0 +1,88 @@
+From 1e71f6c730a4a4ef81895c153d8ea677566ca57f Mon Sep 17 00:00:00 2001
+From: Nate Graham <nate@kde.org>
+Date: Fri, 18 Apr 2025 13:13:02 -0600
+Subject: [PATCH] Respect systemwide default search engine
+
+Right now we hardcode DuckDuckGo, which ignores the user's preference
+and doesn't work in Indonesia, where it's currently blocked.
+
+Instead, get the actual configured default search engine, which the user
+can change if desired or needed.
+
+BUG: 502908
+FIXED-IN: 6.4.0
+---
+ discover/CMakeLists.txt               |  1 +
+ discover/DiscoverObject.cpp           | 10 ++++++++++
+ discover/DiscoverObject.h             |  1 +
+ discover/qml/ApplicationsListPage.qml |  2 +-
+ 4 files changed, 13 insertions(+), 1 deletion(-)
+
+diff --git a/discover/CMakeLists.txt b/discover/CMakeLists.txt
+index 9c195fca4..8fda6621a 100644
+--- a/discover/CMakeLists.txt
++++ b/discover/CMakeLists.txt
+@@ -45,6 +45,7 @@ target_link_libraries(plasma-discover PUBLIC
+                                      KF6::I18n
+                                      KF6::ConfigGui
+                                      KF6::KIOCore
++                                     KF6::KIOGui
+                                      KF6::WindowSystem
+                                      KF6::Notifications
+                                      KF6::JobWidgets
+diff --git a/discover/DiscoverObject.cpp b/discover/DiscoverObject.cpp
+index a95dd3a6e..842ca31c6 100644
+--- a/discover/DiscoverObject.cpp
++++ b/discover/DiscoverObject.cpp
+@@ -45,6 +45,7 @@
+ #include <KSharedConfig>
+ #include <KStatusNotifierItem>
+ #include <KUiServerV2JobTracker>
++#include <KUriFilter>
+ #include <kcoreaddons_version.h>
+ // #include <KSwitchLanguageDialog>
+ 
+@@ -636,6 +637,15 @@ void DiscoverObject::copyTextToClipboard(const QString text)
+     clipboard->setText(text);
+ }
+ 
++QUrl DiscoverObject::searchUrl(const QString searchText)
++{
++    KUriFilterData filterData(searchText);
++    if (KUriFilter::self()->filterSearchUri(filterData, KUriFilter::NormalTextFilter)) {
++        return filterData.uri();
++    }
++    return {};
++}
++
+ void DiscoverObject::setAboutToPowerOff()
+ {
+     for (auto backend : ResourcesModel::global()->backends()) {
+diff --git a/discover/DiscoverObject.h b/discover/DiscoverObject.h
+index f98fcea1b..e736c3e54 100644
+--- a/discover/DiscoverObject.h
++++ b/discover/DiscoverObject.h
+@@ -45,6 +45,7 @@ public:
+     QQuickWindow *mainWindow() const;
+     void showError(const QString &msg);
+     Q_INVOKABLE void copyTextToClipboard(const QString text);
++    Q_INVOKABLE QUrl searchUrl(const QString searchText);
+ 
+     QString describeSources() const;
+     Q_SCRIPTABLE void restore();
+diff --git a/discover/qml/ApplicationsListPage.qml b/discover/qml/ApplicationsListPage.qml
+index 984d31f55..e11b82d01 100644
+--- a/discover/qml/ApplicationsListPage.qml
++++ b/discover/qml/ApplicationsListPage.qml
+@@ -230,7 +230,7 @@ DiscoverPage {
+                     icon.name: "internet-web-browser"
+                     onTriggered: {
+                         const searchTerm = encodeURIComponent("Linux " + appsModel.search);
+-                        Qt.openUrlExternally(i18nc("If appropriate, localize this URL to be something more relevant to the language. %1 is the text that will be searched for.", "https://duckduckgo.com/?q=%1", searchTerm));
++                        Qt.openUrlExternally(app.searchUrl(searchTerm));
+                     }
+                 }
+ 
+-- 
+GitLab
+

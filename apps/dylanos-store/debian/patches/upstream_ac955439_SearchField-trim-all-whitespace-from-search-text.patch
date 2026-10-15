@@ -1,0 +1,35 @@
+From ac955439ff6434cf2738dd3ffe05c25ff971d180 Mon Sep 17 00:00:00 2001
+From: Nate Graham <nate@kde.org>
+Date: Fri, 13 Jun 2025 10:31:41 -0600
+Subject: [PATCH] SearchField: trim all whitespace from search text
+
+We already trim newlines, but let's go whole-hog here and do all
+whitespace, since none of it serves any purpose.
+
+BUG: 505538
+FIXED-IN: 6.4.1
+
+
+(cherry picked from commit d51f99e2b790daf042294f4080b4405c5e128841)
+
+Co-authored-by: Nate Graham <nate@kde.org>
+---
+ discover/qml/SearchField.qml | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/discover/qml/SearchField.qml b/discover/qml/SearchField.qml
+index 9b19e55ad..d64cabf45 100644
+--- a/discover/qml/SearchField.qml
++++ b/discover/qml/SearchField.qml
+@@ -26,7 +26,7 @@ Kirigami.SearchField {
+     placeholderText: (!enabled || !page || page.hasOwnProperty("isHome") || window.leftPage.name.length === 0) ? i18n("Search…") : i18n("Search in '%1'…", window.leftPage.name)
+ 
+     onAccepted: {
+-        text = text.replace(/\n/g, ' ');
++        text = text.trim();
+         currentSearchText = text;
+     }
+ 
+-- 
+GitLab
+

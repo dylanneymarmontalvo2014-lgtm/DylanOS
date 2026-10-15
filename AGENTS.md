@@ -11,11 +11,18 @@ Sistema operativo ligero basado en Debian + KDE Plasma, con identidad visual pro
 
 ## Estructura
 
-- `apps/workspace/` — App QML/Python (PySide6) con 7 páginas: welcome, files, notes, store, dev, monitor, settings.
+- `apps/workspace/` — App QML/Python (PySide6) con 6 páginas: welcome, files, notes, dev, monitor, settings.
   - `main.py` (entry, acepta `--page`, `--smoke`, `--screenshot`, `--appearance`), `backend.py` (puente Qt), `core.py`.
   - `qml/`: Main.qml + páginas. Componentes de diseño: `Field.qml`, `ActionButton.qml` (primary=crimson), `Surface.qml` (tarjeta glass con gradiente según dark/light).
   - En el ISO se instala en `/usr/share/dylanos/workspace`; wrapper `/usr/bin/dylanos --page <key>` (lo genera `scripts/stage.py`).
 - `apps/dylanos-app-center/` — Launcher fullscreen C++/QML (grid de apps instaladas, fondo carmesí humo, búsqueda píldora, puntos de paginación). Ejecutable `dylanos-app-center`.
+- `apps/dylanos-store/` — **DylanOS Store nativa**: fork de plasma-discover 6.3.6 con UI 100% del prototipo (puerto QML verificado) y datos reales vía libdiscover.
+  - `src/libdiscover/` — motor real conservado (recursos, transacciones, backends PackageKit+Flatpak ON; Snap/Fwupd/KNS/RpmOstree OFF).
+  - `src/store/` — la app: `main.cpp` (ResourcesModel global, CLI `--mode Update|--search|--application|--screenshot`), `models/` (StoreController=QML singleton `Store`, AppItem/AppModel/AppFilterModel, providers de iconos), `services/` (contrato `PackageBackend`, `LibDiscoverBackend` real, `MockPackageBackend` solo tests), `qml/` (Main + theme×6 + components×24 + pages×9 del prototipo; sin StatesPage ni insignia demo), `data/` (iconos Lucide, Onest.ttf, `store-config.json` curación, `demo-apps.json` solo tests, logo DylanOS).
+  - `src/notifier/` — agente de bandeja rebrandeado: binario `dylanos-store-notifier`, autostart `org.dylanos.store.notifier.desktop`, "Abrir DylanOS Store…", lanza `dylanos-store --mode Update`.
+  - Puente de datos: `StoreController::loadFromResources(ResourcesModel*)` — catálogo AppStream real vía `backend->search(Filters{})` (stream "all"), categorías mapeadas AppStream→ids del prototipo (store-config.json), estados reales (none/installed/update) + transacciones (busy/progreso/error/cancel), favoritos y "instalado el" persistidos en QSettings("DylanOS","dylanos-store"), listas featured/popular/newest/essential/recommended curadas + relleno determinista, updates recalculadas en cada stateChanged.
+  - Nombres: binario `dylanos-store`, DBus `org.dylanos.dylanos-store` (KDBusService Unique), desktop `org.dylanos.store.desktop`, ventana icono `dylanos-store`, header con logo DylanOS (`qrc:/data/logo.png`) + texto "DylanOS Store". **NUNCA mostrar Discover/KDE al usuario.**
+  - Ventana solo tras catálogo listo (`catalogReady`) con watchdog de 20 s; QA de captura: `dylanos-store --screenshot out.png --size 1280x800 --view home` (en el ISO/chroot, con DBus).
 - `apps/dylanos-spotlight/` — Búsqueda rápida (Python). `dylanos-spotlight`.
 - `apps/com.dylanos.dock/` y `apps/com.dylanos.activeapp/` — Plasmoids Plasma.
 - `apps/archivos/`, `apps/calculator/` — Apps propias adicionales.
@@ -30,10 +37,12 @@ Sistema operativo ligero basado en Debian + KDE Plasma, con identidad visual pro
 
 ## Store (DylanOS Store)
 
-- Página `store` del Workspace = **DylanOS Store** (antes delegaba con nombre "Discover"; hoy 100% rebranding).
-- Motor real: `plasma-discover` (visual rebranding only). `backend.action("store"|"updates")` y `backend.findSoftware(q)` lo lanzan; NUNCA mostrar el nombre "Discover/plasma-discover" al usuario.
-- Logo: `branding/icons/dylanos-store.svg` (master) + PNG rasterizado en `apps/workspace/assets/dylanos-store.png` y `branding/icons/dylanos-store.png` (icono hicolor 512 en staging).
-- Entrada desktop: `org.dylanos.store.desktop`, Name=DylanOS Store, Icon=dylanos-store (en `scripts/stage.py`).
+- La tienda es la **app nativa `dylanos-store`** (fork de Discover en `apps/dylanos-store/`), ya NO plasma-discover rebrandeado: el workspace ya no tiene página `store` (6 páginas) y `backend.action("store"|"updates")` + `backend.findSoftware(q)` lanzan `dylanos-store`.
+- Motor real: libdiscover del fork (PackageKit+AppStream+Flatpak). NUNCA mostrar el nombre "Discover/plasma-discover" al usuario.
+- Logo: `branding/icons/dylanos-store.svg` (master) + PNG rasterizado en `branding/icons/dylanos-store.png` (icono hicolor 512 en staging). Logo de marca en el header de la app: `branding/logo.png` embebido en `qrc:/data/logo.png`.
+- Entrada desktop: la instala el CMake del fork (`org.dylanos.store.desktop`, Name=DylanOS Store, Icon=dylanos-store, Exec=dylanos-store); `scripts/stage.py` escribe una versión equivalente ANTES del build (fallback idempotente) y borra restos de `org.kde.discover` en chroots reutilizados.
+- ISO: `scripts/build.sh` compila el fork en el chroot (`cmake -GNinja` + `ctest` + `cmake --install`) y purga los `-dev` exclusivos de la tienda al final. Runtime: `appstream`, `libpackagekitqt6-1`, `packagekit`, `flatpak` (en `packages/default`); build deps en `packages/build`.
+- Compilación local rápida: chroot de pruebas `work/discover-build` (trixie + build-deps) con `/tmp/opencode/build_store.sh` (no forma parte del repo).
 
 ## QA (ejecutar antes de entregar)
 
@@ -41,9 +50,9 @@ Sistema operativo ligero basado en Debian + KDE Plasma, con identidad visual pro
 DYLANOS_PYTHON=/tmp/opencode/venv/bin/python bash scripts/check.sh
 ```
 
-- Valida: bash -n de todos los .sh, shellcheck, test_packages.sh, unittest completo, compileall, staging (con desktop-file-validate) y carga QML offscreen de las 7 páginas (store incluida) + variante light.
+- Valida: bash -n de todos los .sh, shellcheck, test_packages.sh, unittest completo módulo a módulo (proceso propio por suite; incluye test_store.py del fork), compileall, staging (con desktop-file-validate) y carga QML offscreen de las 6 páginas del workspace + variante light.
 - PySide6/psutil NO están en el python3 del sistema: usar venv (`/tmp/opencode/venv`) o instalar `python3-pyside6` + `python3-psutil` (los que usa el ISO: PySide6 6.8.2.1).
-- Tests clave: `test_staging.py` (cuenta 8 desktop entries org.dylanos.*), `test_ui.py`, `test_workspace.py`, `test_backend.py`.
+- Tests clave: `test_staging.py` (cuenta 8 desktop entries org.dylanos.*), `test_store.py` (fork de la tienda sin rastro de Discover), `test_ui.py`, `test_workspace.py`, `test_backend.py`.
 - `unittest discover` (la flag de CLI) aparece en docs históricos: NO es una referencia a KDE Discover; no tocar.
 
 ## Convenciones

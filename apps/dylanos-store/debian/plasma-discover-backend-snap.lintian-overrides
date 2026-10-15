@@ -1,0 +1,2 @@
+# plasma-discover is a strict requirement for plasma-discover-backend-snap
+plasma-discover-backend-snap: desktop-command-not-in-package plasma-discover [usr/share/applications/org.kde.discover.snap.desktop]
