@@ -1,10 +1,12 @@
 #pragma once
 
 #include <QFileInfo>
+
+#include <KIOWidgets/kdirlister.h>
+#include <KIOCore/kfileitem.h>
 #include <QAbstractListModel>
 #include <QCollator>
 #include <QDateTime>
-#include <QFileSystemWatcher>
 #include <QHash>
 #include <QSet>
 #include <QTimer>
@@ -103,9 +105,14 @@ private:
     };
 
     static Entry makeEntry(const QFileInfo &fi);
+    static Entry makeEntry(const KFileItem &item);
     void sortEntries(QVector<Entry> &entries) const;
     void notifySelection();
+    void publishEntries(const QVector<Entry> &entries);
+    void setErrorKind(const QString &kind);
+    void reloadSearch(const QString &needle);
 
+    class KDirLister *m_lister = nullptr;
     QVector<Entry> m_entries;
     QSet<QString> m_selected;
     int m_anchor = -1;
@@ -119,7 +126,6 @@ private:
     bool m_ascending = true;
 
     QCollator m_collator;
-    QFileSystemWatcher m_watcher;
     QTimer m_reloadTimer;
     mutable QHash<QString, int> m_countCache;
 };

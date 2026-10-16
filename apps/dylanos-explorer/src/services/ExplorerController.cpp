@@ -13,10 +13,31 @@
 #include <QSettings>
 #include <QUrl>
 #include <QtConcurrent>
+#include <KIOCore/kio/copyjob.h>
+#include <KIOCore/kio/deletejob.h>
+#include <KIOCore/kio/emptytrashjob.h>
+#include <KIOCore/kio/restorejob.h>
+#include <KIOCore/kio/job.h>
+#include <KIOWidgets/kio/fileundomanager.h>
+#include <KIOGui/kio/openurljob.h>
+#include "models/PlacesService.h"
 
 namespace {
 
 const QString kHome = QStringLiteral("home://");
+
+bool isUrlLocation(const QString &loc)
+{
+    const int scheme = loc.indexOf(QLatin1Char(':'));
+    return scheme > 0 && loc.at(0).isLetter() && !loc.startsWith(QLatin1String("home:"));
+}
+
+QUrl toUrl(const QString &path)
+{
+    if (isUrlLocation(path))
+        return QUrl(path);
+    return QUrl::fromLocalFile(path);
+}
 
 QString permissionString(QFileDevice::Permissions p)
 {
@@ -78,7 +99,7 @@ bool ExplorerController::isHome() const
 
 bool ExplorerController::inTrash() const
 {
-    return !isHome() && FileOperations::isInTrash(m_location);
+    return !isHome() && (m_location.startsWith(QLatin1String("trash:/")) || FileOperations::isInTrash(m_location));
 }
 
 QString ExplorerController::title() const
@@ -89,12 +110,26 @@ QString ExplorerController::title() const
         return QStringLiteral("Papelera");
     if (m_location == QLatin1String("/"))
         return QStringLiteral("Sistema de archivos");
+    if (isUrlLocation(m_location)) {
+        const QUrl url(m_location);
+        if (url.scheme() == QLatin1String("trash"))
+            return QStringLiteral("Papelera");
+        if (url.scheme() == QLatin1String("remote"))
+            return QStringLiteral("Red");
+        return url.toString();
+    }
     return QFileInfo(m_location).fileName();
 }
 
 bool ExplorerController::canGoUp() const
 {
-    return !isHome() && m_location != QLatin1String("/");
+    if (isHome() || m_location == QLatin1String("/"))
+        return false;
+    if (isUrlLocation(m_location)) {
+        const QUrl url(m_location);
+        return url.path() != QLatin1String("/") && !url.path().isEmpty();
+    }
+    return true;
 }
 
 void ExplorerController::setViewMode(int mode)
@@ -160,15 +195,31 @@ bool ExplorerController::navigateInternal(const QString &target, bool pushHistor
     if (loc != kHome) {
         if (loc.startsWith(QLatin1String("file://")))
             loc = QUrl(loc).toLocalFile();
-        loc = QDir::cleanPath(QDir(loc).absolutePath());
-        const QFileInfo fi(loc);
-        if (!fi.exists()) {
-            emit notify("error", QStringLiteral("La carpeta «%1» no existe").arg(fi.fileName().isEmpty() ? loc : fi.fileName()));
-            return false;
-        }
-        if (!fi.isDir()) {
-            openItem(loc);
-            return false;
+        if (isUrlLocation(loc)) {
+            // Ubicaciones de red/papelera (trash:/, remote:/, smb:/, mtp:/):
+            // el listado real lo hace el motor KIO de Dolphin.
+            if (PlacesService *places = PlacesService::instance()) {
+                if (places->isUnmountedDevice(loc)) {
+                    if (!m_mountWired) {
+                        m_mountWired = true;
+                        connect(places, &PlacesService::mounted, this, [this](const QString &url) { navigate(url); }, Qt::QueuedConnection);
+                    }
+                    emit notify("info", QStringLiteral("Montando volumen…"));
+                    places->requestSetup(loc);
+                    return false;
+                }
+            }
+        } else {
+            loc = QDir::cleanPath(QDir(loc).absolutePath());
+            const QFileInfo fi(loc);
+            if (!fi.exists()) {
+                emit notify("error", QStringLiteral("La carpeta «%1» no existe").arg(fi.fileName().isEmpty() ? loc : fi.fileName()));
+                return false;
+            }
+            if (!fi.isDir()) {
+                openItem(loc);
+                return false;
+            }
         }
     }
     if (pushHistory) {
@@ -218,8 +269,22 @@ void ExplorerController::goForward()
 
 void ExplorerController::goUp()
 {
-    if (canGoUp())
-        navigateInternal(QFileInfo(m_location).dir().absolutePath(), true);
+    if (!canGoUp())
+        return;
+    if (isUrlLocation(m_location)) {
+        const QUrl url(m_location);
+        QUrl parent = url;
+        if (url.scheme() == QLatin1String("trash")) {
+            parent = QUrl(QStringLiteral("trash:/"));
+        } else {
+            const QString path = url.path();
+            const int cut = path.lastIndexOf(QLatin1Char('/'));
+            parent.setPath(cut > 0 ? path.left(cut) : QStringLiteral("/"));
+        }
+        navigateInternal(parent.toString(), true);
+        return;
+    }
+    navigateInternal(QFileInfo(m_location).dir().absolutePath(), true);
 }
 
 void ExplorerController::goHome()
@@ -246,8 +311,14 @@ void ExplorerController::openItem(const QString &path)
         navigateInternal(path, true);
         return;
     }
-    if (!QDesktopServices::openUrl(QUrl::fromLocalFile(fi.absoluteFilePath())))
-        emit notify("error", QStringLiteral("No hay ninguna aplicación para abrir «%1»").arg(fi.fileName()));
+    // Apertura con el mecanismo exacto de Dolphin (KIO::OpenUrlJob).
+    auto *job = new KIO::OpenUrlJob(toUrl(fi.absoluteFilePath()));
+    job->setRunExecutables(true);
+    connect(job, &KJob::result, this, [this, job, name = fi.fileName()](KJob *) {
+        if (job->error() != 0 && job->error() != KJob::KilledJobError)
+            emit notify("error", QStringLiteral("No se pudo abrir «%1»: %2").arg(name, job->errorString()));
+    });
+    job->start();
 }
 
 void ExplorerController::openSelection()
@@ -284,9 +355,8 @@ void ExplorerController::openNetwork(const QString &kind)
             emit notify("error", QStringLiteral("No se pudo abrir %1").arg(m_serverUrl));
         return;
     }
-    // Network browsing is delegated to the desktop's KIO/gvfs handlers.
-    if (!QDesktopServices::openUrl(QUrl(QStringLiteral("remote:/"))))
-        emit notify("error", QStringLiteral("No hay un explorador de red disponible en este sistema"));
+    // La navegación de red ocurre dentro de Explorer (motor KIO de Dolphin).
+    navigateInternal(QStringLiteral("remote:/"), true);
 }
 
 // ----------------------------------------------------------------- clipboard
@@ -399,6 +469,8 @@ void ExplorerController::onJobFinished()
 void ExplorerController::cancelOperation()
 {
     m_cancel = true;
+    if (m_kioJob)
+        m_kioJob->kill(KJob::Quietly);
 }
 
 void ExplorerController::paste()
@@ -469,14 +541,13 @@ void ExplorerController::trashSelection()
     const QStringList sel = selectionOrNotify(QStringLiteral("Selecciona al menos un elemento"));
     if (sel.isEmpty())
         return;
-    runJob(QStringLiteral("Moviendo a la papelera…"),
-           [sel](const FileOperations::Progress &, const std::atomic_bool *) { return FileOperations::trash(sel); },
-           [this, n = sel.size()](const FileOperations::Result &r) {
-               if (r.ok)
-                   emit notify("success", QStringLiteral("%1 elemento(s) movido(s) a la papelera").arg(n));
-               else
-                   emit notify("error", r.error);
-           });
+    // KIO::trash: papelera freedesktop multi-dispositivo y DESHACIBLE con
+    // Ctrl+Z, exactamente como en Dolphin (KIO::UndoManager).
+    QList<QUrl> urls;
+    for (const QString &p : sel)
+        urls << toUrl(p);
+    runKioJob(QStringLiteral("Moviendo a la papelera…"), KIO::trash(urls, KIO::JobFlag::HideProgressInfo),
+              QStringLiteral("%1 elemento(s) movido(s) a la papelera").arg(sel.size()));
 }
 
 void ExplorerController::deleteSelection()
@@ -484,14 +555,11 @@ void ExplorerController::deleteSelection()
     const QStringList sel = selectionOrNotify(QStringLiteral("Selecciona al menos un elemento"));
     if (sel.isEmpty())
         return;
-    runJob(QStringLiteral("Eliminando…"),
-           [sel](const FileOperations::Progress &, const std::atomic_bool *) { return FileOperations::removePermanently(sel); },
-           [this, n = sel.size()](const FileOperations::Result &r) {
-               if (r.ok)
-                   emit notify("success", QStringLiteral("%1 elemento(s) eliminado(s) permanentemente").arg(n));
-               else
-                   emit notify("error", r.error);
-           });
+    QList<QUrl> urls;
+    for (const QString &p : sel)
+        urls << toUrl(p);
+    runKioJob(QStringLiteral("Eliminando…"), KIO::del(urls, KIO::JobFlag::HideProgressInfo),
+              QStringLiteral("%1 elemento(s) eliminado(s) permanentemente").arg(sel.size()));
 }
 
 void ExplorerController::restoreSelection()
@@ -499,24 +567,28 @@ void ExplorerController::restoreSelection()
     const QStringList sel = selectionOrNotify(QStringLiteral("Selecciona al menos un elemento"));
     if (sel.isEmpty())
         return;
-    const auto r = FileOperations::restoreFromTrash(sel);
-    m_model->reload();
-    if (r.ok)
-        emit notify("success", QStringLiteral("%1 elemento(s) restaurado(s)").arg(sel.size()));
-    else
-        emit notify("error", r.error);
+    // Restauración con el motor de Dolphin: KIO::restoreFromTrash a partir de
+    // las rutas originales guardadas en los .trashinfo.
+    QStringList missing;
+    QList<QUrl> originals;
+    for (const QString &p : sel) {
+        const QString orig = FileOperations::trashOrigin(p);
+        if (orig.isEmpty()) {
+            missing << p;
+            continue;
+        }
+        originals << QUrl::fromLocalFile(orig);
+    }
+    if (!originals.isEmpty())
+        runKioJob(QStringLiteral("Restaurando…"), KIO::restoreFromTrash(originals, KIO::JobFlag::HideProgressInfo),
+                  QStringLiteral("%1 elemento(s) restaurado(s)").arg(originals.size()));
+    if (!missing.isEmpty())
+        emit notify("error", QStringLiteral("%1 elemento(s) sin información de restauración").arg(missing.size()));
 }
 
 void ExplorerController::emptyTrash()
 {
-    runJob(QStringLiteral("Vaciando la papelera…"),
-           [](const FileOperations::Progress &, const std::atomic_bool *) { return FileOperations::emptyTrash(); },
-           [this](const FileOperations::Result &r) {
-               if (r.ok)
-                   emit notify("success", QStringLiteral("La papelera está vacía"));
-               else
-                   emit notify("error", r.error);
-           });
+    runKioJob(QStringLiteral("Vaciando la papelera…"), KIO::emptyTrash(), QStringLiteral("La papelera está vacía"));
 }
 
 // --------------------------------------------------------------- properties
@@ -556,6 +628,56 @@ QVariantMap ExplorerController::properties(const QString &path) const
     m["hidden"] = fi.isHidden();
     m["symlinkTarget"] = fi.isSymLink() ? fi.symLinkTarget() : QString();
     return m;
+}
+
+void ExplorerController::undo()
+{
+    // Deshacer la última operación KIO (papelera, movimiento, copia…),
+    // el mismo gestor que usa Dolphin.
+    KIO::FileUndoManager::self()->undo();
+}
+
+void ExplorerController::runKioJob(const QString &label, KIO::Job *job, const QString &doneMessage)
+{
+    if (!job) {
+        emit notify("error", QStringLiteral("La operación falló"));
+        return;
+    }
+    if (m_busy) {
+        emit notify("error", QStringLiteral("Hay otra operación en curso"));
+        delete job;
+        return;
+    }
+    m_cancel = false;
+    m_busy = true;
+    m_progress = -1;
+    m_progressText = label;
+    m_kioJob = job;
+    emit busyChanged();
+    emit progressChanged();
+
+    connect(job, &KJob::percentChanged, this, [this](KJob *, unsigned long pct) {
+        m_progress = double(pct) / 100.0;
+        emit progressChanged();
+    });
+    connect(job, &KJob::result, this, [this, job, doneMessage](KJob *) {
+        m_kioJob = nullptr;
+        const int err = job->error();
+        const bool killed = err == KJob::KilledJobError;
+        const QString errText = job->errorString();
+        m_busy = false;
+        m_progress = 0;
+        emit busyChanged();
+        emit progressChanged();
+        m_model->reload();
+        if (err == 0)
+            emit notify("success", doneMessage);
+        else if (killed)
+            emit notify("info", QStringLiteral("Operación cancelada"));
+        else
+            emit notify("error", errText.isEmpty() ? QStringLiteral("La operación falló") : errText);
+    });
+    job->start();
 }
 
 int ExplorerController::requestSize(const QStringList &paths)

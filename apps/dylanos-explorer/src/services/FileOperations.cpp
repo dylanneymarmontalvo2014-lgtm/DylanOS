@@ -423,6 +423,23 @@ bool FileOperations::isInTrash(const QString &path)
     return p == t || p.startsWith(t + QLatin1Char('/'));
 }
 
+QString FileOperations::trashOrigin(const QString &path)
+{
+    QString name;
+    QString candidate = path;
+    if (path.startsWith(QLatin1String("trash:/")) || path.startsWith(QLatin1String("trash://"))) {
+        const QUrl url(path);
+        name = QUrl::fromPercentEncoding(url.path().toUtf8());
+        while (name.startsWith(QLatin1String("/")))
+            name.remove(0, 1);
+        candidate = QDir(trashFilesDir()).filePath(name);
+    }
+    const QFileInfo fi(candidate);
+    if (QDir::cleanPath(fi.absolutePath()) != trashFilesDir())
+        return {};
+    return readTrashInfoPath(QDir(trashInfoDir()).filePath(fi.fileName() + QStringLiteral(".trashinfo")));
+}
+
 FileOperations::Result FileOperations::restoreFromTrash(const QStringList &paths)
 {
     QStringList errors;

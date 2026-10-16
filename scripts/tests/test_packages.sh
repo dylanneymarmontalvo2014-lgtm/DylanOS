@@ -107,9 +107,13 @@ dev_pkgs="$(parse_package_list "$DEV_LIST" 2>/dev/null || true)"
 
 # Paquetes del sistema base migrados del build.sh original
 for p in linux-image-amd64 systemd-sysv kde-plasma-desktop sddm parted \
-    squashfs-tools fastfetch sudo network-manager dolphin konsole; do
+    squashfs-tools fastfetch sudo network-manager konsole; do
     assert_contains_line "default contiene $p" "$default_pkgs" "$p"
 done
+# DylanOS Explorer no es un paquete apt: se compila desde apps/dylanos-explorer.
+assert_eq "explorer se compila en build" "si" "$(grep -q 'dylanos-src/dylanos-explorer' "$ROOT/scripts/build.sh" && echo si || echo no)"
+assert_eq "default ya no contiene dolphin" "no" \
+    "$(printf '%s' "$default_pkgs" | grep -qx dolphin && echo si || echo no)"
 
 # Calamares quedó eliminado: el instalador propio debe ocupar su lugar.
 assert_eq "default ya no contiene calamares" "no" \
@@ -122,6 +126,10 @@ while IFS= read -r app; do
     # In-tree applications are compiled by build.sh, not downloaded by APT.
     if [ "$app" = dylanos-calculator ]; then
         assert_eq "calculadora se compila en build" "si" "$(grep -q 'for app in calculator dylanos-app-center' "$ROOT/scripts/build.sh" && echo si || echo no)"
+        continue
+    fi
+    if [ "$app" = dylanos-explorer ]; then
+        assert_eq "explorer se compila en build" "si" "$(grep -q 'dylanos-src/dylanos-explorer' "$ROOT/scripts/build.sh" && echo si || echo no)"
         continue
     fi
     assert_contains_line "default-apps.conf: $app está en la lista default" \

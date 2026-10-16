@@ -1,6 +1,8 @@
 #pragma once
 
 #include <QFutureWatcher>
+
+#include <QUrl>
 #include <QObject>
 #include <QTimer>
 #include <QVariantList>
@@ -31,17 +33,29 @@ public:
 
     Q_INVOKABLE void refresh();
 
+    // Dispositivos con el motor de Dolphin: detecta unidades extraíbles y
+    // las monta bajo demanda (KFilePlacesModel::requestSetup).
+    static PlacesService *instance();
+    static PlacesService *s_instance;
+    bool isUnmountedDevice(const QString &url) const;
+    void requestSetup(const QString &url);
+
 signals:
     void devicesChanged();
     void homeFoldersChanged();
     void recentFilesChanged();
+    void mounted(const QString &url);
 
 private:
     void refreshDevices();
+    void watchSetup(const QString &url);
     void refreshHomeFolders();
     void refreshRecents();
     static QString projectsDir();
 
+    class KFilePlacesModel *m_places = nullptr;
+    QString m_pendingSetup;
+    bool m_lastSetupFailed = false;
     QVariantList m_favorites;
     QVariantList m_network;
     QVariantList m_devices;
