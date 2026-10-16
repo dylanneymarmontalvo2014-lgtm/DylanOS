@@ -5,19 +5,15 @@ import org.kde.taskmanager as TaskManager
 
 PlasmoidItem {
     id: root
-    // 400 px cubre los nombres de aplicación reales más largos sin que un
-    // título patológico consuma todo el panel; antes con 200 px el nombre
-    // de la app activa salía cortado con puntos suspensivos.
-    readonly property int maxTitleWidth: 400
 
-    Layout.fillWidth: false
+    // El applet toma el espacio libre del panel y solo recorta cuando no
+    // queda sitio: un tope fijo (200/400 px) cortaba nombres reales aunque
+    // sobrara panel; el elidrado es el último recurso, no el primero.
+    Layout.fillWidth: true
     Layout.fillHeight: true
-    Layout.preferredWidth: Math.min(contentRow.implicitWidth + 16, maxTitleWidth + 16)
-    // El applet nunca debe colapsar por debajo de lo que pide el título: con
-    // el mínimo anterior (16 px) el panel podía encogerlo hasta mostrar solo
-    // una letra del nombre de la aplicación activa.
-    Layout.minimumWidth: Layout.preferredWidth
-    Layout.maximumWidth: maxTitleWidth + 16
+    Layout.minimumWidth: 24
+    Layout.maximumWidth: 4096
+    Layout.preferredWidth: Math.min(contentRow.implicitWidth + 16, 4096)
 
     preferredRepresentation: fullRepresentation
     fullRepresentation: Item {
@@ -65,7 +61,8 @@ PlasmoidItem {
                 font.family: "Inter"
                 color: "#ffffff"
                 verticalAlignment: Text.AlignVCenter
-                Layout.maximumWidth: root.maxTitleWidth
+                Layout.fillWidth: true
+                Layout.minimumWidth: 16
                 elide: Text.ElideRight
             }
         }

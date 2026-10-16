@@ -1,6 +1,7 @@
 #include "models/AppIconImageProvider.h"
 #include "models/IconImageProvider.h"
 #include "models/StoreController.h"
+#include "services/CatalogSync.h"
 #include "services/LibDiscoverBackend.h"
 #include <KAboutData>
 #include <KCrash>
@@ -70,6 +71,7 @@ int main(int argc, char *argv[])
 
     auto *controller = new StoreController(new LibDiscoverBackend());
     StoreController::s_instance = controller;
+    auto *catalogSync = new CatalogSync(controller);
 
     QQmlApplicationEngine engine;
     engine.addImageProvider(QStringLiteral("icon"), new IconImageProvider());
@@ -82,7 +84,9 @@ int main(int argc, char *argv[])
     bool catalogReady = false;
     QObject::connect(controller, &StoreController::catalogReady, &app, [&] {
         catalogReady = true;
+        catalogSync->applySeed(); // estanterías definitivas antes de mostrar la ventana
         engine.loadFromModule("DylanOS", "Main");
+        QTimer::singleShot(2500, catalogSync, &CatalogSync::refresh); // actualización remota
     });
     if (model->backends().isEmpty())
         QObject::connect(model, &ResourcesModel::allInitialized, &app, [&] { controller->loadFromResources(model); });

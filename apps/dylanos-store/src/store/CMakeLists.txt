@@ -17,7 +17,12 @@ set(CORE_SOURCES
     models/StoreController.h models/StoreController.cpp
     services/PackageBackend.h
     services/MockPackageBackend.h services/MockPackageBackend.cpp
-    services/LibDiscoverBackend.h services/LibDiscoverBackend.cpp)
+    services/LibDiscoverBackend.h services/LibDiscoverBackend.cpp
+    services/CatalogSync.h services/CatalogSync.cpp)
+
+# Semilla del catálogo editorial: copia del SQLite del repo (catalog/store.db).
+file(COPY_FILE ${CMAKE_CURRENT_SOURCE_DIR}/../../catalog/store.db ${CMAKE_CURRENT_BINARY_DIR}/store-seed.db)
+set_source_files_properties(${CMAKE_CURRENT_BINARY_DIR}/store-seed.db PROPERTIES QT_RESOURCE_ALIAS "data/store-seed.db")
 
 qt_add_executable(dylanos-store main.cpp ${CORE_SOURCES})
 target_include_directories(dylanos-store PRIVATE models services)
@@ -47,10 +52,11 @@ qt_add_qml_module(dylanos-store
 
 # Plain data resources live under :/data/... (catalog for tests, config, font, icon set, logo).
 qt_add_resources(dylanos-store data_resources PREFIX "/" FILES
-    data/demo-apps.json data/store-config.json data/logo.png data/fonts/Onest.ttf ${ICON_FILES})
+    data/demo-apps.json data/store-config.json data/logo.png data/fonts/Onest.ttf ${ICON_FILES}
+    ${CMAKE_CURRENT_BINARY_DIR}/store-seed.db)
 
 target_link_libraries(dylanos-store PRIVATE
-    Qt6::Core Qt6::Gui Qt6::Qml Qt6::Quick Qt6::QuickControls2 Qt6::Svg
+    Qt6::Core Qt6::Gui Qt6::Qml Qt6::Quick Qt6::QuickControls2 Qt6::Svg Qt6::Sql
     KF6::Crash KF6::DBusAddons KF6::I18n KF6::CoreAddons
     Discover::Common)
 

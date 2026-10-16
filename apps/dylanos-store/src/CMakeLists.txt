@@ -22,7 +22,7 @@ include(GenerateExportHeader)
 include(ECMQtDeclareLoggingCategory)
 include(ECMDeprecationSettings)
 
-find_package(Qt6 ${QT_MIN_VERSION} REQUIRED CONFIG COMPONENTS Core Gui Qml Quick QuickControls2 Svg Test Network Concurrent DBus)
+find_package(Qt6 ${QT_MIN_VERSION} REQUIRED CONFIG COMPONENTS Core Gui Qml Quick QuickControls2 Svg Sql Test Network Concurrent DBus)
 
 find_package(PkgConfig REQUIRED)
 

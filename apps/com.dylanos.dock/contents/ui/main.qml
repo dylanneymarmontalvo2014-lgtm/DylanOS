@@ -36,6 +36,7 @@ PlasmoidItem {
         //   find /usr/share/applications ~/.local/share/applications -iname "*dylanos*"
         launcherList: [
             "applications:dylanos-app-center.desktop",
+            "applications:org.dylanos.store.desktop",
             "applications:org.dylanos.calculator.desktop",
             "applications:org.kde.dolphin.desktop",
             "applications:org.kde.konsole.desktop",

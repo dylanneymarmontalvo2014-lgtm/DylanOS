@@ -86,6 +86,64 @@ class StoreStructureTest(unittest.TestCase):
         self.assertNotIn("plasma-discover", backend)
         self.assertIn('"store": ["dylanos-store"]', backend)
 
+    def test_sql_catalog_system(self):
+        import sqlite3
+        db_path = ROOT / "apps/dylanos-store/catalog/store.db"
+        self.assertTrue(db_path.exists(), "el catálogo SQLite debe vivir en el repo")
+        db = sqlite3.connect(db_path)
+        apps = db.execute("SELECT package, backend, shelf FROM apps").fetchall()
+        self.assertGreater(len(apps), 10)
+        valid_backends = {"apt", "flatpak"}
+        for package, backend, shelf in apps:
+            self.assertTrue(package, "toda app necesita al menos nombre de paquete")
+            self.assertIn(backend, valid_backends, f"gestor no válido: {backend}")
+            self.assertTrue(shelf, "toda app pertenece a una estantería")
+        # el gestor 'discover' del usuario se normaliza a flatpak en la app
+        self.assertFalse(any(b == "discover" for _, b, _ in apps))
+        db.close()
+
+    def test_sql_client_wiring(self):
+        sync_h = (STORE / "services/CatalogSync.h").read_text(encoding="utf-8")
+        sync_cpp = (STORE / "services/CatalogSync.cpp").read_text(encoding="utf-8")
+        self.assertIn("raw.githubusercontent.com", sync_cpp)
+        self.assertIn("applySeed", sync_h)
+        self.assertIn("refresh", sync_h)
+        controller = (STORE / "models/StoreController.h").read_text(encoding="utf-8")
+        self.assertIn("applyShelfRows", controller)
+        self.assertIn("shelfVersion", controller)
+        main_cpp = (STORE / "main.cpp").read_text(encoding="utf-8")
+        self.assertIn("applySeed()", main_cpp)
+        self.assertIn("CatalogSync::refresh", main_cpp)
+        cmake = (STORE / "CMakeLists.txt").read_text(encoding="utf-8")
+        self.assertIn("Qt6::Sql", cmake)
+        self.assertIn("catalog/store.db", cmake)
+        default = (ROOT / "packages/default/packages.list").read_text(encoding="utf-8")
+        self.assertIn("libqt6sql6-sqlite", default.split())
+
+    def test_hero_pager_drag_and_arrows(self):
+        home = (STORE / "qml/pages/HomePage.qml").read_text(encoding="utf-8")
+        self.assertIn("Keys.onLeftPressed", home)
+        self.assertIn("Keys.onRightPressed", home)
+        self.assertIn("prevHero()", home)
+        self.assertIn("nextHero()", home)
+        self.assertIn("heroSwipe", home)
+
+    def test_dock_and_panel_wiring(self):
+        dock = (ROOT / "apps/com.dylanos.dock/contents/ui/main.qml").read_text(encoding="utf-8")
+        self.assertIn("applications:org.dylanos.store.desktop", dock)
+        layout = (ROOT / "themes/lookandfeel/org.dylanos.crimson/contents/layouts/org.kde.plasma.desktop-layout.js").read_text(encoding="utf-8")
+        self.assertIn("applications:org.dylanos.store.desktop", layout)
+        # la barra superior se oculta bajo ventanas a pantalla completa
+        self.assertIn('menuBar.hiding = "letwindowscover"', layout)
+
+    def test_grub_live_visible_installed_hidden(self):
+        iso = (ROOT / "scripts/iso.sh").read_text(encoding="utf-8")
+        self.assertIn("set timeout=10", iso)
+        self.assertNotIn("set timeout=0", iso)
+        stage = (ROOT / "scripts/stage.py").read_text(encoding="utf-8")
+        self.assertIn("GRUB_TIMEOUT=0", stage)
+        self.assertIn("GRUB_TIMEOUT_STYLE=hidden", stage)
+
     def test_packages_and_build_wiring(self):
         default = (ROOT / "packages/default/packages.list").read_text(encoding="utf-8")
         self.assertNotIn("plasma-discover", default)
@@ -97,6 +155,7 @@ class StoreStructureTest(unittest.TestCase):
             self.assertIn(dev, build.split())
         buildsh = (ROOT / "scripts/build.sh").read_text(encoding="utf-8")
         self.assertIn("dylanos-store/build", buildsh)
+        self.assertIn("dylanos-store/catalog/store.db", buildsh)
         self.assertIn("ctest --test-dir /tmp/dylanos-src/dylanos-store/build", buildsh)
         self.assertIn("apt-get -y purge", buildsh)
 

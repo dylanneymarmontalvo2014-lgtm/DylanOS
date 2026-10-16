@@ -24,7 +24,8 @@ class StoreController : public QObject
     Q_PROPERTY(QString backendKind READ backendKind CONSTANT)
     Q_PROPERTY(AppModel *appModel READ appModel CONSTANT)
     Q_PROPERTY(QVariantList categories READ categories CONSTANT)
-    Q_PROPERTY(QVariantList collections READ collections CONSTANT)
+    Q_PROPERTY(QVariantList collections READ collections NOTIFY shelvesChanged)
+    Q_PROPERTY(int shelfVersion READ shelfVersion NOTIFY shelvesChanged)
     Q_PROPERTY(QStringList favorites READ favorites NOTIFY favoritesChanged)
     Q_PROPERTY(bool offline READ offline WRITE setOffline NOTIFY offlineChanged)
     Q_PROPERTY(int updateCount READ updateCount NOTIFY countsChanged)
@@ -53,6 +54,12 @@ public:
 
     QVariant resourceIcon(const QString &id) const { return m_backend->resourceIcon(id); }
 
+    // Catálogo editorial (SQLite remoto). Cada fila: package, backend
+    // ('apt'|'discover'|'flatpak'), shelf, position, display_name, summary.
+    // El resto de datos lo autocompleta la tienda desde el recurso encontrado.
+    void applyShelfRows(const QVariantList &rows, const QVariantList &collections);
+    int shelfVersion() const { return m_shelfVersion; }
+
     Q_INVOKABLE AppItem *app(const QString &id) const { return m_items.value(id); }
     Q_INVOKABLE QStringList list(const QString &name) const; // featured|popular|newest|essential|recommended|updates
     Q_INVOKABLE int categoryCount(const QString &id) const;
@@ -71,6 +78,7 @@ public:
 
 Q_SIGNALS:
     void toast(const QString &text, const QString &tone);
+    void shelvesChanged();
     void favoritesChanged();
     void offlineChanged();
     void countsChanged();
@@ -80,7 +88,7 @@ private:
     void onBackendState(const QString &id);
     void recount();
     void rebuildLists();
-    void addResources(const QVector<AbstractResource *> &resources);
+    void addResources(const QVector<AbstractResource *> &resources, const QString &backendKind);
     bool loadStoreConfig();
     QString mapCategory(AbstractResource *resource) const;
 
@@ -89,6 +97,10 @@ private:
     QHash<QString, AppItem *> m_items;
     QHash<QString, QStringList> m_lists;
     QHash<QString, QString> m_installedOnDates;
+    QHash<QString, AppItem *> m_byPackage;
+    QHash<QString, QStringList> m_collectionIds;
+    int m_shelfVersion = 0;
+    bool m_sqlApplied = false;
     QVariantList m_categories, m_collections, m_collectionDefs;
     QStringList m_favorites;
     QStringList m_curatedFeatured, m_curatedPopular, m_curatedEssential, m_curatedRecommended;

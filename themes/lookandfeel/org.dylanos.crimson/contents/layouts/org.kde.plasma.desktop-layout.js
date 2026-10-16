@@ -21,7 +21,10 @@ menuBar.location = "top";
 menuBar.height = Math.round(panelUnit * 2);
 menuBar.floating = false;
 menuBar.opacity = "translucent";
-menuBar.hiding = "none";
+// Con "letwindowscover" las ventanas maximizadas no la cubren (sigue
+// reservando su franja), pero una app a pantalla completa SÍ la cubre:
+// la barra superior se oculta sola en juegos, vídeo y fullscreen.
+menuBar.hiding = "letwindowscover";
 
 var launcher = menuBar.addWidget("org.kde.plasma.kickoff");
 launcher.currentConfigGroup = ["General"];
@@ -70,6 +73,7 @@ tasks.writeConfig("launchers", [
     "applications:firefox-esr.desktop",
     "applications:codium.desktop",
     "applications:dylanos-app-center.desktop",
+    "applications:org.dylanos.store.desktop",
     "applications:org.dylanos.settings.desktop",
     "applications:org.dylanos.calculator.desktop"
 ]);
