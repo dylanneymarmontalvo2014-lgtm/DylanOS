@@ -1,14 +1,18 @@
-name: Build
+name: Build validation
 
 on:
   push:
     branches: [main]
   pull_request:
 
+permissions:
+  contents: read
+
 jobs:
-  build:
+  validate:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
-      - name: Placeholder build step
-        run: echo "Build workflow placeholder"
+      - name: Check out source
+        uses: actions/checkout@v4
+      - name: Run static tests
+        run: ./scripts/test.sh
