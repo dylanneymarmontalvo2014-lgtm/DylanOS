@@ -42,7 +42,7 @@ Almacena la configuración predeterminada del sistema.
 - `scripts/iso.sh`: alias del proceso de construcción.
 - `scripts/test.sh`: valida las listas de paquetes, recursos gráficos y estructura básica.
 
-Consulta [la guía de construcción](docs/build.md) para instalar las dependencias y generar la ISO.
+Consulta [la guía de construcción](docs/build.md) para instalar las dependencias y generar la ISO. El comando local `dylanos-info` muestra información básica del sistema instalado; está descrito en [herramientas](docs/commands.md).
 
 ### Installer
 

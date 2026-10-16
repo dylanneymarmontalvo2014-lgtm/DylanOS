@@ -35,6 +35,7 @@ done
 
 # Baseline identity and machine defaults.
 cp -a "$ROOT_DIR/configs/system/rootfs/." "$INCLUDES/"
+install -D -m 0755 "$ROOT_DIR/configs/system/rootfs/usr/bin/dylanos-info" "$INCLUDES/usr/bin/dylanos-info"
 install -D -m 0644 "$ROOT_DIR/configs/bash/dylanos.bashrc" "$INCLUDES/etc/skel/.bashrc"
 install -D -m 0644 "$ROOT_DIR/configs/zsh/dylanos.zshrc" "$INCLUDES/etc/skel/.zshrc"
 install -D -m 0644 "$ROOT_DIR/configs/plasma/kdeglobals" "$INCLUDES/etc/skel/.config/kdeglobals"

@@ -8,6 +8,15 @@ for script in scripts/*.sh; do
   bash -n "$script"
 done
 
+info_tool="$ROOT_DIR/configs/system/rootfs/usr/bin/dylanos-info"
+[[ -f "$info_tool" ]] || { printf 'Missing executable: %s\\n' "$info_tool" >&2; exit 1; }
+sh "$info_tool" --help >/dev/null
+sh "$info_tool" --version | grep -q '^DylanOS'
+if sh "$info_tool" --unsupported >/dev/null 2>&1; then
+  printf 'dylanos-info unexpectedly accepted an invalid option\\n' >&2
+  exit 1
+fi
+
 python3 - <<'PY'
 from pathlib import Path
 import re
