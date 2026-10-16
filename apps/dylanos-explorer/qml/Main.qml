@@ -312,6 +312,8 @@ ApplicationWindow {
     Shortcut { sequence: "Ctrl+F"; enabled: !win.modalOpen; onActivated: header.search.focusField() }
     Shortcut { sequence: "Ctrl+,"; enabled: !win.modalOpen; onActivated: settings.open() }
     Shortcut { sequence: "Ctrl+H"; enabled: !win.modalOpen; onActivated: explorer.showHidden = !explorer.showHidden }
+    // Deshacer la última operación de archivos (KIO::UndoManager, como Dolphin).
+    Shortcut { sequence: "Ctrl+Z"; enabled: !win.modalOpen; onActivated: explorer.undo() }
     Shortcut { sequence: "Ctrl+Shift+N"; enabled: win.keysOn; onActivated: win.askNewFolder() }
     Shortcut { sequence: "Ctrl+A"; enabled: win.keysOn && !explorer.isHome; onActivated: explorer.model.selectAll() }
     Shortcut { sequence: "Ctrl+C"; enabled: win.keysOn && win.selCount > 0; onActivated: explorer.copySelection() }

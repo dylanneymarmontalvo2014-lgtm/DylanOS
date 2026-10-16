@@ -16,6 +16,18 @@ dylanos-explorer/
 └── tests/tst_fileoperations.cpp   QtTest sobre QTemporaryDir
 ```
 
+## Motor (basado en Dolphin)
+
+La capa de datos NO es propia: es la que Dolphin usa en producción (KIO/KF6), de modo que el
+comportamiento con la papelera, dispositivos, red, permisos y deshacer es idéntico al de Dolphin:
+
+- `FileListModel` lista con `KDirLister` (todos los protocolos, refresco automático, lotes).
+- `PlacesService` lee dispositivos/lugares con `KFilePlacesModel` (Solid) y monta bajo demanda.
+- `ExplorerController` ejecuta `KIO::trash/del/emptyTrash/restoreFromTrash`, abre con
+  `KIO::OpenUrlJob` y deshace con `KIO::FileUndoManager`. Las copias/movimientos locales se
+  mantienen en `FileOperations` (probados por unidad) y las remotas van por KIO.
+- `FileOperations` conserva las rutas protegidas y el análisis `.trashinfo`.
+
 ## Capas
 
 1. **`services/FileOperations` y `Formatters`**: Qt Core únicamente, sin dependencia de QML.

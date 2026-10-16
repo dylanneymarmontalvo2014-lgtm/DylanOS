@@ -7,6 +7,11 @@ set(CMAKE_AUTOMOC ON)
 
 # Qt 6.4 is what Debian 12 ships; Debian 13 ships 6.8. Nothing newer is required.
 find_package(Qt6 6.4 REQUIRED COMPONENTS Core Gui Qml Quick QuickControls2 Concurrent)
+# ECM aporta FindKF6 (paquete paraguas de componentes KDE) como en el resto
+# de DylanOS; sin esto el configure no encuentra KF6Config.cmake en Debian.
+find_package(ECM 6.10 REQUIRED NO_MODULE)
+set(CMAKE_MODULE_PATH ${ECM_MODULE_PATH} "${CMAKE_CURRENT_SOURCE_DIR}/cmake;${CMAKE_MODULE_PATH}")
+find_package(KF6 6.10 REQUIRED COMPONENTS KIO)
 find_package(Qt6 6.4 QUIET OPTIONAL_COMPONENTS Test)
 qt_standard_project_setup()
 
@@ -76,9 +81,18 @@ qt_add_qml_module(dylanos-explorer
 )
 
 target_include_directories(dylanos-explorer PRIVATE src src/models src/services)
+# Debian instala las cabeceras de KF6 en /usr/include/KF6/<Componente> y exporta
+# solo ese subdirectorio; los includes estilo <KIOCore/xxx.h> necesitan además
+# la raíz de KF6, que derivamos de la cabecera encontrada (sin hardcodear rutas).
+find_path(KF6_KIO_HEADER kfileitem.h HINTS /usr/include/KF6/KIOCore /usr/include/KF6/KIOFileWidgets)
+if(KF6_KIO_HEADER)
+    get_filename_component(KF6_HEADERS_ROOT "${KF6_KIO_HEADER}/.." ABSOLUTE)
+    target_include_directories(dylanos-explorer PRIVATE "${KF6_HEADERS_ROOT}")
+endif()
 target_link_libraries(dylanos-explorer PRIVATE
     explorer_services
     Qt6::Core Qt6::Gui Qt6::Qml Qt6::Quick Qt6::QuickControls2 Qt6::Concurrent
+    KF6::KIOCore KF6::KIOGui KF6::KIOFileWidgets
 )
 
 # --- Install -------------------------------------------------------------------

@@ -4,6 +4,7 @@
 #include "services/FileOperations.h"
 
 #include <QFutureWatcher>
+#include <QUrl>
 #include <QObject>
 #include <QStringList>
 #include <QVariantMap>
@@ -11,6 +12,10 @@
 
 #include <atomic>
 #include <functional>
+
+namespace KIO {
+class Job;
+}
 
 // QML-facing application controller: navigation history, view settings,
 // clipboard (shared with other file managers through the system clipboard),
@@ -89,6 +94,8 @@ public:
     Q_INVOKABLE void restoreSelection();
     Q_INVOKABLE void emptyTrash();
     Q_INVOKABLE void cancelOperation();
+    // Deshacer la última operación de archivos (motor de Dolphin).
+    Q_INVOKABLE void undo();
 
     // properties dialog
     Q_INVOKABLE QVariantMap properties(const QString &path) const;
@@ -116,6 +123,7 @@ private:
     void setLocation(const QString &loc);
     void runJob(const QString &label, JobFn job, DoneFn done);
     void onJobFinished();
+    void runKioJob(const QString &label, KIO::Job *job, const QString &doneMessage);
     void setClipboard(bool cut);
     QStringList selectionOrNotify(const QString &emptyMessage);
     QStringList clipboardPaths(bool *cut) const;
@@ -135,6 +143,8 @@ private:
     double m_progress = 0;
     QString m_progressText;
     std::atomic_bool m_cancel{false};
+    KIO::Job *m_kioJob = nullptr;
+    bool m_mountWired = false;
     QFutureWatcher<FileOperations::Result> m_watcher;
     DoneFn m_onDone;
     int m_sizeToken = 0;

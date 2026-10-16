@@ -7,16 +7,33 @@
 #include <QElapsedTimer>
 #include <QFileInfo>
 #include <QMimeDatabase>
+#include <KIOWidgets/kdirlister.h>
 
 #include <algorithm>
 
 namespace {
 constexpr int kMaxSearchResults = 5000;
 constexpr int kSearchBudgetMs = 600;
+
+bool isUrlLocation(const QString &loc)
+{
+    const int scheme = loc.indexOf(QLatin1Char(':'));
+    return scheme > 0 && loc.at(0).isLetter();
+}
+
+QString itemPath(const KFileItem &item)
+{
+    const QUrl url = item.url();
+    if (url.isLocalFile())
+        return url.toLocalFile();
+    return url.toString();
+}
+
 } // namespace
 
 FileListModel::FileListModel(QObject *parent)
     : QAbstractListModel(parent)
+    , m_lister(new KDirLister(this))
 {
     m_collator.setNumericMode(true);
     m_collator.setCaseSensitivity(Qt::CaseInsensitive);
@@ -24,7 +41,50 @@ FileListModel::FileListModel(QObject *parent)
     m_reloadTimer.setSingleShot(true);
     m_reloadTimer.setInterval(200);
     connect(&m_reloadTimer, &QTimer::timeout, this, &FileListModel::reload);
-    connect(&m_watcher, &QFileSystemWatcher::directoryChanged, this, [this] { m_reloadTimer.start(); });
+
+    // Motor de listado de Dolphin (KIO): todos los protocolos (trash:/,
+    // remote:/, smb:/, mtp:), refresco automático y lotes progresivos.
+    connect(m_lister, &KDirLister::newItems, this, [this](const KFileItemList &items) {
+        if (m_path.isEmpty() || !m_search.isEmpty())
+            return;
+        QVector<Entry> entries = m_entries;
+        for (const KFileItem &item : items) {
+            const Entry e = makeEntry(item);
+            if (!m_showHidden && e.hidden)
+                continue;
+            entries.append(e);
+        }
+        publishEntries(entries);
+    });
+    connect(m_lister, &KDirLister::completed, this, [this] {
+        if (m_path.isEmpty() || !m_search.isEmpty())
+            return;
+        setErrorKind(QString());
+        emit loaded();
+    });
+    connect(m_lister, &KDirLister::canceled, this, [this] {
+        if (m_path.isEmpty() || !m_search.isEmpty())
+            return;
+        const QUrl url = m_lister->url();
+        if (url.isLocalFile()) {
+            const QFileInfo di(url.toLocalFile());
+            if (!di.exists())
+                setErrorKind(QStringLiteral("missing"));
+            else if (!di.isDir())
+                setErrorKind(QStringLiteral("notdir"));
+            else if (!di.isReadable() || !di.isExecutable())
+                setErrorKind(QStringLiteral("permission"));
+        } else if (m_entries.isEmpty()) {
+            // URL remota cancelada sin datos: sin permiso o inaccesible.
+            setErrorKind(QStringLiteral("permission"));
+        }
+        emit loaded();
+    });
+    connect(m_lister, &KDirLister::itemsDeleted, this, [this](const KFileItemList &) {
+        if (m_path.isEmpty() || !m_search.isEmpty())
+            return;
+        m_reloadTimer.start();
+    });
 }
 
 int FileListModel::rowCount(const QModelIndex &parent) const
@@ -111,17 +171,12 @@ QVariant FileListModel::data(const QModelIndex &index, int role) const
 
 void FileListModel::setPath(const QString &path)
 {
-    const QString clean = path.isEmpty() ? QString() : QDir::cleanPath(path);
+    const QString clean = path.isEmpty() ? QString() : (isUrlLocation(path) ? path : QDir::cleanPath(path));
     if (clean == m_path)
         return;
-    const auto watched = m_watcher.directories();
-    if (!watched.isEmpty())
-        m_watcher.removePaths(watched);
     m_path = clean;
     m_selected.clear();
     m_anchor = -1;
-    if (!m_path.isEmpty())
-        m_watcher.addPath(m_path);
     emit pathChanged();
     reload();
     emit selectionChanged();
@@ -178,6 +233,21 @@ FileListModel::Entry FileListModel::makeEntry(const QFileInfo &fi)
     return e;
 }
 
+FileListModel::Entry FileListModel::makeEntry(const KFileItem &item)
+{
+    Entry e;
+    e.name = item.name();
+    e.path = itemPath(item);
+    e.symlink = item.isLink();
+    e.isDir = item.isDir();
+    e.hidden = item.isHidden();
+    e.readable = item.isReadable();
+    e.size = e.isDir ? 0 : item.size();
+    e.modified = item.time(KFileItem::ModificationTime);
+    e.suffix = e.isDir ? QString() : QFileInfo(item.name()).suffix().toLower();
+    return e;
+}
+
 void FileListModel::sortEntries(QVector<Entry> &entries) const
 {
     std::stable_sort(entries.begin(), entries.end(), [this](const Entry &a, const Entry &b) {
@@ -207,50 +277,88 @@ void FileListModel::sortEntries(QVector<Entry> &entries) const
 
 void FileListModel::reload()
 {
+    const QString needle = m_search.trimmed();
+
+    // Búsqueda recursiva: igual que antes, local y con tope de resultados.
+    if (!m_path.isEmpty() && !needle.isEmpty()) {
+        reloadSearch(needle);
+        return;
+    }
+
+    if (m_path.isEmpty()) {
+        publishEntries({});
+        setErrorKind(QString());
+        m_truncated = false;
+        return;
+    }
+
+    // Listado de carpeta: motor KIO de Dolphin (asíncrono, todos los
+    // protocolos). Los errores locales se detectan aquí de inmediato para
+    // conservar los estados de la interfaz; los remotos llegan vía canceled().
+    const QUrl url = QUrl::fromUserInput(m_path);
+    if (url.isLocalFile()) {
+        const QFileInfo di(url.toLocalFile());
+        if (!di.exists()) {
+            publishEntries({});
+            setErrorKind(QStringLiteral("missing"));
+            return;
+        }
+        if (!di.isDir()) {
+            publishEntries({});
+            setErrorKind(QStringLiteral("notdir"));
+            return;
+        }
+        if (!di.isReadable() || !di.isExecutable()) {
+            publishEntries({});
+            setErrorKind(QStringLiteral("permission"));
+            return;
+        }
+    }
+    setErrorKind(QString());
+    if (m_lister->url() != url) {
+        // Cambio de carpeta: vacía de inmediato; el listado llega por lotes.
+        publishEntries({});
+    }
+    m_lister->setShowHiddenFiles(m_showHidden);
+    m_lister->openUrl(url);
+}
+
+void FileListModel::reloadSearch(const QString &needle)
+{
     QVector<Entry> entries;
     QString errorKind;
     bool truncated = false;
 
-    if (!m_path.isEmpty()) {
-        const QFileInfo di(m_path);
-        if (!di.exists()) {
-            errorKind = QStringLiteral("missing");
-        } else if (!di.isDir()) {
-            errorKind = QStringLiteral("notdir");
-        } else if (!di.isReadable() || !di.isExecutable()) {
-            errorKind = QStringLiteral("permission");
-        } else {
-            QDir::Filters f = QDir::AllEntries | QDir::NoDotAndDotDot | QDir::System;
-            if (m_showHidden)
-                f |= QDir::Hidden;
-            const QString needle = m_search.trimmed();
-            if (needle.isEmpty()) {
-                const auto list = QDir(m_path).entryInfoList(f, QDir::NoSort);
-                entries.reserve(int(list.size()));
-                for (const QFileInfo &fi : list)
-                    entries.append(makeEntry(fi));
-            } else {
-                const QDir base(m_path);
-                QDirIterator it(m_path, f, QDirIterator::Subdirectories);
-                QElapsedTimer timer;
-                timer.start();
-                while (it.hasNext()) {
-                    it.next();
-                    const QFileInfo fi = it.fileInfo();
-                    if (fi.fileName().contains(needle, Qt::CaseInsensitive)) {
-                        Entry e = makeEntry(fi);
-                        const QString rel = base.relativeFilePath(fi.absolutePath());
-                        e.location = rel == QLatin1String(".") ? QString() : rel;
-                        entries.append(e);
-                    }
-                    if (entries.size() >= kMaxSearchResults || timer.elapsed() > kSearchBudgetMs) {
-                        truncated = true;
-                        break;
-                    }
-                }
+    const QFileInfo di(m_path);
+    if (!di.exists()) {
+        errorKind = QStringLiteral("missing");
+    } else if (!di.isDir()) {
+        errorKind = QStringLiteral("notdir");
+    } else if (!di.isReadable() || !di.isExecutable()) {
+        errorKind = QStringLiteral("permission");
+    } else {
+        QDir::Filters f = QDir::AllEntries | QDir::NoDotAndDotDot | QDir::System;
+        if (m_showHidden)
+            f |= QDir::Hidden;
+        const QDir base(m_path);
+        QDirIterator it(m_path, f, QDirIterator::Subdirectories);
+        QElapsedTimer timer;
+        timer.start();
+        while (it.hasNext()) {
+            it.next();
+            const QFileInfo fi = it.fileInfo();
+            if (fi.fileName().contains(needle, Qt::CaseInsensitive)) {
+                Entry e = makeEntry(fi);
+                const QString rel = base.relativeFilePath(fi.absolutePath());
+                e.location = rel == QLatin1String(".") ? QString() : rel;
+                entries.append(e);
             }
-            sortEntries(entries);
+            if (entries.size() >= kMaxSearchResults || timer.elapsed() > kSearchBudgetMs) {
+                truncated = true;
+                break;
+            }
         }
+        sortEntries(entries);
     }
 
     beginResetModel();
@@ -270,6 +378,29 @@ void FileListModel::reload()
     emit loaded();
     if (selectionShrank)
         emit selectionChanged();
+}
+
+void FileListModel::publishEntries(const QVector<Entry> &entries)
+{
+    beginResetModel();
+    m_entries = entries;
+    m_countCache.clear();
+    QSet<QString> keep;
+    for (const Entry &e : std::as_const(m_entries))
+        if (m_selected.contains(e.path))
+            keep.insert(e.path);
+    m_selected = keep;
+    m_anchor = -1;
+    endResetModel();
+    emit loaded();
+}
+
+void FileListModel::setErrorKind(const QString &kind)
+{
+    if (kind == m_errorKind)
+        return;
+    m_errorKind = kind;
+    emit loaded();
 }
 
 void FileListModel::notifySelection()

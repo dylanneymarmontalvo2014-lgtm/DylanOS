@@ -26,6 +26,25 @@ class ExplorerStructureTest(unittest.TestCase):
         self.assertIn("URI DylanOS.Explorer", cmake)
         self.assertIn("Qt6::Concurrent", cmake)
 
+    def test_dolphin_engine(self):
+        # El motor de datos es el de Dolphin (KIO), no una reimplementación.
+        model = (APP / "src/models/FileListModel.cpp").read_text(encoding="utf-8")
+        self.assertIn("KDirLister", model)
+        places = (APP / "src/models/PlacesService.cpp").read_text(encoding="utf-8")
+        self.assertIn("KFilePlacesModel", places)
+        self.assertIn("requestSetup", places)
+        ctl = (APP / "src/services/ExplorerController.cpp").read_text(encoding="utf-8")
+        self.assertIn("KIO::trash", ctl)
+        self.assertIn("KIO::emptyTrash", ctl)
+        self.assertIn("KIO::restoreFromTrash", ctl)
+        self.assertIn("FileUndoManager", ctl)
+        self.assertIn("OpenUrlJob", ctl)
+        cmake = (APP / "CMakeLists.txt").read_text(encoding="utf-8")
+        self.assertIn("KF6::KIOCore", cmake)
+        self.assertIn("KF6::KIOFileWidgets", cmake)
+        main_qml = (APP / "qml/Main.qml").read_text(encoding="utf-8")
+        self.assertIn('Ctrl+Z', main_qml)  # deshacer, como Dolphin
+
     def test_no_web_runtime(self):
         main = (APP / "src/main.cpp").read_text(encoding="utf-8")
         self.assertIn("QQmlApplicationEngine", main)
@@ -60,9 +79,13 @@ class ExplorerStructureTest(unittest.TestCase):
         self.assertIn('"explorer", "Archivos", "dylanos-explorer"', stage)
         layout = (ROOT / "themes/lookandfeel/org.dylanos.crimson/contents/layouts/org.kde.plasma.desktop-layout.js").read_text(encoding="utf-8")
         self.assertIn("applications:org.dylanos.explorer.desktop", layout)
-        # dolphin permanece instalado como vía de reversión (no se desinstala)
+        # Un solo explorador: dolphin ya no se envía en el ISO; el Explorer
+        # (motor KIO de Dolphin) es el gestor de archivos del sistema.
         default = (ROOT / "packages/default/packages.list").read_text(encoding="utf-8")
-        self.assertIn("dolphin", default.split())
+        package_lines = [l.strip() for l in default.splitlines() if l.strip() and not l.strip().startswith("#")]
+        self.assertNotIn("dolphin", package_lines)
+        stage = (ROOT / "scripts/stage.py").read_text(encoding="utf-8")
+        self.assertIn("inode/directory=org.dylanos.explorer.desktop", stage)
 
     def test_build_wiring(self):
         buildsh = (ROOT / "scripts/build.sh").read_text(encoding="utf-8")

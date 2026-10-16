@@ -40,5 +40,8 @@ public:
     static QString trashInfoDir();
     static bool isInTrash(const QString &path);
     static Result restoreFromTrash(const QStringList &paths);
+    // Ubicación original de un elemento de la papelera (trash:/URL o ruta en
+    // ~/.local/share/Trash/files). Vacía si no hay .trashinfo válido.
+    static QString trashOrigin(const QString &path);
     static Result emptyTrash();
 };

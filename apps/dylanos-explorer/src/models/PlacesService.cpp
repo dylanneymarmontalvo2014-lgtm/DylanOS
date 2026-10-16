@@ -9,6 +9,7 @@
 #include <QStandardPaths>
 #include <QStorageInfo>
 #include <QtConcurrent>
+#include <KIOFileWidgets/kfileplacesmodel.h>
 
 #include <algorithm>
 
@@ -66,9 +67,34 @@ QVariantList scanRecent(const QStringList &roots, int limit)
 
 } // namespace
 
+PlacesService *PlacesService::s_instance = nullptr;
+
+PlacesService *PlacesService::instance()
+{
+    return s_instance;
+}
+
 PlacesService::PlacesService(QObject *parent)
     : QObject(parent)
 {
+    s_instance = this;
+    m_places = new KFilePlacesModel(this);
+    connect(m_places, &KFilePlacesModel::rowsInserted, this, [this] { refreshDevices(); });
+    connect(m_places, &KFilePlacesModel::rowsRemoved, this, [this] { refreshDevices(); });
+    connect(m_places, &KFilePlacesModel::dataChanged, this, [this](const QModelIndex &, const QModelIndex &) { refreshDevices(); });
+    connect(m_places, &KFilePlacesModel::setupDone, this, [this](const QModelIndex &idx, bool success) {
+        refreshDevices();
+        const QUrl url = m_places->url(idx);
+        if (!m_pendingSetup.isEmpty()) {
+            const QString done = m_pendingSetup;
+            m_pendingSetup.clear();
+            if (success)
+                emit mounted(done.isEmpty() ? url.toString() : done);
+            else
+                m_lastSetupFailed = true;
+        }
+    });
+
     auto fav = [this](const QString &name, const QString &icon, const QString &path) {
         m_favorites.append(QVariantMap{{"name", name}, {"icon", icon}, {"path", path}});
     };
@@ -120,42 +146,69 @@ void PlacesService::refresh()
 
 void PlacesService::refreshDevices()
 {
+    // Unidades y volúmenes exactamente como los ve Dolphin (KFilePlacesModel,
+    // Solid): etiquetas correctas, entradas ocultas filtradas y estado de
+    // montaje real. El espacio libre se lee del punto de montaje.
     QVariantList list;
-    QSet<QByteArray> seen;
-    const auto volumes = QStorageInfo::mountedVolumes();
-    for (const QStorageInfo &s : volumes) {
-        if (!s.isValid() || !s.isReady())
+    const auto rows = m_places->rowCount();
+    for (int r = 0; r < rows; ++r) {
+        const QModelIndex idx = m_places->index(r, 0);
+        if (!m_places->isDevice(idx))
             continue;
-        const QString mp = s.rootPath();
-        if (!s.isRoot()) {
-            const QByteArray dev = s.device();
-            if (!dev.startsWith("/dev/") || seen.contains(dev))
-                continue;
-            static const QStringList skip = {"/boot", "/snap", "/var/lib", "/sys", "/proc", "/dev"};
-            bool hidden = false;
-            for (const QString &pre : skip)
-                if (mp == pre || mp.startsWith(pre + QLatin1Char('/')))
-                    hidden = true;
-            if (hidden)
-                continue;
-        }
-        seen.insert(s.device());
-        QString name = s.isRoot() ? QStringLiteral("DylanOS") : s.name();
-        if (name.isEmpty())
-            name = QFileInfo(mp).fileName();
-        const qint64 total = s.bytesTotal();
-        const qint64 avail = s.bytesAvailable();
+        const QUrl url = m_places->url(idx);
+        const bool mounted = url.isLocalFile() && QFileInfo(url.toLocalFile()).exists();
+        const QString mountPoint = mounted ? url.toLocalFile() : QString();
         QVariantMap m;
-        m["name"] = name;
-        m["path"] = mp;
-        m["usedFraction"] = total > 0 ? 1.0 - double(avail) / double(total) : 0.0;
-        m["text"] = QStringLiteral("%1 disponibles de %2").arg(Formatters::capacity(avail), Formatters::capacity(total));
+        m["name"] = m_places->text(idx);
+        m["path"] = url.toString();
+        m["mounted"] = mounted;
+        if (mounted && !mountPoint.isEmpty()) {
+            const QStorageInfo s(mountPoint);
+            const qint64 total = s.bytesTotal();
+            const qint64 avail = s.bytesAvailable();
+            m["usedFraction"] = total > 0 ? 1.0 - double(avail) / double(total) : 0.0;
+            m["text"] = QStringLiteral("%1 disponibles de %2").arg(Formatters::capacity(avail), Formatters::capacity(total));
+        } else {
+            m["usedFraction"] = 0.0;
+            m["text"] = QStringLiteral("Sin montar — clic para montar");
+        }
         list.append(m);
     }
     if (list != m_devices) {
         m_devices = list;
         emit devicesChanged();
     }
+}
+
+bool PlacesService::isUnmountedDevice(const QString &url) const
+{
+    const QUrl want(url);
+    const auto rows = m_places->rowCount();
+    for (int r = 0; r < rows; ++r) {
+        const QModelIndex idx = m_places->index(r, 0);
+        if (m_places->isDevice(idx) && m_places->url(idx) == want && !(want.isLocalFile() && QFileInfo(want.toLocalFile()).exists()))
+            return true;
+    }
+    return false;
+}
+
+void PlacesService::requestSetup(const QString &url)
+{
+    const QUrl want(url);
+    const auto rows = m_places->rowCount();
+    for (int r = 0; r < rows; ++r) {
+        const QModelIndex idx = m_places->index(r, 0);
+        if (m_places->isDevice(idx) && m_places->url(idx) == want && !(want.isLocalFile() && QFileInfo(want.toLocalFile()).exists())) {
+            m_pendingSetup = url;
+            m_places->requestSetup(idx);
+            return;
+        }
+    }
+}
+
+void PlacesService::watchSetup(const QString &url)
+{
+    m_pendingSetup = url;
 }
 
 void PlacesService::refreshHomeFolders()
