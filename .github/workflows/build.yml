@@ -16,3 +16,25 @@ jobs:
         uses: actions/checkout@v4
       - name: Run static tests
         run: ./scripts/test.sh
+
+  resolve-packages:
+    runs-on: ubuntu-latest
+    container:
+      image: debian:stable-slim
+    steps:
+      - name: Check out source
+        uses: actions/checkout@v4
+      - name: Enable Debian archive components
+        run: |
+          rm -f /etc/apt/sources.list.d/debian.sources
+          cat > /etc/apt/sources.list.d/dylanos.sources <<'EOF'
+          Types: deb
+          URIs: http://deb.debian.org/debian
+          Suites: stable
+          Components: main contrib non-free non-free-firmware
+          Signed-By: /usr/share/keyrings/debian-archive-keyring.gpg
+          EOF
+      - name: Update package index
+        run: apt-get update
+      - name: Simulate package installation
+        run: grep -hEv '^[[:space:]]*(#|$)' packages/*/packages.list | xargs -r apt-get --simulate --no-install-recommends install
