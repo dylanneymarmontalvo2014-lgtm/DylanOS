@@ -1,0 +1,41 @@
+#!/bin/sh
+set -eu
+
+usage() {
+    cat <<'EOF'
+Usage: dylanos-wallpaper [--help]
+
+Apply the bundled DylanOS wallpaper to the current KDE Plasma session.
+Run this command from a logged-in desktop session. The change affects the
+current user's desktop only; it does not change other users' settings.
+EOF
+}
+
+case "${1:-}" in
+    --help|-h)
+        usage
+        exit 0
+        ;;
+    '')
+        ;;
+    *)
+        usage >&2
+        exit 2
+        ;;
+esac
+
+wallpaper=/usr/share/backgrounds/dylanos/wallpaper.png
+if [ ! -r "$wallpaper" ]; then
+    printf 'DylanOS wallpaper not found: %s\n' "$wallpaper" >&2
+    exit 1
+fi
+if ! command -v plasma-apply-wallpaperimage >/dev/null 2>&1; then
+    printf 'KDE Plasma wallpaper helper is unavailable.\n' >&2
+    exit 127
+fi
+if [ -z "${DBUS_SESSION_BUS_ADDRESS:-}" ]; then
+    printf 'Run this command from a logged-in KDE Plasma session.\n' >&2
+    exit 1
+fi
+
+exec plasma-apply-wallpaperimage "$wallpaper"
