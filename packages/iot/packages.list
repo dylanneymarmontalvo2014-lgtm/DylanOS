@@ -1,0 +1,9 @@
+# Serial, bus, and embedded-device utilities.
+avrdude
+i2c-tools
+minicom
+mosquitto-clients
+openocd
+picocom
+python3-serial
+usbutils
