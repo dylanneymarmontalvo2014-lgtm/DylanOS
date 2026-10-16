@@ -92,6 +92,13 @@ for app in calculator dylanos-app-center; do
     chroot "$CHROOT" cmake --build "/tmp/dylanos-src/$app/build" --parallel 2
     chroot "$CHROOT" cmake --install "/tmp/dylanos-src/$app/build"
 done
+# DylanOS Explorer: gestor de archivos nativo (Qt6/QML).
+mkdir -p "$CHROOT/tmp/dylanos-src/dylanos-explorer"
+cp -a "$ROOT/apps/dylanos-explorer/." "$CHROOT/tmp/dylanos-src/dylanos-explorer/"
+chroot "$CHROOT" cmake -S /tmp/dylanos-src/dylanos-explorer -B /tmp/dylanos-src/dylanos-explorer/build -GNinja -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX=/usr
+chroot "$CHROOT" cmake --build /tmp/dylanos-src/dylanos-explorer/build --parallel 2
+chroot "$CHROOT" ctest --test-dir /tmp/dylanos-src/dylanos-explorer/build --output-on-failure
+chroot "$CHROOT" cmake --install /tmp/dylanos-src/dylanos-explorer/build
 # DylanOS Store: fork nativo de Discover (libdiscover + UI del prototipo).
 mkdir -p "$CHROOT/tmp/dylanos-src/dylanos-store" "$CHROOT/tmp/dylanos-src/catalog"
 cp -a "$ROOT/apps/dylanos-store/src/." "$CHROOT/tmp/dylanos-src/dylanos-store/"

@@ -239,7 +239,7 @@ class Backend(QObject):
         self.work(lambda: str(create_project(parent, name, template)), self.projectCreated.emit)
 
     def launch(self, args):
-        friendly = {"dylanos-store": "DylanOS Store", "plasma-systemmonitor": "Monitor del sistema",
+        friendly = {"dylanos-store": "DylanOS Store", "dylanos-explorer": "Archivos", "plasma-systemmonitor": "Monitor del sistema",
                     "systemsettings": "Ajustes del sistema", "konsole": "Terminal", "dolphin": "Archivos"}
         if not shutil.which(args[0]):
             self.message.emit(f"{friendly.get(args[0], args[0])} no está instalado. Puedes instalarlo desde DylanOS Store.")
@@ -274,8 +274,8 @@ class Backend(QObject):
             "keyboard": ["systemsettings", "kcm_keyboard"], "users": ["systemsettings", "kcm_users"],
             "appearance": ["systemsettings", "kcm_lookandfeel"],
             "store": ["dylanos-store"], "updates": ["dylanos-store", "--mode", "Update"],
-            "calculator": ["dylanos-calculator"], "monitor": ["plasma-systemmonitor"],
-            "screenshot": ["spectacle"], "documents": ["libreoffice"], "files": ["dolphin"],
+            "calculator": ["dylanos-calculator"], "monitor": ["plasma-systemmonitor"], "files": ["dylanos-explorer"],
+            "screenshot": ["spectacle"], "documents": ["libreoffice"], 
         }
         if name in commands:
             self.launch(commands[name])

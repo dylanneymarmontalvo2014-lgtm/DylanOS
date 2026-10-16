@@ -1,0 +1,12 @@
+[Desktop Entry]
+Type=Application
+Name=DylanOS Explorer
+GenericName=Gestor de archivos
+Comment=Gestor de archivos de DylanOS Crimson
+Exec=dylanos-explorer %U
+Icon=dylanos-explorer
+Terminal=false
+Categories=System;FileTools;FileManager;Qt;
+StartupWMClass=dylanos-explorer
+MimeType=inode/directory;
+StartupNotify=true

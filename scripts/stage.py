@@ -138,7 +138,7 @@ exec /usr/bin/python3 /usr/share/dylanos/installer/native/main.py "$@"
     remove("/etc/xdg/autostart/org.kde.discover.notifier.desktop")
     for key, name, icon, category in [
         ("welcome", "Bienvenido a DylanOS", "distributor-logo-dylanos", "Utility"),
-        ("files", "Archivos", "system-file-manager", "System;FileTools;FileManager"),
+        ("explorer", "Archivos", "dylanos-explorer", "System;FileTools;FileManager"),
         ("notes", "Notas", "accessories-text-editor", "Utility;TextEditor"),
         ("dev", "Desarrollo DylanOS", "applications-development", "Development"),
         ("monitor", "Monitor DylanOS", "utilities-system-monitor", "System;Monitor"),
