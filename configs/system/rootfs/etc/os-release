@@ -1,0 +1,9 @@
+NAME="DylanOS"
+ID=dylanos
+ID_LIKE=debian
+PRETTY_NAME="DylanOS 0.1.0 Alpha"
+VERSION="0.1.0 Alpha"
+VERSION_ID="0.1.0"
+VARIANT="Live"
+VARIANT_ID=live
+LOGO=dylanos

@@ -1,0 +1,9 @@
+---
+componentName: dylanos
+productName: DylanOS
+shortProductName: DylanOS
+version: 0.1.0 Alpha
+shortVersion: 0.1.0
+bootloaderEntryName: DylanOS
+productUrl: https://github.com/dylanneymarmontalvo2014-lgtm/DylanOS
+welcomePageLogo: branding.svg

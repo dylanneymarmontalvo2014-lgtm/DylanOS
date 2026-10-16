@@ -1,0 +1,13 @@
+# DylanOS Plymouth script theme.
+# The artwork is centered and the background remains legible on all displays.
+Window.SetBackgroundTopColor(0.035, 0.075, 0.16);
+Window.SetBackgroundBottomColor(0.12, 0.08, 0.29);
+logo_image = Image("dylanos.png");
+logo_sprite = Sprite(logo_image);
+logo_sprite.SetPosition(Window.GetWidth() / 2 - logo_image.GetWidth() / 2, Window.GetHeight() / 2 - logo_image.GetHeight() / 2, 10000);
+fun message_callback (text) {
+  message_image = Image.Text(text, 0.82, 0.86, 0.96);
+  message_sprite = Sprite(message_image);
+  message_sprite.SetPosition(Window.GetWidth() / 2 - message_image.GetWidth() / 2, Window.GetHeight() * 3 / 4, 10000);
+}
+Plymouth.SetMessageFunction(message_callback);

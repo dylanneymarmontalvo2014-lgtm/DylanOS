@@ -1,0 +1,42 @@
+#!/bin/sh
+set -eu
+
+usage() {
+    cat <<'EOF'
+Usage: dylanos-info [--help|--version]
+
+Show a short, local summary of the DylanOS system.
+With no option, print the release name, kernel, architecture, and desktop session.
+EOF
+}
+
+release_name() {
+    if [ -r /etc/dylan-release ]; then
+        IFS= read -r name < /etc/dylan-release || name=DylanOS
+        printf '%s\n' "${name:-DylanOS}"
+    else
+        printf '%s\n' 'DylanOS'
+    fi
+}
+
+case "${1:-}" in
+    --help|-h)
+        usage
+        exit 0
+        ;;
+    --version|-V)
+        release_name
+        exit 0
+        ;;
+    '')
+        ;;
+    *)
+        usage >&2
+        exit 2
+        ;;
+esac
+
+printf 'System: %s\n' "$(release_name)"
+printf 'Kernel: %s\n' "$(uname -sr)"
+printf 'Architecture: %s\n' "$(uname -m)"
+printf 'Desktop session: %s\n' "${XDG_CURRENT_DESKTOP:-not detected}"

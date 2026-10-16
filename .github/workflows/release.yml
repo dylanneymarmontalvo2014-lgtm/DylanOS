@@ -1,14 +1,55 @@
-name: Release
+name: Build and release ISO
 
 on:
+  workflow_dispatch:
   push:
     tags:
       - 'v*'
 
+permissions:
+  contents: read
+
 jobs:
-  release:
+  build-iso:
     runs-on: ubuntu-latest
+    timeout-minutes: 180
+    permissions:
+      contents: read
     steps:
-      - uses: actions/checkout@v4
-      - name: Placeholder release step
-        run: echo "Release workflow placeholder"
+      - name: Check out source
+        uses: actions/checkout@v4
+      - name: Install Debian Live build dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install --yes live-build debootstrap squashfs-tools xorriso
+      - name: Run static tests
+        run: ./scripts/test.sh
+      - name: Build ISO
+        run: sudo scripts/build.sh
+      - name: Name release image
+        env:
+          RELEASE_TAG: ${{ github.ref_name }}
+        run: cp build/live-build/binary.hybrid.iso "DylanOS-${RELEASE_TAG}-amd64.iso"
+      - name: Upload ISO artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: DylanOS-${{ github.ref_name }}-amd64
+          path: DylanOS-${{ github.ref_name }}-amd64.iso
+          if-no-files-found: error
+
+  publish-release:
+    if: startsWith(github.ref, 'refs/tags/')
+    needs: build-iso
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - name: Download built ISO
+        uses: actions/download-artifact@v4
+        with:
+          name: DylanOS-${{ github.ref_name }}-amd64
+          path: dist
+      - name: Publish tagged release
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: gh release create "$GITHUB_REF_NAME" "dist/DylanOS-${GITHUB_REF_NAME}-amd64.iso" --title "DylanOS $GITHUB_REF_NAME" --generate-notes
