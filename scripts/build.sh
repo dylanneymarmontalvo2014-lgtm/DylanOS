@@ -93,8 +93,9 @@ for app in calculator dylanos-app-center; do
     chroot "$CHROOT" cmake --install "/tmp/dylanos-src/$app/build"
 done
 # DylanOS Store: fork nativo de Discover (libdiscover + UI del prototipo).
-mkdir -p "$CHROOT/tmp/dylanos-src/dylanos-store"
+mkdir -p "$CHROOT/tmp/dylanos-src/dylanos-store" "$CHROOT/tmp/dylanos-src/catalog"
 cp -a "$ROOT/apps/dylanos-store/src/." "$CHROOT/tmp/dylanos-src/dylanos-store/"
+cp -a "$ROOT/apps/dylanos-store/catalog/store.db" "$CHROOT/tmp/dylanos-src/catalog/"
 chroot "$CHROOT" cmake -S /tmp/dylanos-src/dylanos-store -B /tmp/dylanos-src/dylanos-store/build -GNinja -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX=/usr
 chroot "$CHROOT" cmake --build /tmp/dylanos-src/dylanos-store/build --parallel 2
 chroot "$CHROOT" ctest --test-dir /tmp/dylanos-src/dylanos-store/build --output-on-failure

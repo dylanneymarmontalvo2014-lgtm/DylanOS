@@ -46,6 +46,7 @@ public:
     // static
     QString m_id, m_name, m_glyph, m_color, m_category, m_categoryLabel, m_short, m_long, m_dev, m_license;
     QString m_version, m_newVersion, m_size, m_date, m_installedOn, m_initial, m_failsOnce;
+    QString m_packageName, m_backendName;
     QStringList m_tags, m_changes;
     bool m_unknown = false;
     bool m_hasIcon = false;

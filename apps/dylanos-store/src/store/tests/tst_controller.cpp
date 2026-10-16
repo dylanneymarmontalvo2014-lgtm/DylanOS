@@ -71,6 +71,26 @@ private Q_SLOTS:
         QCOMPARE(c->app("krita")->status(), QString("error"));
         QCOMPARE(c->app("krita")->errorKind(), QString("repo"));
     }
+    void sqlShelfRowsCurate()
+    {
+        QVariantList rows, collections;
+        rows << QVariantMap{{"package", "krita"}, {"backend", "apt"}, {"shelf", "featured"}, {"position", 1}};
+        rows << QVariantMap{{"package", "vlc"}, {"backend", "apt"}, {"shelf", "featured"}, {"position", 2}};
+        rows << QVariantMap{{"package", "vlc"}, {"backend", "apt"}, {"shelf", "popular"}, {"position", 1}};
+        rows << QVariantMap{{"package", "no-existe-tal"}, {"backend", "apt"}, {"shelf", "featured"}, {"position", 3}};
+        // 'discover' = flatpak: en este catálogo demo (solo apt) no casa y se ignora.
+        rows << QVariantMap{{"package", "code"}, {"backend", "discover"}, {"shelf", "featured"}, {"position", 9}};
+        rows << QVariantMap{{"package", "krita"}, {"backend", "apt"}, {"shelf", "collection:Arte"}, {"position", 1}};
+        rows << QVariantMap{{"package", "vlc"}, {"backend", "apt"}, {"shelf", "collection:Arte"}, {"position", 2}};
+        collections << QVariantMap{{"name", "Arte"}, {"descr", "Cosas"}, {"ids", QStringList{}}};
+        c->applyShelfRows(rows, collections);
+        QCOMPARE(c->list("featured"), QStringList({"krita", "vlc"})); // el paquete inexistente se ignora
+        QCOMPARE(c->list("popular"), QStringList({"vlc"}));
+        QCOMPARE(c->collections().size(), 1);
+        QCOMPARE(c->collections().first().toMap().value("name").toString(), QString("Arte"));
+        QCOMPARE(c->collections().first().toMap().value("ids").toStringList(), QStringList({"krita", "vlc"}));
+        QVERIFY(c->shelfVersion() > 0);
+    }
     void openAppNeverLaunches()
     {
         QSignalSpy toast(c, &StoreController::toast);

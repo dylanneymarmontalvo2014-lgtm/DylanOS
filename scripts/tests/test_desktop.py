@@ -36,7 +36,8 @@ assert(!panels[0].widgets.some(w => w.type.includes('tasks')));
 assert(!panels[0].widgets.some(w => w.type === 'org.kde.plasma.pager'));
 // Barra superior = barra de menú: siempre visible (sin autoocultado) y sin
 // flotación, porque el margen de un panel flotante recortaba sus elementos.
-assert.equal(panels[0].hiding, 'none');
+// La barra superior se deja cubrir por ventanas a pantalla completa.
+assert.equal(panels[0].hiding, 'letwindowscover');
 assert.equal(panels[0].floating, false);
 assert(panels[0].height >= 34, 'alto de barra insuficiente: ' + panels[0].height);
 // El nombre de la aplicación activa y sus menús de acción van juntos: el
@@ -54,13 +55,13 @@ assert.equal(panels[1].floating, true);
 assert.equal(panels[1].hiding, 'dodgewindows');
 const pins = panels[1].widgets[0].settings.launchers;
 // Dock inferior: explorador de archivos, Firefox, VSCodium, App Center,
-// Ajustes de DylanOS y Calculadora (en ese orden, sin extras).
-for (const app of ['org.kde.dolphin.desktop','firefox-esr.desktop','codium.desktop','dylanos-app-center.desktop','org.dylanos.settings.desktop','org.dylanos.calculator.desktop'])
+// DylanOS Store, Ajustes de DylanOS y Calculadora (en ese orden, sin extras).
+for (const app of ['org.kde.dolphin.desktop','firefox-esr.desktop','codium.desktop','dylanos-app-center.desktop','org.dylanos.store.desktop','org.dylanos.settings.desktop','org.dylanos.calculator.desktop'])
   assert(pins.includes('applications:' + app));
-assert.equal(pins.length, 6);
+assert.equal(pins.length, 7);
 // Sin gridUnit disponible el script no debe fallar (usa la unidad de reserva).
 const fallback = run({});
 assert.equal(fallback.panels[0].height, 36);
-assert.equal(fallback.panels[0].hiding, 'none');
+assert.equal(fallback.panels[0].hiding, 'letwindowscover');
 ''', str(LAYOUT)], capture_output=True, text=True)
         self.assertEqual(result.returncode, 0, result.stderr)

@@ -102,3 +102,4 @@ firmware-iwlwifi
 firmware-realtek
 firmware-amd-graphics
 firmware-intel-graphics
+libqt6sql6-sqlite

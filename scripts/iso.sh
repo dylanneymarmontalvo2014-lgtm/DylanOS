@@ -38,7 +38,8 @@ fi
 printf 'DylanOS 1.0 Beta amd64\n' > "$IMAGE/.disk/info"
 cat > "$IMAGE/boot/grub/grub.cfg" <<'EOF'
 set default=0
-set timeout=0
+# En el LIVE el menú GRUB es visible para elegir sesión antes de arrancar.
+set timeout=10
 
 # Sesión live DylanOS: arranque directo al escritorio Plasma en X11 (vista
 # previa del sistema). El instalador oficial queda como ejecutable en el

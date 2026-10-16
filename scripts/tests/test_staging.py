@@ -96,14 +96,17 @@ class StagingTest(unittest.TestCase):
             # debe autoejecutarse al iniciar sesión (nada de /etc/xdg/autostart).
             self.assertFalse((root / "etc/xdg/autostart/dylanos-installer.desktop").exists(),
                              "El instalador no debe autoejecutarse en la sesión live")
-            # El nombre de la aplicación activa nunca debe colapsar a una letra:
-            # el applet de la barra superior no admite un ancho menor que su título.
+            # El nombre de la aplicación activa no se corta con topes fijos:
+            # el applet toma el espacio libre del panel y solo elida cuando
+            # de verdad no queda sitio (nada de máximos de 200/400 px).
             activeapp = (root / "usr/share/plasma/plasmoids/com.dylanos.activeapp/contents/ui/main.qml").read_text()
-            self.assertIn("Layout.minimumWidth: Layout.preferredWidth", activeapp)
-            # El tope de ancho del título debe cubrir nombres largos: con el
-            # límite anterior (200 px) el nombre salía cortado con elipsis.
-            self.assertIn("maxTitleWidth: 400", activeapp)
-            self.assertNotIn("maxTitleWidth: 200", activeapp)
+            self.assertIn("Layout.fillWidth: true", activeapp)
+            self.assertNotIn("maxTitleWidth", activeapp)
+            # En el sistema instalado el GRUB arranca DylanOS sin menú; el
+            # menú visible solo existe en el LIVE (scripts/iso.sh, timeout=10).
+            grubcfg = (root / "etc/default/grub.d/dylanos.cfg").read_text()
+            self.assertIn("GRUB_TIMEOUT=0", grubcfg)
+            self.assertIn("GRUB_TIMEOUT_STYLE=hidden", grubcfg)
             # La ventana del instalador abre con los botones de menú nativos
             # (minimizar/maximizar/cerrar); la pantalla completa es opcional.
             installer_native = (root / "usr/share/dylanos/installer/native/main.py").read_text()

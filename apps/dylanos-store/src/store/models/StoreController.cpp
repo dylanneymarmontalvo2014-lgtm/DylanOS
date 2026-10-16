@@ -121,7 +121,10 @@ bool StoreController::loadCatalog(const QJsonObject &root, QString *error)
         a->m_changes = strings(o[QLatin1String("changes")]);
         a->m_unknown = o[QLatin1String("unknown")].toBool();
         a->m_failsOnce = o[QLatin1String("failsOnce")].toString();
+        a->m_packageName = a->m_id;
+        a->m_backendName = QStringLiteral("apt");
         m_items.insert(a->m_id, a);
+        m_byPackage.insert(QStringLiteral("apt:") + a->m_id.toLower(), a);
         items << a;
         entries.append({a->m_id, a->m_initial, a->m_version, a->m_newVersion, a->m_failsOnce});
         if (a->m_initial == QLatin1String("update"))
@@ -232,7 +235,7 @@ QString StoreController::mapCategory(AbstractResource *resource) const
     return QStringLiteral("sys");
 }
 
-void StoreController::addResources(const QVector<AbstractResource *> &resources)
+void StoreController::addResources(const QVector<AbstractResource *> &resources, const QString &backendKind)
 {
     QList<AppItem *> batch;
     for (auto *res : resources) {
@@ -277,6 +280,9 @@ void StoreController::addResources(const QVector<AbstractResource *> &resources)
         a->m_color = paletteColor(id);
         a->m_installedOn = m_installedOnDates.value(id);
 
+        a->m_packageName = res->packageName();
+        a->m_backendName = backendKind;
+        m_byPackage.insert(backendKind + QLatin1Char(':') + a->m_packageName.toLower(), a);
         m_backend->registerResource(id, res);
         a->setHasIcon(iconUsable(m_backend->resourceIcon(id)));
         connect(res, &AbstractResource::iconChanged, this, [this, id] {
@@ -312,13 +318,16 @@ bool StoreController::loadFromResources(ResourcesModel *model)
         if (!backend || !backend->hasApplications())
             continue;
         ++m_pendingStreams;
+        const QString backendKind = QString::fromLatin1(backend->metaObject()->className()).toLower().contains(QLatin1String("flatpak"))
+            ? QStringLiteral("flatpak")
+            : QStringLiteral("apt");
         auto *stream = backend->search(AbstractResourcesBackend::Filters{});
-        connect(stream, &ResultsStream::resourcesFound, this, [this](const QVector<StreamResult> &results) {
+        connect(stream, &ResultsStream::resourcesFound, this, [this, backendKind](const QVector<StreamResult> &results) {
             QVector<AbstractResource *> resources;
             resources.reserve(results.size());
             for (const auto &r : results)
                 resources << r.resource;
-            addResources(resources);
+            addResources(resources, backendKind);
         });
         connect(stream, &QObject::destroyed, this, [this, model] {
             if (--m_pendingStreams <= 0) {
@@ -351,15 +360,21 @@ void StoreController::rebuildLists()
         }
         return out;
     };
-    auto pad = [this, &curated, &byName](const QStringList &ids, int target) {
+    auto pad = [this, &curated, byName](const QStringList &ids, int target) {
         QStringList out = curated(ids);
         if (out.size() >= target)
             return out.mid(0, target);
         QList<AppItem *> pool;
         for (auto *a : std::as_const(m_items))
-            if (!out.contains(a->m_id) && a->m_hasIcon)
+            if (!out.contains(a->m_id))
                 pool << a;
-        std::sort(pool.begin(), pool.end(), byName);
+        // Con icono resuelto primero; el resto entra igual: los iconos cargan
+        // de forma asíncrona y eso nunca debe dejar la estantería vacía.
+        std::sort(pool.begin(), pool.end(), [byName](AppItem *x, AppItem *y) {
+            if (x->m_hasIcon != y->m_hasIcon)
+                return x->m_hasIcon;
+            return byName(x, y);
+        });
         for (auto *a : std::as_const(pool)) {
             out << a->m_id;
             if (out.size() >= target)
@@ -368,10 +383,20 @@ void StoreController::rebuildLists()
         return out;
     };
 
-    m_lists.insert(QStringLiteral("featured"), pad(m_curatedFeatured, 5));
-    m_lists.insert(QStringLiteral("popular"), pad(m_curatedPopular, 5));
-    m_lists.insert(QStringLiteral("essential"), pad(m_curatedEssential, 5));
-    m_lists.insert(QStringLiteral("recommended"), pad(m_curatedRecommended, 12));
+    // Si el catálogo SQL curó una estantería, se respeta exactamente lo que
+    // dice; el relleno automático es solo el fallback sin SQL.
+    auto shelfList = [this, &pad, &curated](const QStringList &ids, int target) {
+        if (m_sqlApplied) {
+            const QStringList out = curated(ids);
+            if (!out.isEmpty())
+                return out;
+        }
+        return pad(ids, target);
+    };
+    m_lists.insert(QStringLiteral("featured"), shelfList(m_curatedFeatured, 5));
+    m_lists.insert(QStringLiteral("popular"), shelfList(m_curatedPopular, 5));
+    m_lists.insert(QStringLiteral("essential"), shelfList(m_curatedEssential, 5));
+    m_lists.insert(QStringLiteral("recommended"), shelfList(m_curatedRecommended, 12));
 
     // "Novedades": real release dates, newest first.
     QList<AppItem *> dated;
@@ -398,15 +423,73 @@ void StoreController::rebuildLists()
     m_collections.clear();
     for (const auto &def : std::as_const(m_collectionDefs)) {
         const auto m = def.toMap();
-        QStringList ids;
-        for (const QString &id : m.value(QStringLiteral("ids")).toStringList()) {
-            if (m_items.contains(id))
+        const QString cname = m.value(QStringLiteral("name")).toString();
+        QStringList ids = m.value(QStringLiteral("ids")).toStringList();
+        for (const QString &id : m_collectionIds.value(cname))
+            if (m_items.contains(id) && !ids.contains(id))
                 ids << id;
-            if (ids.size() >= 5)
+        QStringList present;
+        for (const QString &id : std::as_const(ids)) {
+            if (m_items.contains(id))
+                present << id;
+            if (present.size() >= 6)
                 break;
         }
-        m_collections << QVariantMap{{QStringLiteral("name"), m.value(QStringLiteral("name"))}, {QStringLiteral("desc"), m.value(QStringLiteral("desc"))}, {QStringLiteral("ids"), ids}};
+        QString descr = m.value(QStringLiteral("descr")).toString();
+        if (descr.isEmpty())
+            descr = m.value(QStringLiteral("desc")).toString();
+        m_collections << QVariantMap{{QStringLiteral("name"), cname},
+                                     {QStringLiteral("desc"), descr},
+                                     {QStringLiteral("ids"), present}};
     }
+}
+
+// ─── Catálogo editorial SQL (remoto, sin recompilar el ISO) ──────────────────
+
+void StoreController::applyShelfRows(const QVariantList &rows, const QVariantList &collections)
+{
+    QStringList featured, popular, essential, recommended;
+    QHash<QString, QStringList> collectionIds;
+    for (const QVariant &v : rows) {
+        const QVariantMap row = v.toMap();
+        QString backend = row.value(QStringLiteral("backend")).toString().toLower();
+        if (backend == QLatin1String("discover"))
+            backend = QStringLiteral("flatpak");
+        AppItem *item = m_byPackage.value(backend + QLatin1Char(':') + row.value(QStringLiteral("package")).toString().toLower());
+        if (!item)
+            continue; // no está en el catálogo local: se ignora sin romper nada
+        const QString nameOverride = row.value(QStringLiteral("display_name")).toString();
+        const QString summaryOverride = row.value(QStringLiteral("summary")).toString();
+        if (!nameOverride.isEmpty())
+            item->m_name = nameOverride;
+        if (!summaryOverride.isEmpty())
+            item->m_short = summaryOverride;
+        const QString shelf = row.value(QStringLiteral("shelf")).toString();
+        if (shelf == QLatin1String("popular"))
+            popular << item->m_id;
+        else if (shelf == QLatin1String("essential"))
+            essential << item->m_id;
+        else if (shelf == QLatin1String("recommended"))
+            recommended << item->m_id;
+        else if (shelf.startsWith(QLatin1String("collection:")))
+            collectionIds[shelf.mid(11)] << item->m_id;
+        else
+            featured << item->m_id;
+    }
+    if (!featured.isEmpty())
+        m_curatedFeatured = featured;
+    if (!popular.isEmpty())
+        m_curatedPopular = popular;
+    if (!essential.isEmpty())
+        m_curatedEssential = essential;
+    if (!recommended.isEmpty())
+        m_curatedRecommended = recommended;
+    m_collectionDefs = collections;
+    m_collectionIds = collectionIds;
+    m_sqlApplied = true;
+    rebuildLists();
+    ++m_shelfVersion;
+    Q_EMIT shelvesChanged();
 }
 
 void StoreController::onBackendState(const QString &id)
