@@ -9,11 +9,18 @@ for script in scripts/*.sh; do
 done
 
 info_tool="$ROOT_DIR/configs/system/rootfs/usr/bin/dylanos-info"
+wallpaper_tool="$ROOT_DIR/configs/system/rootfs/usr/bin/dylanos-wallpaper"
 [[ -f "$info_tool" ]] || { printf 'Missing executable: %s\\n' "$info_tool" >&2; exit 1; }
 sh "$info_tool" --help >/dev/null
+[[ -f "$wallpaper_tool" ]] || { printf 'Missing system command: wallpaper helper\\n' >&2; exit 1; }
+sh "$wallpaper_tool" --help >/dev/null
 sh "$info_tool" --version | grep -q '^DylanOS'
 if sh "$info_tool" --unsupported >/dev/null 2>&1; then
   printf 'dylanos-info unexpectedly accepted an invalid option\\n' >&2
+  exit 1
+fi
+if sh "$wallpaper_tool" --unsupported >/dev/null 2>&1; then
+  printf 'dylanos-wallpaper accepted an invalid option\\n' >&2
   exit 1
 fi
 
