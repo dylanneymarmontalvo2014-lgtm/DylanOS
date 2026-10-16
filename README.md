@@ -30,7 +30,7 @@ Incluye los temas de:
 
 ### Packages
 
-Define las aplicaciones instaladas por defecto.
+Define las aplicaciones instaladas por defecto en listas separadas para el escritorio, desarrollo, juegos e IoT.
 
 ### Configs
 
@@ -38,12 +38,11 @@ Almacena la configuración predeterminada del sistema.
 
 ### Scripts
 
-Contiene los scripts para:
+- `scripts/build.sh`: prepara la configuración de Debian Live y construye una ISO híbrida x86_64.
+- `scripts/iso.sh`: alias del proceso de construcción.
+- `scripts/test.sh`: valida las listas de paquetes, recursos gráficos y estructura básica.
 
-- Construcción de la ISO.
-- Pruebas.
-- Limpieza.
-- Publicación.
+Consulta [la guía de construcción](docs/build.md) para instalar las dependencias y generar la ISO.
 
 ### Installer
 
@@ -53,4 +52,4 @@ Configuración del instalador Calamares.
 
 ## Objetivo
 
-Crear una distribución Linux moderna, elegante y fácil de usar, inspirada en la experiencia de macOS sin perder la libertad y flexibilidad del ecosistema Linux.s
+Crear una distribución Linux moderna, elegante y fácil de usar, inspirada en la experiencia de macOS sin perder la libertad y flexibilidad del ecosistema Linux.

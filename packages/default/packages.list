@@ -1,0 +1,22 @@
+# Core live desktop, installer, and everyday utilities.
+task-kde-desktop
+breeze-gtk-theme
+breeze-icon-theme
+sddm
+sddm-theme-breeze
+calamares
+live-boot
+live-config
+live-config-systemd
+network-manager
+sudo
+firefox-esr
+plymouth
+plymouth-themes
+ca-certificates
+curl
+wget
+fonts-dejavu-core
+less
+nano
+zsh

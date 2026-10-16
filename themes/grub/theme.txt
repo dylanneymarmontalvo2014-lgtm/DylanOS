@@ -1,0 +1,19 @@
+# DylanOS GRUB theme.
+desktop-image: "background.png"
+desktop-color: "#10172c"
+title-text: "DylanOS"
+title-color: "#eaf4ff"
+title-font: "Unifont Regular 16"
+message-color: "#bac8e8"
+message-bg-color: "#10172c"
+terminal-font: "Unifont Regular 16"
++ boot_menu {
+  left = 22%
+  top = 28%
+  width = 56%
+  height = 48%
+  item_color = "#c8d5f0"
+  selected_item_color = "#7ce7ff"
+  item_font = "Unifont Regular 16"
+  item_height = 32
+}

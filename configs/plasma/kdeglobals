@@ -1,0 +1,17 @@
+[General]
+ColorScheme=DylanOS
+Name=DylanOS
+TerminalApplication=konsole
+TerminalService=org.kde.konsole.desktop
+
+[KDE]
+LookAndFeelPackage=org.kde.breeze.desktop
+
+[Icons]
+Theme=breeze
+
+[WM]
+activeBackground=25,38,72
+activeForeground=245,247,255
+inactiveBackground=30,34,53
+inactiveForeground=190,198,220
