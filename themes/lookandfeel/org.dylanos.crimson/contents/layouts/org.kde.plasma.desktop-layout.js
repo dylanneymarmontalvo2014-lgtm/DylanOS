@@ -68,8 +68,10 @@ var tasks = dock.addWidget("org.kde.plasma.icontasks");
 tasks.currentConfigGroup = ["General"];
 // Apps fijadas en el dock inferior, en este orden: explorador de archivos,
 // Firefox, VSCodium, App Center, Ajustes de DylanOS y Calculadora.
+// Gestor de archivos: DylanOS Explorer nativo (dolphin sigue instalado como
+// vía de reversión, pero no fijado).
 tasks.writeConfig("launchers", [
-    "applications:org.kde.dolphin.desktop",
+    "applications:org.dylanos.explorer.desktop",
     "applications:firefox-esr.desktop",
     "applications:codium.desktop",
     "applications:dylanos-app-center.desktop",

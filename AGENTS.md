@@ -25,6 +25,7 @@ Sistema operativo ligero basado en Debian + KDE Plasma, con identidad visual pro
   - Ventana solo tras catálogo listo (`catalogReady`) con watchdog de 20 s; QA de captura: `dylanos-store --screenshot out.png --size 1280x800 --view home` (en el ISO/chroot, con DBus).
 - `apps/dylanos-spotlight/` — Búsqueda rápida (Python). `dylanos-spotlight`.
 - `apps/com.dylanos.dock/` y `apps/com.dylanos.activeapp/` — Plasmoids Plasma.
+- `apps/dylanos-explorer/` — **DylanOS Explorer**: gestor de archivos nativo Qt6/QML (ventana sin marco propia, sidebar + vistas grid/lista/columnas + preview, papelera freedesktop, QStorageInfo, operaciones con QtConcurrent + cancelación). C++ (FileListModel/PlacesService/ExplorerController/FileOperations) + QML `DylanOS.Explorer` (theme Theme/Icons singletons). Reemplaza los lanzadores de dolphin: dock inferior + workspace action("files") + stage.py (org.dylanos.explorer.desktop); dolphin sigue instalado como reversión. QA: `dylanos-explorer --screenshot out.png --size 1384x805 [--path dir]` (chroot, offscreen).
 - `apps/archivos/`, `apps/calculator/` — Apps propias adicionales.
 - `branding/` — logo.png (instalado como `distributor-logo-dylanos`), colors/, wallpapers/, icons/.
 - `themes/` — Plasma look-and-feel `org.dylanos.crimson`, aurorae, SDDM, GRUB, Plymouth, GTK DylanOS-Crimson(+Light), color-schemes.
