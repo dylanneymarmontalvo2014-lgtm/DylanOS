@@ -1,8 +1,15 @@
 # DylanOS Explorer
 
-Gestor de archivos de **DylanOS Crimson** (Debian Stable + KDE Plasma) escrito con **Qt 6 / Qt Quick (QML) + C++17 + CMake**.
-La interfaz reproduce la referencia visual de "Inicio" (barra lateral, tarjetas de carpetas, tabla de archivos recientes) y completa
-las pantallas que la referencia no muestra con el mismo lenguaje visual.
+Gestor de archivos de **DylanOS Crimson** (Debian Stable + KDE Plasma), **basado en el motor de Dolphin (KIO)**:
+la interfaz es Qt 6 / Qt Quick (QML) con la referencia visual de "Inicio" (barra lateral, tarjetas de
+carpetas, tabla de recientes), y todas las funciones de datos usan el mismo motor que Dolphin —
+
+- **KDirLister** para listar carpetas y todos los protocolos KIO (`trash:/`, `remote:/`, `smb:/`, `mtp:/`),
+  con refresco automático y lotes progresivos.
+- **KFilePlacesModel** para dispositivos y lugares (con montaje bajo demanda vía Solid).
+- **KIO::trash / del / emptyTrash / restoreFromTrash** para la papelera freedesktop multi-dispositivo,
+  **deshacibles con Ctrl+Z** (KIO::FileUndoManager, el mismo gestor que usa Dolphin).
+- **KIO::OpenUrlJob** para abrir con la aplicación predeterminada del sistema.
 
 > **Estado de verificación:** compilado y verificado en el chroot de DylanOS (Debian trixie, Qt 6.8.2):
 > `cmake`+`ninja` en verde, `ctest` 1/1 (`tst_fileoperations`), la ventana abre con `--screenshot`
@@ -21,7 +28,7 @@ sudo apt install build-essential cmake ninja-build \
 
 Qt >= 6.4. Ningún comando de `sudo` se usa en la aplicación; solo para instalar dependencias.
 
-## Compilar y ejecutar
+## Compilar y ejecutar (además de `libkf6kio-dev`)
 
 ```sh
 cmake -S . -B build -G Ninja -DCMAKE_BUILD_TYPE=Release

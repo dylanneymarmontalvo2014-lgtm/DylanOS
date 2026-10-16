@@ -8,7 +8,8 @@ systemd-sysv
 # Escritorio KDE Plasma
 kde-plasma-desktop
 sddm
-dolphin
+# El único gestor de archivos es DylanOS Explorer (apps/dylanos-explorer,
+# motor KIO de Dolphin); el paquete dolphin ya no se envía.
 konsole
 systemsettings
 
