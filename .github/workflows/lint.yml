@@ -1,14 +1,22 @@
-name: Lint
+name: Shell lint
 
 on:
   push:
     branches: [main]
   pull_request:
 
+permissions:
+  contents: read
+
 jobs:
-  lint:
+  shellcheck:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
-      - name: Placeholder lint step
-        run: echo "Lint workflow placeholder"
+      - name: Check out source
+        uses: actions/checkout@v4
+      - name: Install ShellCheck
+        run: |
+          sudo apt-get update
+          sudo apt-get install --yes shellcheck
+      - name: Lint shell scripts
+        run: shellcheck --severity=warning scripts/*.sh
