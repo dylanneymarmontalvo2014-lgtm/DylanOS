@@ -3,10 +3,11 @@ set -eu
 
 usage() {
     cat <<'EOF'
-Usage: dylanos-info [--help|--version]
+Usage: dylanos-info [--help|--version|--diagnose]
 
 Show a short, local summary of the DylanOS system.
 With no option, print the release name, kernel, architecture, and desktop session.
+Use --diagnose for read-only checks of boot mode, disk space, memory, network, and failed services.
 EOF
 }
 
@@ -19,6 +20,65 @@ release_name() {
     fi
 }
 
+system_summary() {
+    printf 'System: %s\n' "$(release_name)"
+    printf 'Kernel: %s\n' "$(uname -sr)"
+    printf 'Architecture: %s\n' "$(uname -m)"
+    printf 'Desktop session: %s\n' "${XDG_CURRENT_DESKTOP:-not detected}"
+}
+
+diagnostics() {
+    system_summary
+
+    if [ -d /sys/firmware/efi ]; then
+        printf 'Boot mode: UEFI\n'
+    else
+        printf 'Boot mode: BIOS/legacy or unavailable\n'
+    fi
+
+    if command -v df >/dev/null 2>&1; then
+        disk_status=$(df -hP / 2>/dev/null | awk 'NR == 2 { printf "%s used of %s (%s); %s available", $3, $2, $5, $4 }')
+        printf 'Root filesystem: %s\n' "${disk_status:-unavailable}"
+    else
+        printf 'Root filesystem: df is unavailable\n'
+    fi
+
+    if [ -r /proc/meminfo ]; then
+        memory_status=$(awk '
+            /^MemTotal:/ { total = $2 }
+            /^MemAvailable:/ { available = $2 }
+            END {
+                if (total > 0) {
+                    printf "%.1f GiB total, %.1f GiB available", total / 1048576, available / 1048576
+                } else {
+                    print "unavailable"
+                }
+            }
+        ' /proc/meminfo)
+        printf 'Memory: %s\n' "$memory_status"
+    else
+        printf 'Memory: /proc/meminfo is unavailable\n'
+    fi
+
+    if command -v nmcli >/dev/null 2>&1; then
+        network_status=$(nmcli -t -f STATE general 2>/dev/null || true)
+        printf 'NetworkManager: %s\n' "${network_status:-status unavailable}"
+    else
+        printf 'NetworkManager: command not installed\n'
+    fi
+
+    if command -v systemctl >/dev/null 2>&1; then
+        if failed_units=$(systemctl --failed --no-legend --no-pager 2>/dev/null); then
+            failed_count=$(printf '%s\n' "$failed_units" | awk 'NF { count++ } END { print count + 0 }')
+            printf 'Failed systemd units: %s\n' "$failed_count"
+        else
+            printf 'Failed systemd units: status unavailable\n'
+        fi
+    else
+        printf 'Failed systemd units: systemctl not installed\n'
+    fi
+}
+
 case "${1:-}" in
     --help|-h)
         usage
@@ -28,15 +88,15 @@ case "${1:-}" in
         release_name
         exit 0
         ;;
+    --diagnose)
+        diagnostics
+        exit 0
+        ;;
     '')
+        system_summary
         ;;
     *)
         usage >&2
         exit 2
         ;;
 esac
-
-printf 'System: %s\n' "$(release_name)"
-printf 'Kernel: %s\n' "$(uname -sr)"
-printf 'Architecture: %s\n' "$(uname -m)"
-printf 'Desktop session: %s\n' "${XDG_CURRENT_DESKTOP:-not detected}"
