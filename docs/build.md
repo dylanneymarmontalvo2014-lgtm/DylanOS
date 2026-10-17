@@ -4,14 +4,29 @@ DylanOS usa Debian Live para generar una ISO híbrida de arranque para amd64.
 
 ## Dependencias del anfitrión
 
-En Debian instala las herramientas de construcción:
+En Debian o Ubuntu, instala las herramientas de construcción incluidas en el proyecto:
 
 ```bash
-sudo apt update
-sudo apt install live-build debootstrap squashfs-tools xorriso
+sudo ./install-deps.sh
 ```
 
-La construcción requiere privilegios de root y conexión a Internet para descargar los paquetes del sistema.
+También puedes instalar manualmente `live-build`, `debootstrap`, `squashfs-tools` y `xorriso`. La construcción necesita privilegios de root y conexión a Internet para descargar los paquetes del sistema.
+
+## Construir con Docker
+
+El `Dockerfile` prepara el entorno de compilación; construir la imagen no genera todavía la ISO:
+
+```bash
+docker build --tag dylanos-builder .
+```
+
+Para ejecutar el `scripts/build.sh` existente y guardar los artefactos en `build/live-build/` del repositorio:
+
+```bash
+docker run --rm --privileged --volume "$PWD:/workspace" --workdir /workspace dylanos-builder
+```
+
+El contenedor necesita `--privileged` porque Debian Live usa operaciones de montaje y chroot durante la construcción. No se creó un segundo `build.sh`.
 
 ## Pruebas estáticas
 
@@ -23,7 +38,7 @@ scripts/test.sh
 
 Estas pruebas comprueban la sintaxis de los scripts, las listas de paquetes, los SVG, los encabezados de los PNG y que las carpetas que antes tenían `.gitkeep` contengan archivos reales.
 
-## Generar la ISO
+## Generar la ISO directamente en el anfitrión
 
 ```bash
 sudo scripts/build.sh
