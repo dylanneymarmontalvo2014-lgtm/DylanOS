@@ -1,15 +1,23 @@
 # Changelog
 
-Todos los cambios importantes de DylanOS serán documentados en este archivo.
+Cambios importantes del proyecto, inspirados en el formato Keep a Changelog y versionado semántico.
 
-El formato está inspirado en Keep a Changelog y sigue Versionado Semántico.
+## [Unreleased]
+
+### Añadido
+
+- README visual con banner y paleta derivada de los temas de DylanOS.
+- Guías de estado, identidad visual y escritorio, y alcance de pruebas.
+
+### Cambiado
+
+- Se amplía la documentación de arquitectura, instalación, construcción, herramientas, contribución y roadmap para distinguir configuración de validación real.
+- Se separa el build manual de artefactos del workflow que publica Releases etiquetadas, evitando dos publicadores para el mismo tag.
 
 ## [0.1.0-alpha] - En desarrollo
 
 ### Añadido
 
-- Creación del repositorio oficial.
-- Definición de la estructura del proyecto.
-- Documentación inicial.
-- Diseño de la interfaz gráfica.
-- Planificación del sistema de construcción.
+- Creación del repositorio oficial y estructura inicial.
+- Branding, configuración del sistema y listas de paquetes.
+- Constructor de ISO, pruebas automatizadas y documentación base.
