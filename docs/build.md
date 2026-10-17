@@ -62,13 +62,15 @@ Para revisar una ISO ya construida, instala QEMU, OVMF, xorriso y squashfs-tools
 scripts/test-iso.sh build/live-build/ruta-a-la-iso.iso
 ```
 
-El test inspecciona el catálogo de arranque, comprueba archivos del sistema live y arranca la imagen en BIOS y UEFI esperando que SDDM inicie. Para reproducir localmente el build temporal que se usa en CI, activa la consola serial:
+El test inspecciona el catálogo de arranque, comprueba archivos del sistema live y arranca la imagen en BIOS y UEFI esperando que SDDM inicie. El ISO debe haberse construido con consola serial para que el test detecte el marcador de SDDM:
 
 ```bash
 sudo env DYLANOS_SERIAL_CONSOLE=1 scripts/build.sh
+iso="$(find build/live-build -maxdepth 1 -type f -name '*.iso' -print -quit)"
+scripts/test-iso.sh "$iso"
 ```
 
-El workflow `ISO QEMU smoke test` prepara ese build temporal automáticamente. La consola serial es para probar el arranque y no se habilita en la ISO de producción. Un resultado positivo no completa ni valida la instalación de Calamares.
+El workflow automático de QEMU se retiró porque la construcción completa hacía demasiado lenta la CI de cada PR; estas pruebas quedan disponibles para ejecución manual. La consola serial es solo para smoke tests y no se habilita en la ISO de producción. Un resultado positivo no completa ni valida la instalación de Calamares.
 
 Consulta [Pruebas y alcance de CI](testing.md) para conocer los límites de cada verificación.
 

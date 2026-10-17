@@ -38,8 +38,8 @@ El constructor incluye las cuatro categorías de paquetes en cada imagen actual:
 | `packages/` | Listas APT agrupadas por propósito |
 | `themes/` | Ajustes de GTK, Plasma, SDDM y GRUB |
 | `installer/calamares/` | Secuencia, módulo unpackfs y branding |
-| `scripts/` | Construcción, pruebas estáticas y smoke test de ISO |
-| `.github/workflows/` | CI, construcción de ISO y publicación versionada |
+| `scripts/` | Construcción, pruebas estáticas y smoke test de ISO ejecutable manualmente |
+| `.github/workflows/` | CI ligera, build manual de artefacto y publicación versionada |
 | `docs/` | Guías y registro de límites conocidos |
 
 ## Configuración que llega al sistema
