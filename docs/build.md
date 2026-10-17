@@ -42,6 +42,15 @@ Para una ISO ya construida, `scripts/test-iso.sh ruta/a/dylanos.iso` comprueba e
 
 El workflow `ISO QEMU smoke test` automatiza la construcción y esas pruebas cuando cambian los componentes de la imagen. Verificar que Calamares está incluido no sustituye completar una instalación en una máquina virtual: esa prueba de extremo a extremo sigue pendiente.
 
+## Publicar una ISO en GitHub Releases
+
+Al enviar una etiqueta de versión cuyo nombre empieza con `v` (por ejemplo, `v0.1.0`) al repositorio original, el workflow `Build and publish release ISO` construye la ISO de producción y crea una GitHub Release pública con la ISO amd64 y su archivo SHA-256. La publicación solo ocurre al enviar esa etiqueta; no se ejecuta en cada push a `main`.
+
+```bash
+git tag v0.1.0
+git push origin v0.1.0
+```
+
 ## Generar la ISO directamente en el anfitrión
 
 ```bash
