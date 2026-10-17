@@ -29,12 +29,12 @@ jobs:
           rm -f /etc/apt/sources.list.d/debian.sources
           cat > /etc/apt/sources.list.d/dylanos.sources <<'EOF'
           Types: deb
-          URIs: https://deb.debian.org/debian
+          URIs: http://deb.debian.org/debian
           Suites: stable
           Components: main contrib non-free non-free-firmware
           Signed-By: /usr/share/keyrings/debian-archive-keyring.gpg
           EOF
       - name: Update package index
-        run: apt-get update
+        run: apt-get update -o APT::Update::Error-Mode=any
       - name: Simulate package installation
         run: grep -hEv '^[[:space:]]*(#|$)' packages/*/packages.list | xargs -r apt-get --simulate --no-install-recommends install
