@@ -19,4 +19,4 @@ jobs:
           sudo apt-get update
           sudo apt-get install --yes shellcheck
       - name: Lint shell scripts
-        run: shellcheck --severity=warning scripts/*.sh
+        run: shellcheck --severity=warning install-deps.sh scripts/*.sh

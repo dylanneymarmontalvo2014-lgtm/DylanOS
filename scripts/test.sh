@@ -7,6 +7,7 @@ cd "$ROOT_DIR"
 for script in scripts/*.sh; do
   bash -n "$script"
 done
+bash -n "$ROOT_DIR/install-deps.sh"
 
 info_tool="$ROOT_DIR/configs/system/rootfs/usr/bin/dylanos-info"
 wallpaper_tool="$ROOT_DIR/configs/system/rootfs/usr/bin/dylanos-wallpaper"

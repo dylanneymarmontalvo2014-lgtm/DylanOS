@@ -38,3 +38,11 @@ jobs:
         run: apt-get update -o APT::Update::Error-Mode=any
       - name: Simulate package installation
         run: grep -hEv '^[[:space:]]*(#|$)' packages/*/packages.list | xargs -r apt-get --simulate --no-install-recommends install
+
+  docker-image:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out source
+        uses: actions/checkout@v4
+      - name: Build ISO builder image
+        run: docker build --tag dylanos-builder:ci .
