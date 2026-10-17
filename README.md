@@ -20,7 +20,7 @@ DylanOS busca ofrecer un escritorio Linux moderno y personalizable, con identida
 - Identidad visual aplicada a recursos de GRUB, Plymouth, GTK y Plasma.
 - Configuración de Calamares y una bienvenida gráfica con accesos al diagnóstico, documentación e instalador.
 - `dylanos-info --diagnose`, comprobaciones locales de solo lectura; `dylanos-wallpaper`, aplicación manual del fondo de pantalla.
-- Pruebas estáticas, resolución simulada de paquetes, construcción de la imagen Docker y un smoke test BIOS/UEFI con QEMU.
+- Pruebas estáticas, resolución simulada de paquetes y construcción de la imagen Docker; `scripts/test-iso.sh` permite probar manualmente el arranque BIOS/UEFI con QEMU.
 
 Consulta el [estado y los límites conocidos](docs/status.md). Que exista una configuración o una prueba automática no significa que la instalación completa o el soporte de hardware estén certificados.
 
@@ -77,7 +77,7 @@ La construcción requiere Internet, privilegios de root y, en Docker, `--privile
 - `themes/`: ajustes de GRUB, GTK, Plasma y SDDM.
 - `installer/calamares/`: configuración y marca del instalador.
 - `scripts/`, `Dockerfile` e `install-deps.sh`: construcción y comprobaciones.
-- `.github/workflows/`: validación, smoke test, build de artefacto manual y publicación etiquetada.
+- `.github/workflows/`: validación rápida, build manual de artefacto y publicación de ISO al crear una etiqueta de versión.
 - `docs/`: documentación del proyecto y recursos del README.
 
 ## Licencia

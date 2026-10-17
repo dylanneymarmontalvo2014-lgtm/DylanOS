@@ -11,7 +11,7 @@ Este roadmap describe metas, no certificaciones. Consulta [Estado del proyecto](
 - Branding inicial para GRUB, Plymouth, SDDM, GTK y Plasma.
 - Configuración inicial de Calamares.
 - Bienvenida, diagnóstico local y aplicación manual del wallpaper.
-- Pruebas estáticas, CI de paquetes/Docker y smoke test QEMU BIOS/UEFI.
+- Pruebas estáticas, CI de paquetes/Docker y el script manual de smoke test QEMU BIOS/UEFI (sin ejecución automática en cada PR).
 - Automatización para publicar una ISO versionada y checksum SHA-256.
 
 ### Pendiente de validación antes de distribuir
