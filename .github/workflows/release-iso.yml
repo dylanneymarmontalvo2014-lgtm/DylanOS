@@ -1,0 +1,48 @@
+name: Build and publish release ISO
+
+on:
+  push:
+    tags:
+      - 'v*'
+
+permissions:
+  contents: write
+
+jobs:
+  build-and-release:
+    runs-on: ubuntu-latest
+    timeout-minutes: 120
+    steps:
+      - name: Check out the tagged source
+        uses: actions/checkout@v4
+      - name: Run project checks
+        run: scripts/test.sh
+      - name: Build the ISO builder image
+        run: docker build --tag dylanos-builder:release .
+      - name: Build the production ISO
+        run: |
+          docker run --rm --privileged \
+            --volume "$GITHUB_WORKSPACE:/workspace" \
+            --workdir /workspace \
+            dylanos-builder:release
+          mapfile -t iso_files < <(find build/live-build -maxdepth 1 -type f -name '*.iso' -print)
+          if [[ "${#iso_files[@]}" -ne 1 ]]; then
+            printf 'Expected exactly one ISO; found %s.\n' "${#iso_files[@]}" >&2
+            exit 1
+          fi
+          asset_tag="${GITHUB_REF_NAME//\//-}"
+          iso_asset="$GITHUB_WORKSPACE/DylanOS-${asset_tag}-amd64.iso"
+          cp -- "${iso_files[0]}" "$iso_asset"
+          (cd "$GITHUB_WORKSPACE" && sha256sum "$(basename -- "$iso_asset")" > "$(basename -- "$iso_asset").sha256")
+      - name: Create GitHub Release and upload ISO
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          asset_tag="${GITHUB_REF_NAME//\//-}"
+          iso_asset="$GITHUB_WORKSPACE/DylanOS-${asset_tag}-amd64.iso"
+          gh release create "$GITHUB_REF_NAME" \
+            "$iso_asset#DylanOS amd64 ISO" \
+            "$iso_asset.sha256#SHA256 checksum" \
+            --verify-tag \
+            --title "DylanOS ${GITHUB_REF_NAME}" \
+            --generate-notes

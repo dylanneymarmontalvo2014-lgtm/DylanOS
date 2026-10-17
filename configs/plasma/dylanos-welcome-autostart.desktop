@@ -1,0 +1,10 @@
+[Desktop Entry]
+Type=Application
+Name=Bienvenido a DylanOS
+Comment=Mostrar accesos rápidos de DylanOS una vez al iniciar sesión
+Exec=dylanos-welcome --autostart
+TryExec=dylanos-welcome
+Icon=dylanos
+Terminal=false
+OnlyShowIn=KDE;
+X-KDE-autostart-after=panel
