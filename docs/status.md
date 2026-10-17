@@ -10,7 +10,7 @@ DylanOS es una distribución **Alpha**. Esta página separa lo que el repositori
 - Recursos de marca para el escritorio, GRUB y Plymouth, además de configuración de SDDM basada en Breeze.
 - Utilidades locales `dylanos-info`, `dylanos-welcome` y `dylanos-wallpaper`.
 - Configuración de Calamares, incluida la secuencia de módulos y el copiado del filesystem live.
-- Flujos de CI para pruebas estáticas, ShellCheck, resolución simulada de paquetes, construcción de la imagen Docker, pruebas de arranque QEMU y publicación versionada.
+- Flujos de CI para pruebas estáticas, ShellCheck, resolución simulada de paquetes y construcción de la imagen Docker; la publicación versionada se ejecuta solo al enviar una etiqueta `v*`. El smoke test QEMU queda disponible para ejecución manual.
 
 ## Verificación automatizada
 
@@ -18,9 +18,9 @@ DylanOS es una distribución **Alpha**. Esta página separa lo que el repositori
 - `shellcheck` revisa los scripts de shell.
 - La simulación de APT comprueba que las listas sean resolubles en los repositorios configurados; no instala todos los paquetes en una imagen.
 - La construcción de Docker valida el entorno del constructor, pero por sí sola no produce una ISO.
-- `scripts/test-iso.sh` comprueba el catálogo de arranque, algunos archivos del filesystem live y que el sistema alcance SDDM en BIOS y UEFI cuando la prueba completa termina correctamente.
+- `scripts/test-iso.sh` comprueba el catálogo de arranque, algunos archivos del filesystem live y que el sistema alcance SDDM en BIOS y UEFI cuando la prueba completa termina correctamente; ahora se ejecuta manualmente, no en cada PR.
 
-Consulta [Pruebas](testing.md) para los criterios exactos. El estado actual de los workflows debe confirmarse en GitHub Actions: la presencia de un workflow no demuestra que su última ejecución haya pasado.
+El workflow automático que construía una ISO para QEMU se retiró porque prolongaba demasiado la CI. La construcción automática de Releases por etiqueta se conserva. Consulta [Pruebas](testing.md) para los criterios exactos. El estado actual de los workflows debe confirmarse en GitHub Actions: la presencia de un workflow no demuestra que su última ejecución haya pasado.
 
 ## Límites que deben mantenerse visibles
 
