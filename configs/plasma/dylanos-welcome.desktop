@@ -1,0 +1,9 @@
+[Desktop Entry]
+Type=Application
+Name=Bienvenido a DylanOS
+Comment=Accesos rápidos, instalador y diagnóstico del sistema
+Exec=dylanos-welcome
+Icon=dylanos
+Terminal=false
+Categories=System;Utility;
+StartupNotify=true

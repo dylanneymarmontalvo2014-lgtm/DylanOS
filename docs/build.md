@@ -36,7 +36,11 @@ Desde la raíz del repositorio:
 scripts/test.sh
 ```
 
-Estas pruebas comprueban la sintaxis de los scripts, las listas de paquetes, los SVG, los encabezados de los PNG y que las carpetas que antes tenían `.gitkeep` contengan archivos reales.
+Estas pruebas comprueban la sintaxis de los scripts y las herramientas, las listas de paquetes, los SVG, los encabezados de los PNG y que las carpetas que antes tenían `.gitkeep` contengan archivos reales.
+
+Para una ISO ya construida, `scripts/test-iso.sh ruta/a/dylanos.iso` comprueba el catálogo de arranque, que Calamares y sus ajustes estén dentro del sistema live y que el arranque llegue a SDDM tanto con BIOS como con UEFI. Requiere QEMU, OVMF, xorriso y squashfs-tools. Para una compilación de prueba directa, usa `sudo env DYLANOS_SERIAL_CONSOLE=1 scripts/build.sh`; con Docker, pasa `--env DYLANOS_SERIAL_CONSOLE=1` a `docker run`.
+
+El workflow `ISO QEMU smoke test` automatiza la construcción y esas pruebas cuando cambian los componentes de la imagen. Verificar que Calamares está incluido no sustituye completar una instalación en una máquina virtual: esa prueba de extremo a extremo sigue pendiente.
 
 ## Generar la ISO directamente en el anfitrión
 
