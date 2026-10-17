@@ -4,6 +4,7 @@ on:
   pull_request:
     paths:
       - '.github/workflows/iso-smoke.yml'
+      - '.github/workflows/release-iso.yml'
       - 'Dockerfile'
       - 'install-deps.sh'
       - 'scripts/build.sh'
