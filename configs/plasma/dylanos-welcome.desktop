@@ -1,0 +1,9 @@
+[Desktop Entry]
+Type=Application
+Name=DylanOS Welcome
+Comment=Quick-start actions, installer, and system diagnostics
+Exec=dylanos-welcome
+Icon=dylanos
+Terminal=false
+Categories=System;Utility;
+StartupNotify=true

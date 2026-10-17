@@ -20,3 +20,6 @@ fonts-dejavu-core
 less
 nano
 zsh
+kdialog
+pkexec
+xdg-utils

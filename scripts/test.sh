@@ -11,11 +11,21 @@ bash -n "$ROOT_DIR/install-deps.sh"
 
 info_tool="$ROOT_DIR/configs/system/rootfs/usr/bin/dylanos-info"
 wallpaper_tool="$ROOT_DIR/configs/system/rootfs/usr/bin/dylanos-wallpaper"
+welcome_tool="$ROOT_DIR/configs/system/rootfs/usr/bin/dylanos-welcome"
 [[ -f "$info_tool" ]] || { printf 'Missing executable: %s\\n' "$info_tool" >&2; exit 1; }
 sh "$info_tool" --help >/dev/null
 [[ -f "$wallpaper_tool" ]] || { printf 'Missing system command: wallpaper helper\\n' >&2; exit 1; }
 sh "$wallpaper_tool" --help >/dev/null
+[[ -f "$welcome_tool" ]] || { printf 'Missing system command: welcome helper\\n' >&2; exit 1; }
+sh "$welcome_tool" --help >/dev/null
+sh "$welcome_tool" --version | grep -Fxq 'DylanOS Welcome'
 sh "$info_tool" --version | grep -q '^DylanOS'
+diagnostics_output="$(sh "$info_tool" --diagnose)"
+[[ "$diagnostics_output" == *'Boot mode:'* ]]
+[[ "$diagnostics_output" == *'Memory:'* ]]
+[[ -f "$ROOT_DIR/configs/plasma/dylanos-welcome.desktop" ]]
+[[ -f "$ROOT_DIR/configs/plasma/dylanos-welcome-autostart.desktop" ]]
+bash "$ROOT_DIR/scripts/test-iso.sh" --help >/dev/null
 if sh "$info_tool" --unsupported >/dev/null 2>&1; then
   printf 'dylanos-info unexpectedly accepted an invalid option\\n' >&2
   exit 1
@@ -24,6 +34,25 @@ if sh "$wallpaper_tool" --unsupported >/dev/null 2>&1; then
   printf 'dylanos-wallpaper accepted an invalid option\\n' >&2
   exit 1
 fi
+if sh "$welcome_tool" --unsupported >/dev/null 2>&1; then
+  printf 'dylanos-welcome accepted an invalid option\\n' >&2
+  exit 1
+fi
+
+welcome_test_dir="$(mktemp -d)"
+trap 'rm -rf -- "$welcome_test_dir"' EXIT
+mkdir -p "$welcome_test_dir/bin" "$welcome_test_dir/home"
+cat > "$welcome_test_dir/bin/kdialog" <<'KDLG'
+#!/bin/sh
+printf 'menu\n' >> "$DYLANOS_KDIALOG_LOG"
+printf 'done\n'
+KDLG
+chmod 0755 "$welcome_test_dir/bin/kdialog"
+env HOME="$welcome_test_dir/home" XDG_STATE_HOME="$welcome_test_dir/state" PATH="$welcome_test_dir/bin:$PATH" DYLANOS_KDIALOG_LOG="$welcome_test_dir/kdialog.log" sh "$welcome_tool" --autostart
+env HOME="$welcome_test_dir/home" XDG_STATE_HOME="$welcome_test_dir/state" PATH="$welcome_test_dir/bin:$PATH" DYLANOS_KDIALOG_LOG="$welcome_test_dir/kdialog.log" sh "$welcome_tool" --autostart
+[[ "$(wc -l < "$welcome_test_dir/kdialog.log")" -eq 1 ]]
+env HOME="$welcome_test_dir/home" XDG_STATE_HOME="$welcome_test_dir/state" PATH="$welcome_test_dir/bin:$PATH" DYLANOS_KDIALOG_LOG="$welcome_test_dir/kdialog.log" sh "$welcome_tool" --force
+[[ "$(wc -l < "$welcome_test_dir/kdialog.log")" -eq 2 ]]
 
 python3 - <<'PY'
 from pathlib import Path

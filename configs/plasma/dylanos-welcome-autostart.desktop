@@ -1,0 +1,10 @@
+[Desktop Entry]
+Type=Application
+Name=DylanOS Welcome
+Comment=Show DylanOS quick-start actions once after first login
+Exec=dylanos-welcome --autostart
+TryExec=dylanos-welcome
+Icon=dylanos
+Terminal=false
+OnlyShowIn=KDE;
+X-KDE-autostart-after=panel

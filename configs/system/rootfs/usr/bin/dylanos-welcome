@@ -1,0 +1,98 @@
+#!/bin/sh
+set -eu
+
+APP_NAME='DylanOS Welcome'
+DOCS_URL='https://github.com/dylanneymarmontalvo2014-lgtm/DylanOS'
+AUTOSTART=0
+
+usage() {
+    cat <<'EOF'
+Usage: dylanos-welcome [--help|--version|--autostart|--force]
+
+Show DylanOS quick-start actions. The autostart mode runs once per user.
+Use --force to open the welcome screen again.
+EOF
+}
+
+case "${1:-}" in
+    --help|-h)
+        usage
+        exit 0
+        ;;
+    --version|-V)
+        printf '%s\n' "$APP_NAME"
+        exit 0
+        ;;
+    --autostart)
+        AUTOSTART=1
+        ;;
+    --force)
+        ;;
+    '')
+        ;;
+    *)
+        usage >&2
+        exit 2
+        ;;
+esac
+if [ "$#" -gt 1 ]; then
+    usage >&2
+    exit 2
+fi
+
+if ! command -v kdialog >/dev/null 2>&1; then
+    printf '%s requires KDE kdialog.\n' "$APP_NAME" >&2
+    exit 1
+fi
+if [ -z "${HOME:-}" ]; then
+    printf '%s cannot determine the current user home directory.\n' "$APP_NAME" >&2
+    exit 1
+fi
+
+state_dir=${XDG_STATE_HOME:-"$HOME/.local/state"}/dylanos
+seen_file=$state_dir/welcome-seen
+if [ "$AUTOSTART" -eq 1 ] && [ -e "$seen_file" ]; then
+    exit 0
+fi
+mkdir -p "$state_dir"
+: > "$seen_file"
+
+while :; do
+    if ! choice=$(kdialog --title "$APP_NAME" --menu \
+        'Welcome! Choose a quick-start action. You can reopen this screen from the application menu.' \
+        diagnostics 'View system diagnostics' \
+        installer 'Launch the DylanOS installer' \
+        docs 'Open DylanOS documentation' \
+        done 'Finish') ; then
+        exit 0
+    fi
+
+    case "$choice" in
+        diagnostics)
+            if command -v dylanos-info >/dev/null 2>&1; then
+                kdialog --title 'DylanOS system diagnostics' --msgbox "$(dylanos-info --diagnose)"
+            else
+                kdialog --title "$APP_NAME" --sorry 'The dylanos-info diagnostic command is not installed.'
+            fi
+            ;;
+        installer)
+            if ! command -v calamares >/dev/null 2>&1; then
+                kdialog --title "$APP_NAME" --sorry 'The installer is not available in this session.'
+            elif ! command -v pkexec >/dev/null 2>&1; then
+                kdialog --title "$APP_NAME" --sorry 'The graphical privilege helper is not available.'
+            elif ! pkexec calamares; then
+                kdialog --title "$APP_NAME" --sorry 'The installer did not start. You can launch it from the application menu or review the system diagnostics.'
+            fi
+            ;;
+        docs)
+            if command -v xdg-open >/dev/null 2>&1; then
+                xdg-open "$DOCS_URL" >/dev/null 2>&1 &
+            else
+                kdialog --title "$APP_NAME" --msgbox "Documentation: $DOCS_URL"
+            fi
+            ;;
+        done|'')
+            exit 0
+            ;;
+    esac
+done
