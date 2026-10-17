@@ -20,11 +20,17 @@ fi
 mkdir -p "$BUILD_DIR"
 cd "$BUILD_DIR"
 
-lb config \
-  --distribution "$DEBIAN_SUITE" \
-  --architectures amd64 \
-  --binary-images iso-hybrid \
+LB_CONFIG=(
+  lb config
+  --distribution "$DEBIAN_SUITE"
+  --architectures amd64
+  --binary-images iso-hybrid
   --archive-areas 'main contrib non-free non-free-firmware'
+)
+if [[ "${DYLANOS_SERIAL_CONSOLE:-0}" == '1' ]]; then
+  LB_CONFIG+=(--bootappend-live 'boot=live components console=tty0 console=ttyS0,115200n8 systemd.show_status=1')
+fi
+"${LB_CONFIG[@]}"
 
 mkdir -p "$CONFIG_DIR/package-lists" "$INCLUDES" "$CONFIG_DIR/hooks/live"
 for category in default development gaming iot; do
@@ -37,6 +43,9 @@ done
 cp -a "$ROOT_DIR/configs/system/rootfs/." "$INCLUDES/"
 install -D -m 0755 "$ROOT_DIR/configs/system/rootfs/usr/bin/dylanos-info" "$INCLUDES/usr/bin/dylanos-info"
 install -D -m 0755 "$ROOT_DIR/configs/system/rootfs/usr/bin/dylanos-wallpaper" "$INCLUDES/usr/bin/dylanos-wallpaper"
+install -D -m 0755 "$ROOT_DIR/configs/system/rootfs/usr/bin/dylanos-welcome" "$INCLUDES/usr/bin/dylanos-welcome"
+install -D -m 0644 "$ROOT_DIR/configs/plasma/dylanos-welcome.desktop" "$INCLUDES/usr/share/applications/dylanos-welcome.desktop"
+install -D -m 0644 "$ROOT_DIR/configs/plasma/dylanos-welcome-autostart.desktop" "$INCLUDES/etc/xdg/autostart/dylanos-welcome.desktop"
 install -D -m 0644 "$ROOT_DIR/configs/bash/dylanos.bashrc" "$INCLUDES/etc/skel/.bashrc"
 install -D -m 0644 "$ROOT_DIR/configs/zsh/dylanos.zshrc" "$INCLUDES/etc/skel/.zshrc"
 install -D -m 0644 "$ROOT_DIR/configs/plasma/kdeglobals" "$INCLUDES/etc/skel/.config/kdeglobals"
