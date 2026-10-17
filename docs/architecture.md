@@ -1,56 +1,53 @@
 # Arquitectura de DylanOS
 
-## Base del sistema
+## Plataforma de referencia
 
-- Distribución base: Debian Stable
-- Arquitectura: x86_64
-- Kernel: Linux
-- Escritorio: KDE Plasma
-- Gestor de inicio de sesión: SDDM
-- Instalador: Calamares
+| Capa | Elección configurada |
+|---|---|
+| Distribución | Debian Stable / Debian Live |
+| Arquitectura de imagen | `amd64` (x86_64) |
+| Escritorio | KDE Plasma, con componentes Breeze |
+| Inicio de sesión | SDDM |
+| Instalador | Calamares |
+| Arranque y splash | GRUB y Plymouth |
+| Empaquetado | Listas APT incorporadas por `scripts/build.sh` |
 
----
+Estas son las elecciones declaradas por los archivos de construcción; no constituyen una matriz de hardware certificado.
 
-## Componentes principales
+## Flujo de construcción
 
-### Branding
+```text
+packages/*/packages.list ─┐
+configs/ + themes/ ───────┼─> scripts/build.sh ─> Debian Live ─> ISO híbrida amd64
+branding/ ────────────────┤
+installer/calamares/ ────┘
+```
 
-Contiene el logo, fondos de pantalla, iconos y recursos visuales de DylanOS.
+`build.sh` prepara `build/live-build/`, crea listas de paquetes de Debian Live, copia la identidad y las utilidades a `config/includes.chroot`, configura Calamares y ejecuta `lb build`. La compilación necesita root; Docker ejecuta el mismo script con los permisos de montaje requeridos por Debian Live. El detalle está en [Construir DylanOS](build.md).
 
-### Themes
+El constructor incluye las cuatro categorías de paquetes en cada imagen actual: `default`, `development`, `gaming` e `iot`. No son opciones seleccionables ni perfiles de instalación separados todavía.
 
-Incluye los temas de:
+## Mapa por responsabilidad
 
-- Plasma
-- GTK
-- Qt
-- SDDM
-- GRUB
-- Plymouth
+| Ruta | Responsabilidad |
+|---|---|
+| `branding/` | Logo, icono, wallpaper y recursos de inicio |
+| `configs/system/rootfs/` | Identidad instalada y comandos propios |
+| `configs/bash/`, `configs/zsh/` | Defaults para usuarios nuevos |
+| `configs/plasma/` | Tema KDE y entradas de bienvenida/autoinicio |
+| `packages/` | Listas APT agrupadas por propósito |
+| `themes/` | Ajustes de GTK, Plasma, SDDM y GRUB |
+| `installer/calamares/` | Secuencia, módulo unpackfs y branding |
+| `scripts/` | Construcción, pruebas estáticas y smoke test de ISO |
+| `.github/workflows/` | CI, construcción de ISO y publicación versionada |
+| `docs/` | Guías y registro de límites conocidos |
 
-### Packages
+## Configuración que llega al sistema
 
-Define las aplicaciones instaladas por defecto.
+`configs/system/rootfs/` se copia al filesystem de la imagen. `configs/plasma/dylanos-welcome.desktop` registra la aplicación en el menú y `dylanos-welcome-autostart.desktop` la inicia una vez por usuario KDE. Las configuraciones de Bash/Zsh y `kdeglobals` se instalan en `/etc/skel` para cuentas nuevas.
 
-### Configs
+Los temas de Plasma, GTK, SDDM, GRUB y Plymouth se instalan desde sus directorios respectivos. El wallpaper queda disponible para aplicación manual; no se modifica al iniciar sesión. El repositorio no declara una disposición propia de panel/dock de Plasma.
 
-Almacena la configuración predeterminada del sistema.
+## Instalador
 
-### Scripts
-
-Contiene los scripts para:
-
-- Construcción de la ISO.
-- Pruebas.
-- Limpieza.
-- Publicación.
-
-### Installer
-
-Configuración del instalador Calamares.
-
----
-
-## Objetivo
-
-Crear una distribución Linux moderna, elegante y fácil de usar, inspirada en la experiencia de macOS sin perder la libertad y flexibilidad del ecosistema Linux.
+`installer/calamares/settings.conf` define las páginas y módulos de la secuencia; `modules/unpackfs.conf` instala el sistema live en el destino. Que estos archivos y el paquete `calamares` estén configurados no significa que se haya completado una instalación de punta a punta. Consulta [Estado del proyecto](status.md) y [Pruebas](testing.md).

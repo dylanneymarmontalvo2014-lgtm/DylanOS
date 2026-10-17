@@ -1,0 +1,37 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1440 196" role="img" aria-labelledby="title desc">
+  <title id="title">Paleta de colores de DylanOS</title>
+  <desc id="desc">Azul noche, azul de superficie, azul de selección, cian, violeta y blanco frío.</desc>
+  <rect width="1440" height="196" rx="24" fill="#0b1023"/>
+  <g font-family="Inter,Segoe UI,Arial,sans-serif">
+    <g transform="translate(20 20)">
+      <rect width="220" height="156" rx="16" fill="#10172c" stroke="#62719d" stroke-opacity="0.6"/>
+      <text x="18" y="108" fill="#ebf1ff" font-size="18" font-weight="700">AZUL NOCHE</text>
+      <text x="18" y="136" fill="#bdc9e7" font-size="16">#10172C</text>
+    </g>
+    <g transform="translate(258 20)">
+      <rect width="220" height="156" rx="16" fill="#171d30" stroke="#62719d" stroke-opacity="0.6"/>
+      <text x="18" y="108" fill="#ebf1ff" font-size="18" font-weight="700">SUPERFICIE</text>
+      <text x="18" y="136" fill="#bdc9e7" font-size="16">#171D30</text>
+    </g>
+    <g transform="translate(496 20)">
+      <rect width="220" height="156" rx="16" fill="#4664b9"/>
+      <text x="18" y="108" fill="#fff" font-size="18" font-weight="700">SELECCIÓN</text>
+      <text x="18" y="136" fill="#edf1ff" font-size="16">#4664B9</text>
+    </g>
+    <g transform="translate(734 20)">
+      <rect width="220" height="156" rx="16" fill="#7ce7ff"/>
+      <text x="18" y="108" fill="#10203a" font-size="18" font-weight="700">Cian</text>
+      <text x="18" y="136" fill="#10203a" font-size="16">#7CE7FF</text>
+    </g>
+    <g transform="translate(972 20)">
+      <rect width="220" height="156" rx="16" fill="#7d77ff"/>
+      <text x="18" y="108" fill="#fff" font-size="18" font-weight="700">Violeta</text>
+      <text x="18" y="136" fill="#fff" font-size="16">#7D77FF</text>
+    </g>
+    <g transform="translate(1210 20)">
+      <rect width="210" height="156" rx="16" fill="#ebf1ff"/>
+      <text x="18" y="108" fill="#17213c" font-size="18" font-weight="700">BLANCO FRÍO</text>
+      <text x="18" y="136" fill="#34405e" font-size="16">#EBF1FF</text>
+    </g>
+  </g>
+</svg>

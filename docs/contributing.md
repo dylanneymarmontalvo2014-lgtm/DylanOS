@@ -1,67 +1,39 @@
-# Guía de Contribución
+# Contribuir a DylanOS
 
-¡Gracias por tu interés en contribuir a DylanOS!
+Gracias por ayudar a mejorar DylanOS. El proyecto está en Alpha; los cambios pequeños, verificables y bien documentados son especialmente útiles.
 
-Actualmente el proyecto se encuentra en una etapa temprana de desarrollo.
+## Antes de empezar
 
-## Cómo contribuir
+1. Revisa [Estado del proyecto](status.md), [Arquitectura](architecture.md) y los límites de [Pruebas](testing.md).
+2. Busca si la propuesta o el error ya se reportó en Issues o Pull Requests.
+3. Para errores, incluye versión/commit, pasos para reproducir, resultado esperado y resultado observado. Añade una captura o log cuando ayude, ocultando datos personales.
 
-Puedes ayudar de las siguientes maneras:
-
-- Reportando errores.
-- Proponiendo nuevas funciones.
-- Mejorando la documentación.
-- Corrigiendo código.
-- Diseñando iconos o temas.
-- Probando nuevas versiones.
-
-## Flujo de trabajo
-
-1. Haz un Fork del repositorio.
-2. Crea una nueva rama.
+## Flujo recomendado
 
 ```bash
-git checkout -b feature/nombre-de-la-funcion
+git clone https://github.com/dylanneymarmontalvo2014-lgtm/DylanOS.git
+cd DylanOS
+git checkout -b docs/describe-el-cambio
 ```
 
-3. Realiza tus cambios.
-
-4. Guarda tus cambios.
+Trabaja en una rama y mantén cada PR centrado en una responsabilidad. Antes de abrirlo, ejecuta:
 
 ```bash
-git add .
-git commit -m "Descripción del cambio"
+scripts/test.sh
+shellcheck --severity=warning install-deps.sh scripts/*.sh
 ```
 
-5. Envía los cambios.
+Si el cambio afecta paquetes, configuración, branding o construcción de la ISO, explica qué se verificó y qué queda pendiente. La prueba de una ISO requiere `scripts/test-iso.sh`; completar una instalación de Calamares es una prueba aparte.
 
-```bash
-git push origin feature/nombre-de-la-funcion
-```
+## Convenciones del repositorio
 
-6. Abre un Pull Request.
+- Mantén listas APT en `packages/<categoría>/packages.list`; usa nombres de paquete Debian válidos y evita duplicados.
+- Coloca defaults de sistema, usuario, Plasma y herramientas en sus directorios responsables bajo `configs/`.
+- Evita afirmar soporte, requisitos mínimos o validación que no se haya probado.
+- No añadas binarios de ISO, imágenes de disco ni artefactos generados al repositorio.
+- Documenta cualquier comportamiento visible y conserva las advertencias propias de una versión Alpha.
+- El contenido del proyecto está cubierto por la [GNU GPL v3](../LICENSE).
 
-## Reglas
+## Pull Request
 
-- Escribir código limpio y documentado.
-- Mantener una estructura organizada.
-- No subir archivos innecesarios.
-- Seguir las convenciones del proyecto.
-- Respetar la licencia GPL v3.
-
-## Reportar errores
-
-Si encuentras un problema, crea un **Issue** incluyendo:
-
-- Descripción del problema.
-- Pasos para reproducirlo.
-- Resultado esperado.
-- Resultado obtenido.
-- Capturas de pantalla (si aplica).
-- Información del sistema.
-
-## Código de conducta
-
-Se espera que todos los colaboradores mantengan un ambiente respetuoso, colaborativo y profesional.
-
-¡Gracias por contribuir a DylanOS!
+Incluye un título claro, resumen del cambio, pruebas ejecutadas y cualquier limitación conocida. Si el PR modifica una workflow o una función de publicación, explica qué evento la activa y qué artefactos produce.

@@ -1,70 +1,88 @@
-# Construir DylanOS
+# Construir y publicar DylanOS
 
-DylanOS usa Debian Live para generar una ISO híbrida de arranque para amd64.
+DylanOS usa Debian Live para preparar una ISO híbrida de arranque para `amd64`. El script principal es `scripts/build.sh`; `scripts/iso.sh` es un alias.
 
-## Dependencias del anfitrión
+## Requisitos del anfitrión
 
-En Debian o Ubuntu, instala las herramientas de construcción incluidas en el proyecto:
+En Debian o Ubuntu, instala las dependencias incluidas en el proyecto:
 
 ```bash
 sudo ./install-deps.sh
 ```
 
-También puedes instalar manualmente `live-build`, `debootstrap`, `squashfs-tools` y `xorriso`. La construcción necesita privilegios de root y conexión a Internet para descargar los paquetes del sistema.
+El script instala `live-build`, `debootstrap`, `squashfs-tools` y `xorriso` mediante APT. La construcción requiere conexión a Internet y permisos de root para las operaciones de montaje y chroot de Debian Live.
+
+## Construir directamente
+
+Desde la raíz del repositorio:
+
+```bash
+sudo scripts/build.sh
+```
+
+El constructor usa Debian Stable, arquitectura amd64 y las áreas `main`, `contrib`, `non-free` y `non-free-firmware`. Guarda la configuración y los resultados en `build/live-build/`. Se pueden cambiar suite o directorio de trabajo:
+
+```bash
+sudo DYLANOS_SUITE=stable DYLANOS_BUILD_DIR=/ruta/al/build scripts/build.sh
+```
+
+Las cuatro listas bajo `packages/` se copian a la imagen en todas las compilaciones actuales; no son perfiles opcionales. Los recursos y las configuraciones de `branding/`, `configs/`, `themes/` e `installer/calamares/` se incorporan durante la preparación.
 
 ## Construir con Docker
 
-El `Dockerfile` prepara el entorno de compilación; construir la imagen no genera todavía la ISO:
+Construir la imagen del constructor no construye la ISO:
 
 ```bash
 docker build --tag dylanos-builder .
 ```
 
-Para ejecutar el `scripts/build.sh` existente y guardar los artefactos en `build/live-build/` del repositorio:
+Después ejecuta el contenedor con el repositorio montado:
 
 ```bash
-docker run --rm --privileged --volume "$PWD:/workspace" --workdir /workspace dylanos-builder
+docker run --rm --privileged \
+  --volume "$PWD:/workspace" \
+  --workdir /workspace \
+  dylanos-builder
 ```
 
-El contenedor necesita `--privileged` porque Debian Live usa operaciones de montaje y chroot durante la construcción. No se creó un segundo `build.sh`.
+`--privileged` es necesario para las operaciones de Debian Live. Los artefactos aparecen en `build/live-build/`; no se crea un segundo script de construcción.
 
-## Pruebas estáticas
+## Validar cambios y una ISO
 
-Desde la raíz del repositorio:
+Las pruebas estáticas se ejecutan desde la raíz:
 
 ```bash
 scripts/test.sh
+shellcheck --severity=warning install-deps.sh scripts/*.sh
 ```
 
-Estas pruebas comprueban la sintaxis de los scripts y las herramientas, las listas de paquetes, los SVG, los encabezados de los PNG y que las carpetas que antes tenían `.gitkeep` contengan archivos reales.
+Para revisar una ISO ya construida, instala QEMU, OVMF, xorriso y squashfs-tools y ejecuta:
 
-Para una ISO ya construida, `scripts/test-iso.sh ruta/a/dylanos.iso` comprueba el catálogo de arranque, que Calamares y sus ajustes estén dentro del sistema live y que el arranque llegue a SDDM tanto con BIOS como con UEFI. Requiere QEMU, OVMF, xorriso y squashfs-tools. Para una compilación de prueba directa, usa `sudo env DYLANOS_SERIAL_CONSOLE=1 scripts/build.sh`; con Docker, pasa `--env DYLANOS_SERIAL_CONSOLE=1` a `docker run`.
+```bash
+scripts/test-iso.sh build/live-build/ruta-a-la-iso.iso
+```
 
-El workflow `ISO QEMU smoke test` automatiza la construcción y esas pruebas cuando cambian los componentes de la imagen. Verificar que Calamares está incluido no sustituye completar una instalación en una máquina virtual: esa prueba de extremo a extremo sigue pendiente.
+El test inspecciona el catálogo de arranque, comprueba archivos del sistema live y arranca la imagen en BIOS y UEFI esperando que SDDM inicie. Para reproducir localmente el build temporal que se usa en CI, activa la consola serial:
 
-## Publicar una ISO en GitHub Releases
+```bash
+sudo env DYLANOS_SERIAL_CONSOLE=1 scripts/build.sh
+```
 
-Al enviar una etiqueta de versión cuyo nombre empieza con `v` (por ejemplo, `v0.1.0`) al repositorio original, el workflow `Build and publish release ISO` construye la ISO de producción y crea una GitHub Release pública con la ISO amd64 y su archivo SHA-256. La publicación solo ocurre al enviar esa etiqueta; no se ejecuta en cada push a `main`.
+El workflow `ISO QEMU smoke test` prepara ese build temporal automáticamente. La consola serial es para probar el arranque y no se habilita en la ISO de producción. Un resultado positivo no completa ni valida la instalación de Calamares.
+
+Consulta [Pruebas y alcance de CI](testing.md) para conocer los límites de cada verificación.
+
+## Publicar una versión
+
+El workflow `Build and publish release ISO` es el único que publica Releases automáticamente. Al enviar al repositorio original una etiqueta que empiece con `v`, por ejemplo `v0.1.0`, compila la ISO de producción, crea la Release y adjunta el archivo amd64 y su checksum SHA-256:
 
 ```bash
 git tag v0.1.0
 git push origin v0.1.0
 ```
 
-## Generar la ISO directamente en el anfitrión
+El workflow manual `Build ISO artifact (manual)` construye y sube un artefacto descargable de GitHub Actions; no crea una Release pública.
 
-```bash
-sudo scripts/build.sh
-```
+## Estado y precauciones
 
-El script usa Debian Stable y guarda la configuración de Debian Live y la ISO en `build/live-build/`. También puedes seleccionar otra suite o una ruta de trabajo distinta:
-
-```bash
-sudo DYLANOS_SUITE=stable DYLANOS_BUILD_DIR=/ruta/al/build scripts/build.sh
-```
-
-Las listas bajo `packages/` se convierten en listas de paquetes de Debian Live. Los recursos de `branding/`, `configs/`, `themes/` y `installer/calamares/` se copian a sus ubicaciones del sistema de destino durante la preparación.
-
-## Alcance actual
-
-La configuración prepara una ISO live con escritorio KDE, branding, listas de paquetes y configuración inicial de Calamares. La ISO no debe considerarse instalable o lista para distribuir hasta que se haya construido y probado el arranque y el flujo de instalación en una máquina virtual y en hardware compatible.
+No se debe anunciar una ISO como probada, instalable o lista para uso diario hasta revisar los resultados del build, el arranque y una instalación de extremo a extremo en una VM. Las pruebas QEMU de arranque y las pruebas de instalación son etapas diferentes.
