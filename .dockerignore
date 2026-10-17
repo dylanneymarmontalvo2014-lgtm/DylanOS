@@ -1,0 +1,6 @@
+.git
+/build/
+*.iso
+*.img
+*.tar.gz
+*.zip
