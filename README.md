@@ -41,10 +41,11 @@ Almacena la configuración predeterminada del sistema.
 - `install-deps.sh`: instala las dependencias necesarias en Debian o Ubuntu.
 - `scripts/build.sh`: prepara Debian Live y construye una ISO híbrida x86_64.
 - `scripts/iso.sh`: alias del proceso de construcción.
-- `scripts/test.sh`: valida las listas de paquetes, recursos gráficos y estructura básica.
+- `scripts/test.sh`: valida las listas de paquetes, recursos gráficos, utilidades y estructura básica.
+- `scripts/test-iso.sh`: inspecciona una ISO y prueba su arranque BIOS/UEFI con QEMU.
 - `Dockerfile`: crea un entorno aislado para ejecutar el `scripts/build.sh` existente.
 
-Consulta [la guía de construcción](docs/build.md) para instalar las dependencias y generar la ISO, con o sin Docker. `dylanos-info` muestra información básica del sistema instalado y `dylanos-wallpaper` aplica el fondo incluido en Plasma; ambos están descritos en [herramientas](docs/commands.md).
+Consulta [la guía de construcción](docs/build.md) para instalar las dependencias, generar la ISO y probar su arranque. `dylanos-info --diagnose` ofrece comprobaciones locales de solo lectura; `dylanos-welcome` da acceso a diagnósticos, documentación e instalación. Ambos, junto con `dylanos-wallpaper`, están descritos en [herramientas](docs/commands.md).
 
 ### Installer
 
