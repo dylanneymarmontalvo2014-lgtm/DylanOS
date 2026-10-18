@@ -1,3 +1,9 @@
+# Licencia del repositorio
+
+DylanOS se distribuye bajo la GNU General Public License v3.0 o posterior, salvo que un archivo concreto indique otra licencia o condición específica.
+
+Los recursos de branding, temas, iconos y arte visual del proyecto se consideran parte del repositorio y deben respetar la misma licencia principal salvo que se indique lo contrario en un archivo de ese conjunto.
+
 GNU GENERAL PUBLIC LICENSE
 Version 3, 29 June 2007
 
@@ -13,3 +19,4 @@ but WITHOUT ANY WARRANTY; without even the implied warranty of
 MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
 
 See <https://www.gnu.org/licenses/>.
+

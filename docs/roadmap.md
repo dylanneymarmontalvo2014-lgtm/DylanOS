@@ -1,40 +1,39 @@
 # Roadmap de DylanOS
 
-## Versión 0.1 Alpha
+Este documento refleja la hoja de ruta actual del proyecto en la iteración Crimson y no sustituye los informes históricos archivados en `docs/`.
 
-### Objetivos
+## DylanOS Crimson 1.0
 
-- Crear la primera ISO.
-- Configurar Debian Stable como base.
-- Integrar KDE Plasma.
-- Personalizar el tema.
-- Personalizar SDDM.
-- Personalizar GRUB.
-- Integrar Calamares.
-- Publicar la primera versión Alpha.
+### Objetivos principales
 
----
+- consolidar la identidad visual Crimson
+- estabilizar la base Debian 13 + Plasma 6
+- mantener las apps nativas del proyecto: workspace, explorer, store y app center
+- dejar el flujo de instalación propio funcionando con validación real
+- preparar documentación operativa y de contribución coherente
 
-## Versión 0.5 Beta
+### Estado actual
 
-### Objetivos
+El proyecto ya muestra una dirección clara hacia un entorno de trabajo nativo con un único estilo visual, una capa gráfica propia y componentes de software diseñados para DylanOS, en lugar de depender de proveedores visuales genéricos del escritorio.
 
-- Optimizar rendimiento.
-- Crear aplicaciones propias.
-- Mejorar la estabilidad.
-- Añadir centro de notificaciones.
-- Añadir widgets.
-- Mejorar el dock.
-- Publicar la versión Beta.
+## Próxima evolución
 
----
+### 1.0.x
 
-## Versión 1.0
+- endurecer la validación del instalador
+- revisar compatibilidad de hardware y arranque
+- pulir experiencia de store y explorador
+- mejorar estabilidad del workspace y la persistencia
 
-### Objetivos
+### 1.1+
 
-- Lanzamiento oficial.
-- Corrección de errores.
-- Documentación completa.
-- Soporte para actualizaciones.
-- Publicación del sitio web oficial.
+- consolidar baseline de rendimiento
+- extender validación del sistema en hardware real
+- continuar refinando branding, widgets y experiencia de escritorio
+
+## Documentación relacionada
+
+- [README.md](../README.md)
+- [install.md](install.md)
+- [architecture.md](architecture.md)
+- [contributing.md](contributing.md)

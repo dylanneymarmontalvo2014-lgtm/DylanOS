@@ -1,12 +1,19 @@
-# Instalación y pruebas de DylanOS 1.0 Beta
+# Instalación y pruebas de DylanOS
 
-## Primero en una máquina virtual
+Esta guía recoge el proceso de arranque, instalación y validación del sistema tal como está integrado en el repositorio actual de DylanOS Crimson.
 
-Verifica el SHA-256 y usa una VM con 4 GB de RAM, 2 CPU y un disco virtual de 32 GB.
-No uses tu disco físico para la primera prueba. La imagen ofrece arranque BIOS y
-UEFI sin Secure Boot. No se anuncia soporte de Secure Boot hasta validarlo.
+## Requisitos
 
-```sh
+- Host Debian/Ubuntu amd64 para construir la ISO.
+- Al menos 25 GB de espacio libre para la imagen y el chroot.
+- Acceso a `sudo`.
+- Máquina virtual recomendada con 4 GB de RAM, 2 CPU y disco virtual de 32 GB para pruebas iniciales.
+
+## Arranque live en máquina virtual
+
+Para probar la ISO sin tocar el disco físico:
+
+```bash
 bash scripts/test.sh
 qemu-img create -f qcow2 work/dylanos-test.qcow2 32G
 qemu-system-x86_64 -enable-kvm -m 4096 -smp 2 \
@@ -14,46 +21,55 @@ qemu-system-x86_64 -enable-kvm -m 4096 -smp 2 \
   -drive file=work/dylanos-test.qcow2,format=qcow2 -vga virtio
 ```
 
-Sin `/dev/kvm`, quita `-enable-kvm`; la emulación será bastante más lenta.
-Para UEFI usa una copia escribible de OVMF_VARS y OVMF_CODE de tu distribución.
+Si tu sistema no expone `/dev/kvm`, elimina `-enable-kvm`. La emulación será más lenta, pero funciona.
 
-Selecciona «DylanOS 1.0 Beta — Sesión live (probar o instalar)». El modo live
-arranca el escritorio Plasma en X11 con el usuario `dylan`, creado por
-live-config, con entrada automática. Si solicitas autenticación en la sesión
-live, la contraseña predeterminada de live-config es `live`. Esta cuenta
-temporal no sustituye al usuario que crearás en el instalador de DylanOS.
+La sesión live debe arrancar con el entorno de DylanOS y mostrar la experiencia visual Crimson con el escritorio Plasma customizado. El instalador puede lanzarse desde el escritorio o desde el acceso del menú del sistema.
 
-El instalador oficial aparece como ejecutable en el escritorio (`~/Desktop` y
-`~/Escritorio`, porque el nombre de la carpeta depende del idioma) y en el menú
-de aplicaciones. **No se abre solo**: la sesión live es un escritorio de vista
-previa para que pruebes DylanOS y lances la instalación cuando quieras. Revisa
-su resumen antes de confirmar el particionado del disco virtual.
+## Instalación desde el instalador propio
 
-## Comprobaciones de aceptación
+El flujo actual del proyecto usa el instalador incluido en `installer/dylanos-installer` y no depende de Calamares. Antes de confirmar la instalación, revisa:
 
-1. Arrancar por BIOS y UEFI; comprobar el menú y el splash.
-2. Verificar panel superior, menú global, ventanas, iconos y fondo con un usuario nuevo.
-3. Abrir todas las apps propias desde el menú; probar claro y oscuro.
-4. Crear/copiar/renombrar un archivo, enviarlo a papelera y recuperarlo en Dolphin.
-5. Crear una nota, cerrar la app y comprobar que permanece al abrirla.
-6. Crear proyectos Python/web/C++; abrirlos en editor/terminal y ejecutarlos.
-7. Probar DylanOS Store, actualizaciones, Wi-Fi, Bluetooth, audio, suspensión y pantalla.
-8. Instalar en el disco virtual, reiniciar sin la ISO y verificar la cuenta creada.
-9. Repetir red/audio/suspensión en los equipos físicos que se vayan a soportar.
+- tipo de disco
+- particionado elegido
+- idioma y teclado
+- nombre de usuario y contraseña
+- arranque UEFI/BIOS del sistema
 
-Una carga QML o un checksum correcto no sustituyen estas pruebas.
+> La instalación afecta el disco destino y debe hacerse con precaución. Para la primera prueba, se recomienda una máquina virtual o un disco externo no crítico.
 
-## Desarrollo local
+## Validación funcional mínima
 
-`bash scripts/check.sh` comprueba sintaxis, ShellCheck, parser de paquetes,
-operaciones de datos, puente Qt, calculadora y persistencia desde QML, staging y
-carga de cada pantalla. Define `DYLANOS_PYTHON` para usar tu entorno virtual.
+1. Arrancar la ISO en BIOS y UEFI.
+2. Verificar el escritorio, panel, tema y fondo Crimson.
+3. Comprobar la apertura de `dylanos-explorer`, `dylanos-store`, workspace y app center.
+4. Probar la creación, renombrado y borrado de archivos.
+5. Verificar notas y persistencia del panel de trabajo.
+6. Comprobar la instalación de software desde DylanOS Store.
+7. Instalar en un disco virtual y reiniciar sin la ISO.
+8. Repetir prueba de audio, Wi‑Fi, suspensión y pantalla en hardware real.
 
-```sh
-python3 scripts/stage.py /tmp/dylanos-stage
-QT_QPA_PLATFORM=offscreen QT_QUICK_BACKEND=software \
-  .venv/bin/python apps/workspace/main.py --page dev --screenshot /tmp/desarrollo.png
+## Validación local del repositorio
+
+```bash
+python3 -m venv .venv
+. .venv/bin/activate
+python -m pip install -r apps/workspace/requirements-dev.txt
+DYLANOS_PYTHON="$PWD/.venv/bin/python" bash scripts/check.sh
 ```
 
-Para regenerar los fondos y SVG propios: `.venv/bin/python scripts/lib/generate-theme.py`.
-La compilación se puede retomar con `bash scripts/build.sh --resume`.
+Este comando valida la base del proyecto con sintaxis, comprobaciones de shell y validaciones de staging/QML según el estado actual del repo.
+
+## Construcción del ISO
+
+```bash
+bash scripts/build.sh
+bash scripts/iso.sh
+```
+
+El proceso de build usa `scripts/build.sh` y `scripts/stage.py` para preparar el contenido del sistema, con salida en `work/chroot` y `work/iso`.
+
+## Documentación relacionada
+
+- [architecture.md](architecture.md)
+- [roadmap.md](roadmap.md)
+- [contributing.md](contributing.md)
