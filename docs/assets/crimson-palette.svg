@@ -1,0 +1,32 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1400 250" role="img" aria-labelledby="title desc">
+  <title id="title">Paleta oficial DylanOS Crimson</title>
+  <desc id="desc">Cinco muestras: Crimson, Black, White, Gray y Light Gray.</desc>
+  <rect width="1400" height="250" rx="22" fill="#0A0A0A"/>
+  <g font-family="sans-serif" text-anchor="middle">
+    <g transform="translate(26 26)">
+      <rect width="256" height="126" rx="14" fill="#DC143C"/>
+      <text x="128" y="188" fill="#FFFFFF" font-size="22" font-weight="700">CRIMSON</text>
+      <text x="128" y="218" fill="#B3B3B3" font-size="18">#DC143C</text>
+    </g>
+    <g transform="translate(304 26)">
+      <rect width="256" height="126" rx="14" fill="#0A0A0A" stroke="#B3B3B3" stroke-opacity="0.4"/>
+      <text x="128" y="188" fill="#FFFFFF" font-size="22" font-weight="700">BLACK</text>
+      <text x="128" y="218" fill="#B3B3B3" font-size="18">#0A0A0A</text>
+    </g>
+    <g transform="translate(582 26)">
+      <rect width="256" height="126" rx="14" fill="#FFFFFF"/>
+      <text x="128" y="188" fill="#FFFFFF" font-size="22" font-weight="700">WHITE</text>
+      <text x="128" y="218" fill="#B3B3B3" font-size="18">#FFFFFF</text>
+    </g>
+    <g transform="translate(860 26)">
+      <rect width="256" height="126" rx="14" fill="#1A1A1A" stroke="#B3B3B3" stroke-opacity="0.2"/>
+      <text x="128" y="188" fill="#FFFFFF" font-size="22" font-weight="700">GRAY</text>
+      <text x="128" y="218" fill="#B3B3B3" font-size="18">#1A1A1A</text>
+    </g>
+    <g transform="translate(1138 26)">
+      <rect width="236" height="126" rx="14" fill="#B3B3B3"/>
+      <text x="118" y="188" fill="#FFFFFF" font-size="20" font-weight="700">LIGHT GRAY</text>
+      <text x="118" y="218" fill="#B3B3B3" font-size="18">#B3B3B3</text>
+    </g>
+  </g>
+</svg>
