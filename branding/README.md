@@ -1,27 +1,36 @@
-# DylanOS Branding
+# Branding de DylanOS
 
-## Colores oficiales
+DylanOS mantiene una identidad visual clara y consistente bajo la etiqueta Crimson. El objetivo es combinar un fondo oscuro, acentos rojos y superficies limpias con una sensación moderna y técnica.
 
-| Nombre | HEX | Uso |
+## Paleta oficial
+
+| Nombre | Código HEX | Uso |
 |---|---|---|
-| DylanOS Crimson | #DC143C | Color principal, acciones y acentos |
-| DylanOS Black | #0A0A0A | Fondo principal |
-| DylanOS White | #FFFFFF | Texto principal |
-| DylanOS Gray | #1A1A1A | Superficies y paneles |
-| DylanOS Light Gray | #B3B3B3 | Texto secundario |
+| DylanOS Crimson | #DC143C | color principal, acciones, botones y acentos |
+| DylanOS Black | #0A0A0A | fondos y superficies profundas |
+| DylanOS White | #FFFFFF | textos y elementos elevados |
+| DylanOS Gray | #1A1A1A | paneles, menús y tarjetas |
+| DylanOS Light Gray | #B3B3B3 | textos secundarios y detalles sutiles |
+
+La definición técnica también aparece en `branding/colors/dylanos.conf`.
 
 ## Logo
 
-El logotipo reutilizable es `branding/logo.png`. El staging lo instala como
-icono PNG de hicolor (`512x512`) y lo adapta al nombre `logo.png` que declara el
-branding de Calamares; no se modifica ningún archivo del instalador fuente.
+La marca principal del proyecto se conserva en `branding/logo.png` y forma parte del sistema visual general. El recurso se reutiliza en la visual del escritorio y en la identidad de la tienda, el instalador y otros puntos del sistema.
 
-## Wallpaper
+## Wallpapers y recursos
 
-El wallpaper predeterminado se encuentra en:
+- `branding/wallpapers/`: fondos del sistema
+- `branding/icons/`: iconografía y recursos gráficos
+- `branding/splash/`: recursos de arranque visual
 
-`branding/wallpapers/dylanos-default.png`
+## Concepto visual
 
-## Concepto
+DylanOS Crimson prioriza:
 
-DylanOS utiliza una identidad visual minimalista, moderna y tecnológica basada principalmente en rojo y negro.
+- profundidad con negro y gris oscuro
+- contraste con rojo como elemento de identidad
+- superficies limpias sin ruido visual excesivo
+- una experiencia moderna, estable y enfocada en el usuario
+
+La guía visual debe mantenerse consistente con los temas de `themes/` y la base UI del sistema en `apps/`.

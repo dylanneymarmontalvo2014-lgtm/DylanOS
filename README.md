@@ -1,83 +1,110 @@
-# DylanOS 1.0 Beta
+# DylanOS Crimson 1.0
 
-Distribución de escritorio basada en **Debian 13 (trixie), KDE Plasma 6 y Qt 6**,
-con una apariencia Crimson inspirada en Tahoe: barra superior de menús y estado,
-dock inferior flotante, controles de ventana a la izquierda y temas GTK/Qt claros
-y oscuros. El fondo predeterminado es `branding/wallpapers/dylanos-default.png`.
+DylanOS es un entorno de escritorio basado en Debian 13 (trixie), KDE Plasma 6 y Qt 6, con una identidad visual propia marcada por la paleta Crimson: rojo intenso, negro profundo y superficies de vidrio sutil. El proyecto combina un escritorio Plasma personalizado, aplicaciones nativas y un flujo de instalación y gestión de software propio.
 
-## Aplicaciones
+## Estado actual
 
-- **Aplicaciones DylanOS independientes**: Bienvenida, Notas, Desarrollo, Monitor,
-  Software y Ajustes; comparten componentes y abren ventanas separadas. Monitor
-  muestra historial de CPU/RAM y búsqueda de procesos; Desarrollo ofrece plantillas
-  Python, web y C++. Las notas existentes en SQLite conservan su ubicación.
-- **Archivos**: Dolphin es el explorador predeterminado. El explorador propio
-  preexistente sigue disponible con `dylanos --page files`.
-- **Calculadora**: aplicación Qt nativa con teclado y manejo de errores.
-- **App Center**: lanzador de aplicaciones instaladas mediante los servicios de KDE.
-- Firefox ESR, Dolphin, Konsole, Kate, LibreOffice, Thunderbird, Okular, VLC,
-  Elisa, Gwenview, Ark, Spectacle, Kamoso, monitor de KDE y Kup. El software se
-  instala desde DylanOS Store.
-- Perfil de desarrollo: VSCodium, Git, Python/venv, Node/npm, GCC, CMake,
-  Ninja, GDB, Podman, SSH, ripgrep y ShellCheck.
+- Base del sistema: Debian 13 (trixie) amd64
+- Escritorio: KDE Plasma 6
+- Tecnología base: Qt 6 / QML / KWin
+- Identidad visual: DylanOS Crimson
+- Instalador: propio, dentro de `installer/dylanos-installer`
+- Explorador: DylanOS Explorer
+- Tienda: DylanOS Store
+- Shell de trabajo: `apps/workspace`
 
-DylanOS Store gestiona las instalaciones y actualizaciones. Ajustes abre
-los módulos reales de Plasma. Las apps no simulan descargas ni controles de hardware.
+## Qué incluye
 
-## Ejecutar y comprobar las apps
+- `apps/workspace`: centro de trabajo con páginas de bienvenida, archivos, notas, desarrollo, monitor y ajustes.
+- `apps/dylanos-explorer`: gestor de archivos nativo basado en el motor de Dolphin/KIO.
+- `apps/dylanos-store`: tienda nativa de DylanOS para software, actualizaciones y catálogo.
+- `apps/dylanos-app-center`: lanzador de apps instaladas.
+- `apps/dylanos-spotlight`: búsqueda rápida del sistema.
+- `themes/`: look and feel, SDDM, GRUB, Plymouth, GTK y aurorae.
+- `branding/`: logo, pintura, wallpapers e iconografía.
+- `configs/`: perfiles de usuario, Konsole, bash, zsh y defaults del sistema.
+- `scripts/`: build, staging, QA y validación del sistema.
 
-```sh
+## Diseño visual
+
+La identidad oficial de DylanOS Crash/Crimson se define con estos valores:
+
+- DylanOS Red: `#DC143C`
+- DylanOS Black: `#0A0A0A`
+- DylanOS White: `#FFFFFF`
+- DylanOS Gray: `#1A1A1A`
+- DylanOS Light Gray: `#B3B3B3`
+
+La referencia visual principal está en `branding/` y en los temas bajo `themes/`.
+
+## Inicio rápido
+
+Para probar la app de escritorio localmente con el entorno de desarrollo del proyecto:
+
+```bash
 python3 -m venv .venv
-.venv/bin/pip install -r apps/workspace/requirements-dev.txt
-.venv/bin/python apps/workspace/main.py
+. .venv/bin/activate
+python -m pip install -r apps/workspace/requirements-dev.txt
+python apps/workspace/main.py
+```
+
+Para validar la base del proyecto con las comprobaciones del repositorio:
+
+```bash
 DYLANOS_PYTHON="$PWD/.venv/bin/python" bash scripts/check.sh
 ```
 
-Los controles de escritorio requieren Plasma y sus paquetes. Archivos, Notas,
-Monitor y las plantillas se pueden probar en otra distribución Linux con Qt 6.
-`scripts/check.sh` necesita también `shellcheck` y `desktop-file-validate`.
+Las pruebas del repositorio requieren dependencias como `shellcheck` y `desktop-file-validate` disponibles en el sistema.
 
-## Construir la imagen
+## Construcción de la ISO
 
-En un host Debian/Ubuntu amd64 con acceso a `sudo`, al menos 25 GB libres y conexión:
+En un host Debian/Ubuntu amd64 con acceso a `sudo` y espacio suficiente:
 
-```sh
+```bash
 sudo apt install debootstrap gnupg squashfs-tools xorriso grub-pc-bin grub-efi-amd64-bin mtools dosfstools
 bash scripts/build.sh
 bash scripts/iso.sh
 bash scripts/test.sh
 ```
 
-Salida: `DylanOS-1.0-beta-amd64.iso` y su archivo `.sha256`. La construcción se
-limita a `work/chroot`, en un espacio de montajes separado. No instala Plasma en
-el host, no particiona discos y no borra una construcción anterior. `--resume`
-continúa una existente; `--minimal` omite el grupo de desarrollo (las dependencias
-de compilación de las apps siguen siendo necesarias).
+El flujo de build está centrado en `scripts/build.sh` y `scripts/stage.py`, y se apoya en `work/chroot` y `work/iso` para no mezclar lo generado con el repositorio fuente.
 
-La firma de Debian se comprueba con la clave de trixie incluida en `configs/keys`.
-Los paquetes de Debian reciben actualizaciones de trixie, trixie-updates y
-trixie-security; VSCodium usa su repositorio externo firmado. Se guarda el
-inventario de versiones en `work/packages.manifest`. Las versiones APT no están
-congeladas: esta es una construcción repetible, no una imagen idéntica byte a byte.
+## Documentación del proyecto
 
-Consulta [instalación y QA](docs/install.md), [estado de la beta](docs/beta-status.md)
-y [arquitectura](docs/architecture.md). Las imágenes de `docs/previews` anteriores
-son propuestas; las capturas de verificación nuevas se guardan en `artifacts/`.
+- [docs/README.md](docs/README.md): índice de la documentación.
+- [docs/install.md](docs/install.md): instalación, pruebas y arranque live.
+- [docs/architecture.md](docs/architecture.md): arquitectura y principios de diseño.
+- [docs/roadmap.md](docs/roadmap.md): hoja de ruta.
+- [docs/contributing.md](docs/contributing.md): flujo de contribución.
+- [docs/auditoria-*-2026-*.md](docs): informes históricos y de depuración archivados.
 
-## Renovación visual de octubre de 2026
+## Estructura del repositorio
 
-La auditoría y los módulos modificados están en
-[el informe de escritorio](docs/auditoria-escritorio-2026-10-11.md).
-El instalador es completamente propio (`installer/dylanos-installer`): la
-interfaz del prototipo Figma se muestra en una ventana nativa de escritorio
-(Qt WebEngine, sin navegador externo) sobre un backend REST que detecta
-hardware y discos reales, particiona con parted, extrae el squashfs y
-configura usuario, idioma, teclado y GRUB. Calamares quedó eliminado de la
-imagen y del repositorio.
-El splash de sesión es propio y separado de Plymouth.
-El terminal usa Konsole translúcido con perfil DylanOS, fastfetch con logo
-propio y un prompt Crimson con separadores, tips y sugerencias de comandos.
+```text
+DylanOS/
+├── apps/
+├── branding/
+├── configs/
+├── docs/
+├── installer/
+├── packages/
+├── scripts/
+├── themes/
+├── README.md
+├── CHANGELOG.md
+├── CONTRIBUTING.md
+├── LICENSE
+└── work/
+```
 
-El nuevo layout se aplica a perfiles nuevos. No se borran los paneles de cuentas
-existentes: se puede elegir DylanOS Crimson en Preferencias → Tema global y
-aplicar su distribución de escritorio expresamente.
+## Licencia
+
+El código fuente del repositorio se distribuye bajo la GNU General Public License v3.0 o posterior, salvo que un archivo concreto indique otra cosa. Los recursos de branding, temas e iconos se mantienen dentro de la misma licencia del repositorio a menos que exista una nota específica en un archivo o conjunto de archivos.
+
+## Contribución
+
+Consulta [CONTRIBUTING.md](CONTRIBUTING.md) para el flujo de trabajo, estándares y validación recomendada antes de enviar cambios.
+
+## Nota
+
+Los informes técnicos y auditorías antiguas siguen conservados en `docs/` como referencia histórica y no deben tratarse como documentación activa del proyecto.
