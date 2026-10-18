@@ -1,110 +1,112 @@
 # DylanOS Crimson 1.0
 
-DylanOS es un entorno de escritorio basado en Debian 13 (trixie), KDE Plasma 6 y Qt 6, con una identidad visual propia marcada por la paleta Crimson: rojo intenso, negro profundo y superficies de vidrio sutil. El proyecto combina un escritorio Plasma personalizado, aplicaciones nativas y un flujo de instalación y gestión de software propio.
+<p align="center">
+	<img src="branding/logo.png" alt="Logotipo de DylanOS" width="112">
+</p>
 
-## Estado actual
+<p align="center">
+	<strong>Un escritorio Linux con identidad propia.</strong><br>
+	Debian 13 · KDE Plasma 6 · Qt 6 · DylanOS Crimson
+</p>
 
-- Base del sistema: Debian 13 (trixie) amd64
-- Escritorio: KDE Plasma 6
-- Tecnología base: Qt 6 / QML / KWin
-- Identidad visual: DylanOS Crimson
-- Instalador: propio, dentro de `installer/dylanos-installer`
-- Explorador: DylanOS Explorer
-- Tienda: DylanOS Store
-- Shell de trabajo: `apps/workspace`
+<p align="center">
+	<a href="docs/install.md">Instalación</a> ·
+	<a href="docs/architecture.md">Arquitectura</a> ·
+	<a href="docs/roadmap.md">Roadmap</a> ·
+	<a href="CONTRIBUTING.md">Contribuir</a>
+</p>
 
-## Qué incluye
+<p align="center">
+	<img src="previews/DylanOS%20shell/escritorio_preview.png" alt="Vista de referencia del escritorio DylanOS Crimson" width="100%">
+</p>
 
-- `apps/workspace`: centro de trabajo con páginas de bienvenida, archivos, notas, desarrollo, monitor y ajustes.
-- `apps/dylanos-explorer`: gestor de archivos nativo basado en el motor de Dolphin/KIO.
-- `apps/dylanos-store`: tienda nativa de DylanOS para software, actualizaciones y catálogo.
-- `apps/dylanos-app-center`: lanzador de apps instaladas.
-- `apps/dylanos-spotlight`: búsqueda rápida del sistema.
-- `themes/`: look and feel, SDDM, GRUB, Plymouth, GTK y aurorae.
-- `branding/`: logo, pintura, wallpapers e iconografía.
-- `configs/`: perfiles de usuario, Konsole, bash, zsh y defaults del sistema.
-- `scripts/`: build, staging, QA y validación del sistema.
+> [!NOTE]
+> Las imágenes de `previews/` muestran el objetivo visual del proyecto. Pueden incluir diseños en progreso y no representan por sí solas funciones verificadas en una ISO.
 
-## Diseño visual
+## La experiencia Crimson
 
-La identidad oficial de DylanOS Crash/Crimson se define con estos valores:
+DylanOS combina la base de Debian con KDE Plasma y una capa visual propia. El rojo carmesí identifica acciones y detalles; los fondos negros y grises dan profundidad, mientras el blanco y el gris claro mantienen la interfaz legible.
 
-- DylanOS Red: `#DC143C`
-- DylanOS Black: `#0A0A0A`
-- DylanOS White: `#FFFFFF`
-- DylanOS Gray: `#1A1A1A`
-- DylanOS Light Gray: `#B3B3B3`
+<p align="center">
+	<img src="previews/DylanOS%20shell/controlcenter_preview.png" alt="Concepto visual del centro de control DylanOS" width="49%">
+	<img src="previews/DylanOS%20shell/sddm_preview.png" alt="Concepto visual de la pantalla de inicio de sesión DylanOS" width="49%">
+</p>
 
-La referencia visual principal está en `branding/` y en los temas bajo `themes/`.
+## Aplicaciones DylanOS
 
-## Inicio rápido
+El proyecto reúne aplicaciones y herramientas propias alrededor de tareas cotidianas del escritorio:
 
-Para probar la app de escritorio localmente con el entorno de desarrollo del proyecto:
+- **Workspace**: bienvenida, archivos, notas, desarrollo, monitor y ajustes.
+- **DylanOS Explorer**: gestor de archivos nativo basado en KIO.
+- **DylanOS Store**: catálogo, instalación y actualización de software.
+- **App Center**: acceso a las aplicaciones instaladas.
+- **Spotlight**: búsqueda rápida.
+- **Calculator**: calculadora de escritorio Qt.
+
+<p align="center">
+	<img src="previews/DylanOS%20explorer/explorer-home.png" alt="Pantalla de inicio de DylanOS Explorer" width="49%">
+	<img src="previews/DylanOS%20store/preview_shop.png" alt="Vista de DylanOS Store" width="49%">
+</p>
+
+Las capturas son referencias del aspecto visual de estas experiencias. Para conocer su estado actual, consulta el código de cada aplicación y la [guía de arquitectura](docs/architecture.md).
+
+## Paleta oficial
+
+La paleta se mantiene en [`branding/colors/dylanos.conf`](branding/colors/dylanos.conf) y guía los recursos gráficos del sistema.
+
+<p align="center">
+	<img src="docs/assets/crimson-palette.svg" alt="Paleta DylanOS: Crimson #DC143C, Black #0A0A0A, White #FFFFFF, Gray #1A1A1A y Light Gray #B3B3B3" width="100%">
+</p>
+
+| Color | HEX | Aplicación |
+|---|---|---|
+| DylanOS Crimson | `#DC143C` | Acentos, acciones e identidad |
+| DylanOS Black | `#0A0A0A` | Fondos profundos |
+| DylanOS White | `#FFFFFF` | Texto y contraste |
+| DylanOS Gray | `#1A1A1A` | Paneles y superficies |
+| DylanOS Light Gray | `#B3B3B3` | Texto secundario y detalles |
+
+## Componentes del sistema
+
+| Ruta | Propósito |
+|---|---|
+| `apps/` | Aplicaciones de DylanOS |
+| `branding/` | Logo, colores, iconos y fondos |
+| `configs/` | Ajustes del sistema y del entorno de usuario |
+| `installer/` | Componentes del instalador |
+| `packages/` | Selección de paquetes del sistema |
+| `scripts/` | Construcción, staging y comprobaciones |
+| `themes/` | Temas de Plasma, SDDM, GRUB, GTK y Plymouth |
+| `previews/` | Capturas y referencias del diseño objetivo |
+
+## Construir y probar
+
+El proceso de construcción requiere un host Debian o Ubuntu amd64, conexión a Internet y las dependencias indicadas en [`docs/install.md`](docs/install.md). Desde la raíz del repositorio:
 
 ```bash
-python3 -m venv .venv
-. .venv/bin/activate
-python -m pip install -r apps/workspace/requirements-dev.txt
-python apps/workspace/main.py
-```
-
-Para validar la base del proyecto con las comprobaciones del repositorio:
-
-```bash
-DYLANOS_PYTHON="$PWD/.venv/bin/python" bash scripts/check.sh
-```
-
-Las pruebas del repositorio requieren dependencias como `shellcheck` y `desktop-file-validate` disponibles en el sistema.
-
-## Construcción de la ISO
-
-En un host Debian/Ubuntu amd64 con acceso a `sudo` y espacio suficiente:
-
-```bash
-sudo apt install debootstrap gnupg squashfs-tools xorriso grub-pc-bin grub-efi-amd64-bin mtools dosfstools
 bash scripts/build.sh
 bash scripts/iso.sh
 bash scripts/test.sh
 ```
 
-El flujo de build está centrado en `scripts/build.sh` y `scripts/stage.py`, y se apoya en `work/chroot` y `work/iso` para no mezclar lo generado con el repositorio fuente.
+Para la configuración de desarrollo, los criterios de prueba y las precauciones antes de instalar, sigue la [guía de instalación y QA](docs/install.md). Una prueba automatizada correcta no sustituye la validación de arranque e instalación en una máquina virtual.
 
-## Documentación del proyecto
+## Documentación
 
-- [docs/README.md](docs/README.md): índice de la documentación.
-- [docs/install.md](docs/install.md): instalación, pruebas y arranque live.
-- [docs/architecture.md](docs/architecture.md): arquitectura y principios de diseño.
-- [docs/roadmap.md](docs/roadmap.md): hoja de ruta.
-- [docs/contributing.md](docs/contributing.md): flujo de contribución.
-- [docs/auditoria-*-2026-*.md](docs): informes históricos y de depuración archivados.
+- [Instalación y QA](docs/install.md)
+- [Arquitectura](docs/architecture.md)
+- [Roadmap](docs/roadmap.md)
+- [Branding](branding/README.md)
+- [Licencias de recursos](docs/licenses/assets.md)
+- [Índice de documentación](docs/README.md)
+- [Contribuir](CONTRIBUTING.md)
 
-## Estructura del repositorio
+Los informes y auditorías fechados en `docs/` se conservan como contexto histórico; consulta las guías anteriores para el estado vigente.
 
-```text
-DylanOS/
-├── apps/
-├── branding/
-├── configs/
-├── docs/
-├── installer/
-├── packages/
-├── scripts/
-├── themes/
-├── README.md
-├── CHANGELOG.md
-├── CONTRIBUTING.md
-├── LICENSE
-└── work/
-```
+## Contribuir
+
+Las contribuciones son bienvenidas. Lee [`CONTRIBUTING.md`](CONTRIBUTING.md), mantén los cambios enfocados y describe las pruebas realizadas.
 
 ## Licencia
 
-El código fuente del repositorio se distribuye bajo la GNU General Public License v3.0 o posterior, salvo que un archivo concreto indique otra cosa. Los recursos de branding, temas e iconos se mantienen dentro de la misma licencia del repositorio a menos que exista una nota específica en un archivo o conjunto de archivos.
-
-## Contribución
-
-Consulta [CONTRIBUTING.md](CONTRIBUTING.md) para el flujo de trabajo, estándares y validación recomendada antes de enviar cambios.
-
-## Nota
-
-Los informes técnicos y auditorías antiguas siguen conservados en `docs/` como referencia histórica y no deben tratarse como documentación activa del proyecto.
+El código de DylanOS se distribuye bajo la [GNU General Public License v3.0 o posterior](LICENSE), salvo que un archivo o recurso indique expresamente otra licencia.
