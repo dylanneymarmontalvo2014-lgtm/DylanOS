@@ -1,67 +1,57 @@
-# Guía de Contribución
+# Guía de contribución
 
-¡Gracias por tu interés en contribuir a DylanOS!
+Gracias por colaborar con DylanOS. Este proyecto mantiene una documentación activa y un estado de desarrollo real del escritorio, por lo que es importante trabajar con el código y la arquitectura actuales, no con referencias históricas.
 
-Actualmente el proyecto se encuentra en una etapa temprana de desarrollo.
+## Antes de empezar
 
-## Cómo contribuir
+Lee primero la documentación actual del proyecto:
 
-Puedes ayudar de las siguientes maneras:
+- [README.md](../README.md)
+- [architecture.md](architecture.md)
+- [install.md](install.md)
 
-- Reportando errores.
-- Proponiendo nuevas funciones.
-- Mejorando la documentación.
-- Corrigiendo código.
-- Diseñando iconos o temas.
-- Probando nuevas versiones.
+Esto ayuda a detectar si el cambio afecta a branding, workspace, installer, store, explorer o scripts de validación.
 
-## Flujo de trabajo
+## Flujo recomendado
 
-1. Haz un Fork del repositorio.
-2. Crea una nueva rama.
-
-```bash
-git checkout -b feature/nombre-de-la-funcion
-```
-
-3. Realiza tus cambios.
-
-4. Guarda tus cambios.
+1. Haz un fork del repositorio.
+2. Crea una rama exclusiva para el cambio.
+3. Mantén el alcance del PR pequeño y claro.
+4. Ejecuta la validación mínima del repositorio.
+5. Abre el PR con resumen, contexto y pruebas.
 
 ```bash
-git add .
-git commit -m "Descripción del cambio"
+git checkout -b feature/mi-cambio
 ```
 
-5. Envía los cambios.
+## Estándares del proyecto
+
+- Mantén la estructura del repositorio y el naming actual.
+- Prioriza cambios pequeños y bien documentados.
+- No subas artefactos del build ni contenido temporal desde `work/` salvo que el proceso claramente lo requiera.
+- Si tocas branding o diseño, revisa la paleta Crimson y el estado visual del proyecto.
+- Evita referencias obsoletas a Calamares, Dolphin como producto final o Discover si ya se está usando una solución propia.
+
+## Validación mínima
 
 ```bash
-git push origin feature/nombre-de-la-funcion
+python3 -m venv .venv
+. .venv/bin/activate
+python -m pip install -r apps/workspace/requirements-dev.txt
+DYLANOS_PYTHON="$PWD/.venv/bin/python" bash scripts/check.sh
 ```
 
-6. Abre un Pull Request.
+Si tu cambio afecta archivos de staging, instalación o scripts del sistema, valida también el flujo de `scripts/build.sh` y `scripts/stage.py` antes de enviar el cambio.
 
-## Reglas
+## Pull request
 
-- Escribir código limpio y documentado.
-- Mantener una estructura organizada.
-- No subir archivos innecesarios.
-- Seguir las convenciones del proyecto.
-- Respetar la licencia GPL v3.
+Incluye:
 
-## Reportar errores
-
-Si encuentras un problema, crea un **Issue** incluyendo:
-
-- Descripción del problema.
-- Pasos para reproducirlo.
-- Resultado esperado.
-- Resultado obtenido.
-- Capturas de pantalla (si aplica).
-- Información del sistema.
+- descripción breve del problema o mejora
+- archivos tocados
+- pruebas ejecutadas
+- impacto esperado en usuario final o sistema
 
 ## Código de conducta
 
-Se espera que todos los colaboradores mantengan un ambiente respetuoso, colaborativo y profesional.
-
-¡Gracias por contribuir a DylanOS!
+Se espera un ambiente respetuoso, técnico y colaborativo. Los cambios deben mejorar DylanOS sin introducir ruido ni estados inconsistentes en la documentación.
