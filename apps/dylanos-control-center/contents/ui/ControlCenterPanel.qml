@@ -304,7 +304,7 @@ Rectangle {
             }
         }
 
-        // Accesos secundarios (datos de MockData)
+        // Accesos secundarios (comandos reales: kcmshell6)
         RowLayout {
             Layout.fillWidth: true
             spacing: 10
@@ -314,9 +314,18 @@ Rectangle {
                     Layout.fillWidth: true
                     Layout.preferredHeight: 70
                     radius: 14
-                    color: cGray
+                    color: secondaryMouse.containsMouse ? "#242424" : cGray
                     border.color: cCardBorder
                     border.width: 1
+
+                    MouseArea {
+                        id: secondaryMouse
+                        anchors.fill: parent
+                        hoverEnabled: true
+                        cursorShape: Qt.PointingHandCursor
+                        onClicked: MockData.run(modelData.command)
+                    }
+
                     ColumnLayout {
                         anchors.centerIn: parent
                         spacing: 4
@@ -404,7 +413,7 @@ Rectangle {
             icon.name: "configure"
             icon.color: cLightGray
             flat: true
-            onClicked: {}
+            onClicked: MockData.run("dylanos --page settings")
         }
     }
 }

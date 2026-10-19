@@ -12,6 +12,3 @@ StartupNotify=true
 StartupWMClass=dylanos-store
 MimeType=x-scheme-handler/appstream;x-scheme-handler/apt;
 SingleMainWindow=true
-X-DBUS-ServiceName=org.dylanos.dylanos-store
-X-DBUS-StartupType=Unique
-X-KDE-DBUS-RestrictedInterfaces=org_kde_lightly

@@ -1,115 +1,399 @@
 import QtQuick
 import QtQuick.Controls
 import QtQuick.Layouts
+import "components"
 
-// DylanOS Crimson — pantalla de login:
-// reloj grande arriba, avatar circular centrado, campo contraseña tipo píldora.
+/*
+ * DylanOS Crimson — pantalla de inicio de sesión.
+ * Replica previews/DylanOS shell/sddm_preview.png: barra superior con logo,
+ * indicadores y reloj; bloque central con candado "Bloqueado", reloj metálico
+ * y fecha; tarjetas laterales; pista de huella abajo.
+ *
+ * Autenticación real: cualquier tecla o clic sobre el fondo revela el campo
+ * de contraseña (sddm.login con usuario y sesión reales). El clima, la música
+ * y el sistema son contenido de referencia: un greeter no tiene acceso a esa
+ * información; el calendario y los relojes son reales.
+ */
 Rectangle {
     id: root
-    width: 1280; height: 800; color: "#1c1c1e"
+    width: 1280; height: 800; color: "#0A0A0A"
     property bool authenticating: false
+    property bool loginVisible: false
+    property string errorText: ""
+
+    readonly property color cCrimson: "#DC143C"
+    readonly property color cWhite: "#FFFFFF"
+    readonly property color cGray: "#B3B3B3"
 
     Image { anchors.fill: parent; source: config.background; fillMode: Image.PreserveAspectCrop }
-    // Oscurecido suave (sin blur para compatibilidad SDDM).
-    Rectangle { anchors.fill: parent; color: "#40000000" }
+    Rectangle { anchors.fill: parent; color: "#66000000" }
 
-    Timer { interval: 1000; running: true; repeat: true; triggeredOnStart: true
-        onTriggered: clock.text = Qt.formatTime(new Date(), "hh:mm") }
-
-    Column {
-        anchors.top: parent.top; anchors.topMargin: parent.height * .09
-        anchors.horizontalCenter: parent.horizontalCenter; spacing: 4
-        Label { id: clock; anchors.horizontalCenter: parent.horizontalCenter
-            font.family: "Inter"; font.pixelSize: 76; font.weight: Font.Bold; color: "white" }
-        Label { text: Qt.formatDate(new Date(), "dddd, d 'de' MMMM"); anchors.horizontalCenter: parent.horizontalCenter
-            font.family: "Inter"; font.pixelSize: 18; font.weight: Font.Medium; color: "#f2f2f7" }
+    // Cualquier tecla o clic revela el acceso (pista "presiona cualquier tecla").
+    MouseArea {
+        anchors.fill: parent
+        z: -1
+        onClicked: root.revealLogin()
+    }
+    FocusScope {
+        anchors.fill: parent
+        focus: !root.loginVisible
+        Keys.onPressed: (event) => root.revealLogin()
     }
 
-    Column {
-        anchors.centerIn: parent; anchors.verticalCenterOffset: 60; spacing: 14
+    function revealLogin() {
+        if (!loginVisible) {
+            loginVisible = true
+            password.forceActiveFocus()
+        }
+    }
+    function getHour12() {
+        var h = new Date().getHours() % 12;
+        if (h === 0) h = 12;
+        return (h < 10 ? "0" : "") + h;
+    }
 
-        // Avatar circular con la inicial del usuario.
-        Rectangle {
-            width: 96; height: 96; radius: 48; anchors.horizontalCenter: parent.horizontalCenter
-            color: "#DC143C"
-            Label { anchors.centerIn: parent
-                text: user.currentText ? user.currentText.charAt(0).toUpperCase() : "?"
-                color: "white"; font.pixelSize: 44; font.weight: Font.Medium }
+    function getAmPm() {
+        return new Date().getHours() >= 12 ? "PM" : "AM";
+    }
+
+    function getSpanishDate() {
+        var d = new Date();
+        var days = ["Domingo", "Lunes", "Martes", "Miércoles", "Jueves", "Viernes", "Sábado"];
+        var months = ["enero", "febrero", "marzo", "abril", "mayo", "junio", "julio", "agosto", "septiembre", "octubre", "noviembre", "diciembre"];
+        var dayName = days[d.getDay()];
+        var dayNum = (d.getDate() < 10 ? "0" : "") + d.getDate();
+        var monthName = months[d.getMonth()];
+        return dayName + ", " + dayNum + " de " + monthName;
+    }
+
+    // ============================================================ barra superior
+    Item {
+        id: topBar
+        anchors.left: parent.left; anchors.right: parent.right; anchors.top: parent.top
+        height: 64
+
+        Row {
+            anchors.left: parent.left; anchors.leftMargin: 32
+            anchors.verticalCenter: parent.verticalCenter
+            spacing: 10
+            Image {
+                source: "logo.png"; width: 30; height: 30
+                fillMode: Image.PreserveAspectFit; mipmap: true
+                anchors.verticalCenter: parent.verticalCenter
+            }
+            Text {
+                text: "DylanOS"; anchors.verticalCenter: parent.verticalCenter
+                font.pixelSize: 22; font.weight: Font.DemiBold; color: root.cWhite
+            }
         }
 
-        Label { text: user.currentText || "Usuario"; anchors.horizontalCenter: parent.horizontalCenter
-            color: "white"; font.family: "Inter"; font.pixelSize: 21; font.weight: Font.Medium }
+        Row {
+            anchors.right: parent.right; anchors.rightMargin: 32
+            anchors.verticalCenter: parent.verticalCenter
+            spacing: 18
+            Image { source: "images/network-wireless.svg"; width: 18; height: 18; mipmap: true; anchors.verticalCenter: parent.verticalCenter }
+            Image { source: "images/bluetooth.svg"; width: 18; height: 18; mipmap: true; anchors.verticalCenter: parent.verticalCenter }
+            Image { source: "images/video-display.svg"; width: 18; height: 18; mipmap: true; anchors.verticalCenter: parent.verticalCenter }
+            // Indicador de batería como en el preview
+            Row {
+                spacing: 6
+                anchors.verticalCenter: parent.verticalCenter
+                Rectangle {
+                    width: 26; height: 13; radius: 3; color: "transparent"
+                    border.color: root.cWhite; border.width: 1
+                    anchors.verticalCenter: parent.verticalCenter
+                    Rectangle {
+                        width: parent.width - 4; height: parent.height - 4
+                        anchors.centerIn: parent; radius: 1.5; color: root.cWhite
+                    }
+                    Rectangle {
+                        width: 2; height: 5; radius: 1; color: root.cWhite
+                        anchors.left: parent.right; anchors.leftMargin: 1
+                        anchors.verticalCenter: parent.verticalCenter
+                    }
+                }
+                Text { text: "100%"; font.pixelSize: 13; color: root.cWhite; anchors.verticalCenter: parent.verticalCenter }
+            }
+            Text {
+                id: topClock
+                anchors.verticalCenter: parent.verticalCenter
+                font.pixelSize: 14; font.weight: Font.DemiBold; color: root.cWhite
+                text: root.getHour12() + ":" + Qt.formatDateTime(new Date(), "mm") + " " + root.getAmPm()
+            }
+        }
+    }
 
-        // Selector de usuario solo si hay varios.
+    // ============================================================ centro: reloj
+    Item {
+        id: centerBlock
+        anchors.horizontalCenter: parent.horizontalCenter
+        anchors.top: parent.top; anchors.topMargin: parent.height * 0.08
+        width: parent.width * 0.44; height: 320
+
+        Row {
+            anchors.horizontalCenter: parent.horizontalCenter
+            spacing: 8
+            Image {
+                source: "images/lock.svg"
+                width: 18; height: 18
+                anchors.verticalCenter: parent.verticalCenter
+                fillMode: Image.PreserveAspectFit
+            }
+            Text {
+                text: "Bloqueado"; anchors.verticalCenter: parent.verticalCenter
+                font.pixelSize: 18; color: "#CFCFCF"
+            }
+        }
+
+        // Anillos elípticos concéntricos rojos detrás del reloj (como en el preview)
+        Canvas {
+            id: ripples
+            anchors.centerIn: clockRow
+            width: 520; height: 220
+            z: -1
+            onPaint: {
+                var ctx = getContext("2d");
+                ctx.clearRect(0, 0, width, height);
+                var cx = width / 2;
+                var cy = height / 2;
+                var radii = [90, 120, 155, 195];
+                for (var i = 0; i < radii.length; i++) {
+                    var r = radii[i];
+                    ctx.beginPath();
+                    ctx.ellipse(cx - r, cy - r * 0.45, r * 2, r * 0.9);
+                    ctx.strokeStyle = Qt.rgba(0.86, 0.08, 0.24, 0.12 - i * 0.02);
+                    ctx.lineWidth = 1.5;
+                    ctx.stroke();
+                }
+            }
+        }
+
+        Row {
+            id: clockRow
+            anchors.horizontalCenter: parent.horizontalCenter
+            anchors.top: parent.top; anchors.topMargin: 38
+            spacing: 8
+
+            Text {
+                id: bigClockHour
+                text: root.getHour12()
+                font.pixelSize: 136; font.weight: Font.Bold; color: "#F0F0F0"
+                style: Text.Raised; styleColor: "#333333"
+            }
+
+            Column {
+                anchors.verticalCenter: parent.verticalCenter
+                spacing: 8
+                Text {
+                    text: root.getAmPm()
+                    font.pixelSize: 22; font.weight: Font.Bold; color: root.cCrimson
+                    anchors.horizontalCenter: parent.horizontalCenter
+                }
+                Column {
+                    spacing: 16
+                    anchors.horizontalCenter: parent.horizontalCenter
+                    Rectangle { width: 14; height: 14; radius: 7; color: root.cCrimson }
+                    Rectangle { width: 14; height: 14; radius: 7; color: root.cCrimson }
+                }
+            }
+
+            Text {
+                id: bigClockMinute
+                text: Qt.formatDateTime(new Date(), "mm")
+                font.pixelSize: 136; font.weight: Font.Bold; color: "#F0F0F0"
+                style: Text.Raised; styleColor: "#333333"
+            }
+        }
+
+        Text {
+            id: dateText
+            anchors.horizontalCenter: parent.horizontalCenter
+            anchors.top: clockRow.bottom; anchors.topMargin: 8
+            text: root.getSpanishDate()
+            font.pixelSize: 25; color: root.cWhite
+        }
+        Rectangle {
+            anchors.horizontalCenter: parent.horizontalCenter
+            anchors.top: dateText.bottom; anchors.topMargin: 10
+            width: 60; height: 2; color: root.cCrimson
+        }
+    }
+
+    Timer {
+        interval: 1000; running: true; repeat: true; triggeredOnStart: true
+        onTriggered: {
+            topClock.text = root.getHour12() + ":" + Qt.formatDateTime(new Date(), "mm") + " " + root.getAmPm()
+            bigClockHour.text = root.getHour12()
+            bigClockMinute.text = Qt.formatDateTime(new Date(), "mm")
+            dateText.text = root.getSpanishDate()
+        }
+    }
+    // ============================================================ acceso real
+    Column {
+        id: loginBlock
+        anchors.horizontalCenter: parent.horizontalCenter
+        anchors.top: parent.top; anchors.topMargin: parent.height * 0.53
+        spacing: 12
+        visible: root.loginVisible || root.authenticating
+        opacity: visible ? 1 : 0
+        Behavior on opacity { NumberAnimation { duration: 220 } }
+
         ComboBox {
-            id: user; model: userModel; textRole: "name"; currentIndex: userModel.lastIndex
-            visible: userModel.count > 1; anchors.horizontalCenter: parent.horizontalCenter
+            id: user
+            model: userModel
+            textRole: "name"
+            currentIndex: (typeof userModel !== "undefined" && userModel && userModel.lastIndex !== undefined) ? userModel.lastIndex : 0
+            visible: typeof userModel !== "undefined" && userModel && userModel.count > 1
+            anchors.horizontalCenter: parent.horizontalCenter
+            width: 300
             Accessible.name: "Usuario"
         }
 
-        // Campo contraseña tipo píldora translúcida + botón flecha.
         Rectangle {
-            width: 280; height: 38; radius: 19; anchors.horizontalCenter: parent.horizontalCenter
-            color: "#40ffffff"; border.color: password.activeFocus ? "#DC143C" : "#55ffffff"; border.width: 1
+            width: 300; height: 42; radius: 21
+            anchors.horizontalCenter: parent.horizontalCenter
+            color: "#40FFFFFF"
+            border.color: password.activeFocus ? cCrimson : "#55FFFFFF"
+            border.width: 1
 
             TextInput {
                 id: password
                 anchors.left: parent.left; anchors.leftMargin: 18
-                anchors.right: arrow.left; anchors.rightMargin: 6
+                anchors.right: arrow.left; anchors.rightMargin: 8
                 anchors.verticalCenter: parent.verticalCenter
-                echoMode: TextInput.Password; color: "white"; font.pixelSize: 14
-                selectionColor: "#DC143C"
-                enabled: !root.authenticating; focus: true
+                echoMode: TextInput.Password; color: cWhite; font.pixelSize: 14
+                selectionColor: cCrimson
+                enabled: !root.authenticating
+                focus: root.loginVisible
                 onAccepted: arrow.doLogin()
                 Accessible.name: "Contraseña"
-                Label { visible: !password.text; text: "Introducir contraseña"
-                    color: "#c7c7cc"; font.pixelSize: 14; anchors.verticalCenter: parent.verticalCenter }
+                Label {
+                    visible: !password.text
+                    text: "Introducir contraseña"
+                    color: "#C7C7CC"; font.pixelSize: 14
+                    anchors.verticalCenter: parent.verticalCenter
+                }
             }
 
             Rectangle {
                 id: arrow
-                width: 26; height: 26; radius: 13; anchors.right: parent.right; anchors.rightMargin: 6
+                width: 28; height: 28; radius: 14
+                anchors.right: parent.right; anchors.rightMargin: 7
                 anchors.verticalCenter: parent.verticalCenter
-                color: mouseArea.containsMouse ? "#ffffff" : "#d1d1d6"
+                color: mouseArea.containsMouse ? cWhite : "#D1D1D6"
                 enabled: !root.authenticating && session.currentIndex >= 0
                 opacity: enabled ? 1 : 0.4
-                Label { anchors.centerIn: parent; text: "→"; color: "#1c1c1e"; font.pixelSize: 15; font.bold: true }
+                Label { anchors.centerIn: parent; text: "→"; color: "#1C1C1E"; font.pixelSize: 15; font.bold: true }
                 function doLogin() {
                     if (!enabled) return
-                    root.authenticating = true; error.text = ""
+                    root.authenticating = true; root.errorText = ""
                     sddm.login(user.currentText, password.text, session.currentIndex)
                 }
                 MouseArea { id: mouseArea; anchors.fill: parent; hoverEnabled: true; onClicked: arrow.doLogin() }
             }
         }
 
-        Label { id: error; color: "#ff9f97"; font.pixelSize: 12; anchors.horizontalCenter: parent.horizontalCenter
-            wrapMode: Text.Wrap; width: 300; horizontalAlignment: Text.AlignHCenter }
-
-        Label { visible: root.authenticating; text: "Iniciando sesión…"; color: "#e5e5ea"
-            font.pixelSize: 12; anchors.horizontalCenter: parent.horizontalCenter }
-    }
-
-    // Barra inferior discreta: sesión y energía.
-    Row {
-        anchors.bottom: parent.bottom; anchors.bottomMargin: 28
-        anchors.horizontalCenter: parent.horizontalCenter; spacing: 26
-        ComboBox { id: session; model: sessionModel; textRole: "name"; currentIndex: sessionModel.lastIndex
-            visible: sessionModel.count > 1; width: 200; Accessible.name: "Sesión" }
-        Label { text: "Suspender"; color: "#e5e5ea"; visible: sddm.canSuspend
-            MouseArea { anchors.fill: parent; onClicked: sddm.suspend() } }
-        Label { text: "Reiniciar"; color: "#e5e5ea"; visible: sddm.canReboot
-            MouseArea { anchors.fill: parent; onClicked: sddm.reboot() } }
-        Label { text: "Apagar"; color: "#e5e5ea"; visible: sddm.canPowerOff
-            MouseArea { anchors.fill: parent; onClicked: sddm.powerOff() } }
+        Label {
+            visible: root.errorText !== ""
+            text: root.errorText; color: "#FF9F97"; font.pixelSize: 12
+            anchors.horizontalCenter: parent.horizontalCenter
+            wrapMode: Text.Wrap; width: 320; horizontalAlignment: Text.AlignHCenter
+        }
+        Label {
+            visible: root.authenticating
+            text: "Iniciando sesión…"; color: "#E5E5EA"; font.pixelSize: 12
+            anchors.horizontalCenter: parent.horizontalCenter
+        }
     }
 
     Connections {
         target: sddm
         function onLoginFailed() {
-            root.authenticating = false; password.text = ""
-            error.text = "Contraseña incorrecta. Inténtalo de nuevo."
+            root.authenticating = false
+            password.text = ""
+            root.errorText = "Contraseña incorrecta. Inténtalo de nuevo."
+            root.loginVisible = true
             password.forceActiveFocus()
         }
+    }
+    // ============================================================ columna izquierda
+    Column {
+        anchors.left: parent.left; anchors.leftMargin: 36
+        anchors.top: parent.top; anchors.topMargin: 96
+        width: 308; spacing: 14
+
+        WeatherCard {}
+        EventCard {}
+        MediaCard {}
+        SystemCard {}
+    }
+
+    // ============================================================ columna derecha
+    Column {
+        anchors.right: parent.right; anchors.rightMargin: 36
+        anchors.top: parent.top; anchors.topMargin: 96
+        width: 308; spacing: 14
+
+        CalendarCard {}
+        RemindersCard {}
+        ShortcutsCard {}
+    }
+
+    // ============================================================ parte inferior
+    Column {
+        anchors.horizontalCenter: parent.horizontalCenter
+        anchors.bottom: parent.bottom; anchors.bottomMargin: 34
+        spacing: 12
+        Image {
+            source: "images/fingerprint.svg"; width: 44; height: 44
+            anchors.horizontalCenter: parent.horizontalCenter
+        }
+        Text {
+            text: "Usa tu huella o presiona cualquier tecla para desbloquear"
+            font.pixelSize: 15; color: "#D8D8D8"
+            anchors.horizontalCenter: parent.horizontalCenter
+        }
+    }
+
+    // Apagado real (sddm.powerOff) — abajo a la izquierda.
+    Rectangle {
+        anchors.left: parent.left; anchors.leftMargin: 28
+        anchors.bottom: parent.bottom; anchors.bottomMargin: 24
+        width: 46; height: 46; radius: 23
+        color: powerArea.containsMouse ? "#2A2A2A" : "#1D1D1D"
+        border.color: Qt.rgba(1, 1, 1, 0.08); border.width: 1
+        Image { source: "images/system-shutdown.svg"; width: 20; height: 20; anchors.centerIn: parent }
+        MouseArea {
+            id: powerArea; anchors.fill: parent; hoverEnabled: true
+            onClicked: if (sddm.canPowerOff) sddm.powerOff()
+        }
+    }
+
+    // Cámara / acción rápida (como en el preview) — abajo a la derecha.
+    Rectangle {
+        id: camButton
+        anchors.right: parent.right; anchors.rightMargin: 28
+        anchors.bottom: parent.bottom; anchors.bottomMargin: 24
+        width: 46; height: 46; radius: 23
+        color: camArea.containsMouse ? "#2A2A2A" : "#1D1D1D"
+        border.color: Qt.rgba(1, 1, 1, 0.08); border.width: 1
+        Image { source: "images/camera.svg"; width: 22; height: 22; anchors.centerIn: parent }
+        MouseArea {
+            id: camArea; anchors.fill: parent; hoverEnabled: true
+            onClicked: root.revealLogin()
+        }
+    }
+
+    // Selector de sesión real (sessionModel) — junto al botón de cámara.
+    ComboBox {
+        id: session
+        model: sessionModel
+        textRole: "name"
+        currentIndex: (typeof sessionModel !== "undefined" && sessionModel && sessionModel.lastIndex !== undefined) ? sessionModel.lastIndex : 0
+        visible: typeof sessionModel !== "undefined" && sessionModel && sessionModel.count > 1
+        anchors.right: camButton.left; anchors.rightMargin: 12
+        anchors.verticalCenter: camButton.verticalCenter
+        width: 180
+        Accessible.name: "Sesión"
     }
 }
