@@ -70,6 +70,8 @@ def stage(destination):
         ("apps/dylanos-spotlight", "/usr/share/dylanos/spotlight"),
         ("apps/com.dylanos.activeapp", "/usr/share/plasma/plasmoids/com.dylanos.activeapp"),
         ("apps/com.dylanos.dock", "/usr/share/plasma/plasmoids/com.dylanos.dock"),
+        ("apps/com.dylanos.search", "/usr/share/plasma/plasmoids/com.dylanos.search"),
+        ("apps/dylanos-control-center", "/usr/share/plasma/plasmoids/com.dylanos.controlcenter"),
         ("installer/dylanos-installer/dist", "/usr/share/dylanos/installer/dist"),
         ("installer/dylanos-installer/backend", "/usr/share/dylanos/installer/backend"),
         ("installer/dylanos-installer/native", "/usr/share/dylanos/installer/native"),

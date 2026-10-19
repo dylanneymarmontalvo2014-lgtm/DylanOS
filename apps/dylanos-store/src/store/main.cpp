@@ -7,6 +7,7 @@
 #include <KCrash>
 #include <KDBusService>
 #include <KLocalizedString>
+#include <KLocalizedContext>
 #include <QCommandLineParser>
 #include <QDebug>
 #include <QGuiApplication>
@@ -54,6 +55,7 @@ int main(int argc, char *argv[])
     about.setOrganizationDomain(QByteArrayLiteral("org.dylanos"));
     about.setDesktopFileName(QStringLiteral("org.dylanos.store"));
     about.setProductName(QByteArrayLiteral("DylanOS Store"));
+    KLocalizedString::setApplicationDomain(QByteArrayLiteral("dylanos-store"));
     KAboutData::setApplicationData(about);
     KCrash::initialize();
 
@@ -79,26 +81,6 @@ int main(int argc, char *argv[])
         return controller->resourceIcon(id);
     }));
     QObject::connect(&engine, &QQmlApplicationEngine::objectCreationFailed, &app, [] { QCoreApplication::exit(1); }, Qt::QueuedConnection);
-
-    auto *model = ResourcesModel::global();
-    bool catalogReady = false;
-    QObject::connect(controller, &StoreController::catalogReady, &app, [&] {
-        catalogReady = true;
-        catalogSync->applySeed(); // estanterías definitivas antes de mostrar la ventana
-        engine.loadFromModule("DylanOS", "Main");
-        QTimer::singleShot(2500, catalogSync, &CatalogSync::refresh); // actualización remota
-    });
-    if (model->backends().isEmpty())
-        QObject::connect(model, &ResourcesModel::allInitialized, &app, [&] { controller->loadFromResources(model); });
-    else
-        controller->loadFromResources(model);
-    // Hard watchdog: always open, even with an incomplete catalog.
-    QTimer::singleShot(std::chrono::seconds(20), &app, [&] {
-        if (!catalogReady) {
-            qWarning() << "catalog watchdog fired";
-            Q_EMIT controller->catalogReady();
-        }
-    });
 
     // Wait until the QML window exists (or fail after the watchdog).
     QObject::connect(&engine, &QQmlApplicationEngine::objectCreated, &app, [&](QObject *obj, const QUrl &) {
@@ -138,7 +120,12 @@ int main(int argc, char *argv[])
                     runAction(a, StoreController::s_instance, nav, win);
             });
             QTimer::singleShot(delayMs, &app, [=] {
+                qInfo() << "screenshot: capturing" << shotPath;
+                // En offscreen el render loop software puede no haber expuesto
+                // el fotograma: forzamos un paso de render antes de capturar.
+                win->update();
                 const QImage img = win->grabWindow();
+                qInfo() << "screenshot: grabbed" << img.size();
                 const bool ok = img.save(shotPath);
                 qInfo() << "screenshot" << shotPath << img.size() << (ok ? "ok" : "FAILED");
                 QCoreApplication::exit(ok ? 0 : 2);
@@ -146,7 +133,22 @@ int main(int argc, char *argv[])
         }
     });
 
-    KDBusService service(KDBusService::Unique);
+    auto *model = ResourcesModel::global();
+    // La ventana se muestra INMEDIATAMENTE (la app debe abrir al instante al
+    // hacer clic); el catálogo se carga en paralelo y las estanterías QML
+    // son reactivas (Store.shelfVersion) y se rellenan al llegar los datos.
+    QObject::connect(controller, &StoreController::catalogReady, &app, [catalogSync, controller] {
+        catalogSync->applySeed();
+        QTimer::singleShot(2500, catalogSync, &CatalogSync::refresh); // actualización remota
+    });
+    if (model->backends().isEmpty())
+        QObject::connect(model, &ResourcesModel::allInitialized, &app, [controller, model] { controller->loadFromResources(model); });
+    else
+        controller->loadFromResources(model);
+
+    engine.loadFromModule("DylanOS", "Main");
+
+    KDBusService service(KDBusService::Unique | KDBusService::NoExitOnFailure);
     QObject::connect(&service, &KDBusService::activateRequested, &engine, [&engine](const QStringList &args, const QString &) {
         if (!engine.rootObjects().isEmpty()) {
             auto *win = qobject_cast<QQuickWindow *>(engine.rootObjects().first());

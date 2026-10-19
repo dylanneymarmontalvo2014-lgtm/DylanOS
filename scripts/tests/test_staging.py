@@ -102,6 +102,26 @@ class StagingTest(unittest.TestCase):
             activeapp = (root / "usr/share/plasma/plasmoids/com.dylanos.activeapp/contents/ui/main.qml").read_text()
             self.assertIn("Layout.fillWidth: true", activeapp)
             self.assertNotIn("maxTitleWidth", activeapp)
+            # DylanOS Shell: búsqueda (Spotlight) y Centro de Control en la
+            # barra superior, papelera al final del dock, reloj 12h con fecha.
+            self.assertTrue((root / "usr/share/plasma/plasmoids/com.dylanos.search/metadata.json").is_file())
+            self.assertTrue((root / "usr/share/plasma/plasmoids/com.dylanos.search/contents/ui/main.qml").is_file())
+            self.assertTrue((root / "usr/share/plasma/plasmoids/com.dylanos.controlcenter/metadata.json").is_file())
+            cc_main = (root / "usr/share/plasma/plasmoids/com.dylanos.controlcenter/contents/ui/main.qml").read_text()
+            self.assertIn("compactRepresentation", cc_main)
+            shell_layout = (root / "usr/share/plasma/look-and-feel/org.dylanos.crimson/contents/layouts/org.kde.plasma.desktop-layout.js").read_text()
+            self.assertIn("com.dylanos.search", shell_layout)
+            self.assertIn("com.dylanos.controlcenter", shell_layout)
+            self.assertIn("org.kde.plasma.trash", shell_layout)
+            self.assertIn('"ddd dd \'de\' MMM"', shell_layout)
+            self.assertIn("use24hFormat\", 1", shell_layout)
+            # SDDM: el greeter replica el preview (revelado por tecla/clic y
+            # tarjetas laterales) y mantiene autenticación real con sddm.login.
+            sddm_main = (root / "usr/share/sddm/themes/DylanOS-Crimson/Main.qml").read_text()
+            self.assertIn("sddm.login(", sddm_main)
+            self.assertIn("revealLogin", sddm_main)
+            self.assertTrue((root / "usr/share/sddm/themes/DylanOS-Crimson/components/SideCard.qml").is_file())
+            self.assertTrue((root / "usr/share/sddm/themes/DylanOS-Crimson/logo.png").is_file())
             # En el sistema instalado el GRUB arranca DylanOS sin menú; el
             # menú visible solo existe en el LIVE (scripts/iso.sh, timeout=10).
             grubcfg = (root / "etc/default/grub.d/dylanos.cfg").read_text()

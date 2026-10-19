@@ -47,12 +47,21 @@ menuBar.addWidget("org.kde.plasma.panelspacer");
 
 menuBar.addWidget("org.kde.plasma.systemtray");
 
+// Búsqueda (lupa) que lanza DylanOS Spotlight, como en el preview.
+menuBar.addWidget("com.dylanos.search");
+
+// Centro de Control de DylanOS: campana con badge que despliega las
+// notificaciones y los controles rápidos del preview (Wi-Fi, Bluetooth,
+// No molestar, Modo oscuro, brillo, volumen, reproductor).
+menuBar.addWidget("com.dylanos.controlcenter");
+
 var clock = menuBar.addWidget("org.kde.plasma.digitalclock");
 clock.currentConfigGroup = ["Appearance"];
 clock.writeConfig("showDate", true);
 clock.writeConfig("dateFormat", "custom");
-clock.writeConfig("customDateFormat", "ddd, d MMM");
-clock.writeConfig("use24hFormat", 2);
+clock.writeConfig("customDateFormat", "ddd dd 'de' MMM");
+// 12 horas con AM/PM, como en el preview ("9:09 AM").
+clock.writeConfig("use24hFormat", 1);
 
 // Plasma floating bottom dock with intelligent auto-hide (dodgewindows).
 var dock = new Panel;
@@ -82,3 +91,6 @@ tasks.writeConfig("launchers", [
 tasks.writeConfig("showOnlyCurrentScreen", true);
 tasks.writeConfig("showOnlyCurrentDesktop", false);
 tasks.writeConfig("maxStripes", 1);
+
+// Papelera al final del dock, como en el preview.
+dock.addWidget("org.kde.plasma.trash");
