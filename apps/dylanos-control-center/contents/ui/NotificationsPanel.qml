@@ -99,13 +99,35 @@ Rectangle {
             Item { Layout.fillHeight: true }
         }
 
+        // ----- Estado vacío -----
+        Item {
+            Layout.fillWidth: true
+            Layout.fillHeight: true
+            visible: !SystemStatus.doNotDisturb && notificationsModel.count === 0
+            ColumnLayout {
+                anchors.centerIn: parent
+                spacing: 12
+                Kirigami.Icon {
+                    source: "notifications"
+                    isMask: true; color: "#3A3A3A"
+                    Layout.preferredWidth: 44; Layout.preferredHeight: 44
+                    Layout.alignment: Qt.AlignHCenter
+                }
+                QQC2.Label {
+                    text: "No hay notificaciones nuevas"
+                    color: cLightGray; font.pixelSize: 14
+                    Layout.alignment: Qt.AlignHCenter
+                }
+            }
+        }
+
         // ----- Lista real -----
         ListView {
             Layout.fillWidth: true
             Layout.fillHeight: true
             spacing: 10
             clip: true
-            visible: !SystemStatus.doNotDisturb
+            visible: !SystemStatus.doNotDisturb && notificationsModel.count > 0
             model: notificationsModel
 
             delegate: Rectangle {

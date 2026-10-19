@@ -44,10 +44,12 @@ assert(panels[0].height >= 34, 'alto de barra insuficiente: ' + panels[0].height
 // separador elástico va después del menú, nunca entre el nombre y el menú.
 assert.deepEqual(panels[0].widgets.map(w => w.type), [
   'org.kde.plasma.kickoff', 'com.dylanos.activeapp', 'org.kde.plasma.appmenu',
-  'org.kde.plasma.panelspacer', 'org.kde.plasma.systemtray', 'org.kde.plasma.digitalclock']);
+  'org.kde.plasma.panelspacer', 'org.kde.plasma.systemtray',
+  'com.dylanos.search', 'com.dylanos.controlcenter',
+  'org.kde.plasma.digitalclock']);
 assert.equal(panels[0].widgets[0].settings.icon, 'distributor-logo-dylanos');
-assert.equal(panels[0].widgets[5].settings.customDateFormat, 'ddd, d MMM');
-assert.equal(panels[0].widgets[5].settings.showDate, true);
+assert.equal(panels[0].widgets[7].settings.customDateFormat, "ddd dd 'de' MMM");
+assert.equal(panels[0].widgets[7].settings.showDate, true);
 // Dock inferior: flotante, centrado, ajustado a su contenido y con autoocultado.
 assert.equal(panels[1].alignment, 'center');
 assert.equal(panels[1].lengthMode, 'fit');
