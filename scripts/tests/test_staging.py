@@ -115,12 +115,14 @@ class StagingTest(unittest.TestCase):
             self.assertIn("org.kde.plasma.trash", shell_layout)
             self.assertIn('"ddd dd \'de\' MMM"', shell_layout)
             self.assertIn("use24hFormat\", 1", shell_layout)
-            # SDDM: el greeter replica el preview (revelado por tecla/clic y
-            # tarjetas laterales) y mantiene autenticación real con sddm.login.
+            # SDDM usa identidad local real y no empaqueta tarjetas de muestra.
             sddm_main = (root / "usr/share/sddm/themes/DylanOS-Crimson/Main.qml").read_text()
             self.assertIn("sddm.login(", sddm_main)
-            self.assertIn("revealLogin", sddm_main)
-            self.assertTrue((root / "usr/share/sddm/themes/DylanOS-Crimson/components/SideCard.qml").is_file())
+            self.assertIn("userAvatarSource", sddm_main)
+            self.assertIn("focus: true", sddm_main)
+            self.assertFalse((root / "usr/share/sddm/themes/DylanOS-Crimson/components/WeatherCard.qml").exists())
+            self.assertIn("background=/usr/share/wallpapers/DylanOS/dylanos-default.png",
+                          (root / "usr/share/sddm/themes/DylanOS-Crimson/theme.conf").read_text())
             self.assertTrue((root / "usr/share/sddm/themes/DylanOS-Crimson/logo.png").is_file())
             # En el sistema instalado el GRUB arranca DylanOS sin menú; el
             # menú visible solo existe en el LIVE (scripts/iso.sh, timeout=10).
