@@ -1,0 +1,17 @@
+{
+    "KPackageStructure": "Plasma/Applet",
+    "KPlugin": {
+        "Authors": [
+            {
+                "Name": "DylanOS Team"
+            }
+        ],
+        "Category": "Utilities",
+        "Description": "Lanza DylanOS Spotlight desde la barra superior",
+        "Icon": "system-search",
+        "Id": "com.dylanos.search",
+        "Name": "DylanOS Search",
+        "Version": "1.0"
+    },
+    "X-Plasma-API-Minimum-Version": "6.0"
+}
