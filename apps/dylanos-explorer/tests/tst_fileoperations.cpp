@@ -65,6 +65,24 @@ private slots:
         QVERIFY(!FileOperations::rename(d + "/Renombrada", "x/y").ok);
     }
 
+    void createFileReal()
+    {
+        const QString d = m_tmp.path();
+        auto r = FileOperations::createFile(d, "Notas.txt");
+        QVERIFY2(r.ok, qPrintable(r.error));
+        const QString target = d + "/Notas.txt";
+        QVERIFY(QFileInfo(target).isFile());
+        QCOMPARE(QFileInfo(target).size(), qint64(0)); // empty file, ready to write
+        QFile f(target);
+        QVERIFY(f.open(QIODevice::WriteOnly));
+        QCOMPARE(f.write("contenido"), qint64(9));
+        f.close();
+        // Collisions are refused, invalid names too.
+        QVERIFY(!FileOperations::createFile(d, "Notas.txt").ok);
+        QVERIFY(!FileOperations::createFile(d, "a/b").ok);
+        QVERIFY(!FileOperations::createFile(d, "").ok);
+    }
+
     void copyTreeWithProgress()
     {
         const QString d = m_tmp.path() + "/copy";

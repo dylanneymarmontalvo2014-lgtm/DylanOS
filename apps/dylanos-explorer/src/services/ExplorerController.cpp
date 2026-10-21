@@ -524,6 +524,22 @@ void ExplorerController::createFolder(const QString &name)
     emit notify("success", QStringLiteral("Carpeta «%1» creada").arg(name));
 }
 
+void ExplorerController::createFile(const QString &name)
+{
+    if (isHome() || inTrash()) {
+        emit notify("error", QStringLiteral("No se pueden crear archivos aquí"));
+        return;
+    }
+    const auto r = FileOperations::createFile(m_location, name);
+    if (!r.ok) {
+        emit notify("error", r.error);
+        return;
+    }
+    m_model->reload();
+    m_model->selectOnly(r.createdPaths.value(0));
+    emit notify("success", QStringLiteral("Archivo «%1» creado").arg(name));
+}
+
 void ExplorerController::renameItem(const QString &path, const QString &newName)
 {
     const auto r = FileOperations::rename(path, newName);

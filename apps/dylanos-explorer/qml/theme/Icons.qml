@@ -27,6 +27,7 @@ QtObject {
         "more": "M6 12h.01 M12 12h.01 M18 12h.01",
         "folder": "M3 7a2 2 0 0 1 2-2h4l2 2.5h8a2 2 0 0 1 2 2V18a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z",
         "folderPlus": "M3 7a2 2 0 0 1 2-2h4l2 2.5h8a2 2 0 0 1 2 2V18a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z M12 11v6 M9 14h6",
+        "filePlus": "M6 3h8l4 4v14H6z M14 3v4h4 M12 11v6 M9 14h6",
         "check": "M5 12.5l4.5 4.5L19 7.5",
         "close": "M6 6l12 12 M18 6 6 18",
         "warning": "M12 4 21 20H3z M12 10v4.5 M12 17.5h.01",

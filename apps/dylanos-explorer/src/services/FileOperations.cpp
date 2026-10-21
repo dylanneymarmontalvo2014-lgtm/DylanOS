@@ -256,6 +256,29 @@ FileOperations::Result FileOperations::createFolder(const QString &parentDir, co
     return r;
 }
 
+FileOperations::Result FileOperations::createFile(const QString &parentDir, const QString &name)
+{
+    QString why;
+    if (!isValidName(name, &why))
+        return fail(why);
+    const QFileInfo pi(parentDir);
+    if (!pi.isDir())
+        return fail(QStringLiteral("La carpeta de destino no existe"));
+    if (!pi.isWritable())
+        return fail(QStringLiteral("No tienes permisos para crear elementos en esta carpeta"));
+    const QString target = QDir(parentDir).filePath(name);
+    if (pathExists(target))
+        return fail(QStringLiteral("Ya existe un elemento llamado «%1»").arg(name));
+    QFile f(target);
+    if (!f.open(QIODevice::ReadWrite | QIODevice::NewOnly))
+        return fail(QStringLiteral("No se pudo crear el archivo «%1»").arg(name));
+    f.close();
+    Result r;
+    r.ok = true;
+    r.createdPaths << target;
+    return r;
+}
+
 FileOperations::Result FileOperations::rename(const QString &path, const QString &newName)
 {
     QString why;

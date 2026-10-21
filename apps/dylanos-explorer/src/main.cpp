@@ -20,7 +20,9 @@ int main(int argc, char *argv[])
     QGuiApplication::setOrganizationName(QStringLiteral("DylanOS"));
     QGuiApplication::setApplicationName(QStringLiteral("Explorer"));
     QGuiApplication::setApplicationDisplayName(QStringLiteral("DylanOS Explorer"));
-    QGuiApplication::setDesktopFileName(QStringLiteral("dylanos-explorer"));
+    // Wayland usa esto como app_id y KWin lo caza con el .desktop del mismo
+    // nombre (org.dylanos.explorer.desktop); en X11 casa via StartupWMClass.
+    QGuiApplication::setDesktopFileName(QStringLiteral("org.dylanos.explorer"));
 
     // The custom QML theme draws every control; Basic is the neutral base style.
     QQuickStyle::setStyle(QStringLiteral("Basic"));
