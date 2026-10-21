@@ -138,7 +138,7 @@ done <<< "$conf_apps"
 
 # Herramientas de desarrollo comprometidas en el diseño
 for p in git build-essential curl wget openssh-client python3 python3-pip \
-    nodejs npm codium; do
+    nodejs npm code; do
     assert_contains_line "development contiene $p" "$dev_pkgs" "$p"
 done
 

@@ -10,6 +10,7 @@ kde-plasma-desktop
 sddm
 # El único gestor de archivos es DylanOS Explorer (apps/dylanos-explorer,
 # motor KIO de Dolphin); el paquete dolphin ya no se envía.
+# kcalc tampoco: la calculadora oficial es la nativa dylanos-calculator.
 konsole
 systemsettings
 
@@ -90,7 +91,6 @@ kate
 vlc
 gwenview
 ark
-kcalc
 okular
 libreoffice
 elisa

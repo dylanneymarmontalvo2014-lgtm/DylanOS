@@ -126,6 +126,11 @@ apt-get -y purge libflatpak-dev libostree-dev libappstreamqt-dev libpackagekitqt
     libkf6idletime-dev libkf6statusnotifieritem-dev libkf6notifications-dev \
     libkf6crash-dev libkf6dbusaddons-dev libkf6archive-dev qt6-svg-dev \
     libkf6iconthemes-dev libkf6auth-dev
+# Un solo explorador de archivos (DylanOS Explorer) y una sola calculadora
+# (dylanos-calculator): dolphin y kcalc entran como dependencias del
+# metapaquete kde-plasma-desktop y se retiran del sistema final. El motor KIO
+# del Explorer (libkf6kio*) y el resto de la pila Plasma permanecen intactos.
+apt-get -y purge dolphin dolphin-plugins kcalc
 apt-get clean
 rm -f /usr/sbin/policy-rc.d
 rm -rf /tmp/dylanos-packages /tmp/dylanos-src

@@ -33,7 +33,7 @@ ScrollView {
         }
         RowLayout {
             Layout.fillWidth: true; spacing: 10
-            ActionButton { text: "⌘  VSCodium"; primary: true; onClicked: backend.action("editor") }
+            ActionButton { text: "⌘  Visual Studio Code"; primary: true; onClicked: backend.action("editor") }
             ActionButton { text: ">_  Terminal"; onClicked: backend.action("terminal") }
             ActionButton { text: "Instalar herramientas"; onClicked: backend.action("store") }
             Item { Layout.fillWidth: true }
