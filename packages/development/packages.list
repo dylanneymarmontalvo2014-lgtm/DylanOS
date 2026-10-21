@@ -1,6 +1,6 @@
 # DylanOS — herramientas de desarrollo
 # Un paquete por línea. '#' inicia un comentario.
-# Requiere setup-repos.sh de este grupo (repo apt de VSCodium).
+# Requiere setup-repos.sh de este grupo (repo apt oficial de Visual Studio Code).
 
 # Control de versiones y acceso remoto
 git
@@ -23,8 +23,8 @@ python3-dev
 nodejs
 npm
 
-# Editor de código (VSCodium, repo externo)
-codium
+# Editor de código (Visual Studio Code, repo oficial de Microsoft)
+code
 cmake
 ninja-build
 gdb

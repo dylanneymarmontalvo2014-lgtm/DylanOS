@@ -267,7 +267,7 @@ class Backend(QObject):
     @Slot(str)
     def action(self, name):
         commands = {
-            "terminal": ["konsole"], "editor": ["codium"], "browser": ["firefox-esr"],
+            "terminal": ["konsole"], "editor": ["code"], "browser": ["firefox-esr"],
             "settings": ["dylanos-configuration"], "network": ["dylanos-configuration", "--page", "network"],
             "bluetooth": ["dylanos-configuration", "--page", "bluetooth"], "audio": ["dylanos-configuration", "--page", "sound"],
             "display": ["dylanos-configuration", "--page", "display"], "power": ["dylanos-configuration", "--page", "power"],
@@ -286,7 +286,7 @@ class Backend(QObject):
             self.message.emit("La carpeta del proyecto no existe.")
             return
         if app == "terminal": self.launch(["konsole", "--workdir", path])
-        elif app == "editor": self.launch(["codium", "--", path])
+        elif app == "editor": self.launch(["code", "--", path])
         elif app == "files": QDesktopServices.openUrl(QUrl.fromLocalFile(path))
 
     @Slot(str)
@@ -341,7 +341,7 @@ class Backend(QObject):
         self._tools = [dict(name=name, command=command, installed=bool(shutil.which(command)),
                             path=shutil.which(command) or "No instalado")
                        for name, command in [("Git", "git"), ("Python", "python3"), ("Node.js", "node"),
-                       ("npm", "npm"), ("C / C++", "g++"), ("CMake", "cmake"), ("VSCodium", "codium"),
+                       ("npm", "npm"), ("C / C++", "g++"), ("CMake", "cmake"), ("Visual Studio Code", "code"),
                        ("Podman", "podman"), ("GDB", "gdb"), ("SSH", "ssh")]]
         self.toolsChanged.emit()
 
