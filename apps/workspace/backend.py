@@ -240,7 +240,7 @@ class Backend(QObject):
 
     def launch(self, args):
         friendly = {"dylanos-store": "DylanOS Store", "dylanos-explorer": "Archivos", "plasma-systemmonitor": "Monitor del sistema",
-                    "systemsettings": "Ajustes del sistema", "konsole": "Terminal", "dolphin": "Archivos"}
+                    "dylanos-configuration": "DylanOS Configuration", "konsole": "Terminal", "dolphin": "Archivos"}
         if not shutil.which(args[0]):
             self.message.emit(f"{friendly.get(args[0], args[0])} no está instalado. Puedes instalarlo desde DylanOS Store.")
             return False
@@ -268,11 +268,11 @@ class Backend(QObject):
     def action(self, name):
         commands = {
             "terminal": ["konsole"], "editor": ["codium"], "browser": ["firefox-esr"],
-            "settings": ["systemsettings"], "network": ["systemsettings", "kcm_networkmanagement"],
-            "bluetooth": ["systemsettings", "kcm_bluetooth"], "audio": ["systemsettings", "kcm_pulseaudio"],
-            "display": ["systemsettings", "kcm_kscreen"], "power": ["systemsettings", "kcm_powerdevilprofilesconfig"],
-            "keyboard": ["systemsettings", "kcm_keyboard"], "users": ["systemsettings", "kcm_users"],
-            "appearance": ["systemsettings", "kcm_lookandfeel"],
+            "settings": ["dylanos-configuration"], "network": ["dylanos-configuration", "--page", "network"],
+            "bluetooth": ["dylanos-configuration", "--page", "bluetooth"], "audio": ["dylanos-configuration", "--page", "sound"],
+            "display": ["dylanos-configuration", "--page", "display"], "power": ["dylanos-configuration", "--page", "power"],
+            "keyboard": ["dylanos-configuration", "--page", "datetime"], "users": ["dylanos-configuration", "--page", "accounts"],
+            "appearance": ["dylanos-configuration", "--page", "personalization"],
             "store": ["dylanos-store"], "updates": ["dylanos-store", "--mode", "Update"],
             "calculator": ["dylanos-calculator"], "monitor": ["plasma-systemmonitor"], "files": ["dylanos-explorer"],
             "screenshot": ["spectacle"], "documents": ["libreoffice"], 

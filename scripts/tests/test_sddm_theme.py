@@ -11,20 +11,31 @@ THEME = ROOT / "themes/sddm/DylanOS-Crimson"
 
 
 class SddmThemeTest(unittest.TestCase):
-    def test_theme_uses_selected_user_identity_instead_of_demo_data(self):
+    def test_theme_matches_dashboard_reference_with_real_login_identity(self):
         main = (THEME / "Main.qml").read_text(encoding="utf-8")
         theme_config = (THEME / "theme.conf").read_text(encoding="utf-8")
 
         self.assertIn('source: root.userAvatarSource', main)
         self.assertIn('"/var/lib/AccountsService/icons/" + user.currentText', main)
+        self.assertIn('valueRole: "icon"', main)
+        self.assertIn("user.currentValue", main)
         self.assertIn("focus: true", main)
+        self.assertIn("sddm.login(", main)
+        self.assertIn("WeatherCard {}", main)
+        self.assertIn("CalendarCard {}", main)
+        self.assertIn("ShortcutsCard {}", main)
+        self.assertNotIn("fingerprint.svg", main)
+        self.assertNotIn("Usa tu huella", main)
+        self.assertLess(main.index("id: session"), main.index("Connections {"))
+        for accessible_name in ("Iniciar sesión", "Apagar", "Enfocar contraseña"):
+            self.assertIn(f'Accessible.name: "{accessible_name}"', main)
         self.assertIn("background=/usr/share/wallpapers/DylanOS/dylanos-default.png", theme_config)
-        for sample in ("19°", "Dream It Possible", "72%", "237 GB libres",
-                       "Estudiar para examen", "Reunión de proyecto"):
-            self.assertNotIn(sample, main)
-        for card in ("WeatherCard", "EventCard", "MediaCard", "SystemCard",
-                     "CalendarCard", "RemindersCard", "ShortcutsCard"):
-            self.assertNotIn(card, main)
+        for component in (
+            "SideCard.qml", "WeatherCard.qml", "EventCard.qml",
+            "MediaCard.qml", "SystemCard.qml", "CalendarCard.qml",
+            "RemindersCard.qml", "ShortcutsCard.qml",
+        ):
+            self.assertTrue((THEME / "components" / component).is_file())
 
     def test_greeter_loads_theme_without_fallback(self):
         greeter = shutil.which("sddm-greeter")

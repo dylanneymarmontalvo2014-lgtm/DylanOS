@@ -115,12 +115,15 @@ class StagingTest(unittest.TestCase):
             self.assertIn("org.kde.plasma.trash", shell_layout)
             self.assertIn('"ddd dd \'de\' MMM"', shell_layout)
             self.assertIn("use24hFormat\", 1", shell_layout)
-            # SDDM usa identidad local real y no empaqueta tarjetas de muestra.
+            # SDDM replica el dashboard de referencia con identidad local real.
             sddm_main = (root / "usr/share/sddm/themes/DylanOS-Crimson/Main.qml").read_text()
             self.assertIn("sddm.login(", sddm_main)
             self.assertIn("userAvatarSource", sddm_main)
             self.assertIn("focus: true", sddm_main)
-            self.assertFalse((root / "usr/share/sddm/themes/DylanOS-Crimson/components/WeatherCard.qml").exists())
+            self.assertIn("WeatherCard {}", sddm_main)
+            self.assertNotIn("fingerprint.svg", sddm_main)
+            self.assertTrue((root / "usr/share/sddm/themes/DylanOS-Crimson/components/WeatherCard.qml").is_file())
+            self.assertTrue((root / "usr/share/sddm/themes/DylanOS-Crimson/components/CalendarCard.qml").is_file())
             self.assertIn("background=/usr/share/wallpapers/DylanOS/dylanos-default.png",
                           (root / "usr/share/sddm/themes/DylanOS-Crimson/theme.conf").read_text())
             self.assertTrue((root / "usr/share/sddm/themes/DylanOS-Crimson/logo.png").is_file())
