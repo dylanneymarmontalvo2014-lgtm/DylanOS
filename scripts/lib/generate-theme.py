@@ -69,19 +69,18 @@ def frame(color, prefix="", x=0, y=0, edge=8, size=64):
     return "".join(parts)
 
 
-def main():
-    for light in (False, True):
-        wallpaper(light)
-        colors(light)
-    write("themes/plasma/DylanOS-Crimson/metadata.json", json.dumps({"KPlugin":{"Id":"DylanOS-Crimson", "Name":"DylanOS Crimson", "Version":"1.0.0", "License":"GPL-3.0-or-later", "Authors":[{"Name":"DylanOS"}]}}, indent=2))
-    write("themes/plasma/DylanOS-Crimson/metadata.desktop", "[Desktop Entry]\nName=DylanOS Crimson\nX-KDE-PluginInfo-Name=DylanOS-Crimson\nX-KDE-PluginInfo-License=GPL-3.0-or-later\n\n[ContrastEffect]\nenabled=false\n\n[BlurBehindEffect]\nenabled=true\n")
-    for element in ("widgets/panel-background", "dialogs/background"):
-        write(f"themes/plasma/DylanOS-Crimson/{element}.svg", '<svg xmlns="http://www.w3.org/2000/svg" width="80" height="80">' + frame("#242429", edge=16, size=48) + '<rect id="hint-stretch-borders" width="1" height="1" fill="none"/><rect id="hint-apply-color-scheme" width="1" height="1" fill="none"/></svg>')
-        write(f"themes/plasma/DylanOS-Crimson/translucent/{element}.svg", '<svg xmlns="http://www.w3.org/2000/svg" width="80" height="80"><g opacity="0.72">' + frame("#242429", edge=16, size=48) + '</g><rect id="hint-stretch-borders" width="1" height="1" fill="none"/><rect id="hint-apply-color-scheme" width="1" height="1" fill="none"/></svg>')
+def aurorae():
+    """Decoración de ventanas DylanOS: sin banda gris tradicional.
+
+    El marco es negro DylanOS (#0f0f11) con esquinas redondeadas, botones
+    semáforo a la izquierda y título tenue: la franja superior se funde con
+    el contenido de la ventana en lugar de leerse como una barra aparte.
+    Regenerable de forma aislada: `python3 scripts/lib/generate-theme.py aurorae`.
+    """
     aurora = "themes/aurorae/DylanOS-Crimson"
     write(f"{aurora}/metadata.desktop", "[Desktop Entry]\nName=DylanOS Crimson\nComment=Original DylanOS window decoration\nX-KDE-PluginInfo-Name=DylanOS-Crimson\nX-KDE-PluginInfo-Version=1.0\nX-KDE-PluginInfo-Author=DylanOS\nX-KDE-PluginInfo-License=GPL-3.0-or-later\n")
-    write(f"{aurora}/DylanOS-Crimsonrc", "[General]\nShadow=false\nAnimation=120\nTitleAlignment=Center\nActiveTextColor=241,241,246\nInactiveTextColor=161,165,184\n\n[Layout]\nBorderLeft=4\nBorderRight=4\nBorderBottom=4\nBorderTop=0\nTitleEdgeTop=8\nTitleEdgeBottom=8\nTitleEdgeLeft=8\nTitleEdgeRight=8\nTitleBorderLeft=5\nTitleBorderRight=5\nButtonWidth=18\nButtonHeight=18\nButtonSpacing=7\nExplicitButtonSpacer=4\n")
-    write(f"{aurora}/decoration.svg", '<svg xmlns="http://www.w3.org/2000/svg" width="500" height="100"><g opacity="0.92">' + frame("#252529", "decoration-", edge=12, size=56) + frame("#202024", "decoration-inactive-", x=100, edge=12, size=56) + '</g>' + frame("#252529", "decoration-opaque-", x=200, edge=12, size=56) + frame("#202024", "decoration-opaque-inactive-", x=300, edge=12, size=56) + frame("white", "mask-", x=400, edge=12, size=56) + '</svg>')
+    write(f"{aurora}/DylanOS-Crimsonrc", "[General]\nShadow=false\nAnimation=120\nTitleAlignment=Center\nActiveTextColor=152,154,162\nInactiveTextColor=104,106,114\n\n[Layout]\nBorderLeft=4\nBorderRight=4\nBorderBottom=4\nBorderTop=0\nTitleEdgeTop=6\nTitleEdgeBottom=6\nTitleEdgeLeft=10\nTitleEdgeRight=10\nTitleBorderLeft=0\nTitleBorderRight=0\nButtonWidth=18\nButtonHeight=18\nButtonSpacing=8\nExplicitButtonSpacer=4\n")
+    write(f"{aurora}/decoration.svg", '<svg xmlns="http://www.w3.org/2000/svg" width="500" height="100"><g opacity="0.92">' + frame("#0f0f11", "decoration-", edge=12, size=56) + frame("#0b0b0d", "decoration-inactive-", x=100, edge=12, size=56) + '</g>' + frame("#0f0f11", "decoration-opaque-", x=200, edge=12, size=56) + frame("#0b0b0d", "decoration-opaque-inactive-", x=300, edge=12, size=56) + frame("white", "mask-", x=400, edge=12, size=56) + '</svg>')
     for name, color, glyph in [("close", "#ff5f57", "M6 6L12 12M12 6L6 12"), ("minimize", "#febc2e", "M5 9H13"), ("maximize", "#28c840", "M6 11V6H11M7 12H12V7"), ("restore", "#28c840", "M5 8H10V13H5Z")]:
         content = '<svg xmlns="http://www.w3.org/2000/svg" width="100" height="22">'
         for i, state in enumerate(["active", "hover", "pressed", "inactive"]):
@@ -95,10 +94,26 @@ def main():
     for source in (ROOT / aurora).iterdir():
         filename = source.name.replace("DylanOS-Crimsonrc", "DylanOS-Crimson-Lightrc")
         content = source.read_text().replace("DylanOS-Crimson", "DylanOS-Crimson-Light").replace("Name=DylanOS Crimson", "Name=DylanOS Crimson Light")
-        content = content.replace("#252529", "#eef0f6").replace("#202024", "#e8eaf0")
-        content = content.replace("241,241,246", "32,33,43").replace("161,165,184", "99,104,121")
+        content = content.replace("#0f0f11", "#eef0f6").replace("#0b0b0d", "#e8eaf0")
+        content = content.replace("152,154,162", "32,33,43").replace("104,106,114", "99,104,121")
         (light / filename).write_text(content)
 
 
+def main():
+    for light in (False, True):
+        wallpaper(light)
+        colors(light)
+    write("themes/plasma/DylanOS-Crimson/metadata.json", json.dumps({"KPlugin":{"Id":"DylanOS-Crimson", "Name":"DylanOS Crimson", "Version":"1.0.0", "License":"GPL-3.0-or-later", "Authors":[{"Name":"DylanOS"}]}}, indent=2))
+    write("themes/plasma/DylanOS-Crimson/metadata.desktop", "[Desktop Entry]\nName=DylanOS Crimson\nX-KDE-PluginInfo-Name=DylanOS-Crimson\nX-KDE-PluginInfo-License=GPL-3.0-or-later\n\n[ContrastEffect]\nenabled=false\n\n[BlurBehindEffect]\nenabled=true\n")
+    for element in ("widgets/panel-background", "dialogs/background"):
+        write(f"themes/plasma/DylanOS-Crimson/{element}.svg", '<svg xmlns="http://www.w3.org/2000/svg" width="80" height="80">' + frame("#242429", edge=16, size=48) + '<rect id="hint-stretch-borders" width="1" height="1" fill="none"/><rect id="hint-apply-color-scheme" width="1" height="1" fill="none"/></svg>')
+        write(f"themes/plasma/DylanOS-Crimson/translucent/{element}.svg", '<svg xmlns="http://www.w3.org/2000/svg" width="80" height="80"><g opacity="0.72">' + frame("#242429", edge=16, size=48) + '</g><rect id="hint-stretch-borders" width="1" height="1" fill="none"/><rect id="hint-apply-color-scheme" width="1" height="1" fill="none"/></svg>')
+    aurorae()
+
+
 if __name__ == "__main__":
-    main()
+    import sys
+    if len(sys.argv) > 1 and sys.argv[1] == "aurorae":
+        aurorae()
+    else:
+        main()

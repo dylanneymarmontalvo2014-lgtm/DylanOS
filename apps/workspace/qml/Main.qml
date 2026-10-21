@@ -10,7 +10,12 @@ ApplicationWindow {
     visible: true
     title: pageTitle + " · DylanOS"
     font.family: "Inter"; font.pixelSize: 14
-    color: dark ? "#151519" : "#f5f5f7"
+    // Ventana DylanOS Shell: sin decoración de KWin. El título vive en la
+    // barra superior propia y los controles (cerrar/minimizar/maximizar)
+    // son parte del frontend, como en Explorer y Configuration.
+    color: "transparent"
+    flags: Qt.Window | Qt.FramelessWindowHint
+    readonly property int radius: 22
     property string page: initialPage
     property bool dark: preferences.dark
     readonly property var names: ({welcome:"Bienvenido", files:"Archivos", notes:"Notas", dev:"Desarrollo", monitor:"Monitor", settings:"Ajustes"})
@@ -41,21 +46,67 @@ ApplicationWindow {
         function onMessage(text) { toastLabel.text = text; toast.open(); toastTimer.restart() }
     }
     Shortcut { sequence: "Ctrl+W"; onActivated: win.close() }
-    header: ToolBar {
-        implicitHeight: 78
-        padding: 0
-        background: Rectangle {
+    Rectangle {
+        id: frame
+        anchors.fill: parent
+        radius: win.radius
+        clip: true
+        color: win.dark ? "#151519" : "#f5f5f7"
+        border.width: 1
+        border.color: win.dark ? "#2e2736" : "#d6d0d4"
+
+        Rectangle {
+            id: chrome
+            anchors.top: parent.top; anchors.left: parent.left; anchors.right: parent.right
+            height: 78
             gradient: Gradient {
                 GradientStop { position: 0; color: win.dark ? "#28131e" : "#faf7fa" }
                 GradientStop { position: 1; color: win.dark ? "#141018" : "#eeedf3" }
             }
             Rectangle { anchors.top: parent.top; width: parent.width; height: 1; color: win.dark ? "#1affffff" : "#30ffffff" }
             Rectangle { anchors.bottom: parent.bottom; width: parent.width; height: 1; color: win.dark ? "#35DC143C" : win.palette.mid }
-        }
         RowLayout {
-            width: parent.width; height: 78; spacing: 14
+            anchors.fill: parent; spacing: 14
+            anchors.leftMargin: 20; anchors.rightMargin: 28
+            // Controles de ventana integrados (a la izquierda, estilo DylanOS)
+            Row {
+                spacing: 8
+                Layout.alignment: Qt.AlignVCenter
+                Rectangle {
+                    width: 13; height: 13; radius: 13
+                    color: closeBtn.containsMouse ? "#ff766d" : "#ff5f57"
+                    Accessible.name: "Cerrar"; Accessible.role: Accessible.Button
+                    Rectangle { anchors.centerIn: parent; visible: closeBtn.containsMouse; width: 6; height: 1.6; radius: 1; color: "#4d0000" }
+                    MouseArea { id: closeBtn; anchors.fill: parent; hoverEnabled: true; cursorShape: Qt.PointingHandCursor; onClicked: win.close() }
+                }
+                Rectangle {
+                    width: 13; height: 13; radius: 13
+                    color: minBtn.containsMouse ? "#ffd066" : "#febc2e"
+                    Accessible.name: "Minimizar"; Accessible.role: Accessible.Button
+                    Rectangle { anchors.centerIn: parent; visible: minBtn.containsMouse; width: 6; height: 1.6; radius: 1; color: "#5b3d00" }
+                    MouseArea { id: minBtn; anchors.fill: parent; hoverEnabled: true; cursorShape: Qt.PointingHandCursor; onClicked: win.showMinimized() }
+                }
+                Rectangle {
+                    width: 13; height: 13; radius: 13
+                    color: maxBtn.containsMouse ? "#48dc60" : "#28c840"
+                    Accessible.name: "Maximizar"; Accessible.role: Accessible.Button
+                    Rectangle {
+                        anchors.centerIn: parent
+                        visible: maxBtn.containsMouse && win.visibility !== Window.Maximized
+                        width: 5; height: 5; radius: 1; color: "#004d10"
+                    }
+                    Rectangle {
+                        anchors.centerIn: parent
+                        visible: maxBtn.containsMouse && win.visibility === Window.Maximized
+                        width: 7; height: 7; radius: 1; color: "#004d10"
+                        Rectangle { anchors.centerIn: parent; width: 4; height: 4; radius: 1; color: maxBtn.containsMouse ? "#48dc60" : "#28c840" }
+                    }
+                    MouseArea { id: maxBtn; anchors.fill: parent; hoverEnabled: true; cursorShape: Qt.PointingHandCursor; onClicked: win.visibility === Window.Maximized ? win.showNormal() : win.showMaximized() }
+                }
+            }
+
             Rectangle {
-                Layout.leftMargin: 28; width: 42; height: 42; radius: 14
+                Layout.leftMargin: 8; width: 42; height: 42; radius: 14
                 color: win.dark ? "#46232f" : "#f8dfe6"; border.color: win.dark ? "#69404d" : "#edc5d0"
                 Label { anchors.centerIn: parent; text: win.symbols[win.page]; color: win.dark ? "#ffa2b7" : "#b61035"; font.pixelSize: 24 }
             }
@@ -66,19 +117,32 @@ ApplicationWindow {
             }
             Item { Layout.fillWidth: true }
             ActionButton {
-                text: win.dark ? "Claro" : "Oscuro"; Layout.rightMargin: 28
+                text: win.dark ? "Claro" : "Oscuro"
                 onClicked: win.dark = !win.dark
                 Accessible.name: "Cambiar apariencia de esta aplicación"
             }
         }
+
+        // Arrastre de la ventana desde la barra y doble clic para maximizar.
+        MouseArea {
+            anchors.fill: chrome
+            z: -1
+            onPressed: win.startSystemMove()
+            onDoubleClicked: win.visibility === Window.Maximized ? win.showNormal() : win.showMaximized()
+        }
+        }
+
+        Loader {
+            id: content
+            anchors.top: chrome.bottom
+            anchors.left: parent.left; anchors.right: parent.right; anchors.bottom: parent.bottom
+            anchors.margins: 28
+            source: ({welcome:"WelcomePage.qml", files:"FilesPage.qml", notes:"NotesPage.qml", dev:"DevPage.qml", monitor:"MonitorPage.qml", settings:"SettingsPage.qml"})[win.page]
+            onLoaded: reveal.restart()
+            NumberAnimation { id: reveal; target: content; property: "opacity"; from: 0; to: 1; duration: 180 }
+        }
     }
-    Loader {
-        id: content
-        anchors.fill: parent; anchors.margins: 28
-        source: ({welcome:"WelcomePage.qml", files:"FilesPage.qml", notes:"NotesPage.qml", dev:"DevPage.qml", monitor:"MonitorPage.qml", settings:"SettingsPage.qml"})[win.page]
-        onLoaded: reveal.restart()
-        NumberAnimation { id: reveal; target: content; property: "opacity"; from: 0; to: 1; duration: 180 }
-    }
+
     Popup {
         id: toast
         x: Math.max(16, (win.width - width) / 2); y: win.height - height - 115

@@ -10,7 +10,11 @@ ApplicationWindow {
     minimumWidth: 280
     minimumHeight: 540
     title: "Calculadora"
-    color: "#19171e"
+    // Ventana DylanOS sin decoración de KWin: controles de ventana
+    // integrados en la propia cabecera, como el resto de apps nativas.
+    color: "transparent"
+    flags: Qt.Window | Qt.FramelessWindowHint
+    readonly property int radius: 22
     font.family: "Inter"
 
     property real storedValue: 0
@@ -111,13 +115,54 @@ ApplicationWindow {
         resetOnNextDigit = true
     }
 
-    ColumnLayout {
+    Rectangle {
+        id: frame
+        anchors.fill: parent
+        radius: root.radius
+        clip: true
+        color: "#19171e"
+        border.width: 1
+        border.color: "#2e2736"
+
+        // Arrastre de la ventana desde la cabecera.
+        MouseArea {
+            anchors.left: parent.left; anchors.right: parent.right
+            anchors.top: parent.top; anchors.bottom: headerRow.bottom
+            z: -1
+            onPressed: root.startSystemMove()
+            onDoubleClicked: root.visibility === Window.Maximized ? root.showNormal() : root.showMaximized()
+        }
+
+        ColumnLayout {
         anchors.fill: parent
         anchors.margins: 20
         spacing: 14
 
         RowLayout {
+            id: headerRow
             Layout.fillWidth: true
+            Row {
+                spacing: 8
+                Layout.alignment: Qt.AlignVCenter
+                Rectangle {
+                    width: 12; height: 12; radius: 12
+                    color: calcClose.containsMouse ? "#ff766d" : "#ff5f57"
+                    Accessible.name: "Cerrar"; Accessible.role: Accessible.Button
+                    MouseArea { id: calcClose; anchors.fill: parent; hoverEnabled: true; cursorShape: Qt.PointingHandCursor; onClicked: root.close() }
+                }
+                Rectangle {
+                    width: 12; height: 12; radius: 12
+                    color: calcMin.containsMouse ? "#ffd066" : "#febc2e"
+                    Accessible.name: "Minimizar"; Accessible.role: Accessible.Button
+                    MouseArea { id: calcMin; anchors.fill: parent; hoverEnabled: true; cursorShape: Qt.PointingHandCursor; onClicked: root.showMinimized() }
+                }
+                Rectangle {
+                    width: 12; height: 12; radius: 12
+                    color: calcMax.containsMouse ? "#48dc60" : "#28c840"
+                    Accessible.name: "Maximizar"; Accessible.role: Accessible.Button
+                    MouseArea { id: calcMax; anchors.fill: parent; hoverEnabled: true; cursorShape: Qt.PointingHandCursor; onClicked: root.visibility === Window.Maximized ? root.showNormal() : root.showMaximized() }
+                }
+            }
             Text { text: "DYLANOS"; color: "#b4a9bb"; font.pixelSize: 10; font.letterSpacing: 2 }
             Item { Layout.fillWidth: true }
             Text { text: "Calculadora"; color: "#f0dde6"; font.pixelSize: 13 }
@@ -175,6 +220,7 @@ ApplicationWindow {
                 onClicked: root.inputDigit("0")
             }
             CalcButton { label: "."; onClicked: root.inputDecimal() }
+        }
         }
     }
 }
