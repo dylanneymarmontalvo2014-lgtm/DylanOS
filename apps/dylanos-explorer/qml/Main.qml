@@ -171,6 +171,7 @@ ApplicationWindow {
                     { id: "selectAll", text: "Seleccionar todo", icon: "check" },
                     { id: "refresh", text: "Actualizar", icon: "refresh" } ]
                 : [ { id: "newFolder", text: "Nueva carpeta", icon: "folderPlus" },
+                    { id: "newFile", text: "Nuevo archivo", icon: "filePlus" },
                     { id: "paste", text: "Pegar", icon: "paste", enabled: explorer.canPaste },
                     { separator: true },
                     { id: "selectAll", text: "Seleccionar todo", icon: "check" },
@@ -211,6 +212,7 @@ ApplicationWindow {
         case "paste": explorer.paste(); break
         case "rename": askRename(); break
         case "newFolder": askNewFolder(); break
+        case "newFile": askNewFile(); break
         case "props": showProps(); break
         case "trash": askTrash(); break
         case "delete": askDelete(); break
@@ -245,6 +247,11 @@ ApplicationWindow {
         if (explorer.isHome || explorer.inTrash) return
         prompt.mode = "newFolder"; prompt.target = ""
         prompt.openWith("Nueva carpeta", "folderPlus", "Nueva carpeta", "Crear")
+    }
+    function askNewFile() {
+        if (explorer.isHome || explorer.inTrash) return
+        prompt.mode = "newFile"; prompt.target = ""
+        prompt.openWith("Nuevo archivo", "filePlus", "Documento.txt", "Crear")
     }
     function askTrash() {
         if (selCount === 0) return
@@ -296,6 +303,7 @@ ApplicationWindow {
         property string target
         onSubmitted: (text) => {
             if (mode === "rename") explorer.renameItem(target, text)
+            else if (mode === "newFile") explorer.createFile(text)
             else explorer.createFolder(text)
         }
     }

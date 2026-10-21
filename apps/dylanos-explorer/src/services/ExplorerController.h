@@ -88,6 +88,7 @@ public:
     Q_INVOKABLE void cutSelection();
     Q_INVOKABLE void paste();
     Q_INVOKABLE void createFolder(const QString &name);
+    Q_INVOKABLE void createFile(const QString &name);
     Q_INVOKABLE void renameItem(const QString &path, const QString &newName);
     Q_INVOKABLE void trashSelection();
     Q_INVOKABLE void deleteSelection();

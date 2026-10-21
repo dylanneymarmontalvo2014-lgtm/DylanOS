@@ -30,6 +30,7 @@ public:
     static qint64 totalSize(const QStringList &paths);
 
     static Result createFolder(const QString &parentDir, const QString &name);
+    static Result createFile(const QString &parentDir, const QString &name);
     static Result rename(const QString &path, const QString &newName);
     static Result transfer(const QStringList &sources, const QString &destDir, bool move,
                            const Progress &progress = {}, const std::atomic_bool *cancel = nullptr);
