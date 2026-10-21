@@ -21,13 +21,22 @@ class SddmThemeTest(unittest.TestCase):
         self.assertIn("user.currentValue", main)
         self.assertIn("focus: true", main)
         self.assertIn("sddm.login(", main)
+        self.assertIn("sddm.powerOff()", main)
+        self.assertIn("sddm.reboot()", main)
+        self.assertIn("sddm.suspend()", main)
+        # La captura de QA es opt-in vía theme.conf: en producción el Timer
+        # de captura no debe ejecutarse ni escribir en /tmp.
+        self.assertIn('config.screenshot.length > 0', main)
+        self.assertNotIn("dylanos-sddm-final-review", main)
         self.assertIn("WeatherCard {}", main)
         self.assertIn("CalendarCard {}", main)
         self.assertIn("ShortcutsCard {}", main)
         self.assertNotIn("fingerprint.svg", main)
         self.assertNotIn("Usa tu huella", main)
+        self.assertIn("screenshot=", theme_config)
+        self.assertIn("id: session", main)
         self.assertLess(main.index("id: session"), main.index("Connections {"))
-        for accessible_name in ("Iniciar sesión", "Apagar", "Enfocar contraseña"):
+        for accessible_name in ("Iniciar sesión", "Apagar", "Reiniciar", "Suspender", "Enfocar contraseña"):
             self.assertIn(f'Accessible.name: "{accessible_name}"', main)
         self.assertIn("background=/usr/share/wallpapers/DylanOS/dylanos-default.png", theme_config)
         for component in (

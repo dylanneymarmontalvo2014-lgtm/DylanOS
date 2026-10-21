@@ -31,17 +31,32 @@ Rectangle {
     readonly property string userAvatarSource: user.currentValue
         ? user.currentValue : accountsAvatarSource
 
+    // Captura de QA (opt-in): solo si theme.conf define screenshot=<ruta> se
+    // graba un PNG de la interfaz renderizada. En producción la clave está
+    // vacía y el Timer nunca se dispara (escribir en disco en cada arranque
+    // sería un artefacto de depuración inaceptable).
     Timer {
-        interval: 1000
-        running: true
+        interval: 1200
+        running: typeof config.screenshot === "string" && config.screenshot.length > 0
         repeat: false
         onTriggered: root.grabToImage(function(result) {
-            result.saveToFile("/tmp/dylanos-sddm-final-review.png")
+            result.saveToFile(config.screenshot)
         })
     }
 
     Image { anchors.fill: parent; source: config.background; fillMode: Image.PreserveAspectCrop }
-    Rectangle { anchors.fill: parent; color: "#66000000" }
+    Rectangle { anchors.fill: parent; color: "#7A000000" }
+    // El preview es prácticamente negro en su tercio superior: degradado que
+    // hunde el fondo arriba y libera hacia abajo, sin tocar tarjetas ni texto
+    // (se pintan encima).
+    Rectangle {
+        anchors.fill: parent
+        gradient: Gradient {
+            GradientStop { position: 0; color: "#A8000000" }
+            GradientStop { position: 0.45; color: "#48000000" }
+            GradientStop { position: 1; color: "#26000000" }
+        }
+    }
 
     function getHour12() {
         var h = new Date().getHours() % 12;
@@ -69,6 +84,8 @@ Rectangle {
         anchors.left: parent.left; anchors.right: parent.right; anchors.top: parent.top
         height: 64
         z: 10
+        // El preview mantiene la barra superior muy tenue sobre el fondo.
+        opacity: 0.75
 
         Row {
             anchors.left: parent.left; anchors.leftMargin: 32
@@ -145,23 +162,36 @@ Rectangle {
             }
         }
 
-        // Anillos elípticos concéntricos rojos detrás del reloj (como en el preview)
+        // Resplandor carmesí del preview: gradiente radial amplio que envuelve
+        // el reloj y baja hasta el bloque de acceso (medido sobre la imagen de
+        // referencia: ocupa ~el 12-88% del ancho y ~el 22-97% del alto, con
+        // núcleo fuerte en el reloj). Los anillos finos originales apenas se
+        // percibían frente al resplandor sólido del diseño aprobado.
         Canvas {
-            id: ripples
-            anchors.centerIn: clockRow
-            width: 520; height: 220
+            id: crimsonGlow
             z: -1
+            x: root.width * 0.12
+            y: root.height * 0.22
+            width: root.width * 0.76
+            height: root.height * 0.75
             onPaint: {
                 var ctx = getContext("2d");
                 ctx.clearRect(0, 0, width, height);
                 var cx = width / 2;
-                var cy = height / 2;
+                var cy = height * 0.38;
+                var g = ctx.createRadialGradient(cx, cy, 0, cx, cy, width * 0.55);
+                g.addColorStop(0.0, Qt.rgba(0.86, 0.08, 0.24, 0.42));
+                g.addColorStop(0.45, Qt.rgba(0.86, 0.08, 0.24, 0.22));
+                g.addColorStop(1.0, Qt.rgba(0.86, 0.08, 0.24, 0.0));
+                ctx.fillStyle = g;
+                ctx.fillRect(0, 0, width, height);
+                // Motivo de anillos del diseño original, ahora dentro del halo.
                 var radii = [90, 120, 155, 195];
                 for (var i = 0; i < radii.length; i++) {
                     var r = radii[i];
                     ctx.beginPath();
                     ctx.ellipse(cx - r, cy - r * 0.45, r * 2, r * 0.9);
-                    ctx.strokeStyle = Qt.rgba(0.86, 0.08, 0.24, 0.12 - i * 0.02);
+                    ctx.strokeStyle = Qt.rgba(0.98, 0.29, 0.40, 0.10 - i * 0.015);
                     ctx.lineWidth = 1.5;
                     ctx.stroke();
                 }
@@ -412,19 +442,53 @@ Rectangle {
         ShortcutsCard {}
     }
 
-    // Apagado real (sddm.powerOff) — abajo a la izquierda.
-    Rectangle {
+    // Acciones de energía reales (sddm.powerOff/reboot/suspend) — abajo a la
+    // izquierda. El preview solo muestra el apagado: reinicio y suspensión se
+    // integran como botones gemelos discretos con la misma composición.
+    Row {
         anchors.left: parent.left; anchors.leftMargin: 28
         anchors.bottom: parent.bottom; anchors.bottomMargin: 24
-        width: 46; height: 46; radius: 23
-        color: powerArea.containsMouse ? "#2A2A2A" : "#1D1D1D"
-        border.color: Qt.rgba(1, 1, 1, 0.08); border.width: 1
-        Accessible.name: "Apagar"
-        Accessible.role: Accessible.Button
-        Image { source: "images/system-shutdown.svg"; width: 20; height: 20; anchors.centerIn: parent }
-        MouseArea {
-            id: powerArea; anchors.fill: parent; hoverEnabled: true
-            onClicked: if (sddm.canPowerOff) sddm.powerOff()
+        spacing: 10
+
+        Rectangle {
+            width: 46; height: 46; radius: 23
+            color: powerArea.containsMouse ? "#2A2A2A" : "#1D1D1D"
+            border.color: Qt.rgba(1, 1, 1, 0.08); border.width: 1
+            Accessible.name: "Apagar"
+            Accessible.role: Accessible.Button
+            Image { source: "images/system-shutdown.svg"; width: 20; height: 20; anchors.centerIn: parent }
+            MouseArea {
+                id: powerArea; anchors.fill: parent; hoverEnabled: true
+                onClicked: if (sddm.canPowerOff) sddm.powerOff()
+            }
+        }
+
+        Rectangle {
+            visible: sddm.canReboot
+            width: 46; height: 46; radius: 23
+            color: rebootArea.containsMouse ? "#2A2A2A" : "#1D1D1D"
+            border.color: Qt.rgba(1, 1, 1, 0.08); border.width: 1
+            Accessible.name: "Reiniciar"
+            Accessible.role: Accessible.Button
+            Image { source: "images/system-reboot.svg"; width: 20; height: 20; anchors.centerIn: parent }
+            MouseArea {
+                id: rebootArea; anchors.fill: parent; hoverEnabled: true
+                onClicked: if (sddm.canReboot) sddm.reboot()
+            }
+        }
+
+        Rectangle {
+            visible: sddm.canSuspend
+            width: 46; height: 46; radius: 23
+            color: suspendArea.containsMouse ? "#2A2A2A" : "#1D1D1D"
+            border.color: Qt.rgba(1, 1, 1, 0.08); border.width: 1
+            Accessible.name: "Suspender"
+            Accessible.role: Accessible.Button
+            Image { source: "images/moon.svg"; width: 18; height: 18; anchors.centerIn: parent }
+            MouseArea {
+                id: suspendArea; anchors.fill: parent; hoverEnabled: true
+                onClicked: if (sddm.canSuspend) sddm.suspend()
+            }
         }
     }
 
