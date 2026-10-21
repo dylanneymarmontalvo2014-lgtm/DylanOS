@@ -139,6 +139,14 @@ exec /usr/bin/python3 /usr/share/dylanos/installer/native/main.py "$@"
     remove("/usr/share/applications/org.kde.discover.notifier.desktop")
     remove("/usr/share/applications/plasma-discover.desktop")
     remove("/etc/xdg/autostart/org.kde.discover.notifier.desktop")
+    # Un solo explorador y una sola calculadora: los .desktop de dolphin y
+    # kcalc no deben existir (build.sh purga los paquetes; esto cubre chroots
+    # reutilizados de builds anteriores).
+    remove("/usr/share/applications/org.kde.dolphin.desktop")
+    remove("/usr/share/applications/org.kde.kcalc.desktop")
+    # DylanOS Configuration sustituye al lanzador del workspace "Ajustes DylanOS"
+    # (dylanos --page settings): la entrada obsoleta no debe volver a aparecer.
+    remove("/usr/share/applications/org.dylanos.settings.desktop")
     for key, name, icon, category in [
         ("welcome", "Bienvenido a DylanOS", "distributor-logo-dylanos", "Utility"),
         ("explorer", "Archivos", "dylanos-explorer", "System;FileTools;FileManager"),

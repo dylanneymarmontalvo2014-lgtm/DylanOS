@@ -208,10 +208,10 @@ class SpotlightBackend(QObject):
                 except Exception as e:
                     print(f"Error lanzando app: {e}")
             elif act_type == "folder":
-                if shutil.which("dolphin"):
-                    subprocess.Popen(["dolphin", payload])
-                elif shutil.which("codium"):
-                    subprocess.Popen(["codium", payload])
+                # DylanOS Explorer es el único explorador de archivos del
+                # sistema; sin él, el portal de escritorio abre la carpeta.
+                if shutil.which("dylanos-explorer"):
+                    subprocess.Popen(["dylanos-explorer", payload])
                 else:
                     QDesktopServices.openUrl(QUrl.fromLocalFile(payload))
             elif act_type == "web":
