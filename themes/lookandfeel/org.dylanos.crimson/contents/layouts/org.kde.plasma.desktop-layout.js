@@ -76,16 +76,17 @@ dock.hiding = "dodgewindows";
 var tasks = dock.addWidget("org.kde.plasma.icontasks");
 tasks.currentConfigGroup = ["General"];
 // Apps fijadas en el dock inferior, en este orden: explorador de archivos,
-// Firefox, VSCodium, App Center, Ajustes de DylanOS y Calculadora.
-// Gestor de archivos: DylanOS Explorer nativo (dolphin sigue instalado como
-// vía de reversión, pero no fijado).
+// Firefox, Visual Studio Code, App Center, DylanOS Store, DylanOS
+// Configuration y Calculadora.
+// Gestor de archivos: DylanOS Explorer es el ÚNICO explorador del sistema
+// (el paquete dolphin no se envía: build.sh lo purga del chroot).
 tasks.writeConfig("launchers", [
     "applications:org.dylanos.explorer.desktop",
     "applications:firefox-esr.desktop",
-    "applications:codium.desktop",
+    "applications:com.microsoft.VSCode.desktop",
     "applications:dylanos-app-center.desktop",
     "applications:org.dylanos.store.desktop",
-    "applications:org.dylanos.settings.desktop",
+    "applications:org.dylanos.configuration.desktop",
     "applications:org.dylanos.calculator.desktop"
 ]);
 tasks.writeConfig("showOnlyCurrentScreen", true);

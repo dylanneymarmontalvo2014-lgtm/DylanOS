@@ -1,4 +1,4 @@
-title-text: "DylanOS 1.0 Beta"
+title-text: "DylanOS crimson 1.0"
 title-color: "#FFFFFF"
 desktop-color: "#0A0A0A"
 desktop-image: "background.png"
