@@ -6,7 +6,10 @@
 - Logo de DylanOS: recurso preexistente `branding/logo.png`, conservado.
 - Inter, Breeze, cursores, aplicaciones y firmware: paquetes oficiales de Debian;
   sus licencias se incluyen en `/usr/share/doc/<paquete>/copyright` en la imagen.
-- VSCodium se obtiene de su repositorio externo con `Signed-By` independiente.
+- Visual Studio Code se obtiene del repositorio apt oficial de Microsoft
+  (`packages.microsoft.com/repos/vscode`) con `Signed-By` independiente. El
+  binario distribuido se rige por la licencia de Microsoft (el código fuente
+  "Code - OSS" es MIT y no se redistribuye aquí). VSCodium fue retirado.
 - El tema SDDM anterior, su fuente SFUIText y sus recursos se conservan en el
   repositorio, pero **no se copian a la imagen beta**. El login nuevo usa Inter.
 - No se incorporaron fondos, iconos, fuentes ni código extraídos de macOS.
