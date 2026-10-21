@@ -51,6 +51,7 @@ def stage(destination):
         ("branding/logo.png", "/usr/share/dylanos/workspace/assets/logo.png"),
         ("branding/logo.png", "/usr/share/icons/hicolor/512x512/apps/distributor-logo-dylanos.png"),
         ("branding/icons/dylanos-store.png", "/usr/share/icons/hicolor/512x512/apps/dylanos-store.png"),
+        ("branding/logo.png", "/usr/share/dylanos/configuration/assets/logo.png"),
         ("branding/wallpapers/dylanos-default.png", "/usr/share/wallpapers/DylanOS/dylanos-default.png"),
         ("branding/wallpapers/DylanOS-Dark.png", "/usr/share/wallpapers/DylanOS/DylanOS-Dark.png"),
         ("branding/wallpapers/DylanOS-Light.png", "/usr/share/wallpapers/DylanOS/DylanOS-Light.png"),
@@ -145,12 +146,43 @@ exec /usr/bin/python3 /usr/share/dylanos/installer/native/main.py "$@"
         ("dev", "Desarrollo DylanOS", "applications-development", "Development"),
         ("monitor", "Monitor DylanOS", "utilities-system-monitor", "System;Monitor"),
         ("store", "DylanOS Store", "dylanos-store", "Settings;PackageManager"),
-        ("settings", "Ajustes DylanOS", "preferences-system", "Settings"),
     ]:
         if key == "store":
             write("/usr/share/applications/org.dylanos.store.desktop", f"[Desktop Entry]\nType=Application\nName={name}\nComment=Descubre e instala aplicaciones\nExec=dylanos-store\nStartupWMClass=dylanos-store\nIcon={icon}\nTerminal=false\nCategories={category};\nStartupNotify=true\n")
         else:
             write(f"/usr/share/applications/org.dylanos.{key}.desktop", f"[Desktop Entry]\nType=Application\nName={name}\nExec=dylanos --page {key}\nStartupWMClass=org.dylanos.{key}\nIcon={icon}\nTerminal=false\nCategories={category};\nStartupNotify=true\n")
+    # DylanOS Configuration: única aplicación de configuración visible.
+    # Fallback idempotente previo al build; CMake instala la canónica después.
+    write("/usr/share/applications/org.dylanos.configuration.desktop",
+          "[Desktop Entry]\nType=Application\nName=DylanOS Configuration\nGenericName=Configuración del sistema\n"
+          "Comment=Configura DylanOS Crimson y KDE Plasma\nExec=dylanos-configuration\n"
+          "StartupWMClass=org.dylanos.configuration\nIcon=dylanos-configuration\n"
+          "Terminal=false\nCategories=Settings;\nStartupNotify=true\n")
+    # Iconos propios de la app (existen tras compilarla: los genera CMake y el
+    # script de preparación de recursos; se instalan solo si están presentes).
+    if (ROOT / "apps/dylanos-configuration/assets/dylanos-configuration.png").exists():
+        copy("apps/dylanos-configuration/assets/dylanos-configuration.png",
+             "/usr/share/icons/hicolor/512x512/apps/dylanos-configuration.png")
+    if (ROOT / "apps/dylanos-configuration/assets/dylanos-configuration.svg").exists():
+        copy("apps/dylanos-configuration/assets/dylanos-configuration.svg",
+             "/usr/share/icons/hicolor/scalable/apps/dylanos-configuration.svg")
+    # Una sola aplicación de configuración visible: se ocultan (NoDisplay) las
+    # entradas de menú duplicadas SIN tocar binarios ni módulos KCM de KDE, que
+    # DylanOS Configuration sigue usando como base funcional (kcmshell/KCM).
+    def hide_duplicate(target):
+        entry = dest / target.lstrip("/")
+        if entry.exists():
+            entry.write_text("[Desktop Entry]\nType=Application\nNoDisplay=true\n", encoding="utf-8")
+    for duplicate in [
+        "/usr/share/applications/systemsettings.desktop",
+        "/usr/share/applications/kdesystemsettings.desktop",
+        "/usr/share/applications/org.kde.plasma.settings.open.desktop",
+        "/usr/share/applications/org.kde.kinfocenter.desktop",
+        "/usr/share/applications/org.gnome.Settings.desktop",
+        "/usr/share/applications/xfce-settings-manager.desktop",
+        "/usr/share/applications/lightdm-settings.desktop",
+    ]:
+        hide_duplicate(duplicate)
     write("/usr/bin/dylanos-welcome", '''#!/bin/sh
 state="${XDG_STATE_HOME:-$HOME/.local/state}/dylanos"
 if [ ! -e "$state/welcome-seen" ]; then

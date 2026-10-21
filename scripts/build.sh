@@ -99,6 +99,14 @@ chroot "$CHROOT" cmake -S /tmp/dylanos-src/dylanos-explorer -B /tmp/dylanos-src/
 chroot "$CHROOT" cmake --build /tmp/dylanos-src/dylanos-explorer/build --parallel 2
 chroot "$CHROOT" ctest --test-dir /tmp/dylanos-src/dylanos-explorer/build --output-on-failure
 chroot "$CHROOT" cmake --install /tmp/dylanos-src/dylanos-explorer/build
+# DylanOS Configuration: única app de configuración (Qt6/QML sobre módulos KCM).
+mkdir -p "$CHROOT/tmp/dylanos-src/dylanos-configuration"
+cp -a "$ROOT/apps/dylanos-configuration/." "$CHROOT/tmp/dylanos-src/dylanos-configuration/"
+# El logo oficial se incrusta en el binario (qrc:/assets/logo.png).
+cp -a "$ROOT/branding/logo.png" "$CHROOT/tmp/dylanos-src/dylanos-configuration/assets/logo.png"
+chroot "$CHROOT" cmake -S /tmp/dylanos-src/dylanos-configuration -B /tmp/dylanos-src/dylanos-configuration/build -GNinja -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX=/usr
+chroot "$CHROOT" cmake --build /tmp/dylanos-src/dylanos-configuration/build --parallel 2
+chroot "$CHROOT" cmake --install /tmp/dylanos-src/dylanos-configuration/build
 # DylanOS Store: fork nativo de Discover (libdiscover + UI del prototipo).
 mkdir -p "$CHROOT/tmp/dylanos-src/dylanos-store" "$CHROOT/tmp/dylanos-src/catalog"
 cp -a "$ROOT/apps/dylanos-store/src/." "$CHROOT/tmp/dylanos-src/dylanos-store/"

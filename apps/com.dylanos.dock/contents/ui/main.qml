@@ -41,7 +41,7 @@ PlasmoidItem {
             "applications:org.kde.dolphin.desktop",
             "applications:org.kde.konsole.desktop",
             "applications:org.kde.kate.desktop",
-            "applications:systemsettings.desktop"
+            "applications:org.dylanos.configuration.desktop"
         ]
     }
 

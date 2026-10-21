@@ -1,0 +1,11 @@
+[Desktop Entry]
+Type=Application
+Name=DylanOS Configuration
+GenericName=Configuración del sistema
+Comment=Configura DylanOS Crimson y KDE Plasma
+Exec=dylanos-configuration
+StartupWMClass=org.dylanos.configuration
+Icon=dylanos-configuration
+Terminal=false
+Categories=Settings;
+StartupNotify=true
