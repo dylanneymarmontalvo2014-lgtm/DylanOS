@@ -9,7 +9,7 @@ done
 node -e '
 const [major, minor] = process.versions.node.split(".").map(Number);
 const supported = major >= 24 || (major === 22 && minor >= 12) || (major === 20 && minor >= 19);
-if (!supported) { console.error(`Unsupported Node.js ${process.versions.node}; Vite requires 20.19+, 22.12+, or 24+.`); process.exit(1); }
+if (!supported) { console.error("Unsupported Node.js " + process.versions.node + "; Vite requires 20.19+, 22.12+, or 24+."); process.exit(1); }
 '
 cd "$APP"
 npm ci --no-audit --no-fund

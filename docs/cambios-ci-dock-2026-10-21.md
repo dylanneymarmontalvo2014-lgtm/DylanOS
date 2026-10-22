@@ -9,7 +9,7 @@ Este port se aplica directamente sobre `development` del repositorio canónico `
 | `apps/com.dylanos.activeapp/contents/ui/main.qml` | Aumenta el ancho mínimo del nombre de la aplicación activa de 24 a 192 px para que el título de la barra superior sea legible. | `scripts/tests/test_shell_contract.py` verifica el valor. |
 | `apps/com.dylanos.dock/contents/ui/main.qml` | Añade `applications:code.desktop` a los lanzadores fijados para usar la aplicación oficial instalada. | Prueba de contrato del dock. |
 | `themes/lookandfeel/org.dylanos.crimson/contents/layouts/org.kde.plasma.desktop-layout.js` | Sustituye el ID incorrecto `com.microsoft.VSCode.desktop` por el ID `code.desktop`. | Prueba que ambos layouts usan el ID correcto y rechazan el antiguo. |
-| `scripts/build-installer.sh` | Nuevo build reproducible del frontend: valida Node/npm y la versión compatible con Vite, ejecuta `npm ci` y build y exige `dist/index.html` no vacío. | Ejecución directa en CI y ShellCheck. |
+| `scripts/build-installer.sh` | Nuevo build reproducible del frontend: valida Node/npm y la versión compatible con Vite, ejecuta `npm ci` y build y exige `dist/index.html` no vacío. La salida de error de Node se concatena para mantener ShellCheck limpio. | Ejecución directa en CI y ShellCheck. |
 | `scripts/build.sh` | Construye el frontend antes de entrar al namespace aislado, de modo que `stage.py` copie un `dist` generado. | Prueba de orden; el build ISO queda disponible manualmente. |
 | `scripts/check.sh` | Incluye el helper en ShellCheck y genera el instalador antes de las pruebas de staging. | Workflow de lint. |
 | `.github/workflows/build.yml` | Configura Node 22 con caché npm para el lockfile del instalador. | Workflow manual de build de ISO. |
@@ -26,5 +26,5 @@ El branch canónico instala el paquete oficial `code` desde el repositorio apt d
 
 ## Evidencia de pruebas
 
-- Estado del CI de este commit: pendiente de ejecutar/verificar en GitHub Actions.
+- Run inicial `39718171476` (`f418c7f`): falló en ShellCheck (`SC2016`) antes de ejecutar las suites; la plantilla literal de Node se sustituyó por concatenación de cadenas en `scripts/build-installer.sh`. El rerun con esa corrección está pendiente de verificar.
 - ISO de producción/QEMU: no ejecutados como parte del workflow de lint; el workflow de build de ISO es manual.
