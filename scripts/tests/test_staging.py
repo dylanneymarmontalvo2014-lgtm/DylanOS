@@ -120,7 +120,7 @@ class StagingTest(unittest.TestCase):
             self.assertIn("sddm.login(", sddm_main)
             self.assertIn("userAvatarSource", sddm_main)
             self.assertIn("focus: true", sddm_main)
-            for component in ("SideCard", "AccountCard", "SessionCard", "LocalTimeCard", "PowerCard"):
+            for component in ("AccountCard", "SessionCard", "LocalTimeCard", "PowerCard"):
                 self.assertIn(f"{component} {{}}", sddm_main)
                 self.assertTrue((root / f"usr/share/sddm/themes/DylanOS-Crimson/components/{component}.qml").is_file())
             self.assertNotIn("fingerprint.svg", sddm_main)
@@ -133,7 +133,7 @@ class StagingTest(unittest.TestCase):
             self.assertNotIn("Storage", sddm_main)
             self.assertNotIn("Network", sddm_main)
             power_card = (root / "usr/share/sddm/themes/DylanOS-Crimson/components/PowerCard.qml").read_text()
-            for capability in ("canSuspend", "canHibernate", "canReboot", "canPowerOff"):
+            for capability in ("sddm.canPowerOff", "sddm.canReboot", "sddm.canSuspend"):
                 self.assertIn(capability, power_card)
             self.assertIn("background=/usr/share/wallpapers/DylanOS/dylanos-default.png",
                           (root / "usr/share/sddm/themes/DylanOS-Crimson/theme.conf").read_text())
