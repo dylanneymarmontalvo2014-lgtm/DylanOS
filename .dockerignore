@@ -1,0 +1,10 @@
+.git
+.venv
+**/.venv
+**/__pycache__
+**/*.py[cod]
+**/node_modules
+installer/dylanos-installer/dist
+work
+*.iso
+*.iso.sha256

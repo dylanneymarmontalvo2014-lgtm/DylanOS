@@ -81,7 +81,7 @@ La paleta se mantiene en [`branding/colors/dylanos.conf`](branding/colors/dylano
 
 ## Construir y probar
 
-El proceso de construcción requiere un host Debian o Ubuntu amd64, conexión a Internet y las dependencias indicadas en [`docs/install.md`](docs/install.md). Desde la raíz del repositorio:
+La construcción nativa requiere un host Debian o Ubuntu amd64, conexión a Internet y las dependencias indicadas en [`docs/install.md`](docs/install.md). Como alternativa, puedes usar el builder con Docker descrito abajo. Desde la raíz del repositorio:
 
 ```bash
 make check
@@ -91,6 +91,19 @@ make test-iso
 ```
 
 `make` sin argumentos muestra la ayuda. `make build PROFILE=minimal` construye el perfil base; el perfil predeterminado es `development`. Para continuar un chroot existente usa `make build RESUME=1`. `make qemu-test` ejecuta la prueba de arranque en QEMU sobre una ISO ya creada. También puedes invocar los scripts de `scripts/` directamente.
+
+### Construir con Docker
+
+También puedes usar el entorno de construcción incluido. Requiere Docker Engine y Compose v2 en un host Linux amd64, además de al menos 25 GB libres. El contenedor del builder usa modo privilegiado para permitir los namespaces y montajes del chroot; ejecútalo solo con código de confianza.
+
+```bash
+docker compose build builder
+docker compose run --rm builder make check
+docker compose run --rm builder make build
+docker compose run --rm builder make iso test-iso
+```
+
+Para el perfil base usa `docker compose run --rm builder make build PROFILE=minimal`; para continuar un chroot existente, agrega `RESUME=1`. La ISO queda en la raíz del repositorio. Los archivos generados pueden quedar propiedad de `root`. La prueba gráfica de QEMU se ejecuta en el host, con QEMU instalado, usando `make qemu-test`.
 
 Para la configuración de desarrollo, los criterios de prueba y las precauciones antes de instalar, sigue la [guía de instalación y QA](docs/install.md). Una prueba automatizada correcta no sustituye la validación de arranque e instalación en una máquina virtual.
 
