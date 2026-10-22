@@ -19,6 +19,7 @@
 #include <unistd.h>
 
 #include <algorithm>
+#include <cmath>
 
 static QString expandPath(const QString &p)
 {
@@ -135,11 +136,37 @@ QVariantMap SystemService::sysInfo() const
     if (cpufile.open(QIODevice::ReadOnly | QIODevice::Text)) {
         while (!cpufile.atEnd()) {
             const QString line = QString::fromUtf8(cpufile.readLine());
-            if (line.startsWith(QLatin1String("model name"))) {
-                cpu = line.section(QLatin1Char(':'), 1).trimmed();
-                break;
+            // "model name" (x86) y "Hardware" (ARM de 32 bits): el kernel omite
+            // "model name" cuando la marca del CPUID está vacía (p. ej. QEMU
+            // TCG con -cpu max) y la página quedaba en "—".
+            if (line.startsWith(QLatin1String("model name"))
+                || line.startsWith(QLatin1String("Hardware"))) {
+                const QString model = line.section(QLatin1Char(':'), 1).trimmed();
+                if (!model.isEmpty()) {
+                    cpu = model;
+                    break;
+                }
             }
         }
+    }
+    if (cpu.isEmpty()) {
+        const QString lscpu = exec(QStringLiteral("lscpu"), QStringList(), 5000);
+        for (const QString &line : lscpu.split(QLatin1Char('\n'))) {
+            if (line.startsWith(QLatin1String("Model name:"))) {
+                const QString model = line.mid(line.indexOf(QLatin1Char(':')) + 1).trimmed();
+                if (!model.isEmpty()) {
+                    cpu = model;
+                    break;
+                }
+            }
+        }
+    }
+    if (cpu.isEmpty()) {
+        const long cores = sysconf(_SC_NPROCESSORS_ONLN);
+        if (cores == 1)
+            cpu = QStringLiteral("Procesador de 1 núcleo");
+        else if (cores > 1)
+            cpu = QStringLiteral("Procesador de %1 núcleos").arg(cores);
     }
     QFile memfile(QStringLiteral("/proc/meminfo"));
     qint64 memKb = 0;
@@ -163,7 +190,25 @@ QVariantMap SystemService::sysInfo() const
     info.insert(QStringLiteral("kernel"), QSysInfo::kernelVersion());
     info.insert(QStringLiteral("arch"), QSysInfo::currentCpuArchitecture());
     info.insert(QStringLiteral("cpu"), cpu);
-    info.insert(QStringLiteral("memoryGb"), memKb > 0 ? QString::number(memKb / (1024.0 * 1024.0), 'f', 2) + QStringLiteral(" GB") : QString());
+    // MemTotal recorta la memoria reservada por el firmware: 8 GB físicos se
+    // leen como ~7,6 GiB. La RAM se vende en potencias de dos, así que se
+    // redondea al entero más cercano y se ajusta a la potencia de dos más
+    // próxima cuando queda a menos del 10 % (7,6→8, 15,4→16, 11,6→12).
+    QString memoryGb;
+    if (memKb > 0) {
+        const double gib = memKb / (1024.0 * 1024.0);
+        double shown = std::round(gib);
+        for (double size = 2.0; size <= 128.0; size *= 2.0) {
+            if (std::abs(gib - size) <= size * 0.10) {
+                shown = size;
+                break;
+            }
+        }
+        memoryGb = shown < 1.0
+                      ? QString::number(gib, 'f', 1) + QStringLiteral(" GB")
+                      : QString::number(int(shown)) + QStringLiteral(" GB");
+    }
+    info.insert(QStringLiteral("memoryGb"), memoryGb);
     info.insert(QStringLiteral("device"), product);
     info.insert(QStringLiteral("hostname"), QSysInfo::machineHostName());
     info.insert(QStringLiteral("uptimeHours"), uptimeHours);
