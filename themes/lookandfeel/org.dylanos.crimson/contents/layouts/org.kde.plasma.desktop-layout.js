@@ -83,7 +83,7 @@ tasks.currentConfigGroup = ["General"];
 tasks.writeConfig("launchers", [
     "applications:org.dylanos.explorer.desktop",
     "applications:firefox-esr.desktop",
-    "applications:code.desktop",
+    "applications:com.microsoft.VSCode.desktop",
     "applications:dylanos-app-center.desktop",
     "applications:org.dylanos.store.desktop",
     "applications:org.dylanos.configuration.desktop",
