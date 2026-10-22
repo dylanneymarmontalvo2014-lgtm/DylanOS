@@ -227,8 +227,9 @@ fi
     home_dylan.mkdir(parents=True, exist_ok=True)
     if (dest / "etc/skel").exists():
         shutil.copytree(dest / "etc/skel", home_dylan, dirs_exist_ok=True)
-    for p in [home_dylan] + list(home_dylan.rglob("*")):
-        os.chown(p, 1000, 1000)
+    if os.geteuid() == 0:
+        for p in [home_dylan] + list(home_dylan.rglob("*")):
+            os.chown(p, 1000, 1000)
     xsessions_dir = dest / "usr/share/xsessions"
     if (xsessions_dir / "plasmax11.desktop").exists() and not (xsessions_dir / "plasma.desktop").exists():
         try:
