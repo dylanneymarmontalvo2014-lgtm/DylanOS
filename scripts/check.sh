@@ -27,15 +27,23 @@ if "$PYTHON" -c 'import PySide6, psutil' 2>/dev/null; then
     mkdir -p "$staging/home" "$staging/config" "$staging/data" "$staging/runtime"
     chmod 700 "$staging/runtime"
     for page in welcome files notes dev monitor settings; do
-        HOME="$staging/home" XDG_CONFIG_HOME="$staging/config" XDG_DATA_HOME="$staging/data" XDG_RUNTIME_DIR="$staging/runtime" \
-        QT_QPA_PLATFORM=offscreen QT_QUICK_BACKEND=software \
-        "$PYTHON" apps/workspace/main.py --page "$page" --smoke 2>"$staging/$page.log"
-        if [[ -s "$staging/$page.log" ]]; then cat "$staging/$page.log"; exit 1; fi
+        if ! HOME="$staging/home" XDG_CONFIG_HOME="$staging/config" XDG_DATA_HOME="$staging/data" XDG_RUNTIME_DIR="$staging/runtime" \
+            QT_QPA_PLATFORM=offscreen QT_QUICK_BACKEND=software \
+            "$PYTHON" apps/workspace/main.py --page "$page" --smoke 2>"$staging/$page.log"; then
+            echo "Falló la carga QML de la página $page:" >&2
+            cat "$staging/$page.log" >&2
+            exit 1
+        fi
+        if [[ -s "$staging/$page.log" ]]; then cat "$staging/$page.log" >&2; exit 1; fi
     done
-    HOME="$staging/home" XDG_CONFIG_HOME="$staging/config" XDG_DATA_HOME="$staging/data" XDG_RUNTIME_DIR="$staging/runtime" \
-    QT_QPA_PLATFORM=offscreen QT_QUICK_BACKEND=software \
-    "$PYTHON" apps/workspace/main.py --page settings --appearance light --smoke 2>"$staging/light.log"
-    if [[ -s "$staging/light.log" ]]; then cat "$staging/light.log"; exit 1; fi
+    if ! HOME="$staging/home" XDG_CONFIG_HOME="$staging/config" XDG_DATA_HOME="$staging/data" XDG_RUNTIME_DIR="$staging/runtime" \
+        QT_QPA_PLATFORM=offscreen QT_QUICK_BACKEND=software \
+        "$PYTHON" apps/workspace/main.py --page settings --appearance light --smoke 2>"$staging/light.log"; then
+        echo "Falló la carga QML de la variante clara:" >&2
+        cat "$staging/light.log" >&2
+        exit 1
+    fi
+    if [[ -s "$staging/light.log" ]]; then cat "$staging/light.log" >&2; exit 1; fi
 else
     echo 'PySide6/psutil ausentes: no se ejecutó QA QML. Instala las dependencias para verificar la interfaz.' >&2
     exit 1
