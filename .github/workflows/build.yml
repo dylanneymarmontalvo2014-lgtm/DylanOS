@@ -9,6 +9,11 @@ jobs:
     timeout-minutes: 180
     steps:
       - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+          cache-dependency-path: installer/dylanos-installer/package-lock.json
       - run: sudo apt-get update && sudo apt-get install -y debootstrap gnupg squashfs-tools xorriso grub-pc-bin grub-efi-amd64-bin mtools dosfstools
       - run: bash scripts/build.sh
       - run: bash scripts/iso.sh

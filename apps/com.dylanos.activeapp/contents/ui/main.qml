@@ -11,7 +11,7 @@ PlasmoidItem {
     // sobrara panel; el elidrado es el último recurso, no el primero.
     Layout.fillWidth: true
     Layout.fillHeight: true
-    Layout.minimumWidth: 24
+    Layout.minimumWidth: 192
     Layout.maximumWidth: 4096
     Layout.preferredWidth: Math.min(contentRow.implicitWidth + 16, 4096)
 
