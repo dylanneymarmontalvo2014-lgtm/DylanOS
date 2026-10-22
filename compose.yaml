@@ -1,0 +1,11 @@
+services:
+  builder:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: dylanos-builder:local
+    platform: linux/amd64
+    working_dir: /workspace
+    privileged: true
+    volumes:
+      - .:/workspace
