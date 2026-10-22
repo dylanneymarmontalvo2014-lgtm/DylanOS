@@ -81,10 +81,16 @@ La paleta se mantiene en [`branding/colors/dylanos.conf`](branding/colors/dylano
 
 ## Construir y probar
 
-La construcción nativa requiere un host Debian o Ubuntu amd64, conexión a Internet y las dependencias indicadas en [`docs/install.md`](docs/install.md). Como alternativa, puedes usar el builder con Docker descrito abajo. Desde la raíz del repositorio:
+La construcción nativa requiere un host Debian o Ubuntu amd64 y conexión a Internet. Para preparar el host, desde la raíz del repositorio ejecuta:
 
 ```bash
-make check
+bash init.sh
+```
+
+El script muestra los paquetes y pide confirmación antes de instalarlos y configurar NodeSource; si aceptas, también prepara `.venv`. Si respondes que no, no instala nada. Como alternativa, puedes usar el builder con Docker descrito abajo. Después de preparar las dependencias, ejecuta:
+
+```bash
+make check PYTHON=.venv/bin/python
 make build
 make iso
 make test-iso
