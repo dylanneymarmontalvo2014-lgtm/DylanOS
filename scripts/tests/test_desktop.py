@@ -59,7 +59,7 @@ const pins = panels[1].widgets[0].settings.launchers;
 // Dock inferior: explorador de archivos, Firefox, Visual Studio Code, App
 // Center, DylanOS Store, DylanOS Configuration y Calculadora (en ese orden,
 // sin extras).
-for (const app of ['org.dylanos.explorer.desktop','firefox-esr.desktop','com.microsoft.VSCode.desktop','dylanos-app-center.desktop','org.dylanos.store.desktop','org.dylanos.configuration.desktop','org.dylanos.calculator.desktop'])
+for (const app of ['org.dylanos.explorer.desktop','firefox-esr.desktop','code.desktop','dylanos-app-center.desktop','org.dylanos.store.desktop','org.dylanos.configuration.desktop','org.dylanos.calculator.desktop'])
   assert(pins.includes('applications:' + app));
 assert.equal(pins.length, 7);
 // Sin gridUnit disponible el script no debe fallar (usa la unidad de reserva).
