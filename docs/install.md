@@ -50,11 +50,16 @@ El flujo actual del proyecto usa el instalador incluido en `installer/dylanos-in
 
 ## Validación local del repositorio
 
+Prepara las dependencias con el inicializador; revisa la lista y confirma solo si quieres instalarla:
+
 ```bash
-python3 -m venv .venv
-. .venv/bin/activate
-python -m pip install -r apps/workspace/requirements-dev.txt
-DYLANOS_PYTHON="$PWD/.venv/bin/python" bash scripts/check.sh
+bash init.sh
+```
+
+Si cancelas, no instala paquetes ni configura NodeSource. Al confirmar, también crea o actualiza `.venv` con las dependencias Python de desarrollo. Luego ejecuta las comprobaciones:
+
+```bash
+make check PYTHON=.venv/bin/python
 ```
 
 Este comando valida la base del proyecto con sintaxis, comprobaciones de shell y validaciones de staging/QML según el estado actual del repo.
