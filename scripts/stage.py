@@ -147,9 +147,13 @@ exec /usr/bin/python3 /usr/share/dylanos/installer/native/main.py "$@"
     # DylanOS Configuration sustituye al lanzador del workspace "Ajustes DylanOS"
     # (dylanos --page settings): la entrada obsoleta no debe volver a aparecer.
     remove("/usr/share/applications/org.dylanos.settings.desktop")
+    # "Archivos" siempre es DylanOS Explorer (binario real). La entrada
+    # org.dylanos.files.desktop de builds anteriores abría el workspace en su
+    # página de archivos en lugar del gestor: es un artefacto obsoleto y no
+    # debe volver a aparecer en chroots reutilizados.
+    remove("/usr/share/applications/org.dylanos.files.desktop")
     for key, name, icon, category in [
         ("welcome", "Bienvenido a DylanOS", "distributor-logo-dylanos", "Utility"),
-        ("explorer", "Archivos", "dylanos-explorer", "System;FileTools;FileManager"),
         ("notes", "Notas", "accessories-text-editor", "Utility;TextEditor"),
         ("dev", "Desarrollo DylanOS", "applications-development", "Development"),
         ("monitor", "Monitor DylanOS", "utilities-system-monitor", "System;Monitor"),
@@ -159,6 +163,13 @@ exec /usr/bin/python3 /usr/share/dylanos/installer/native/main.py "$@"
             write("/usr/share/applications/org.dylanos.store.desktop", f"[Desktop Entry]\nType=Application\nName={name}\nComment=Descubre e instala aplicaciones\nExec=dylanos-store\nStartupWMClass=dylanos-store\nIcon={icon}\nTerminal=false\nCategories={category};\nStartupNotify=true\n")
         else:
             write(f"/usr/share/applications/org.dylanos.{key}.desktop", f"[Desktop Entry]\nType=Application\nName={name}\nExec=dylanos --page {key}\nStartupWMClass=org.dylanos.{key}\nIcon={icon}\nTerminal=false\nCategories={category};\nStartupNotify=true\n")
+    # La entrada "Archivos" del menú abre el gestor real, nunca una página del
+    # workspace (el fallback anterior usaba "dylanos --page explorer", una
+    # página que no existe y moría sin abrir nada). Se copia el .desktop
+    # canónico del Explorer: el CMake del build vuelve a instalar el mismo
+    # archivo después del staging (fallback idempotente).
+    copy("apps/dylanos-explorer/assets/org.dylanos.explorer.desktop",
+         "/usr/share/applications/org.dylanos.explorer.desktop")
     # DylanOS Configuration: única aplicación de configuración visible.
     # Fallback idempotente previo al build; CMake instala la canónica después.
     write("/usr/share/applications/org.dylanos.configuration.desktop",
