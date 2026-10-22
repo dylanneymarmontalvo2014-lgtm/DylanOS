@@ -98,8 +98,11 @@ class ExplorerStructureTest(unittest.TestCase):
         # el informe debe ser honesto sobre lo pendiente
         self.assertTrue("Pendiente" in readme or "pendiente" in readme)
 
-    def test_reference_prototype_preserved(self):
-        self.assertTrue((ROOT / "previews/DylanOS explorer/DylanOS Explorer.zip").exists())
+    def test_reference_previews_preserved(self):
+        for name in ("explorer.png", "explorer-home.png", "explorer-dir.png"):
+            preview = ROOT / "previews/DylanOS explorer" / name
+            self.assertTrue(preview.is_file(), name)
+            self.assertGreater(preview.stat().st_size, 0, name)
 
 
 if __name__ == "__main__":
