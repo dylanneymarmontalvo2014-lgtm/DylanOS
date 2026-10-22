@@ -18,3 +18,9 @@ jobs:
       - run: sudo apt-get update && sudo apt-get install -y shellcheck desktop-file-utils libegl1 libopengl0 libxkbcommon0
       - run: pip install -r apps/workspace/requirements-dev.txt
       - run: bash scripts/check.sh
+      - name: Validar configuración de Compose
+        run: docker compose config --quiet
+      - name: Construir imagen Docker
+        run: docker build --tag dylanos-builder:ci .
+      - name: Ejecutar QA dentro del contenedor
+        run: docker run --rm --volume "$PWD:/workspace" --workdir /workspace dylanos-builder:ci make check
