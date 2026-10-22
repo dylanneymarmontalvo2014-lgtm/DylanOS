@@ -4,7 +4,7 @@ Esta guía recoge el proceso de arranque, instalación y validación del sistema
 
 ## Requisitos
 
-- Host Debian/Ubuntu amd64 para construir la ISO.
+- Para construir la ISO de forma nativa: host Debian/Ubuntu amd64. Como alternativa, usa Docker Engine y Compose v2 en un host Linux amd64; el builder requiere modo privilegiado (ver [README](../README.md#construir-con-docker)).
 - Al menos 25 GB de espacio libre para la imagen y el chroot.
 - Acceso a `sudo`.
 - Máquina virtual recomendada con 4 GB de RAM, 2 CPU y disco virtual de 32 GB para pruebas iniciales.
