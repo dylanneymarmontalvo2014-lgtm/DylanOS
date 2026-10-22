@@ -5,6 +5,13 @@ set -Eeuo pipefail
 ROOT="$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd)"
 ASSUME_YES=false
 NODE_KEY_URL="https://deb.nodesource.com/gpgkey/nodesource-repo.gpg.key"
+INIT_TMP_FILES=()
+cleanup_init_tmp_files() {
+    if ((${#INIT_TMP_FILES[@]})); then
+        rm -f -- "${INIT_TMP_FILES[@]}"
+    fi
+}
+trap cleanup_init_tmp_files EXIT
 
 usage() {
     cat <<'HELP'
@@ -34,7 +41,8 @@ if [[ "$(uname -s)" != Linux || ! -r /etc/os-release ]]; then
 fi
 # shellcheck disable=SC1091
 . /etc/os-release
-if ! command -v dpkg >/dev/null 2>&1 || [[ "$(dpkg --print-architecture)" != amd64 ]]; then
+HOST_ARCH="$(uname -m)"
+if [[ "$HOST_ARCH" != x86_64 && "$HOST_ARCH" != amd64 ]]; then
     echo 'DylanOS solo prepara dependencias para Linux amd64.' >&2
     exit 1
 fi
@@ -49,6 +57,12 @@ run_as_root() {
         "$@"
     else
         sudo "$@"
+    fi
+}
+require_root_access() {
+    if (( EUID != 0 )) && ! command -v sudo >/dev/null 2>&1; then
+        echo 'Esta acción necesita root o sudo.' >&2
+        exit 1
     fi
 }
 
@@ -68,7 +82,6 @@ confirm_changes() {
 install_native_dependencies() {
     local venv="${DYLANOS_VENV:-$ROOT/.venv}"
     local arch
-    local key_tmp source_tmp
     local apt_packages=(
         build-essential ca-certificates curl debootstrap desktop-file-utils dosfstools
         gnupg gir1.2-gtk-3.0 gir1.2-gtk-4.0 grub-common grub-efi-amd64-bin
@@ -86,6 +99,10 @@ install_native_dependencies() {
     fi
     if ! command -v apt-get >/dev/null 2>&1; then
         echo 'No se encontró apt-get.' >&2
+        exit 1
+    fi
+    if ! command -v dpkg >/dev/null 2>&1; then
+        echo 'No se encontró dpkg para el modo Debian/Ubuntu.' >&2
         exit 1
     fi
     if (( EUID != 0 )) && ! command -v sudo >/dev/null 2>&1; then
@@ -110,9 +127,10 @@ install_native_dependencies() {
     run_as_root env DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends \
         ca-certificates curl gnupg
 
+    local key_tmp source_tmp
     key_tmp="$(mktemp)"
     source_tmp="$(mktemp)"
-    trap 'rm -f "$key_tmp" "$source_tmp"' EXIT
+    INIT_TMP_FILES+=("$key_tmp" "$source_tmp")
     curl -fsSL "$NODE_KEY_URL" | gpg --dearmor > "$key_tmp"
     run_as_root install -d -m 0755 /etc/apt/keyrings
     run_as_root install -m 0644 "$key_tmp" /etc/apt/keyrings/nodesource.gpg
@@ -149,6 +167,7 @@ docker_install_supported() {
 }
 
 install_docker() {
+    require_root_access
     case "${ID:-} ${ID_LIKE:-}" in
         *arch*|*manjaro*|*endeavouros*)
             command -v pacman >/dev/null 2>&1 || { echo 'No se encontró pacman para instalar Docker.' >&2; exit 1; }
@@ -175,6 +194,7 @@ install_docker() {
 
 start_docker_service() {
     if docker info >/dev/null 2>&1; then return 0; fi
+    require_root_access
     if command -v systemctl >/dev/null 2>&1; then
         run_as_root systemctl enable --now docker
     elif command -v rc-service >/dev/null 2>&1; then
@@ -224,7 +244,7 @@ prepare_docker_builder() {
     if [[ "$missing" == true ]]; then install_docker; fi
     start_docker_service
     if ! docker_compose_available; then
-        echo "Docker Compose v2 no quedó disponible como 'docker compose' ." >&2
+        echo "Docker Compose v2 no quedó disponible con 'docker compose'." >&2
         exit 1
     fi
     run_docker compose build builder
