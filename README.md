@@ -81,13 +81,13 @@ La paleta se mantiene en [`branding/colors/dylanos.conf`](branding/colors/dylano
 
 ## Construir y probar
 
-La construcción nativa requiere un host Debian o Ubuntu amd64 y conexión a Internet. Para preparar el host, desde la raíz del repositorio ejecuta:
+Desde la raíz del repositorio ejecuta `bash init.sh`. Detecta el sistema: en Debian/Ubuntu amd64 instala dependencias nativas y prepara `.venv`; en otras distribuciones Linux usa Docker. Si falta Docker o Compose, intenta instalarlos y arrancar el servicio automáticamente en Arch Linux o Fedora; en otros Linux, Docker debe estar instalado. Antes de instalar paquetes, iniciar el daemon o construir la imagen, muestra lo que hará y pide confirmación. Si respondes que no, no hace cambios.
 
 ```bash
 bash init.sh
 ```
 
-El script muestra los paquetes y pide confirmación antes de instalarlos y configurar NodeSource; si aceptas, también prepara `.venv`. Si respondes que no, no instala nada. Como alternativa, puedes usar el builder con Docker descrito abajo. Después de preparar las dependencias, ejecuta:
+Después de preparar las dependencias nativas en Debian/Ubuntu, ejecuta:
 
 ```bash
 make check PYTHON=.venv/bin/python
@@ -109,7 +109,7 @@ docker compose run --rm builder make build
 docker compose run --rm builder make iso test-iso
 ```
 
-Para el perfil base usa `docker compose run --rm builder make build PROFILE=minimal`; para continuar un chroot existente, agrega `RESUME=1`. La ISO queda en la raíz del repositorio. Los archivos generados pueden quedar propiedad de `root`. La prueba gráfica de QEMU se ejecuta en el host, con QEMU instalado, usando `make qemu-test`.
+Para el perfil base usa `docker compose run --rm builder make build PROFILE=minimal`; para continuar un chroot existente, agrega `RESUME=1`. La ISO queda en la raíz del repositorio. Los archivos generados pueden quedar propiedad de `root`. Si tu usuario no tiene acceso al daemon, antepone `sudo` a los comandos `docker compose`. La prueba gráfica de QEMU se ejecuta en el host, con QEMU instalado, usando `make qemu-test`.
 
 Para la configuración de desarrollo, los criterios de prueba y las precauciones antes de instalar, sigue la [guía de instalación y QA](docs/install.md). Una prueba automatizada correcta no sustituye la validación de arranque e instalación en una máquina virtual.
 
