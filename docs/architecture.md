@@ -67,6 +67,14 @@ Los centros duplicados (systemsettings, kinfocenter, ajustes de otros DE) se ocu
 `#RRGGBBAA` (ese malentendido causó la pantalla negra de la 1.0 beta); en Items hijos,
 `state` sin calificar resuelve a la propiedad integrada `Item.state` — usar `root.state`.
 
+`sysInfo()` lee el hardware con cadena de respaldo: el kernel omite «model name» en
+`/proc/cpuinfo` cuando la marca del CPUID está vacía (p. ej. QEMU TCG con `-cpu max`), así
+que tras «model name»/«Hardware» se prueba `lscpu` («Model name:») y como último recurso
+se muestra «Procesador de N núcleos» (núcleos online). La RAM se muestra redondeada:
+`MemTotal` recorta la memoria que reserva el firmware (8 GB físicos se leen como ~7,6 GiB),
+así que se ajusta a la potencia de dos más próxima si queda a ≤10 % (7,6→8, 15,4→16,
+11,6→12; por debajo de 1 GB se muestra con un decimal).
+
 ## 5. Temas GTK y Qt
 
 - **GTK**: `themes/gtk/DylanOS-Crimson` y `-Light` (GTK3 + GTK4, CSS completo: menús,

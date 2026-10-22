@@ -74,7 +74,12 @@ técnica viva: `docs/architecture.md`. Este archivo es el índice operativo de r
   ctest (`tests/tst_fileoperations.cpp`). Icono de app_id: `org.dylanos.explorer`.
 - `apps/dylanos-configuration/` — **DylanOS Configuration**: 16 páginas + SystemService.
   QA: `dylanos-configuration --page <p> --screenshot out.png --size 1280x800` (offscreen;
-  stderr debe quedar limpio).
+  stderr debe quedar limpio). `sysInfo()`: CPU con cadena de fuentes (/proc/cpuinfo
+  "model name" o "Hardware" → `lscpu` "Model name:" → "Procesador de N núcleos") porque
+  el kernel OMITE "model name" cuando la marca del CPUID está vacía (p. ej. QEMU TCG con
+  `-cpu max`) y la página quedaba en "—"; RAM redondeada: MemTotal recorta la memoria que
+  reserva el firmware, así que se ajusta a la potencia de dos más próxima si queda a
+  ≤10 % (7,6 GiB → "8 GB", 15,4 → 16, 11,6 → 12; nunca "7.60 GB").
 - `apps/archivos/` — prototipo histórico, NO se envía.
 - `branding/` — logo.png (`distributor-logo-dylanos`), colors/, wallpapers/, icons/.
 - `themes/` — look-and-feel `org.dylanos.crimson` (layout de 2 paneles), aurorae (negra),
