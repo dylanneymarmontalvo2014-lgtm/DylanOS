@@ -1,46 +1,33 @@
 # DylanOS Crimson SDDM
 
-## Diagnóstico
+## Compatibilidad del greeter
 
-El greeter de SDDM 0.20 instalado para la prueba está enlazado contra Qt 5. Al
-abrir el tema con `sddm-greeter --test-mode --theme`, Qt registraba
-`Library import requires a version` al cargar `Main.qml` y luego usaba el tema
-embebido de SDDM. La causa eran los imports sin versión de QtQuick,
-QtQuick.Controls y QtQuick.Layouts en `Main.qml` y los componentes QML.
+El greeter de SDDM 0.20 usado al investigar previamente el tema estaba enlazado contra Qt 5. Los imports explícitos de QtQuick/QtQuick.Controls 2.15 permiten evitar el error `Library import requires a version` y son compatibles con Qt 6. El tema conserva `QtVersion=6` en `metadata.desktop` para la imagen DylanOS, basada en Qt 6.
 
-`QtVersion=6` en `metadata.desktop` no era el origen: el greeter sí encontraba
-y cargaba `Main.qml`; el fallo ocurría después, al resolver los imports QML.
+## Composición e información mostrada
 
-## Corrección y compatibilidad
+La composición mantiene los rasgos principales de `previews/DylanOS shell/sddm_preview.png`, idéntica a `previews/pantalla de bloqueo/sddm_preview.png`: fondo y velo oscuro, marca superior, reloj/fecha centrales, tarjetas laterales translúcidas y acceso en la franja inferior. La huella fue sustituida por la identidad del usuario y una entrada de contraseña redondeada, enmascarada y enfocada.
 
-Los imports del tema declaran las versiones de API compatibles con Qt 5
-(QtQuick 2.15 y QtQuick.Controls 2.15). Estas versiones también funcionan con
-Qt 6, por lo que el tema se puede probar con ambos greeters sin depender de
-imports implícitos.
+El perfil usa el `userModel` de SDDM (nombre y rol `icon`); si ese rol no apunta a una imagen, intenta `/var/lib/AccountsService/icons/<nombre-de-usuario>`. Si no se puede cargar la foto se muestra la inicial del usuario seleccionado. No se añade una imagen personal al ISO. El selector de sesión usa `sessionModel`, el reloj/fecha vienen de la hora local del greeter y las acciones de energía consultan las capacidades `sddm.canPowerOff`, `canReboot` y `canSuspend` antes de ejecutar la API SDDM.
 
-## Datos y acceso
+SDDM no proporciona APIs de clima, agenda/eventos, MPRIS, recordatorios, batería/almacenamiento, estado de red ni métricas del sistema. Se eliminaron las tarjetas y sus componentes que exponían valores de muestra (pronóstico, evento, pista musical, telemetría, tareas y atajos); nunca deben presentarse como datos reales. Su lugar lo ocupan tarjetas veraces de usuario/avatar, sesiones detectadas, fecha local y capacidades de energía. Los iconos estáticos de estado de red/batería también se quitaron porque no reflejaban estado real.
 
-El fondo configurado (`/usr/share/wallpapers/DylanOS/dylanos-default.png`) es
-el mismo que el escritorio DylanOS establece como predeterminado. `stage.py`
-instala ese archivo junto con el tema.
+## Pruebas y resultado
 
-El greeter muestra la foto asociada al usuario seleccionado en
-`/var/lib/AccountsService/icons/`; si no existe, muestra su inicial. La fecha y
-la hora se actualizan desde el reloj local. El campo de contraseña está visible
-y enfocado desde el inicio, y conserva el envío mediante `sddm.login`.
-
-Se retiraron el pronóstico, los eventos, la música, recordatorios, atajos y
-métricas con valores de muestra. SDDM no proporciona esas fuentes de datos y el
-greeter no debe presentarlas como información del sistema.
-
-## Prueba
-
-La regresión se comprueba con el greeter real en modo de prueba:
+Pruebas automatizadas del tema:
 
 ```sh
 python3 -m unittest scripts.tests.test_sddm_theme -v
 ```
 
-La prueba abre el tema durante unos segundos y falla si SDDM carga su tema
-embebido o Qt informa que falta una versión de import. El tema también se
-instala en `/usr/share/sddm/themes/DylanOS-Crimson` mediante `scripts/stage.py`.
+Esta suite comprueba contrato de identidad y avatar con inicial de respaldo, contraseña/enfoque, login, APIs de energía, paneles reales y ausencia de antiguas muestras. Si `sddm-greeter` existe, también lanza `sddm-greeter --test-mode --theme <copia>` usando Qt offscreen y rechaza el tema embebido de fallback y errores QML/import.
+
+Validación disponible en la sesión de edición (2026-10-22): los tests estáticos pasaron (2/2); el caso con greeter real se omitió porque `sddm-greeter` no estaba instalado. No se ejecutó `scripts/check.sh` ni la batería global completa.
+
+La comprobación de VM debe usar una ISO real:
+
+```sh
+bash scripts/test_QEMU.sh
+```
+
+En esta sesión no se pudo ejecutar arranque QEMU: faltaba `qemu-system-x86_64`; `bash scripts/test_QEMU.sh --dry-run` se intentó y se detuvo por esa dependencia, por lo que ni siquiera certificó el comando completo. VirtualBox tampoco estaba disponible. No se afirma que la interfaz haya cargado en SDDM ni que la ISO haya arrancado en QEMU/VirtualBox. El smoke test SDDM y el arranque VM deben completarse en el CI/builder o host que disponga de esas herramientas.
