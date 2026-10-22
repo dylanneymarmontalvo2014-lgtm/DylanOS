@@ -72,7 +72,7 @@ install_native_dependencies() {
     local apt_packages=(
         build-essential ca-certificates curl debootstrap desktop-file-utils dosfstools
         gnupg gir1.2-gtk-3.0 gir1.2-gtk-4.0 grub-common grub-efi-amd64-bin
-        grub-pc-bin libdbus-1-3 libegl1 libfontconfig1 libfreetype6 libopengl0
+        grub-pc-bin libdbus-1-3 libegl1 libfontconfig1 libfreetype6 libgl1 libopengl0
         libx11-6 libx11-xcb1 libxcb-cursor0 libxcb-icccm4 libxcb-keysyms1
         libxcb-randr0 libxcb-render-util0 libxcb-shape0 libxcb-xfixes0 libxcb-xkb1
         libxkbcommon0 libxkbcommon-x11-0 make mtools nodejs python3 python3-gi
