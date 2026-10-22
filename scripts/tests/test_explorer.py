@@ -76,7 +76,10 @@ class ExplorerStructureTest(unittest.TestCase):
         self.assertIn('"files": ["dylanos-explorer"]', backend)
         self.assertNotIn('"files": ["dolphin"]', backend)
         stage = (ROOT / "scripts/stage.py").read_text(encoding="utf-8")
-        self.assertIn('"explorer", "Archivos", "dylanos-explorer"', stage)
+        # El menú "Archivos" abre el Explorer real: stage.py copia el .desktop
+        # canónico y elimina la entrada obsoleta que abría el workspace.
+        self.assertIn("apps/dylanos-explorer/assets/org.dylanos.explorer.desktop", stage)
+        self.assertIn('remove("/usr/share/applications/org.dylanos.files.desktop")', stage)
         layout = (ROOT / "themes/lookandfeel/org.dylanos.crimson/contents/layouts/org.kde.plasma.desktop-layout.js").read_text(encoding="utf-8")
         self.assertIn("applications:org.dylanos.explorer.desktop", layout)
         # Un solo explorador: dolphin ya no se envía en el ISO; el Explorer
