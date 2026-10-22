@@ -84,10 +84,13 @@ La paleta se mantiene en [`branding/colors/dylanos.conf`](branding/colors/dylano
 El proceso de construcción requiere un host Debian o Ubuntu amd64, conexión a Internet y las dependencias indicadas en [`docs/install.md`](docs/install.md). Desde la raíz del repositorio:
 
 ```bash
-bash scripts/build.sh
-bash scripts/iso.sh
-bash scripts/test.sh
+make check
+make build
+make iso
+make test-iso
 ```
+
+`make` sin argumentos muestra la ayuda. `make build PROFILE=minimal` construye el perfil base; el perfil predeterminado es `development`. Para continuar un chroot existente usa `make build RESUME=1`. `make qemu-test` ejecuta la prueba de arranque en QEMU sobre una ISO ya creada. También puedes invocar los scripts de `scripts/` directamente.
 
 Para la configuración de desarrollo, los criterios de prueba y las precauciones antes de instalar, sigue la [guía de instalación y QA](docs/install.md). Una prueba automatizada correcta no sustituye la validación de arranque e instalación en una máquina virtual.
 
