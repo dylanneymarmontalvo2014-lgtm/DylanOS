@@ -224,11 +224,11 @@ prepare_docker_builder() {
     if [[ "$missing" == true ]]; then install_docker; fi
     start_docker_service
     if ! docker_compose_available; then
-        echo 'Docker Compose v2 no quedó disponible como `docker compose`.' >&2
+        echo "Docker Compose v2 no quedó disponible como 'docker compose' ." >&2
         exit 1
     fi
     run_docker compose build builder
-    echo 'Builder listo. Usa `docker compose run --rm builder make check` para la QA.'
+    echo "Builder listo. Usa 'docker compose run --rm builder make check' para la QA."
 }
 
 if [[ "$NATIVE" == true ]]; then
