@@ -5,6 +5,8 @@ cd "$ROOT"
 PYTHON="${DYLANOS_PYTHON:-python3}"
 while IFS= read -r script; do bash -n "$script"; done < <(find scripts packages -name '*.sh' -type f)
 shellcheck scripts/build.sh scripts/build-installer.sh scripts/iso.sh scripts/test.sh scripts/check.sh scripts/lib/packages.sh packages/development/setup-repos.sh
+make --no-print-directory --dry-run help installer check build iso test-iso qemu-test >/dev/null
+make --no-print-directory --dry-run build PROFILE=minimal RESUME=1 >/dev/null
 bash scripts/build-installer.sh
 bash scripts/tests/test_packages.sh
 # Cada módulo de unittest corre en su propio proceso: las suites QML
