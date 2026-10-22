@@ -3,14 +3,10 @@ import QtQuick.Controls 2.15
 import "components"
 
 /*
- * DylanOS Crimson — pantalla de inicio de sesión.
- * Replica previews/DylanOS shell/sddm_preview.png: barra superior con logo,
- * indicadores y reloj; bloque central con candado "Bloqueado", reloj metálico
- * y fecha; tarjetas laterales; acceso con avatar y contraseña abajo.
- *
- * Autenticación real mediante sddm.login con usuario y sesión reales. El clima,
- * la música y el sistema son contenido de referencia: un greeter no tiene
- * acceso a esa información; el calendario y los relojes son reales.
+ * DylanOS Crimson conserva la composición del preview. Solo muestra datos
+ * reales que ofrece el greeter: usuario/avatar, sesiones, reloj y capacidades
+ * de energía. SDDM no expone clima, eventos, media, recordatorios, red,
+ * batería ni telemetría; no se inventan esos indicadores.
  */
 Rectangle {
     id: root
@@ -102,39 +98,12 @@ Rectangle {
             }
         }
 
-        Row {
+        Text {
+            id: topClock
             anchors.right: parent.right; anchors.rightMargin: 32
             anchors.verticalCenter: parent.verticalCenter
-            spacing: 18
-            Image { source: "images/network-wireless.svg"; width: 18; height: 18; mipmap: true; anchors.verticalCenter: parent.verticalCenter }
-            Image { source: "images/bluetooth.svg"; width: 18; height: 18; mipmap: true; anchors.verticalCenter: parent.verticalCenter }
-            Image { source: "images/video-display.svg"; width: 18; height: 18; mipmap: true; anchors.verticalCenter: parent.verticalCenter }
-            // Indicador de batería como en el preview
-            Row {
-                spacing: 6
-                anchors.verticalCenter: parent.verticalCenter
-                Rectangle {
-                    width: 26; height: 13; radius: 3; color: "transparent"
-                    border.color: root.cWhite; border.width: 1
-                    anchors.verticalCenter: parent.verticalCenter
-                    Rectangle {
-                        width: parent.width - 4; height: parent.height - 4
-                        anchors.centerIn: parent; radius: 1.5; color: root.cWhite
-                    }
-                    Rectangle {
-                        width: 2; height: 5; radius: 1; color: root.cWhite
-                        anchors.left: parent.right; anchors.leftMargin: 1
-                        anchors.verticalCenter: parent.verticalCenter
-                    }
-                }
-                Text { text: "100%"; font.pixelSize: 13; color: root.cWhite; anchors.verticalCenter: parent.verticalCenter }
-            }
-            Text {
-                id: topClock
-                anchors.verticalCenter: parent.verticalCenter
-                font.pixelSize: 14; font.weight: Font.DemiBold; color: root.cWhite
-                text: root.getHour12() + ":" + Qt.formatDateTime(new Date(), "mm") + " " + root.getAmPm()
-            }
+            font.pixelSize: 14; font.weight: Font.DemiBold; color: root.cWhite
+            text: root.getHour12() + ":" + Qt.formatDateTime(new Date(), "mm") + " " + root.getAmPm()
         }
     }
 
@@ -413,33 +382,30 @@ Rectangle {
             password.forceActiveFocus()
         }
     }
-    // ============================================================ columna izquierda
+    // Paneles laterales conservan la composición del preview, pero solo
+    // presentan información real disponible al greeter.
     Column {
         id: leftRail
         anchors.left: parent.left; anchors.leftMargin: 36
-        anchors.top: parent.top; anchors.topMargin: Math.max(64, 96 * root.railScale)
+        anchors.top: parent.top; anchors.topMargin: Math.max(96, 170 * root.railScale)
         width: 308; spacing: 14
         scale: root.railScale
         transformOrigin: Item.TopLeft
 
-        WeatherCard {}
-        EventCard {}
-        MediaCard {}
-        SystemCard {}
+        AccountCard {}
+        SessionCard {}
     }
 
-    // ============================================================ columna derecha
     Column {
         id: rightRail
         anchors.right: parent.right; anchors.rightMargin: 36
-        anchors.top: parent.top; anchors.topMargin: Math.max(64, 96 * root.railScale)
+        anchors.top: parent.top; anchors.topMargin: Math.max(96, 170 * root.railScale)
         width: 308; spacing: 14
         scale: root.railScale
         transformOrigin: Item.TopRight
 
-        CalendarCard {}
-        RemindersCard {}
-        ShortcutsCard {}
+        LocalTimeCard {}
+        PowerCard {}
     }
 
     // Acciones de energía reales (sddm.powerOff/reboot/suspend) — abajo a la
@@ -492,7 +458,7 @@ Rectangle {
         }
     }
 
-    // Cámara / acción rápida (como en el preview) — abajo a la derecha.
+    // Acceso rápido para devolver el foco al campo de contraseña.
     Rectangle {
         id: camButton
         anchors.right: parent.right; anchors.rightMargin: 28
@@ -502,7 +468,7 @@ Rectangle {
         border.color: Qt.rgba(1, 1, 1, 0.08); border.width: 1
         Accessible.name: "Enfocar contraseña"
         Accessible.role: Accessible.Button
-        Image { source: "images/camera.svg"; width: 22; height: 22; anchors.centerIn: parent }
+        Image { source: "images/lock.svg"; width: 20; height: 20; anchors.centerIn: parent }
         MouseArea {
             id: camArea; anchors.fill: parent; hoverEnabled: true
             onClicked: password.forceActiveFocus()
