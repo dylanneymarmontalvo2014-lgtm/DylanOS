@@ -15,9 +15,12 @@ class ShellContractTest(unittest.TestCase):
         dock = (ROOT / "apps/com.dylanos.dock/contents/ui/main.qml").read_text(encoding="utf-8")
         packages = (ROOT / "packages/development/packages.list").read_text(encoding="utf-8").splitlines()
         setup = (ROOT / "packages/development/setup-repos.sh").read_text(encoding="utf-8")
-        self.assertIn("applications:code.desktop", layout)
-        self.assertIn("applications:code.desktop", dock)
-        self.assertNotIn("applications:com.microsoft.VSCode.desktop", layout + dock)
+        # El paquete `code` de Microsoft instala com.microsoft.VSCode.desktop
+        # (Icon=vscode); NO existe ningún code.desktop y fijarlo deja el icono
+        # del dock roto (pin sin resolver).
+        self.assertIn("applications:com.microsoft.VSCode.desktop", layout)
+        self.assertIn("applications:com.microsoft.VSCode.desktop", dock)
+        self.assertNotIn("applications:code.desktop", layout + dock)
         self.assertIn("code", [line.strip() for line in packages if line.strip() and not line.lstrip().startswith("#")])
         self.assertIn("packages.microsoft.com/repos/vscode", setup)
 

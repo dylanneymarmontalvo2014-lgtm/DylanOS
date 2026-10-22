@@ -132,7 +132,9 @@ DYLANOS_PYTHON=/tmp/opencode/venv/bin/python bash scripts/check.sh
 
 - Visual Studio Code: paquete `code` del repo oficial `packages.microsoft.com/repos/vscode`
   (`packages/development/setup-repos.sh`, idempotente, borra restos de VSCodium). El
-  `.desktop` real es `com.microsoft.VSCode.desktop` (Icon=vscode) — es el que fija el dock.
+  `.desktop` que instala ese paquete es `com.microsoft.VSCode.desktop` (Icon=vscode) y es
+  el ÚNICO id válido para fijar en el dock; NO existe `code.desktop` (el nombre del
+  paquete NO es el nombre del .desktop) y fijarlo deja el icono del dock roto.
   Licencia del binario: la de Microsoft; documentada en `docs/licenses/assets.md`.
 - build.sh purga al final: `-dev` exclusivos, `dolphin`, `dolphin-plugins`, `kcalc`,
   `codium` (chroots reutilizados). KF5/KWallet quedan según dependencias reales.
