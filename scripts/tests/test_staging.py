@@ -176,6 +176,16 @@ class StagingTest(unittest.TestCase):
             self.assertIn("StartupWMClass=dylanos-store", store)
             self.assertIn("Icon=dylanos-store", store)
             self.assertNotIn("plasma-discover", store)
+            # "Archivos" del menú es DylanOS Explorer (binario real), no una
+            # página del workspace: la entrada staged es la canónica de la app.
+            explorer = (root / "usr/share/applications/org.dylanos.explorer.desktop").read_text()
+            self.assertIn("Exec=dylanos-explorer %U", explorer)
+            self.assertIn("StartupWMClass=dylanos-explorer", explorer)
+            self.assertNotIn("dylanos --page", explorer)
+            # Las carpetas se abren con el Explorer: dolphin no se envía.
+            mimeapps = (root / "etc/skel/.config/mimeapps.list").read_text()
+            self.assertIn("inode/directory=org.dylanos.explorer.desktop;", mimeapps)
+            self.assertNotIn("dolphin", mimeapps)
             # Re-staging sobre un root existente: debe limpiar artefactos
             # obsoletos (autostart del instalador y restos de Discover) sin
             # sobrescribir la configuración existente del usuario.
@@ -184,6 +194,8 @@ class StagingTest(unittest.TestCase):
             stale_autostart.write_text("[Desktop Entry]\nType=Application\n")
             stale_discover = root / "usr/share/applications/org.kde.discover.desktop"
             stale_discover.write_text("[Desktop Entry]\nType=Application\n")
+            stale_files = root / "usr/share/applications/org.dylanos.files.desktop"
+            stale_files.write_text("[Desktop Entry]\nType=Application\nName=Archivos\nExec=dylanos --page files\n")
             stale_notifier = root / "etc/xdg/autostart/org.kde.discover.notifier.desktop"
             stale_notifier.parent.mkdir(parents=True, exist_ok=True)
             stale_notifier.write_text("[Desktop Entry]\nType=Application\n")
@@ -195,6 +207,8 @@ class StagingTest(unittest.TestCase):
                              "stage() debe borrar los restos de plasma-discover")
             self.assertFalse(stale_notifier.exists(),
                              "stage() debe borrar el autostart obsoleto del notifier de Discover")
+            self.assertFalse(stale_files.exists(),
+                             "stage() debe borrar la entrada obsoleta org.dylanos.files.desktop (Archivos del workspace)")
             self.assertEqual((root / "etc/skel/.config/kdeglobals").read_text(), original)
             self.assertEqual(len(list((root / "usr/share/applications").glob("org.dylanos.*.desktop"))), 8)
             self.assertFalse(list(root.rglob("*.otf")))

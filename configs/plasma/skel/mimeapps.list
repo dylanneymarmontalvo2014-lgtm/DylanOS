@@ -2,7 +2,7 @@
 text/html=firefox-esr.desktop;
 x-scheme-handler/http=firefox-esr.desktop;
 x-scheme-handler/https=firefox-esr.desktop;
-inode/directory=org.kde.dolphin.desktop;
+inode/directory=org.dylanos.explorer.desktop;
 text/plain=org.kde.kate.desktop;
 application/pdf=org.kde.okular.desktop;
 image/png=org.kde.gwenview.desktop;

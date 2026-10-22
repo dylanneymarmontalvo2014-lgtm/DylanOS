@@ -16,6 +16,11 @@ if findmnt -rn -o TARGET | grep -q "^$CHROOT/"; then
     echo 'El chroot tiene montajes activos. Desmóntalos antes de generar la ISO.' >&2
     exit 1
 fi
+# El payload DylanOS del chroot debe reflejar el repositorio ACTUAL. Los
+# rebuilds manuales (p. ej. recompilar una sola app) dejan el staging
+# desactualizado y el ISO hereda entradas .desktop y pines del dock viejos;
+# stage.py es idempotente, así que re-ejecutarlo aquí lo garantiza.
+python3 "$ROOT/scripts/stage.py" "$CHROOT"
 mkdir -p "$IMAGE/live" "$IMAGE/boot/grub"
 # Keep /boot in the filesystem: the installed system needs its own kernel.
 # Excluir solo el CONTENIDO de los dirs virtuales: el root fusionado necesita

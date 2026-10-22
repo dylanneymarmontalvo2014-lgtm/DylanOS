@@ -46,6 +46,12 @@ cancelación, papelera (estándar freedesktop con `.trashinfo`), restaurar, vaci
 protección de rutas del sistema. El paquete `dolphin` no se envía: `build.sh` lo purga
 (entra como dependencia del metapaquete `kde-plasma-desktop`).
 
+El acceso "Archivos" del menú ejecuta siempre el binario real (`dylanos-explorer %U`):
+`scripts/stage.py` elimina la entrada obsoleta `org.dylanos.files.desktop` (abría el
+workspace en su página de archivos), copia el `.desktop` canónico de la app como
+fallback previo al build y asocia `inode/directory` al Explorer en el `mimeapps.list`
+del skel (el valor anterior apuntaba a dolphin, que no se envía).
+
 QA: `dylanos-explorer --screenshot out.png --size 1384x805 [--path dir]` (offscreen en el
 chroot, con DBus); tests C++ reales en `tests/tst_fileoperations.cpp` vía ctest.
 
@@ -98,6 +104,9 @@ módulo, `compileall`, staging con `desktop-file-validate` y la carga QML offscr
 6 páginas del workspace. QA adicionales: capturas offscreen de las 16 páginas de
 Configuration (`--screenshot`), Test Greeter de SDDM con captura opt-in
 (`theme.conf: screenshot=<ruta>`) y métricas de fidelidad en `artifacts/sddm-qa/`.
+`iso.sh` re-ejecuta `scripts/stage.py` sobre el chroot antes de crear el squashfs, de
+modo que la ISO refleje siempre el estado vigente del repositorio (los rebuilds manuales
+de una sola app dejan el staging anterior desactualizado).
 
 ## 8. Diagnóstico rápido
 

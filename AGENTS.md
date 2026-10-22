@@ -9,7 +9,11 @@ técnica viva: `docs/architecture.md`. Este archivo es el índice operativo de r
 
 - **DylanOS Explorer es el ÚNICO explorador de archivos** (`org.dylanos.explorer`): motor
   KIO real; el paquete `dolphin` no se envía (build.sh lo purga). Spotlight y workspace
-  abren carpetas con `dylanos-explorer`, nunca con dolphin.
+  abren carpetas con `dylanos-explorer`, nunca con dolphin. El acceso "Archivos" del menú
+  SIEMPRE ejecuta el binario real: stage.py borra `org.dylanos.files.desktop` (artefacto
+  viejo que abría el workspace) y copia el `.desktop` canónico de la app; `dylanos --page
+  explorer` NO existe (el workspace solo acepta welcome/files/notes/dev/monitor/settings).
+  El `mimeapps.list` del skel asocia `inode/directory` al Explorer.
 - **DylanOS Configuration es el ÚNICO centro de configuración** (`dylanos-configuration`,
   16 páginas + `SystemService` con kcmshell6/nmcli/pactl/bluetoothctl/plasma-apply-*).
   Los demás centros (systemsettings, kinfocenter, otros DE) se ocultan con NoDisplay desde
@@ -19,7 +23,8 @@ técnica viva: `docs/architecture.md`. Este archivo es el índice operativo de r
 - **NUNCA mostrar "Discover/plasma-discover" al usuario**: la tienda es `dylanos-store`.
 - **KWallet se mantiene** (plasma-nm guarda credenciales Wi-Fi con él).
 - stage.py SIEMPRE hace staging a un root explícito y es idempotente (borra artefactos
-  obsoletos: discover, dolphin, kcalc, org.dylanos.settings.desktop…).
+  obsoletos: discover, dolphin, kcalc, org.dylanos.settings.desktop,
+  org.dylanos.files.desktop…).
 - `previews/` y docs históricos (`docs/*-2026-*.md`, `docs/superpowers/`, `.superpowers/`)
   son registros: no reescribirlos. `.claude/worktrees/` es un worktree viejo: no editar.
 - Comentarios y UI en español. Sin simulaciones: cada control ejecuta la acción real.
@@ -127,6 +132,9 @@ DYLANOS_PYTHON=/tmp/opencode/venv/bin/python bash scripts/check.sh
 - build.sh purga al final: `-dev` exclusivos, `dolphin`, `dolphin-plugins`, `kcalc`,
   `codium` (chroots reutilizados). KF5/KWallet quedan según dependencias reales.
 - ISO: `bash scripts/iso.sh` tras build.sh; manifest en `work/packages.manifest`.
+  `iso.sh` re-ejecuta `scripts/stage.py` sobre el chroot ANTES del squashfs: los rebuilds
+  manuales dejan el staging desactualizado y el ISO heredaría entradas `.desktop` y pines
+  del dock viejos (así se coló un pin roto de VS Code en el ISO del 2026-10-21).
 
 ## Convenciones
 
