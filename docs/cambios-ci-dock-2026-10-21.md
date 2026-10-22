@@ -17,6 +17,7 @@ Este port se aplica directamente sobre `development` del repositorio canónico `
 | `scripts/stage.py` | Ejecuta `chown` del home live solo como root; mantiene la asignación UID/GID 1000 en builds reales y permite staging rootless en CI. | Suite de staging del workflow. |
 | `scripts/tests/test_explorer.py` | Reemplaza una aserción obsoleta de ZIP no versionado por verificaciones de los tres PNG de referencia que sí están en el repositorio. | Suite de Explorer. |
 | `scripts/tests/test_shell_contract.py` | Añade regresiones para el ancho del título, el ID de VS Code oficial/configuración del repo y la secuencia build-antes-de-stage. | Nueva suite unittest. |
+| `scripts/tests/test_desktop.py` | Actualiza el contrato de pines del dock para exigir `code.desktop` en vez del antiguo ID de VS Code. | `test_desktop` ejecuta el layout con Node en CI. |
 | `packages/build/packages.list` | Añade la lista versionada de dependencias de compilación para la tienda nativa, requerida por `test_store.py` y el build. | Suite de store y build del sistema. |
 | `docs/cambios-ci-dock-2026-10-21.md` | Registra por archivo cada cambio, su intención y evidencia de validación para mantener trazabilidad. | Se completará con los resultados concretos de Actions. |
 
@@ -26,5 +27,6 @@ El branch canónico instala el paquete oficial `code` desde el repositorio apt d
 
 ## Evidencia de pruebas
 
-- Run inicial `39718171476` (`f418c7f`): falló en ShellCheck (`SC2016`) antes de ejecutar las suites; la plantilla literal de Node se sustituyó por concatenación de cadenas en `scripts/build-installer.sh`. El rerun con esa corrección está pendiente de verificar.
+- Run `39718171476` (`f418c7f`): falló en ShellCheck (`SC2016`) antes de ejecutar las suites; la plantilla literal de Node se sustituyó por concatenación de cadenas en `scripts/build-installer.sh`.
+- Run `39718356615` (`08e37ad`): pasó ShellCheck, el frontend del instalador compiló y pasaron 40 pruebas de paquetes, pero `test_desktop` aún esperaba el ID antiguo de VS Code. Se corrigió ese contrato en `scripts/tests/test_desktop.py`; la nueva ejecución está pendiente de verificar.
 - ISO de producción/QEMU: no ejecutados como parte del workflow de lint; el workflow de build de ISO es manual.
