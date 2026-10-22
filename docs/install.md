@@ -48,18 +48,24 @@ El flujo actual del proyecto usa el instalador incluido en `installer/dylanos-in
 7. Instalar en un disco virtual y reiniciar sin la ISO.
 8. Repetir prueba de audio, Wi‑Fi, suspensión y pantalla en hardware real.
 
-## Validación local del repositorio
+## Preparar dependencias y validar
 
-Prepara las dependencias con el inicializador; revisa la lista y confirma solo si quieres instalarla:
+Desde la raíz del repo, ejecuta `bash init.sh`. En Debian/Ubuntu prepara las dependencias nativas; en otras distribuciones usa Docker y, si hace falta, intenta instalarlo automáticamente en Arch/Fedora. Revisa el plan y confirma solo si quieres aplicarlo.
 
 ```bash
 bash init.sh
 ```
 
-Si cancelas, no instala paquetes ni configura NodeSource. Al confirmar, también crea o actualiza `.venv` con las dependencias Python de desarrollo. Luego ejecuta las comprobaciones:
+En Debian/Ubuntu, corre las comprobaciones con el entorno Python creado por el inicializador:
 
 ```bash
 make check PYTHON=.venv/bin/python
+```
+
+En otras distribuciones Linux, ejecuta la QA dentro del builder:
+
+```bash
+docker compose run --rm builder make check
 ```
 
 Este comando valida la base del proyecto con sintaxis, comprobaciones de shell y validaciones de staging/QML según el estado actual del repo.
