@@ -28,5 +28,7 @@ El branch canónico instala el paquete oficial `code` desde el repositorio apt d
 ## Evidencia de pruebas
 
 - Run `39718171476` (`f418c7f`): falló en ShellCheck (`SC2016`) antes de ejecutar las suites; la plantilla literal de Node se sustituyó por concatenación de cadenas en `scripts/build-installer.sh`.
-- Run `39718356615` (`08e37ad`): pasó ShellCheck, el frontend del instalador compiló y pasaron 40 pruebas de paquetes, pero `test_desktop` aún esperaba el ID antiguo de VS Code. Se corrigió ese contrato en `scripts/tests/test_desktop.py`; la nueva ejecución está pendiente de verificar.
+- Run `39718356615` (`08e37ad`): pasó ShellCheck, el frontend del instalador compiló y pasaron 40 pruebas de paquetes, pero `test_desktop` aún esperaba el ID antiguo de VS Code. Se corrigió ese contrato en `scripts/tests/test_desktop.py`.
+- Run `39718554686` (`7aedb96`): **success**. El frontend del instalador compiló y produjo `dist/index.html`; pasaron las 40 comprobaciones de paquetes y las 17 suites unittest (102 tests descubiertos, 99 aprobados y 3 omitidos); `compileall`, el staging, `desktop-file-validate` y los smoke tests QML finalizaron con `OK`. Las omisiones fueron los dos subcasos GTK 3/4 porque no está disponible GTK introspection y la ejecución real de `sddm-greeter` porque no está instalado en el runner. El build completo del ISO y un arranque QEMU no forman parte de este workflow y no se ejecutaron.
+- El runner emitió una advertencia preexistente de QML `MouseArea` en `apps/calculator/qml/Main.qml:128`; sus pruebas correspondientes aprobaron. No se cambió ese archivo porque no pertenece a las correcciones solicitadas.
 - ISO de producción/QEMU: no ejecutados como parte del workflow de lint; el workflow de build de ISO es manual.
