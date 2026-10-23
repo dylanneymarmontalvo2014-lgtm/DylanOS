@@ -11,7 +11,7 @@ for (var i = 0; i < allDesktops.length; i++) {
 // datos de memoria/tiempo activo leídos del sistema local. Se añade solo al
 // layout de perfiles nuevos, sin tocar los paneles ni cambiar el wallpaper.
 for (var i = 0; i < allDesktops.length; i++) {
-    allDesktops[i].addWidget("com.dylanos.dashboard", 48, 96, 500, 300);
+    allDesktops[i].addWidget("com.dylanos.dashboard", 48, 96, 500, 360);
 }
 
 // Barra superior tipo barra de menú (estilo macOS Tahoe): logotipo, nombre de
