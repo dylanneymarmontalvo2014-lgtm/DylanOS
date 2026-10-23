@@ -1,0 +1,7 @@
+MANTENEDORES DE DYLANOS
+
+Cristopher Borjas — cuenta de GitHub: CRISTOP-bot
+
+Cristopher Borjas es un mantenedor humano de DylanOS y participa en el desarrollo usando la cuenta CRISTOP-bot. La cuenta no es un bot automatizado; el nombre de usuario no describe su naturaleza.
+
+Las decisiones y contribuciones hechas desde esa cuenta corresponden a su mantenedor humano. Los workflows y otras automatizaciones del repositorio, cuando se ejecutan, son procesos separados y no convierten la cuenta en un bot.
