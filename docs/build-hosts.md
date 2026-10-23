@@ -38,3 +38,10 @@ La detección usa campos exactos `ID` y `ID_LIKE` de `/etc/os-release`, no coinc
 bash scripts/test-build-host.sh
 bash -n init.sh scripts/build-host.sh scripts/test-build-host.sh
 ```
+
+
+## Integración del builder Docker
+
+`Dockerfile` copia `scripts/build-host.sh` dentro de la imagen antes de ejecutar `init.sh`. El inicializador importa ese módulo para detectar el host y decidir la ruta de dependencias; si falta la copia, la construcción del builder falla con `detect_host_family: command not found`. Esta dependencia entre archivos debe mantenerse al editar la imagen.
+
+En el CI del 23 de octubre de 2026, la construcción Docker falló porque el `Dockerfile` aún no copiaba dicho archivo. La corrección propuesta agrega `COPY scripts/build-host.sh ./scripts/build-host.sh`; queda pendiente confirmar la nueva construcción de la imagen y la QA dentro del contenedor.
