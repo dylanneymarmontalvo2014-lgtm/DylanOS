@@ -1,0 +1,22 @@
+{
+    "KPackageStructure": "Plasma/Applet",
+    "KPlugin": {
+        "Authors": [
+            {
+                "Name": "DylanOS Team"
+            }
+        ],
+        "Category": "System Information",
+        "Description": "Calendario y estado del sistema con información local en tiempo real",
+        "Description[es]": "Calendario y estado del sistema con información local en tiempo real",
+        "Icon": "view-calendar",
+        "Id": "com.dylanos.dashboard",
+        "Name": "DylanOS Dashboard",
+        "Name[es]": "Panel de escritorio DylanOS",
+        "ServiceTypes": [
+            "Plasma/Applet"
+        ],
+        "Version": "0.1.0"
+    },
+    "X-Plasma-API-Minimum-Version": "6.0"
+}

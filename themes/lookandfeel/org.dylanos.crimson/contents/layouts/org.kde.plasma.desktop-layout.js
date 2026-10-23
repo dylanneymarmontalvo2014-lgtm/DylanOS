@@ -7,6 +7,13 @@ for (var i = 0; i < allDesktops.length; i++) {
     desktop.writeConfig("Image", "file:///usr/share/wallpapers/DylanOS/dylanos-default.png");
 }
 
+// Dashboard inicial sobre el escritorio: calendario interactivo, reloj y
+// datos de memoria/tiempo activo leídos del sistema local. Se añade solo al
+// layout de perfiles nuevos, sin tocar los paneles ni cambiar el wallpaper.
+for (var i = 0; i < allDesktops.length; i++) {
+    allDesktops[i].addWidget("com.dylanos.dashboard", 48, 96, 500, 300);
+}
+
 // Barra superior tipo barra de menú (estilo macOS Tahoe): logotipo, nombre de
 // la aplicación activa y sus menús de acciones (Archivo, Editar, Ver, ...) a
 // la izquierda; el área de estado y el reloj pegados al borde derecho.

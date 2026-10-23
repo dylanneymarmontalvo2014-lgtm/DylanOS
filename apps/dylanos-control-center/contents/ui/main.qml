@@ -2,6 +2,7 @@ import QtQuick
 import QtQuick.Layouts
 import org.kde.plasma.plasmoid
 import org.kde.kirigami as Kirigami
+import QtQuick.Controls as QQC2
 import org.kde.notificationmanager as NotificationManager
 
 /*
@@ -15,7 +16,7 @@ import org.kde.notificationmanager as NotificationManager
 PlasmoidItem {
     id: root
 
-    readonly property int unreadCount: notifModel.count
+    readonly property int notificationCount: notifModel.count
 
     NotificationManager.Notifications {
         id: notifModel
@@ -59,12 +60,18 @@ PlasmoidItem {
             }
 
             Rectangle {
-                visible: root.unreadCount > 0
-                width: 9; height: 9; radius: 4.5
+                visible: root.notificationCount > 0
+                width: Math.max(16, countLabel.implicitWidth + 8); height: 16; radius: 8
                 color: "#FFFFFF"
-                anchors.top: parent.top; anchors.topMargin: -1
-                anchors.right: parent.right; anchors.rightMargin: -1
+                anchors.top: parent.top; anchors.topMargin: -5
+                anchors.right: parent.right; anchors.rightMargin: -7
                 border.color: "#DC143C"; border.width: 1
+                QQC2.Label {
+                    id: countLabel
+                    anchors.centerIn: parent
+                    text: root.notificationCount > 99 ? "99+" : root.notificationCount
+                    color: "#DC143C"; font.pixelSize: 9; font.bold: true
+                }
             }
         }
 
@@ -73,6 +80,8 @@ PlasmoidItem {
             anchors.fill: parent
             hoverEnabled: true
             cursorShape: Qt.PointingHandCursor
+            Accessible.role: Accessible.Button
+            Accessible.name: root.notificationCount > 0 ? "Centro de control, " + root.notificationCount + " notificaciones" : "Abrir centro de control"
             onClicked: root.expanded = !root.expanded
         }
     }
