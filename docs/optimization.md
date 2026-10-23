@@ -1,0 +1,99 @@
+# Optimización de DylanOS e imagen ISO
+
+## Objetivo y principio de seguridad
+
+Reducir software que no aporta a la experiencia seleccionada sin eliminar
+aplicaciones solicitadas, servicios necesarios, firmware, funciones del
+instalador o componentes que aún tengan consumidores. La reducción debe ser
+medible y pasar QA; un paquete no se quita solo por parecer grande o poco usado.
+
+La raíz del sistema objetivo sigue siendo Debian 13 amd64. La compatibilidad de
+otros sistemas anfitriones para compilar se gestiona aparte en
+[build-hosts.md](build-hosts.md) y no cambia los paquetes incluidos en la ISO.
+
+## Limpieza que ya realiza la construcción
+
+`packages/default/packages.list` define la base funcional y las aplicaciones
+predeterminadas. `scripts/build.sh`:
+
+1. instala los paquetes de las listas por perfil;
+2. compila e instala las aplicaciones propias;
+3. purga las dependencias de desarrollo usadas solo para compilar la tienda;
+4. elimina Dolphin, `dolphin-plugins` y KCalc, ya que DylanOS Explorer y la
+   calculadora de DylanOS los sustituyen;
+5. ejecuta `apt-get autoremove --purge` para retirar dependencias marcadas
+   automáticamente que ya no necesite ningún paquete;
+6. limpia la caché de APT antes de crear la ISO.
+
+`--no-install-recommends` evita incluir paquetes recomendados que no estén
+solicitados explícitamente o que no sean dependencias obligatorias. Los paquetes
+enumerados en `packages/default/packages.list` continúan siendo explícitos y no
+se eliminan por autoremove. El perfil `development` se conserva intacto; incluye
+toolchain y herramientas para quien las necesita.
+
+## Funciones que se conservan deliberadamente
+
+No se eliminan del perfil base el navegador, Konsole, herramientas de sistema,
+red, sonido, Bluetooth, energía, utilidades de accesibilidad, firmware, runtime
+de la tienda, componentes KDE/KIO usados por el explorador ni las herramientas
+del instalador. Antes de proponer quitar cualquiera de esos paquetes hay que
+identificar dependencias y probar las funciones afectadas en una ISO real.
+
+Tampoco se cambia el fondo de pantalla ni el logo/identidad de DylanOS como
+parte de esta optimización.
+
+## Métricas reales del dashboard
+
+El panel de escritorio muestra hora, calendario, RAM, CPU, espacio usado/total
+del filesystem raíz y uptime con lecturas locales (`/proc` y `df`). No consulta
+servicios remotos ni inventa valores. El widget pasa a 500 × 360 para acomodar
+las métricas sin solaparlas. El primer render después de iniciar puede mostrar
+la CPU como «leyendo…» hasta obtener dos muestras del contador.
+
+## Comandos de validación
+
+```bash
+bash scripts/tests/test_packages.sh
+python3 -m unittest scripts.tests.test_shell_contract
+python3 -m unittest scripts.tests.test_desktop
+make check PYTHON=.venv/bin/python
+make build PROFILE=default
+make iso
+make test-iso
+```
+
+En hosts no Debian/Ubuntu, corre `make check`, `make build PROFILE=default`,
+`make iso` y `make test-iso` dentro del builder según [build-hosts.md](build-hosts.md).
+La prueba `make qemu-test` es una validación separada y solo debe darse por
+completada cuando se ejecuta y se observa el escritorio en la VM. Los tests
+estáticos y la construcción de ISO no prueban por sí solos el arranque.
+
+## Cómo medir si la ISO se redujo
+
+Antes y después de los cambios, registra:
+
+- tamaño exacto de la ISO y checksum;
+- cantidad de paquetes y tamaños (`dpkg-query` y `apt-get --no-install-recommends`);
+- dependencias retiradas por `apt-get autoremove --purge` en el log;
+- resultado de la batería de pruebas y de la instalación/arranque en VM.
+
+Hasta disponer de builds comparables, no se debe afirmar un ahorro concreto de
+megabytes. Las listas `packages/default/packages.list` y
+`packages/development/packages.list` son el registro auditable de paquetes
+explícitos; no retirar paquetes de esas listas sin documentar el motivo, el
+reemplazo y las pruebas funcionales afectadas.
+
+## Archivos modificados en la actualización del 2026-10-23
+
+- `apps/com.dylanos.dashboard/contents/ui/main.qml`: CPU y disco locales, con
+  barras de uso y una representación de 500 × 360.
+- `scripts/build.sh`: no instalar recommends y retirar solo dependencias
+  automáticas huérfanas después de las purgas existentes.
+- `scripts/tests/test_packages.sh`: asegurar las opciones de optimización y las
+  purgas de dependencias.
+- `scripts/tests/test_shell_contract.py` y `scripts/tests/test_desktop.py`:
+  comprobar las nuevas métricas reales y el tamaño del widget.
+- `docs/dylanos-shell.md`, `docs/README.md`, `README.md`: registro del diseño,
+  índice y accesos a la documentación.
+- `docs/optimization.md`: política, límites, comandos y métricas para comparar
+  builds.
