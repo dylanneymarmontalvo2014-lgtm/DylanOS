@@ -122,7 +122,10 @@ chroot "$CHROOT" /bin/bash <<'CHROOT_SCRIPT'
 set -euo pipefail
 plymouth-set-default-theme dylanos
 update-initramfs -u -k all
+# Herramienta de compilación de la caché: se instala solo durante el build.
+apt-get -y install --no-install-recommends desktop-file-utils
 update-desktop-database /usr/share/applications
+apt-get -y purge desktop-file-utils
 # Los -dev exclusivos de la DylanOS Store no se envían en el ISO.
 apt-get -y purge libflatpak-dev libostree-dev libappstreamqt-dev libpackagekitqt6-dev \
     qcoro-qt6-dev kirigami-addons-dev libkirigami-dev libkf6xmlgui-dev \

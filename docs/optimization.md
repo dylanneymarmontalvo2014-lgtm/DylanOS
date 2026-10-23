@@ -98,3 +98,7 @@ reemplazo y las pruebas funcionales afectadas.
   índice y accesos a la documentación.
 - `docs/optimization.md`: política, límites, comandos y métricas para comparar
   builds.
+
+## Corrección de compilación validada en CI
+
+El build necesita `desktop-file-utils` únicamente para generar la caché de aplicaciones de escritorio. Se instala temporalmente antes de `update-desktop-database` y se purga inmediatamente, antes de `autoremove`; no se conserva como paquete del sistema final. La batería de paquetes comprueba que exista tanto la instalación como la purga.
