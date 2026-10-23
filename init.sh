@@ -1,5 +1,6 @@
 #!/usr/bin/env bash
 # Prepara dependencias nativas en Debian/Ubuntu o usa el builder Docker en otros Linux.
+# shellcheck disable=SC1091
 # shellcheck source=scripts/build-host.sh
 . "$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd)/scripts/build-host.sh"
 set -Eeuo pipefail
