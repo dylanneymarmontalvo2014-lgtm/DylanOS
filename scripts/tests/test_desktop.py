@@ -19,7 +19,7 @@ function run(globals) {
   const panels = [];
   function containment() {
     return {settings: {}, widgets: [], writeConfig(k,v) {this.settings[k]=v;},
-      addWidget(type) {const w=containment(); w.type=type; this.widgets.push(w); return w;}};
+      addWidget(type,x,y,width,height) {const w=containment(); w.type=type; w.geometry=[x,y,width,height]; this.widgets.push(w); return w;}};
   }
   const screens = [containment(), containment()];
   globals.Panel = function() {const p=containment(); panels.push(p); return p;};
@@ -31,6 +31,11 @@ function run(globals) {
 const {panels, screens} = run({gridUnit: 18});
 assert.equal(panels.length, 2);
 assert.deepEqual(panels.map(p => p.location), ['top', 'bottom']);
+for (const s of screens) {
+  assert.equal(s.widgets.length, 1);
+  assert.equal(s.widgets[0].type, 'com.dylanos.dashboard');
+  assert.deepEqual(s.widgets[0].geometry, [48, 96, 500, 300]);
+}
 for (const s of screens) assert.equal(s.settings.Image, 'file:///usr/share/wallpapers/DylanOS/dylanos-default.png');
 assert(!panels[0].widgets.some(w => w.type.includes('tasks')));
 assert(!panels[0].widgets.some(w => w.type === 'org.kde.plasma.pager'));

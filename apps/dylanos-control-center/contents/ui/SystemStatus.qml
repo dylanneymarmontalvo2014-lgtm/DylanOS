@@ -2,6 +2,7 @@ pragma Singleton
 import QtQuick
 import org.kde.plasma.plasma5support as P5Support
 import org.kde.bluezqt as BluezQt
+import org.kde.notificationmanager as NotificationManager
 
 /*
  * SystemStatus — Bloque 3 completo (funcional, NO VERIFICADO en hardware real)
@@ -15,11 +16,23 @@ import org.kde.bluezqt as BluezQt
  * salvo playerctl que hay que instalar aparte):
  *   sudo apt install network-manager qdbus6 playerctl pipewire-pulse
  *
- * "No molestar" es LOCAL a este widget (oculta notificaciones nuevas aquí),
- * no es un DND global del sistema — eso requiere una API privada inestable.
+ * "No molestar" usa la API pública NotificationManager.Settings de Plasma;
+ * su estado y cambios se comparten con el sistema y otras aplicaciones.
  */
 QtObject {
     id: root
+
+    // DND global de Plasma: el plazo y las inhibiciones de aplicaciones son
+    // observados directamente; no se representa un estado local ficticio.
+    property NotificationManager.Settings notificationSettings: NotificationManager.Settings {}
+    readonly property bool doNotDisturb: notificationSettings.notificationsInhibitedByApplication ||
+        (notificationSettings.notificationsInhibitedUntil && notificationSettings.notificationsInhibitedUntil > new Date())
+    readonly property bool dndLockedByApplication: notificationSettings.notificationsInhibitedByApplication
+    function toggleDoNotDisturb() {
+        if (dndLockedByApplication) return
+        if (doNotDisturb) notificationSettings.resetNotificationsInhibitedUntil()
+        else notificationSettings.setNotificationsInhibitedUntil(new Date(Date.now() + 8 * 60 * 60 * 1000))
+    }
 
     // =====================================================================
     // BLUETOOTH (BluezQt — API pública)
@@ -84,12 +97,6 @@ QtObject {
         darkModeActive = target // respuesta inmediata en UI
         exec.connectSource("plasma-apply-colorscheme " + (target ? "BreezeDark" : "BreezeLight"))
     }
-
-    // =====================================================================
-    // NO MOLESTAR (local al widget)
-    // =====================================================================
-    property bool doNotDisturb: false
-    function toggleDoNotDisturb() { doNotDisturb = !doNotDisturb }
 
     // =====================================================================
     // REPRODUCTOR MPRIS (playerctl)

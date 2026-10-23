@@ -13,4 +13,4 @@ StartInCurrentSessionDir=true
 
 [Scrolling]
 HistoryMode=2
-HistorySize=10000
+HistorySize=50000

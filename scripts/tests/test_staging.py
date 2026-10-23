@@ -106,11 +106,18 @@ class StagingTest(unittest.TestCase):
             # barra superior, papelera al final del dock, reloj 12h con fecha.
             self.assertTrue((root / "usr/share/plasma/plasmoids/com.dylanos.search/metadata.json").is_file())
             self.assertTrue((root / "usr/share/plasma/plasmoids/com.dylanos.search/contents/ui/main.qml").is_file())
+            dashboard = root / "usr/share/plasma/plasmoids/com.dylanos.dashboard"
+            self.assertTrue((dashboard / "metadata.json").is_file())
+            dashboard_qml = (dashboard / "contents/ui/main.qml").read_text()
+            self.assertIn("/proc/meminfo", dashboard_qml)
+            self.assertIn("/proc/uptime", dashboard_qml)
+            self.assertIn("Mes anterior", dashboard_qml)
             self.assertTrue((root / "usr/share/plasma/plasmoids/com.dylanos.controlcenter/metadata.json").is_file())
             cc_main = (root / "usr/share/plasma/plasmoids/com.dylanos.controlcenter/contents/ui/main.qml").read_text()
             self.assertIn("compactRepresentation", cc_main)
             shell_layout = (root / "usr/share/plasma/look-and-feel/org.dylanos.crimson/contents/layouts/org.kde.plasma.desktop-layout.js").read_text()
             self.assertIn("com.dylanos.search", shell_layout)
+            self.assertIn('allDesktops[i].addWidget("com.dylanos.dashboard"', shell_layout)
             self.assertIn("com.dylanos.controlcenter", shell_layout)
             self.assertIn("org.kde.plasma.trash", shell_layout)
             self.assertIn('"ddd dd \'de\' MMM"', shell_layout)
