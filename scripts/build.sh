@@ -73,7 +73,9 @@ for setup in /tmp/dylanos-packages/*.setup-repos.sh; do
 done
 apt-get -o Acquire::Retries=3 update
 for list in /tmp/dylanos-packages/*.list; do
-    xargs -r -a "$list" apt-get -o Acquire::Retries=3 install -y
+    # Evita paquetes recomendados que no se solicitan explícitamente; las
+    # dependencias necesarias siguen instalándose automáticamente.
+    xargs -r -a "$list" apt-get -o Acquire::Retries=3 install -y --no-install-recommends
 done
 sed -i 's/^# es_ES.UTF-8 UTF-8/es_ES.UTF-8 UTF-8/; s/^# en_US.UTF-8 UTF-8/en_US.UTF-8 UTF-8/' /etc/locale.gen
 locale-gen
@@ -132,6 +134,8 @@ apt-get -y purge libflatpak-dev libostree-dev libappstreamqt-dev libpackagekitqt
 # metapaquete kde-plasma-desktop y se retiran del sistema final. El motor KIO
 # del Explorer (libkf6kio*) y el resto de la pila Plasma permanecen intactos.
 apt-get -y purge dolphin dolphin-plugins kcalc
+# Retira únicamente dependencias automáticas que APT confirme como huérfanas.
+apt-get -y autoremove --purge
 apt-get clean
 rm -f /usr/sbin/policy-rc.d
 rm -rf /tmp/dylanos-packages /tmp/dylanos-src

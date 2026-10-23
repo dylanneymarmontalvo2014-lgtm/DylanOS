@@ -34,7 +34,7 @@ assert.deepEqual(panels.map(p => p.location), ['top', 'bottom']);
 for (const s of screens) {
   assert.equal(s.widgets.length, 1);
   assert.equal(s.widgets[0].type, 'com.dylanos.dashboard');
-  assert.deepEqual(s.widgets[0].geometry, [48, 96, 500, 300]);
+  assert.deepEqual(s.widgets[0].geometry, [48, 96, 500, 360]);
 }
 for (const s of screens) assert.equal(s.settings.Image, 'file:///usr/share/wallpapers/DylanOS/dylanos-default.png');
 assert(!panels[0].widgets.some(w => w.type.includes('tasks')));
