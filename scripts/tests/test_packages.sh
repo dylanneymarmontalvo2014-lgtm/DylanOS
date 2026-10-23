@@ -124,6 +124,8 @@ assert_eq "APT omite recommends no solicitados" "si" \
     "$(grep -q -- '--no-install-recommends' "$build_script" && echo si || echo no)"
 assert_eq "APT elimina solo dependencias huérfanas después de las purgas" "si" \
     "$(grep -q 'apt-get -y autoremove --purge' "$build_script" && echo si || echo no)"
+assert_eq "desktop-file-utils es temporal para generar la caché de escritorio" "si" \
+    "$(grep -q 'apt-get -y install --no-install-recommends desktop-file-utils' "$build_script" && grep -q 'apt-get -y purge desktop-file-utils' "$build_script" && echo si || echo no)"
 
 # Apps declaradas en configs/default-apps.conf deben instalarse por defecto
 conf_apps="$(grep -vE '^\[|^$|^[[:space:]]*[#;]' "$ROOT/configs/default-apps.conf")"
