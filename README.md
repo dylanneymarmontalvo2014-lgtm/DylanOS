@@ -12,6 +12,7 @@
 <p align="center">
 	<a href="docs/install.md">Instalación</a> ·
 	<a href="docs/build-hosts.md">Hosts de compilación</a> ·
+	<a href="MAINTAINERS.md">Mantenedores</a> ·
 	<a href="docs/architecture.md">Arquitectura</a> ·
 	<a href="docs/roadmap.md">Roadmap</a> ·
 	<a href="CONTRIBUTING.md">Contribuir</a>
