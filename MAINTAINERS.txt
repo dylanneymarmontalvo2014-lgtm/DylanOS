@@ -1,7 +1,97 @@
 MANTENEDORES DE DYLANOS
+======================
 
-Cristopher Borjas — cuenta de GitHub: CRISTOP-bot
+PROYECTO
+--------
+Nombre: DylanOS Crimson
+Repositorio: dylanneymarmontalvo2014-lgtm/DylanOS
+Rama de trabajo activa para los cambios actuales: development
 
-Cristopher Borjas es un mantenedor humano de DylanOS y participa en el desarrollo usando la cuenta CRISTOP-bot. La cuenta no es un bot automatizado; el nombre de usuario no describe su naturaleza.
+MANTENEDOR
+----------
+Cristopher Borjas
+Cuenta de GitHub: CRISTOP-bot
+Perfil: https://github.com/CRISTOP-bot
 
-Las decisiones y contribuciones hechas desde esa cuenta corresponden a su mantenedor humano. Los workflows y otras automatizaciones del repositorio, cuando se ejecutan, son procesos separados y no convierten la cuenta en un bot.
+Cristopher Borjas es una persona y mantenedor humano de DylanOS. CRISTOP-bot
+es su cuenta personal de GitHub; no es un bot automatizado. El nombre de la
+cuenta no describe su naturaleza. Las contribuciones y decisiones hechas
+personalmente desde esa cuenta corresponden a Cristopher. Las acciones,
+workflows y otros procesos automatizados del repositorio son independientes
+de la cuenta.
+
+RESPONSABILIDADES DE MANTENIMIENTO
+----------------------------------
+El mantenimiento del proyecto incluye:
+- conservar la coherencia de arquitectura, branding y experiencia de DylanOS;
+- revisar cambios de código, configuración, documentación y automatizaciones;
+- verificar que las afirmaciones sobre funciones y compatibilidad coincidan
+  con lo que realmente se implementó y probó;
+- mantener instrucciones reproducibles para preparar, compilar y validar;
+- corregir regresiones y documentar limitaciones conocidas;
+- conservar las decisiones explícitas de alcance y no mezclar cambios ajenos;
+- revisar los resultados reales del CI antes de declarar una validación aprobada.
+
+FLUJO DE CAMBIOS
+---------------
+1. Confirmar el repositorio y la rama de destino antes de editar.
+2. Preferir cambios enfocados que respeten la arquitectura y los componentes
+   existentes; revisar el código actual para evitar duplicados.
+3. Mantener el fondo de pantalla y otros recursos de identidad intactos salvo
+   que el cambio solicitado los incluya expresamente.
+4. Añadir o actualizar documentación para cada comportamiento nuevo, cambio de
+   configuración, requisito, comando de uso o limitación relevante.
+5. Ejecutar las pruebas pertinentes al cambio y registrar sus resultados
+   exactos. No describir una prueba como ejecutada si no se ejecutó.
+6. Revisar el estado de CI asociado al SHA exacto que se modificó. Un workflow
+   en curso no es una aprobación.
+7. Comprobar los archivos y el contenido final de la rama después de publicar
+   cambios. No alterar main cuando la tarea indica development.
+
+CRITERIOS DE VERIFICACIÓN
+-------------------------
+- Distinguir claramente entre implementado, probado, experimental y pendiente.
+- Las pruebas estáticas, de staging o de CI no demuestran por sí solas que una
+  ISO arranque, que un instalador complete una instalación o que una función
+  trabaje en hardware real.
+- Informar por separado los resultados de compilación, creación de ISO,
+  pruebas automatizadas, arranque en máquina virtual y pruebas de hardware.
+- Si una prueba falla, conservar el error observado, corregir la causa cuando
+  corresponda y volver a ejecutar la validación afectada.
+- No declarar compatibilidad con un sistema anfitrión basándose únicamente en
+  que el código reconoce su nombre: comprobar sus dependencias y build real.
+- No añadir datos simulados como si fueran lecturas del sistema o resultados
+  reales.
+
+DOCUMENTACIÓN Y REPORTES
+------------------------
+Para cada conjunto de cambios, documentar:
+- archivos afectados y propósito de cada modificación;
+- comandos necesarios para usar o reproducir la función;
+- pruebas ejecutadas, sus resultados y el SHA evaluado;
+- limitaciones, dependencias y validaciones todavía pendientes.
+
+La documentación del estado vigente se mantiene junto al código y en las
+páginas enlazadas desde README.md. Los informes antiguos se consideran contexto
+histórico y no sustituyen las verificaciones actuales.
+
+SEGURIDAD Y CAMBIOS DEL SISTEMA
+-------------------------------
+- Explicar con claridad las operaciones privilegiadas, instalaciones de
+  paquetes, configuración de repositorios y servicios.
+- Pedir confirmación antes de aplicar cambios que modifiquen el sistema del
+  usuario o antes de acciones externas que lo representen.
+- No incluir tokens, contraseñas, claves privadas ni otros secretos en el
+  repositorio, logs o documentación.
+- No eliminar fuentes, proyectos o datos del usuario al limpiar artefactos.
+
+DOCUMENTOS RELACIONADOS
+-----------------------
+README.md                 Resumen del proyecto y comandos iniciales
+CONTRIBUTING.md           Flujo para contribuciones
+docs/architecture.md     Arquitectura del sistema
+docs/install.md          Construcción, instalación y QA
+docs/build-hosts.md      Sistemas anfitriones para compilar
+
+Este archivo describe las responsabilidades y prácticas de mantenimiento;
+no afirma que una prueba o una función esté validada si no existe evidencia.
