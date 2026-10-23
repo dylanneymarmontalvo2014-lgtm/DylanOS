@@ -12,6 +12,11 @@ PlasmoidItem {
     property int memoryUsed: 0
     property int memoryTotal: 0
     property real uptimeSeconds: 0
+    property real cpuUsagePercent: -1
+    property double previousCpuTotal: -1
+    property double previousCpuIdle: -1
+    property double diskUsedBytes: -1
+    property double diskTotalBytes: -1
     property P5Support.DataSource procReader: P5Support.DataSource {
         engine: "executable"
         connectedSources: []
@@ -26,12 +31,34 @@ PlasmoidItem {
             } else if (sourceName === "cat /proc/uptime") {
                 const uptimeMatch = output.match(/^([0-9]+(?:\.[0-9]+)?)/)
                 if (uptimeMatch) root.uptimeSeconds = Number(uptimeMatch[1])
+            } else if (sourceName === "cat /proc/stat") {
+                const cpuMatch = output.match(/^cpu\s+([0-9 ]+)/m)
+                if (cpuMatch) {
+                    const ticks = cpuMatch[1].trim().split(/\s+/).map(Number)
+                    const total = ticks.reduce((sum, value) => sum + value, 0)
+                    const idle = (ticks[3] || 0) + (ticks[4] || 0)
+                    if (root.previousCpuTotal >= 0 && total > root.previousCpuTotal) {
+                        const totalDelta = total - root.previousCpuTotal
+                        const idleDelta = idle - root.previousCpuIdle
+                        root.cpuUsagePercent = Math.max(0, Math.min(100, 100 * (1 - idleDelta / totalDelta)))
+                    }
+                    root.previousCpuTotal = total
+                    root.previousCpuIdle = idle
+                }
+            } else if (sourceName === "df -B1 --output=used,size /") {
+                const diskMatch = output.match(/^\s*(\d+)\s+(\d+)\s*$/m)
+                if (diskMatch) {
+                    root.diskUsedBytes = Number(diskMatch[1])
+                    root.diskTotalBytes = Number(diskMatch[2])
+                }
             }
         }
     }
     function refreshSystemInfo() {
         procReader.connectSource("cat /proc/meminfo")
         procReader.connectSource("cat /proc/uptime")
+        procReader.connectSource("cat /proc/stat")
+        procReader.connectSource("df -B1 --output=used,size /")
     }
     function formatUptime(seconds) {
         const days = Math.floor(seconds / 86400)
@@ -61,7 +88,7 @@ PlasmoidItem {
 
     fullRepresentation: Rectangle {
         implicitWidth: 500
-        implicitHeight: 300
+        implicitHeight: 360
         radius: 24
         color: "#E6101014"
         border.color: "#40FFFFFF"
@@ -98,6 +125,30 @@ PlasmoidItem {
                     Layout.fillWidth: true; height: 5; radius: 3; color: "#3CFFFFFF"
                     Rectangle {
                         width: root.memoryTotal > 0 ? parent.width * root.memoryUsed / root.memoryTotal : 0
+                        height: parent.height; radius: 3; color: "#DC143C"
+                    }
+                }
+                QQC2.Label {
+                    text: root.cpuUsagePercent >= 0 ? "CPU  ·  " + root.cpuUsagePercent.toFixed(0) + "%" : "CPU  ·  leyendo…"
+                    color: "white"; font.pixelSize: 12
+                }
+                Rectangle {
+                    Layout.fillWidth: true; height: 5; radius: 3; color: "#3CFFFFFF"
+                    Rectangle {
+                        width: root.cpuUsagePercent >= 0 ? parent.width * root.cpuUsagePercent / 100 : 0
+                        height: parent.height; radius: 3; color: "#DC143C"
+                    }
+                }
+                QQC2.Label {
+                    text: root.diskTotalBytes > 0
+                        ? "Disco  ·  " + (root.diskUsedBytes / 1073741824).toFixed(1) + " / " + (root.diskTotalBytes / 1073741824).toFixed(1) + " GiB"
+                        : "Disco  ·  no disponible"
+                    color: "white"; font.pixelSize: 12
+                }
+                Rectangle {
+                    Layout.fillWidth: true; height: 5; radius: 3; color: "#3CFFFFFF"
+                    Rectangle {
+                        width: root.diskTotalBytes > 0 ? parent.width * root.diskUsedBytes / root.diskTotalBytes : 0
                         height: parent.height; radius: 3; color: "#DC143C"
                     }
                 }

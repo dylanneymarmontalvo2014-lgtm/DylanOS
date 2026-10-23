@@ -118,6 +118,8 @@ Para la configuración de desarrollo, los criterios de prueba y las precauciones
 ## Documentación
 
 - [Instalación y QA](docs/install.md)
+- [Optimización del sistema e ISO](docs/optimization.md)
+- [Optimización de paquetes e ISO](docs/optimization.md)
 - [Arquitectura](docs/architecture.md)
 - [Roadmap](docs/roadmap.md)
 - [Branding](branding/README.md)

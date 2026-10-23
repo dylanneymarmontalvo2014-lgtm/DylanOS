@@ -118,6 +118,12 @@ assert_eq "default ya no contiene dolphin" "no" \
 # Calamares quedó eliminado: el instalador propio debe ocupar su lugar.
 assert_eq "default ya no contiene calamares" "no" \
     "$(printf '%s' "$default_pkgs" | grep -qx calamares && echo si || echo no)"
+# El build reduce bloat sin desinstalar paquetes explícitos del proyecto.
+build_script="$ROOT/scripts/build.sh"
+assert_eq "APT omite recommends no solicitados" "si" \
+    "$(grep -q -- '--no-install-recommends' "$build_script" && echo si || echo no)"
+assert_eq "APT elimina solo dependencias huérfanas después de las purgas" "si" \
+    "$(grep -q 'apt-get -y autoremove --purge' "$build_script" && echo si || echo no)"
 
 # Apps declaradas en configs/default-apps.conf deben instalarse por defecto
 conf_apps="$(grep -vE '^\[|^$|^[[:space:]]*[#;]' "$ROOT/configs/default-apps.conf")"
