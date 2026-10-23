@@ -87,6 +87,7 @@ reemplazo y las pruebas funcionales afectadas.
 
 - `apps/com.dylanos.dashboard/contents/ui/main.qml`: CPU y disco locales, con
   barras de uso y una representación de 500 × 360.
+- `themes/lookandfeel/org.dylanos.crimson/contents/layouts/org.kde.plasma.desktop-layout.js`: actualizar la geometría inicial del widget a 500 × 360 y conservar explícitamente la ruta/configuración del wallpaper existente.
 - `scripts/build.sh`: no instalar recommends y retirar solo dependencias
   automáticas huérfanas después de las purgas existentes.
 - `scripts/tests/test_packages.sh`: asegurar las opciones de optimización y las
