@@ -1,1 +1,33 @@
-IyEvdXNyL2Jpbi9lbnYgYmFzaAojIEZ1bmNpb25lcyBwdXJhcyBwYXJhIGlkZW50aWZpY2FyIGhvc3RzIGNvbXBhdGlibGVzIGNvbiBsYSBwcmVwYXJhY2nDs24gZGVsIGJ1aWxkZXIuCgpkZXRlY3RfaG9zdF9mYW1pbHkoKSB7CiAgICBsb2NhbCBpZD0iJHsxLCx9IiBpZF9saWtlPSIkezIsLH0iIHRva2VuCiAgICBjYXNlICIkaWQiIGluCiAgICAgICAgdWJ1bnR1fGRlYmlhbnxsaW51eG1pbnR8cG9wfGVsZW1lbnRhcnkpIHByaW50ZiAnZGViaWFuXG4nOyByZXR1cm4gOzsKICAgICAgICBhcmNofG1hbmphcm98ZW5kZWF2b3Vyb3N8Z2FydWRhfGFydGl4KSBwcmludGYgJ2FyY2hcbic7IHJldHVybiA7OwogICAgICAgIGZlZG9yYSkgcHJpbnRmICdmZWRvcmFcbic7IHJldHVybiA7OwogICAgICAgIHJoZWx8Y2VudG9zfHJvY2t5fGFsbWFsaW51eHxvbCkgcHJpbnRmICdyaGVsXG4nOyByZXR1cm4gOzsKICAgICAgICBvcGVuc3VzZS1sZWFwfG9wZW5zdXNlLXR1bWJsZXdlZWR8b3BlbnN1c2V8c2xlc3xzbGVkKSBwcmludGYgJ29wZW5zdXNlXG4nOyByZXR1cm4gOzsKICAgICAgICBhbHBpbmUpIHByaW50ZiAnYWxwaW5lXG4nOyByZXR1cm4gOzsKICAgIGVzYWMKICAgIGZvciB0b2tlbiBpbiAkaWRfbGlrZTsgZG8KICAgICAgICBjYXNlICIkdG9rZW4iIGluCiAgICAgICAgICAgIGRlYmlhbnx1YnVudHUpIHByaW50ZiAnZGViaWFuXG4nOyByZXR1cm4gOzsKICAgICAgICAgICAgYXJjaCkgcHJpbnRmICdhcmNoXG4nOyByZXR1cm4gOzsKICAgICAgICAgICAgZmVkb3JhKSBwcmludGYgJ2ZlZG9yYVxuJzsgcmV0dXJuIDs7CiAgICAgICAgICAgIHJoZWx8Y2VudG9zfHJvY2t5fGFsbWFsaW51eCkgcHJpbnRmICdyaGVsXG4nOyByZXR1cm4gOzsKICAgICAgICAgICAgc3VzZXxvcGVuc3VzZSkgcHJpbnRmICdvcGVuc3VzZVxuJzsgcmV0dXJuIDs7CiAgICAgICAgICAgIGFscGluZSkgcHJpbnRmICdhbHBpbmVcbic7IHJldHVybiA7OwogICAgICAgIGVzYWMKICAgIGRvbmUKICAgIHByaW50ZiAnb3RoZXJcbicKfQoKaG9zdF9mYW1pbHlfc3VwcG9ydHNfZG9ja2VyX2luc3RhbGwoKSB7CiAgICBjYXNlICIkMSIgaW4KICAgICAgICBhcmNofGZlZG9yYXxyaGVsfG9wZW5zdXNlfGFscGluZSkgcmV0dXJuIDAgOzsKICAgICAgICAqKSByZXR1cm4gMSA7OwogICAgZXNhYwp9Cg==
+#!/usr/bin/env bash
+#!/usr/bin/env bash
+# Funciones puras para identificar hosts compatibles con la preparación del builder.
+
+detect_host_family() {
+    local id="${1,,}" id_like="${2,,}" token
+    case "$id" in
+        ubuntu|debian|linuxmint|pop|elementary) printf 'debian\n'; return ;;
+        arch|manjaro|endeavouros|garuda|artix) printf 'arch\n'; return ;;
+        fedora) printf 'fedora\n'; return ;;
+        rhel|centos|rocky|almalinux|ol) printf 'rhel\n'; return ;;
+        opensuse-leap|opensuse-tumbleweed|opensuse|sles|sled) printf 'opensuse\n'; return ;;
+        alpine) printf 'alpine\n'; return ;;
+    esac
+    for token in $id_like; do
+        case "$token" in
+            debian|ubuntu) printf 'debian\n'; return ;;
+            arch) printf 'arch\n'; return ;;
+            fedora) printf 'fedora\n'; return ;;
+            rhel|centos|rocky|almalinux) printf 'rhel\n'; return ;;
+            suse|opensuse) printf 'opensuse\n'; return ;;
+            alpine) printf 'alpine\n'; return ;;
+        esac
+    done
+    printf 'other\n'
+}
+
+host_family_supports_docker_install() {
+    case "$1" in
+        arch|fedora|rhel|opensuse|alpine) return 0 ;;
+        *) return 1 ;;
+    esac
+}
