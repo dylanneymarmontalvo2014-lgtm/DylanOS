@@ -24,6 +24,30 @@ class ShellContractTest(unittest.TestCase):
         self.assertIn("code", [line.strip() for line in packages if line.strip() and not line.lstrip().startswith("#")])
         self.assertIn("packages.microsoft.com/repos/vscode", setup)
 
+
+    def test_dashboard_and_control_center_use_real_local_and_global_state(self):
+        dashboard = (ROOT / "apps/com.dylanos.dashboard/contents/ui/main.qml").read_text(encoding="utf-8")
+        status = (ROOT / "apps/dylanos-control-center/contents/ui/SystemStatus.qml").read_text(encoding="utf-8")
+        notifications = (ROOT / "apps/dylanos-control-center/contents/ui/NotificationsPanel.qml").read_text(encoding="utf-8")
+        mock_data = (ROOT / "apps/dylanos-control-center/contents/ui/MockData.qml").read_text(encoding="utf-8")
+        self.assertIn("cat /proc/meminfo", dashboard)
+        self.assertIn("cat /proc/uptime", dashboard)
+        self.assertIn("NotificationManager.Settings", status)
+        self.assertIn("setNotificationsInhibitedUntil", status)
+        self.assertIn("resetNotificationsInhibitedUntil", status)
+        self.assertNotIn('property bool doNotDisturb: false', status)
+        self.assertIn("model: notificationsModel", notifications)
+        self.assertIn('label: "KDE Connect"', mock_data)
+        self.assertNotIn('label: "AirDrop"', mock_data)
+
+    def test_shell_keeps_wallpaper_and_konsole_profile_contract(self):
+        layout = (ROOT / "themes/lookandfeel/org.dylanos.crimson/contents/layouts/org.kde.plasma.desktop-layout.js").read_text(encoding="utf-8")
+        profile = (ROOT / "configs/konsole/DylanOS.profile").read_text(encoding="utf-8")
+        wallpaper = ROOT / "branding/wallpapers/dylanos-default.png"
+        self.assertIn('desktop.writeConfig("Image", "file:///usr/share/wallpapers/DylanOS/dylanos-default.png")', layout)
+        self.assertEqual(profile.count("HistorySize=50000"), 1)
+        self.assertTrue(wallpaper.is_file())
+
     def test_installer_is_built_before_staging(self):
         build = (ROOT / "scripts/build.sh").read_text(encoding="utf-8")
         check = (ROOT / "scripts/check.sh").read_text(encoding="utf-8")

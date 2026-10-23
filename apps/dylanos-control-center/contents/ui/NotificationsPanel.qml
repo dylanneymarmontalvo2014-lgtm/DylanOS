@@ -59,6 +59,11 @@ Rectangle {
                 text: "Notificaciones"
                 font.pixelSize: 20; font.bold: true; color: cWhite
             }
+            QQC2.Label {
+                text: SystemStatus.doNotDisturb ? "No molestar activo" : "Avisos del sistema"
+                color: cLightGray; font.pixelSize: 11
+                Accessible.name: text
+            }
             Rectangle {
                 width: 24; height: 24; radius: 12
                 color: cCrimson
@@ -76,34 +81,18 @@ Rectangle {
                 }
             }
             Item { Layout.fillWidth: true }
-            QQC2.ToolButton { icon.name: "overflow-menu"; icon.color: cLightGray; flat: true }
-        }
-
-        // ----- Modo "No molestar" activo: no mostramos la lista -----
-        ColumnLayout {
-            Layout.fillWidth: true
-            Layout.fillHeight: true
-            visible: SystemStatus.doNotDisturb
-            spacing: 8
-            Item { Layout.fillHeight: true }
-            Kirigami.Icon {
-                source: "notifications-disabled"; isMask: true; color: "#5a5a5a"
-                Layout.preferredWidth: 40; Layout.preferredHeight: 40
-                Layout.alignment: Qt.AlignHCenter
+            QQC2.ToolButton {
+                icon.name: "overflow-menu"; icon.color: cLightGray; flat: true
+                Accessible.name: "Más opciones de notificaciones"
+                onClicked: MockData.run("kcmshell6 kcm_notifications")
             }
-            QQC2.Label {
-                text: "No molestar activado"
-                color: cLightGray; font.pixelSize: 13
-                Layout.alignment: Qt.AlignHCenter
-            }
-            Item { Layout.fillHeight: true }
         }
 
         // ----- Estado vacío -----
         Item {
             Layout.fillWidth: true
             Layout.fillHeight: true
-            visible: !SystemStatus.doNotDisturb && notificationsModel.count === 0
+            visible: notificationsModel.count === 0
             ColumnLayout {
                 anchors.centerIn: parent
                 spacing: 12
@@ -127,7 +116,7 @@ Rectangle {
             Layout.fillHeight: true
             spacing: 10
             clip: true
-            visible: !SystemStatus.doNotDisturb && notificationsModel.count > 0
+            visible: notificationsModel.count > 0
             model: notificationsModel
 
             delegate: Rectangle {
@@ -196,7 +185,7 @@ Rectangle {
             icon.name: "edit-clear-all"
             icon.color: cLightGray
             flat: true
-            visible: !SystemStatus.doNotDisturb
+            visible: true
             onClicked: {
                 for (let i = notificationsModel.count - 1; i >= 0; i--) {
                     notificationsModel.close(i)

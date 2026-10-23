@@ -5,12 +5,12 @@ import org.kde.plasma.plasma5support as P5Support
 /*
  * Accesos secundarios del Centro de Control + ejecutor de comandos.
  * Cada acción abre su módulo real de configuración (kcmshell6); nada es
- * ficticio. "AirDrop" se implementa vía KDE Connect, el equivalente real
- * disponible en la base KDE de DylanOS.
+ * ficticio. El acceso se nombra "KDE Connect" para describir con precisión
+ * el servicio que abre; no se presenta como AirDrop.
  */
 QtObject {
     readonly property var secondaryActions: [
-        { id: "kdeconnect", icon: "kdeconnect", label: "AirDrop", command: "kcmshell6 kcm_kdeconnect" },
+        { id: "kdeconnect", icon: "kdeconnect", label: "KDE Connect", command: "kcmshell6 kcm_kdeconnect" },
         { id: "project", icon: "video-display", label: "Proyectar", command: "kcmshell6 kcm_kscreen" },
         { id: "powersave", icon: "battery-profile-powersave", label: "Ahorro de energía", command: "kcmshell6 powerdevilprofilesconfig" }
     ]

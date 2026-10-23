@@ -50,7 +50,11 @@ Rectangle {
                 font.pixelSize: 20; font.bold: true; color: cWhite
             }
             Item { Layout.fillWidth: true }
-            QQC2.ToolButton { icon.name: "document-edit"; icon.color: cLightGray; flat: true }
+            QQC2.ToolButton {
+                icon.name: "document-edit"; icon.color: cLightGray; flat: true
+                Accessible.name: "Abrir configuración del sistema"
+                onClicked: MockData.run("dylanos --page settings")
+            }
         }
 
         // Grid 2x2 — Conectado a SystemStatus
@@ -164,7 +168,13 @@ Rectangle {
                     shadowOpacity: 0.5; shadowBlur: 0.8
                 }
 
-                MouseArea { anchors.fill: parent; onClicked: SystemStatus.toggleDoNotDisturb() }
+                MouseArea {
+                    anchors.fill: parent
+                    enabled: !SystemStatus.dndLockedByApplication
+                    Accessible.role: Accessible.Button
+                    Accessible.name: SystemStatus.doNotDisturb ? "Desactivar No molestar" : "Activar No molestar durante ocho horas"
+                    onClicked: SystemStatus.toggleDoNotDisturb()
+                }
 
                 ColumnLayout {
                     anchors.fill: parent; anchors.margins: 12; spacing: 4
@@ -180,9 +190,10 @@ Rectangle {
                         font.pixelSize: 13; font.bold: true
                     }
                     QQC2.Label {
-                        text: SystemStatus.doNotDisturb ? "Activado" : "Desactivado"
+                        text: SystemStatus.dndLockedByApplication ? "Gestionado por una aplicación"
+                              : SystemStatus.doNotDisturb ? "Activado" : "Desactivado"
                         color: SystemStatus.doNotDisturb ? Qt.rgba(1, 1, 1, 0.85) : cLightGray
-                        font.pixelSize: 11
+                        font.pixelSize: 11; elide: Text.ElideRight; Layout.fillWidth: true
                     }
                 }
             }
