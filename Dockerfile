@@ -5,6 +5,7 @@ ENV DEBIAN_FRONTEND=noninteractive
 WORKDIR /tmp/dylanos
 
 COPY init.sh ./init.sh
+COPY scripts/build-host.sh ./scripts/build-host.sh
 COPY apps/workspace/requirements-dev.txt ./apps/workspace/requirements-dev.txt
 RUN DYLANOS_VENV=/opt/dylanos-venv bash init.sh --yes \
     && printf 'root ALL=(ALL:ALL) NOPASSWD: ALL\n' > /etc/sudoers.d/00-root-nopasswd \
