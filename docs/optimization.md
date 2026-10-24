@@ -130,3 +130,19 @@ El build ejecuta `rm -rf /var/lib/apt/lists/*` al final del chroot, después de 
 - `apt-get autoremove --purge` quita solo dependencias marcadas automáticas que ya no necesita ningún paquete explícito.
 - `apt-get clean` borra archivos de paquetes descargados; `rm -rf /var/lib/apt/lists/*` borra índices de repositorio que se regeneran con `apt-get update`. Ninguno de esos dos pasos desinstala aplicaciones.
 - No se borran las aplicaciones explícitas del perfil base, el navegador, la pila de red/sonido/Bluetooth, firmware, tienda/runtime, KIO ni componentes necesarios del instalador. El wallpaper permanece intacto.
+
+
+## Reducción de espera del menú de arranque live (2026-10-24)
+
+- `scripts/iso.sh` conserva el menú GRUB y sus dos opciones de arranque, pero
+  reduce la espera automática de 10 a 3 segundos. La ISO live puede empezar
+  a iniciar hasta 7 segundos antes si nadie selecciona una opción.
+- El GRUB del sistema instalado ya está configurado con espera cero
+  (`GRUB_TIMEOUT=0` y `GRUB_TIMEOUT_STYLE=hidden`); el menú live no controla
+  ese arranque. No se modifican servicios, red, Bluetooth, sonido, firmware,
+  Plymouth ni el initramfs sin una medición que demuestre que alguno añade una
+  espera innecesaria.
+- Esta mejora reduce únicamente la espera de GRUB en la ISO live; no es una
+  medición de cuánto tarda el kernel, systemd, SDDM o Plasma. El test verifica
+  el contrato del menú; una comparación real requiere arrancar la ISO nueva en
+  QEMU/hardware, que debe reportarse por separado.

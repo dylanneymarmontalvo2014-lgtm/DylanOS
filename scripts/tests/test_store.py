@@ -138,7 +138,8 @@ class StoreStructureTest(unittest.TestCase):
 
     def test_grub_live_visible_installed_hidden(self):
         iso = (ROOT / "scripts/iso.sh").read_text(encoding="utf-8")
-        self.assertIn("set timeout=10", iso)
+        self.assertIn("set timeout=3", iso)
+        self.assertNotIn("set timeout=10", iso)
         self.assertNotIn("set timeout=0", iso)
         stage = (ROOT / "scripts/stage.py").read_text(encoding="utf-8")
         self.assertIn("GRUB_TIMEOUT=0", stage)
