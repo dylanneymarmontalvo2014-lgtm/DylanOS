@@ -127,3 +127,14 @@ función de lectura local que el refresco periódico de 10 segundos y muestra la
 hora local de la última solicitud. No cambia las fuentes: RAM, uptime, CPU y uso
 del filesystem raíz siguen viniendo de `/proc` y `df`. Las pruebas de contrato y
 staging verifican la acción y la marca de hora, pero no el render en Plasma.
+
+
+## Tendencia real de CPU del Dashboard (2026-10-24)
+
+Dashboard 0.5.0 conserva hasta 24 porcentajes de CPU calculados a partir de
+deltas reales de `/proc/stat` y los dibuja en una gráfica Crimson Canvas con
+marcas horizontales. No se añaden valores sintéticos: con menos de dos muestras
+no hay trazo. La etiqueta accesible anuncia cuántas muestras existen y el valor
+actual. El refresco periódico es de unos 10 segundos; actualizar manualmente
+puede añadir una lectura extra. Las pruebas de código no sustituyen la validación
+del render Canvas en una sesión Plasma 6.
