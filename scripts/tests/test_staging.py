@@ -147,7 +147,10 @@ class StagingTest(unittest.TestCase):
             self.assertIn("delegate: QQC2.Button", dashboard_qml)
             self.assertIn("Seleccionado · ", dashboard_qml)
             dash_meta = json.loads((dashboard / "metadata.json").read_text())
-            self.assertEqual(dash_meta["KPlugin"]["Version"], "0.2.0")
+            self.assertEqual(dash_meta["KPlugin"]["Version"], "0.3.0")
+            self.assertIn("function usagePercent(used, total)", dashboard_qml)
+            self.assertIn("Accessible.name: \"Uso de memoria: \"", dashboard_qml)
+            self.assertEqual(dashboard_qml.count("Behavior on width { NumberAnimation { duration: 320; easing.type: Easing.OutCubic } }"), 3)
             self.assertTrue((root / "usr/share/plasma/plasmoids/com.dylanos.controlcenter/metadata.json").is_file())
             cc_root = root / "usr/share/plasma/plasmoids/com.dylanos.controlcenter"
             cc_main = (cc_root / "contents/ui/main.qml").read_text()

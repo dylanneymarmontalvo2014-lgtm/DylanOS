@@ -80,6 +80,13 @@ PlasmoidItem {
         const minutes = Math.floor((seconds % 3600) / 60)
         return days > 0 ? days + " d · " + hours + " h" : hours + " h · " + minutes + " min"
     }
+    function usagePercent(used, total) {
+        if (total <= 0 || used < 0) return 0
+        return Math.max(0, Math.min(100, used * 100 / total))
+    }
+    function progressWidth(trackWidth, used, total) {
+        return trackWidth * usagePercent(used, total) / 100
+    }
     function monthTitle(date) { return Qt.formatDate(date, "MMMM yyyy") }
     function cellDate(index) {
         const first = new Date(shownMonth.getFullYear(), shownMonth.getMonth(), 1)
@@ -142,15 +149,17 @@ PlasmoidItem {
                 QQC2.Label { text: "ESTADO DEL SISTEMA"; color: "#AAA4AA"; font.pixelSize: 10; font.bold: true }
                 QQC2.Label {
                     text: root.memoryTotal > 0
-                        ? "Memoria  ·  " + (root.memoryUsed / 1048576).toFixed(1) + " / " + (root.memoryTotal / 1048576).toFixed(1) + " GiB"
+                        ? "Memoria  ·  " + root.usagePercent(root.memoryUsed, root.memoryTotal).toFixed(0) + "%  ·  " + (root.memoryUsed / 1048576).toFixed(1) + " / " + (root.memoryTotal / 1048576).toFixed(1) + " GiB"
                         : "Memoria  ·  No disponible"
                     color: "white"; font.pixelSize: 12
                 }
                 Rectangle {
-                    Layout.fillWidth: true; height: 5; radius: 3; color: "#3CFFFFFF"
+                    Layout.fillWidth: true; height: 6; radius: 3; color: "#3CFFFFFF"
+                    Accessible.name: "Uso de memoria: " + root.usagePercent(root.memoryUsed, root.memoryTotal).toFixed(0) + "%"
                     Rectangle {
-                        width: root.memoryTotal > 0 ? parent.width * root.memoryUsed / root.memoryTotal : 0
+                        width: root.progressWidth(parent.width, root.memoryUsed, root.memoryTotal)
                         height: parent.height; radius: 3; color: "#DC143C"
+                        Behavior on width { NumberAnimation { duration: 320; easing.type: Easing.OutCubic } }
                     }
                 }
                 QQC2.Label {
@@ -158,23 +167,27 @@ PlasmoidItem {
                     color: "white"; font.pixelSize: 12
                 }
                 Rectangle {
-                    Layout.fillWidth: true; height: 5; radius: 3; color: "#3CFFFFFF"
+                    Layout.fillWidth: true; height: 6; radius: 3; color: "#3CFFFFFF"
+                    Accessible.name: root.cpuUsagePercent >= 0 ? "Uso de CPU: " + root.cpuUsagePercent.toFixed(0) + "%" : "Uso de CPU sin datos"
                     Rectangle {
-                        width: root.cpuUsagePercent >= 0 ? parent.width * root.cpuUsagePercent / 100 : 0
+                        width: root.cpuUsagePercent >= 0 ? parent.width * Math.max(0, Math.min(100, root.cpuUsagePercent)) / 100 : 0
                         height: parent.height; radius: 3; color: "#DC143C"
+                        Behavior on width { NumberAnimation { duration: 320; easing.type: Easing.OutCubic } }
                     }
                 }
                 QQC2.Label {
                     text: root.diskTotalBytes > 0
-                        ? "Disco  ·  " + (root.diskUsedBytes / 1073741824).toFixed(1) + " / " + (root.diskTotalBytes / 1073741824).toFixed(1) + " GiB"
+                        ? "Disco  ·  " + root.usagePercent(root.diskUsedBytes, root.diskTotalBytes).toFixed(0) + "%  ·  " + (root.diskUsedBytes / 1073741824).toFixed(1) + " / " + (root.diskTotalBytes / 1073741824).toFixed(1) + " GiB"
                         : "Disco  ·  no disponible"
                     color: "white"; font.pixelSize: 12
                 }
                 Rectangle {
-                    Layout.fillWidth: true; height: 5; radius: 3; color: "#3CFFFFFF"
+                    Layout.fillWidth: true; height: 6; radius: 3; color: "#3CFFFFFF"
+                    Accessible.name: root.diskTotalBytes > 0 ? "Uso del filesystem raíz: " + root.usagePercent(root.diskUsedBytes, root.diskTotalBytes).toFixed(0) + "%" : "Uso del filesystem raíz sin datos"
                     Rectangle {
-                        width: root.diskTotalBytes > 0 ? parent.width * root.diskUsedBytes / root.diskTotalBytes : 0
+                        width: root.progressWidth(parent.width, root.diskUsedBytes, root.diskTotalBytes)
                         height: parent.height; radius: 3; color: "#DC143C"
+                        Behavior on width { NumberAnimation { duration: 320; easing.type: Easing.OutCubic } }
                     }
                 }
                 QQC2.Label {
