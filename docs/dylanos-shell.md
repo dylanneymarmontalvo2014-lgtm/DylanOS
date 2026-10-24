@@ -109,3 +109,12 @@ hoy cuando se selecciona otro día. Los nombres accesibles indican «hoy» y
 «seleccionado» según corresponda; hover, selección y contorno cambian con una
 transición breve. Las pruebas de contrato comprueban QML y staging, pero falta
 validar percepción y foco en una sesión real de Plasma.
+
+
+## Abrir Monitor del sistema desde Dashboard (2026-10-24)
+
+Dashboard 0.4.0 incorpora el botón «Abrir Monitor del sistema», que ejecuta el
+comando real `plasma-systemmonitor` mediante el motor executable de Plasma. El
+paquete está en `packages/default/packages.list`. La prueba de staging y la
+prueba contractual comprueban el comando, botón y dependencia; todavía falta
+verificar su apertura visual en una sesión Plasma real.
