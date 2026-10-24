@@ -48,8 +48,8 @@ parte de esta optimización.
 
 El panel de escritorio muestra hora, calendario, RAM, CPU, espacio usado/total
 del filesystem raíz y uptime con lecturas locales (`/proc` y `df`). No consulta
-servicios remotos ni inventa valores. El widget pasa a 500 × 360 para acomodar
-las métricas sin solaparlas. El primer render después de iniciar puede mostrar
+servicios remotos ni inventa valores. El widget mide actualmente 500 × 470 para
+acomodar las métricas y el temporizador Pomodoro sin solaparlos. El primer render después de iniciar puede mostrar
 la CPU como «leyendo…» hasta obtener dos muestras del contador.
 
 ## Comandos de validación
@@ -89,7 +89,7 @@ reemplazo y las pruebas funcionales afectadas.
 
 - `apps/com.dylanos.dashboard/contents/ui/main.qml`: CPU y disco locales, con
   barras de uso y una representación de 500 × 360.
-- `themes/lookandfeel/org.dylanos.crimson/contents/layouts/org.kde.plasma.desktop-layout.js`: actualizar la geometría inicial del widget a 500 × 360 y conservar explícitamente la ruta/configuración del wallpaper existente.
+- `themes/lookandfeel/org.dylanos.crimson/contents/layouts/org.kde.plasma.desktop-layout.js`: geometría inicial del widget a 500 × 360; conserva la ruta/configuración del wallpaper.
 - `scripts/build.sh`: no instalar recommends y retirar solo dependencias
   automáticas huérfanas después de las purgas existentes.
 - `scripts/tests/test_packages.sh`: asegurar las opciones de optimización y las
@@ -174,3 +174,11 @@ intento no se considera una medición aprobada ni prueba que el greeter se haya
 renderizado. El detector ahora elimina secuencias ANSI, añade un margen de
 tiempo y usa un CPU QEMU sin AVX explícito; el siguiente build debe confirmar
 si el fallo gráfico desaparece y registrar el tiempo real.
+
+
+## Ampliación vertical del Dashboard — 2026-10-24
+
+La representación del plasmoid se amplía de 500 × 360 a 500 × 470 para alojar
+el nuevo temporizador Pomodoro junto con el calendario y las métricas existentes.
+El layout inicial de Plasma asigna la misma geometría a los perfiles nuevos; no
+se modifica el wallpaper ni la geometría de perfiles existentes.

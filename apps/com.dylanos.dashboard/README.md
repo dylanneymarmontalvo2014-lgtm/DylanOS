@@ -1,6 +1,6 @@
 # DylanOS Dashboard — plasmoid `com.dylanos.dashboard`
 
-Widget Plasma 6 instalado en el escritorio para perfiles nuevos. Combina hora/fecha, calendario local y lecturas del sistema local. Versión de paquete del applet: 0.5.0.
+Widget Plasma 6 instalado en el escritorio para perfiles nuevos. Combina hora/fecha, calendario local y lecturas del sistema local. Versión de paquete del applet: 0.6.0.
 
 ## Calendario
 
@@ -31,3 +31,20 @@ Lee `/proc/meminfo`, `/proc/uptime`, `/proc/stat` y `df -B1 --output=used,size /
 El widget no dibuja eventos de calendario, pronóstico ni agenda. La selección de fecha es solo UI, no crea ni guarda eventos. Las pruebas `test_shell_contract.py` y `test_staging.py` comprueban el contrato y empaquetado; no demuestran el render visual del QML. Para QA gráfico hace falta cargar el plasmoid en una sesión Plasma 6.
 
 Consulta [Centro de Control](../dylanos-control-center/README.md), [guía general](../../docs/guia-de-uso.md) y [documento de shell](../../docs/dylanos-shell.md).
+
+## Temporizador de enfoque
+
+Incluye un temporizador local tipo Pomodoro: 25 minutos de enfoque y 5 minutos de
+descanso. «Iniciar» comienza el bloque, «Pausar» conserva el tiempo restante,
+«Continuar» retoma el conteo y «Reiniciar» devuelve el bloque actual a su
+duración completa. Al terminar, el widget marca la sesión y propone comenzar
+el descanso (o volver al enfoque); el siguiente bloque requiere pulsar el
+botón, así que no cambia de modo a escondidas. La hora límite se calcula con
+la hora del sistema (`Date.now()`), el panel muestra progreso
+animado y el contador de sesiones vive solo mientras el widget está cargado;
+no se guarda historial ni se envían notificaciones.
+
+`contents/ui/PomodoroClock.js` contiene cálculos puros de duración, modo,
+tiempo restante y progreso. `scripts/tests/test_pomodoro.py` los prueba con Node
+cuando está disponible; el contrato de QML también se comprueba en las pruebas
+de shell y staging. El render final requiere QA en una sesión Plasma 6.
