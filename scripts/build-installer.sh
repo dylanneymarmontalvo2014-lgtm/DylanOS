@@ -15,7 +15,7 @@ BUILD_ROOT="$(mktemp -d "${TMPDIR:-/tmp}/dylanos-installer-build.XXXXXX")"
 # shellcheck disable=SC2317 # Invoked by EXIT trap.
 cleanup() { rm -rf -- "$BUILD_ROOT"; }
 trap cleanup EXIT
-OUTPUT_DIR="${DYLANOS_INSTALLER_DIST:-$BUILD_ROOT/dist}"
+OUTPUT_DIR="${DYLANOS_INSTALLER_DIST:-$APP/dist}"
 mkdir -p "$OUTPUT_DIR"
 # Build from an isolated copy: npm ci deletes/recreates node_modules, which may
 # contain root-owned links after older sudo-based builds in the user checkout.
