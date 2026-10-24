@@ -10,6 +10,7 @@ Todos los cambios relevantes de DylanOS se registran en este archivo. La intenci
 - Calendario interactivo del Dashboard, silencio de audio en el Centro de Control y guía de uso/capacidades de las aplicaciones.
 - Documentación de componentes Workspace, Spotlight, App Center y Calculator; se precisan las limitaciones reales del instalador y las categorías incompletas de Spotlight.
 - Control de volumen y silencio del micrófono predeterminado en el Centro de Control mediante `pactl`, con estado no disponible cuando no hay fuente de entrada.
+- Dashboard 0.3.0: porcentajes claros y barras Crimson con animación suave y descripciones accesibles para RAM, CPU y filesystem raíz.
 
 ### Cambiado
 
