@@ -12,7 +12,7 @@ propios. El staging oculta los lanzadores genéricos de Kitty y elimina los rest
 Konsole; el build purga su paquete si reaparece como recomendación de Plasma.
 
 La configuración compartida vive en `configs/kitty/kitty.conf`: JetBrains Mono, paleta
-Crimson, fondo `#0A0A0A` con opacidad 0,58 y blur 24 inspirado en la consola de referencia,
+Crimson, fondo `#0A0A0A` con opacidad 0,40 y blur 24 inspirado en la consola de referencia,
 pestañas minimalistas y 50.000 líneas de
 historial. `dylanos-console --directory <ruta>` conserva el flujo de abrir un proyecto
 directamente en su carpeta.
@@ -24,10 +24,12 @@ dibuja la imagen PNG real de `branding/logo.png`, no arte ASCII; el panel usa et
 en español, separador con nombre y la paleta oficial. ImageMagick prepara la imagen.
 
 El recomendador Bash consulta primero el historial reciente y después los comandos
-disponibles. Dibuja únicamente el sufijo sugerido con ANSI `faint` y gris, sin incorporarlo
-a la línea hasta que el usuario pulsa Tab o flecha derecha. Si no hay sugerencia, Tab
-conserva el completado de comandos/archivos. El módulo solo registra atajos Readline en
-sesiones interactivas y se prueba ejecutando una recomendación real y su aceptación.
+disponibles. Sugiere el sufijo y lo incorpora a la línea solo cuando el usuario pulsa Tab
+o flecha derecha. Si no hay sugerencia, Tab conserva el completado de comandos/archivos.
+El texto no se repinta mientras se escribe: los bindings por carácter encadenaban macros
+de Readline ("maximum macro execution nesting level exceeded") y bloqueaban cualquier
+comando. El módulo solo registra atajos Readline en sesiones interactivas y se prueba
+ejecutando una recomendación real y su aceptación.
 
 
 ## Seguimiento de la identidad visual y la optimización
