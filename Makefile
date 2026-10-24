@@ -5,7 +5,7 @@ ROOT := $(abspath $(dir $(lastword $(MAKEFILE_LIST))))
 PYTHON ?= python3
 PROFILE ?= development
 RESUME ?= 0
-BUILD_JOBS ?= $(shell nproc 2>/dev/null || echo 2)
+BUILD_JOBS ?= $(shell n=$$(nproc 2>/dev/null || echo 2); if [ $$n -gt 4 ]; then echo 4; else echo $$n; fi)
 BUILD_ARGS :=
 
 ifeq ($(PROFILE),development)
