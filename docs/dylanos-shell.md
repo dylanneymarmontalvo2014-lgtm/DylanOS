@@ -100,3 +100,12 @@ usada; CPU conserva su porcentaje. Las tres barras Crimson animan las variacione
 entre muestras y ofrecen nombre accesible con su valor. El helper limita anchos
 a 0–100% y maneja valores sin datos. Dashboard eleva el paquete a 0.3.0. La
 prueba contractual verifica estas propiedades; no sustituye QA visual en Plasma.
+
+
+## Estados visuales del calendario (2026-10-24)
+
+El Dashboard 0.3.1 refuerza la fecha elegida y conserva un contorno distinto para
+hoy cuando se selecciona otro día. Los nombres accesibles indican «hoy» y
+«seleccionado» según corresponda; hover, selección y contorno cambian con una
+transición breve. Las pruebas de contrato comprueban QML y staging, pero falta
+validar percepción y foco en una sesión real de Plasma.
