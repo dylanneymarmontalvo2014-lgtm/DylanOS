@@ -80,6 +80,7 @@ bash scripts/iso.sh
 ```
 
 El proceso de build usa `scripts/build.sh` y `scripts/stage.py` para preparar el contenido del sistema, con salida en `work/chroot` y `work/iso`.
+El frontend del instalador se construye en una copia temporal aislada: `npm ci` no opera sobre `installer/dylanos-installer/node_modules` del checkout, que puede contener enlaces heredados con propietario root de compilaciones antiguas. El `dist` resultante también se guarda temporalmente y se copia al chroot solo tras validar que `index.html` existe y no está vacío. No es necesario borrar ni cambiar propietario a `node_modules` del repositorio.
 No ejecutes `build.sh` con `sudo`: el script solicita privilegios solo cuando entra al
 chroot. Si `work/chroot` ya existe, continúa de forma explícita con
 `./scripts/build.sh --resume`; nunca se sobrescribe automáticamente.
