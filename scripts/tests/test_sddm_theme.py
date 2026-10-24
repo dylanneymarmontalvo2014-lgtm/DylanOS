@@ -21,6 +21,10 @@ class SddmThemeTest(unittest.TestCase):
             'sddm.login(', 'sddm.powerOff()', 'sddm.reboot()', 'sddm.suspend()',
             'AccountCard {}', 'SessionCard {}', 'LocalTimeCard {}', 'PowerCard {}',
             'config.screenshot.length > 0',
+            'id: loginPanel', 'Bienvenido a DylanOS', 'Accede a tu sesión',
+            'visible: parent.width >= 1280 && parent.height >= 700',
+            'Behavior on border.color', 'onTextChanged: if (root.errorText !== "") root.errorText = ""',
+            'BusyIndicator { running: root.authenticating',
         ):
             with self.subTest(snippet=snippet):
                 self.assertIn(snippet, main)
