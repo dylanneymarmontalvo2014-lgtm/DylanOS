@@ -115,8 +115,9 @@ técnica viva: `docs/architecture.md`. Este archivo es el índice operativo de r
   visible `DylanOS Console`, desktop/app id `org.dylanos.console`, icono propio
   `branding/icons/dylanos-console.{svg,png}`. Los lanzadores genéricos de Kitty se ocultan
   y `build.sh` purga `konsole` de chroots reutilizados.
-- Configuración: `configs/kitty/kitty.conf` (JetBrains Mono, paleta Crimson, 80 % de
-  opacidad, blur, 50.000 líneas); se instala tanto en `/etc/xdg/kitty` como en el skel.
+- Configuración: `configs/kitty/kitty.conf` (JetBrains Mono, paleta Crimson,
+  opacidad 0,74, blur 40, pestañas minimalistas, 50.000 líneas); se instala tanto en
+  `/etc/xdg/kitty` como en el skel.
 - Neofetch sustituye a Fastfetch. Debian 13 ya no publica el paquete original: se instala
   `neowofetch` (fork compatible mantenido) y `/usr/bin/neofetch` es el wrapper estable de
   DylanOS. `configs/neofetch/config.conf` usa el backend gráfico `kitty` y la imagen real

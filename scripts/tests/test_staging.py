@@ -169,7 +169,9 @@ class StagingTest(unittest.TestCase):
 
             # Terminal DylanOS: Kitty translúcido + neofetch con logo PNG.
             kitty = (root / "etc/skel/.config/kitty/kitty.conf").read_text()
-            self.assertIn("background_opacity 0.80", kitty)
+            self.assertIn("background_opacity 0.74", kitty)
+            self.assertIn("background_blur 40", kitty)
+            self.assertIn("tab_bar_style separator", kitty)
             self.assertIn("scrollback_lines 50000", kitty)
             self.assertIn("#DC143C", kitty)
             console = (root / "usr/share/applications/org.dylanos.console.desktop").read_text()
