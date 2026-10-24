@@ -118,3 +118,12 @@ comando real `plasma-systemmonitor` mediante el motor executable de Plasma. El
 paquete está en `packages/default/packages.list`. La prueba de staging y la
 prueba contractual comprueban el comando, botón y dependencia; todavía falta
 verificar su apertura visual en una sesión Plasma real.
+
+
+## Actualización manual del Dashboard (2026-10-24)
+
+Dashboard 0.4.1 ofrece «Actualizar» junto al estado del sistema. Llama la misma
+función de lectura local que el refresco periódico de 10 segundos y muestra la
+hora local de la última solicitud. No cambia las fuentes: RAM, uptime, CPU y uso
+del filesystem raíz siguen viniendo de `/proc` y `df`. Las pruebas de contrato y
+staging verifican la acción y la marca de hora, pero no el render en Plasma.
