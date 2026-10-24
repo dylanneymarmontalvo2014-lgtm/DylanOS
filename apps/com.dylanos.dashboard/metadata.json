@@ -7,8 +7,8 @@
             }
         ],
         "Category": "System Information",
-        "Description": "Calendario y estado del sistema con información local en tiempo real",
-        "Description[es]": "Calendario y estado del sistema con información local en tiempo real",
+        "Description": "Interactive local calendar and live system dashboard",
+        "Description[es]": "Calendario interactivo y panel del sistema en tiempo real",
         "Icon": "view-calendar",
         "Id": "com.dylanos.dashboard",
         "Name": "DylanOS Dashboard",
@@ -16,7 +16,7 @@
         "ServiceTypes": [
             "Plasma/Applet"
         ],
-        "Version": "0.1.0"
+        "Version": "0.2.0"
     },
     "X-Plasma-API-Minimum-Version": "6.0"
 }

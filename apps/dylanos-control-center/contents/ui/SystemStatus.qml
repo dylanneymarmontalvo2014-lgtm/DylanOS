@@ -87,6 +87,10 @@ QtObject {
         exec.connectSource("pactl set-sink-volume @DEFAULT_SINK@ " + pct + "%")
     }
 
+    function toggleMute() {
+        if (volumeAvailable) exec.connectSource("pactl set-sink-mute @DEFAULT_SINK@ toggle")
+    }
+
     // =====================================================================
     // MODO OSCURO (plasma-apply-colorscheme)
     // =====================================================================
@@ -95,7 +99,7 @@ QtObject {
     function toggleDarkMode() {
         const target = !darkModeActive
         darkModeActive = target // respuesta inmediata en UI
-        exec.connectSource("plasma-apply-colorscheme " + (target ? "BreezeDark" : "BreezeLight"))
+        exec.connectSource("plasma-apply-colorscheme " + (target ? "DylanOSDark" : "DylanOSLight"))
     }
 
     // =====================================================================
@@ -157,7 +161,7 @@ QtObject {
 
             // ---- Modo oscuro ----
             } else if (sourceName.indexOf("kreadconfig6") === 0) {
-                root.darkModeActive = out.toLowerCase().indexOf("dark") !== -1
+                root.darkModeActive = out.trim() === "DylanOSDark"
 
             // ---- MPRIS ----
             } else if (sourceName === "playerctl status") {
@@ -173,29 +177,38 @@ QtObject {
     }
 
     // =====================================================================
-    // POLLING (cada 2s: brillo/volumen/mpris/darkmode. Wi-Fi cada 5s)
+    // Polling escalonado: audio/brillo cada 5 s; apariencia, media y Wi-Fi cada 15 s.
     // =====================================================================
-    function refreshAll() {
+    function refreshAudioAndBrightness() {
         exec.connectSource("qdbus6 org.kde.Solid.PowerManagement /org/kde/Solid/PowerManagement/Actions/BrightnessControl org.kde.Solid.PowerManagement.Actions.BrightnessControl.brightnessMax")
         exec.connectSource("qdbus6 org.kde.Solid.PowerManagement /org/kde/Solid/PowerManagement/Actions/BrightnessControl org.kde.Solid.PowerManagement.Actions.BrightnessControl.brightness")
         exec.connectSource("pactl get-sink-volume @DEFAULT_SINK@")
         exec.connectSource("pactl get-sink-mute @DEFAULT_SINK@")
+    }
+
+    function refreshMediaAndAppearance() {
         exec.connectSource("kreadconfig6 --file kdeglobals --group General --key ColorScheme")
         exec.connectSource("playerctl status")
     }
 
     property Timer fastPoll: Timer {
-        interval: 2000; repeat: true; running: true
-        onTriggered: root.refreshAll()
+        interval: 5000; repeat: true; running: true
+        onTriggered: root.refreshAudioAndBrightness()
+    }
+
+    property Timer slowPoll: Timer {
+        interval: 15000; repeat: true; running: true
+        onTriggered: root.refreshMediaAndAppearance()
     }
 
     property Timer wifiPoll: Timer {
-        interval: 5000; repeat: true; running: true
+        interval: 15000; repeat: true; running: true
         onTriggered: exec.connectSource("nmcli radio wifi")
     }
 
     Component.onCompleted: {
-        refreshAll()
+        refreshAudioAndBrightness()
+        refreshMediaAndAppearance()
         exec.connectSource("nmcli radio wifi")
     }
 }

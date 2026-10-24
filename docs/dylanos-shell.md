@@ -46,3 +46,20 @@ ejecutando una recomendación real y su aceptación.
 - `scripts/tests/test_shell_contract.py`: regresión contractual para el ajuste de contadores guest y validación del intervalo de deltas.
 - Verificación: el CI `Check beta` de `development` se ejecuta para este cambio; no es prueba de arranque ni de render gráfico en QEMU.
 - No cambia el wallpaper, la configuración de Konsole ni Fastfetch.
+
+
+## Widgets interactivos y refresco eficiente (2026-10-24)
+
+- Dashboard: el calendario permite seleccionar cualquier día visible, marca
+  el día actual y expone una acción «Hoy» para regresar rápidamente. La fecha
+  seleccionada se presenta con formato local; no se simulan citas ni eventos.
+- Centro de Control: el silencio de salida ahora usa `pactl` real. El cambio
+  de tema conserva la paleta propia `DylanOSDark`/`DylanOSLight` en vez de
+  reemplazarla por Breeze.
+- Eficiencia: brillo/volumen se consultan cada 5 s; Wi-Fi, reproducción y tema
+  cada 15 s, en lugar de lanzar toda la batería de consultas cada 2 s.
+  `playerctl` se incluye en el perfil base para que los controles MPRIS no
+  dependan de instalación manual.
+- Los dos applets actualizan metadatos a 0.2.0. Las pruebas de contrato y
+  staging verifican funciones, metadatos y frecuencias; el render QML real
+  debe confirmarse además en una sesión Plasma.
