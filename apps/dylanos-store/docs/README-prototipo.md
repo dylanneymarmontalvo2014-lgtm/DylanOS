@@ -1,8 +1,12 @@
+> **Archivo del prototipo React histórico — no describe el backend de producción actual.**
+> El ejecutable instalado hoy es el cliente C++/QML de `src/store/`, con
+> `LibDiscoverBackend` configurado en `main.cpp`. Consulta `../README.md` para
+> instrucciones vigentes.
+
 # DylanOS Store (Qt 6 / QML)
 
 Native migration of the React prototype in `../src` (which is kept untouched as visual reference).
-C++17 + QML + CMake. No React, Electron or embedded browser. The data layer is a simulated backend:
-**nothing is ever installed or removed on the host.**
+C++17 + QML + CMake. No React, Electron or embedded browser. La implementación React de referencia de `src/` y el contrato `MockPackageBackend` son simulados; no representan las operaciones del binario de producción, que usa libdiscover.
 
 ## Requirements
 Qt 6.5+ (developed on 6.8.3) with Quick, QuickControls2, Svg, Shapes, Test; CMake 3.21+; Ninja.

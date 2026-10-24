@@ -1,3 +1,5 @@
+> **Informe histórico, no configuración vigente.** Este documento describe una etapa anterior (Calamares, opciones de GRUB y flujos de autostart) que cambió desde entonces. El instalador actual es `installer/dylanos-installer`; revisa [`install.md`](install.md), [`guia-de-uso.md`](guia-de-uso.md) y el código de `scripts/stage.py`/`scripts/iso.sh` antes de ejecutar instrucciones. Conservamos este texto como registro técnico, no como procedimiento operativo.
+
 # Solución de Cuelgue en Boot (Plymouth) y Personalización de GRUB
 
 ## 1. Diagnóstico del Problema

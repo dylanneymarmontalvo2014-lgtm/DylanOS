@@ -1,22 +1,7 @@
-# Archivos — DylanOS 1.0 Beta
+# Archivos — prototipo histórico
 
-`python3 main.py` abre la implementación real compartida en `../workspace`.
-Requiere PySide6 6.8+ y psutil.
+Esta carpeta conserva un prototipo antiguo y **no es la aplicación de archivos que se instala en la ISO**. Su `main.py` inicia la implementación compartida del Workspace; el QML del prototipo es una referencia, contiene datos de ejemplo y no está conectado al backend activo.
 
-Incluye navegación del sistema de archivos, historial, búsqueda por nombre en la
-carpeta actual, favoritos XDG, vistas de lista/iconos, archivos ocultos, apertura
-con la aplicación predeterminada, creación de carpetas, copia, pegado,
-renombrado sin sobrescritura y papelera con confirmación. Los errores aparecen en
-la ventana; las operaciones largas se ejecutan en segundo plano.
+La aplicación oficial del sistema es **DylanOS Explorer** (`apps/dylanos-explorer`), compilada en C++/Qt Quick y basada en KIO. El Workspace también dispone de una página básica `dylanos --page files`; no es el reemplazo para la gestión completa de archivos.
 
-Dolphin sigue siendo el gestor predeterminado y ofrece selección múltiple,
-arrastrar y soltar, ubicaciones remotas, dispositivos y recuperación de papelera.
-El botón «Abrir en Dolphin» abre la carpeta actual.
-
-`qml/Main.qml` y `assets/` conservan el prototipo anterior sin alteraciones.
-Ese prototipo contiene un árbol de ejemplo: no es la implementación que ejecuta
-la beta. `main.py` no carga `qml/Main.qml`; el prototipo conserva datos
-simulados únicamente como referencia visual y cualquier cambio funcional debe
-hacerse en Workspace. Las etiquetas, columnas y favoritos personalizados del
-prototipo aún no están conectados a disco y no se anuncian en la aplicación
-nueva.
+No usar esta ruta ni sus antiguas capturas para describir el estado actual. Consulta [`../dylanos-explorer/README.md`](../dylanos-explorer/README.md), [`../workspace/README.md`](../workspace/README.md) y la [guía general](../../docs/guia-de-uso.md).

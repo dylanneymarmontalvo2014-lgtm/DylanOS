@@ -1,51 +1,47 @@
-# DylanOS Installer
+# DylanOS Installer — arquitectura y estado real
 
-Instalador oficial de DylanOS: la interfaz del prototipo Figma (React + Vite +
-Tailwind CSS v4) funcionando sobre un backend REST propio que instala el
-sistema de verdad.
+El instalador se distribuye como una ventana Qt WebEngine propia que carga el frontend React/Vite (`src/`) servido por el backend HTTP local (`backend/server.py`). No abre un navegador externo. El ejecutable de sesión es `dylanos-installer`; su frontend compilado se copia al staging durante la construcción.
 
-## Overview
+## Iniciar y compilar el frontend
 
-The DylanOS Installer provides a step-by-step installation wizard with the following screens:
+En el ISO, inicia el acceso «Instalar DylanOS» o ejecuta:
 
-1. **Welcome** — Introduction and feature highlights
-2. **Language** — System language selection with search
-3. **Keyboard** — Keyboard layout, variant, and model selection with a live virtual keyboard tester
-4. **Partitioning** — Disk partitioning (automatic or manual)
-5. **User Creation** — Account setup with password strength validation
-6. **Summary** — Configuration review before installation begins
-7. **Installation** — Simulated installation progress with stage tracking
-8. **Finish** — Completion screen with reboot option
-
-## Project Structure
-
-```
-src/
-├── screens/       # One subfolder per installer screen
-├── components/    # Shared UI components
-├── data/          # Mock data split by domain
-├── state/         # Global installer state (React context + useReducer)
-├── services/      # Business logic (simulated installation)
-├── assets/        # Static assets (logos, backgrounds, illustrations)
-└── styles/        # CSS split by concern (colors, typography, spacing, borders, effects)
+```sh
+dylanos-installer
+dylanos-installer --fullscreen
 ```
 
-## Development
+El modo normal abre una ventana redimensionable; `--fullscreen` usa pantalla completa y Escape vuelve a ventana. Para desarrollo del frontend: `npm ci` y `npm run build` dentro de este directorio. El flujo oficial de staging compila el frontend en una copia temporal aislada; no es necesario ni recomendable modificar el `node_modules` del checkout para construir la ISO.
 
-The dev server runs on `$PORT` (default 8443) via Vite. Hot reload is enabled.
+La ventana nativa arranca el backend en `127.0.0.1:8088`. Si ya existe un backend escuchando, puede reutilizarlo. El backend necesita root y acceso a disco para la ruta de instalación real; ejecutado sin root sirve una vista previa sin escribir al disco.
 
-```bash
-pnpm run dev
-pnpm run build
-```
+## API local
 
-## Notes
+GET: `/api/health`, `/api/system-info`, `/api/disks`, `/api/locales`, `/api/keyboards`, `/api/install/status`.
 
-El backend (`backend/server.py`) expone `/api/system-info`, `/api/disks`,
-`/api/locales`, `/api/apply-keyboard`, `/api/validate-user`, `/api/install`,
-`/api/install/status`, `/api/reboot` y `/api/quit`. La instalación real
-(particionado con parted, extracción del squashfs con progreso medido,
-usuarios, locale, teclado, GRUB) solo se ejecuta cuando el backend corre como
-root sobre un disco real; en caso contrario funciona en modo vista previa sin
-escribir nada. Los catálogos de `src/data/` actúan como respaldo si el backend
-no responde.
+POST: `/api/apply-keyboard`, `/api/validate-user`, `/api/install`, `/api/reboot`, `/api/quit`. El frontend consulta `install/status` durante el progreso. La API escucha solo en localhost; no está concebida como servicio remoto ni como interfaz autenticada para una red.
+
+## Flujo real y protección de disco
+
+El backend obtiene datos de sistema/discos mediante fuentes locales (`/proc`, `lsblk` y herramientas del sistema), enumera discos físicos omitiendo el medio live y responde con progreso de instalación. En modo automático, sobre una ruta de dispositivo existente y con privilegios root, puede escribir una tabla GPT, formatear ESP y raíz ext4, extraer el filesystem, crear la cuenta/locale/teclado y configurar GRUB. Es una operación **destructiva para el disco seleccionado**. Antes de confirmar, verifica dispositivo, tamaño, modo y copia de seguridad; primero prueba en VM con un disco virtual descartable. No uses un disco del host como prueba.
+
+En modo manual, el backend no ofrece un editor de particiones completo: busca una partición ext4 existente y una ESP opcional. Los botones visuales «Nueva partición», «Editar», «Eliminar» y «Revertir» del prototipo de particionado no tienen acciones conectadas. No los trates como funcionales ni elijas el modo manual esperando que apliquen esos cambios.
+
+## Vista previa y límites del frontend
+
+Si el backend no responde, varios componentes React retienen datos locales de demostración como respaldo. El frontend también conserva una secuencia de progreso simulada como fallback cuando la solicitud de instalación falla. Esa animación **no** ejecuta particionado, no copia DylanOS y no prueba que se haya instalado. La interfaz de hardware puede mostrar valores de catálogo si no se reciben datos del backend.
+
+Solo el estado del endpoint real y el log del backend, corriendo con privilegios y disco válido en una VM desechable, sirven para evaluar la instalación. La vista previa QML/HTML o el smoke test de ventana solo demuestra que la interfaz carga. La compilación de frontend no demuestra que una instalación real arranque. Documenta aparte la validación de detección, escritura, reinicio y arranque desde el disco virtual.
+
+## QA
+
+- Frontend: `npm run build` valida compilación de Vite/TypeScript según los scripts instalados.
+- Ventana nativa: `dylanos-installer --smoke`; requiere runtime PySide6/Qt WebEngine y sesión gráfica/offscreen apropiada.
+- Backend: ejecutar pruebas dirigidas desde `scripts/tests/test_installer_backend.py`; deben usar dispositivos temporales/mocks, nunca el disco de trabajo.
+- ISO: seguir [`../../../docs/install.md`](../../../docs/install.md). La instalación real debe ejecutarse en VM con un disco virtual desechable y comprobar el arranque instalado por separado.
+
+## Referencias
+
+- [Guía de uso DylanOS y límites del instalador](../../../docs/guia-de-uso.md)
+- [Contrato y pruebas del backend](../../../scripts/tests/test_installer_backend.py)
+- [Implementación backend](../backend/server.py) y [ventana nativa](../native/main.py)

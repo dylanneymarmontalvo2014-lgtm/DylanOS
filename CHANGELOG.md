@@ -2,6 +2,18 @@
 
 Todos los cambios relevantes de DylanOS se registran en este archivo. La intención es mantener un histórico claro de la evolución del escritorio, el branding y la plataforma de instalación.
 
+## [Unreleased] - development
+
+### Añadido
+
+- Comando `about`, generado por staging y conectado a `MAINTAINERS.txt`.
+- Calendario interactivo del Dashboard, silencio de audio en el Centro de Control y guía de uso/capacidades de las aplicaciones.
+- Documentación de componentes Workspace, Spotlight, App Center y Calculator; se precisan las limitaciones reales del instalador y las categorías incompletas de Spotlight.
+
+### Cambiado
+
+- El índice de documentación enlaza las nuevas guías y diferencia las guías activas de los informes históricos.
+
 ## [1.0.0-crimson] - 2026-10-18
 
 ### Añadido
