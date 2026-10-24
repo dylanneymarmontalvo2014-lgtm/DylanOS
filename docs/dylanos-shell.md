@@ -188,3 +188,21 @@ compositor. No se cambia wallpaper, Kitty ni el tema de color personalizado.
 `scripts/lib/generate-theme.py`; pruebas de contrato/tema/staging; guías de uso.
 **Validación:** pruebas de suites estáticas, generación y staging; QA visual real
 requiere una sesión Plasma 6 con composición habilitada.
+
+
+## Menos memoria y actividad en segundo plano (2026-10-24)
+
+Centro de Control 0.4.0 comparte el mismo `NotificationManager.Notifications`
+entre el indicador compacto y la lista desplegable: se elimina la segunda
+instancia del modelo. Los temporizadores de lectura de audio/brillo (5 s) y
+Wi-Fi/tema/MPRIS (15 s) solo funcionan mientras el popup está abierto; al
+abrirlo se solicita una lectura inmediata y al cerrarlo se paran. Se conserva
+la actualización en tiempo real mientras el usuario usa el panel y se dejan
+intactos los servicios/paquetes del sistema. Se reduce memoria auxiliar y
+actividad en reposo; no se atribuye una cifra de MiB sin benchmark de una ISO
+y sesión equivalentes antes/después.
+
+**Archivos afectados:** `apps/dylanos-control-center/contents/ui/main.qml`,
+`NotificationsPanel.qml`, `SystemStatus.qml`, `metadata.json`, README, guía,
+contratos de shell/staging y `docs/optimization.md`. QA gráfica y memoria real
+quedan pendientes de VM Plasma 6 y medición bajo la misma carga.

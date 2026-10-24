@@ -182,3 +182,18 @@ La representación del plasmoid se amplía de 500 × 360 a 500 × 470 para aloja
 el nuevo temporizador Pomodoro junto con el calendario y las métricas existentes.
 El layout inicial de Plasma asigna la misma geometría a los perfiles nuevos; no
 se modifica el wallpaper ni la geometría de perfiles existentes.
+
+
+## Menos memoria auxiliar del Centro de Control (2026-10-24)
+
+- El compacto y el desplegable comparten un único modelo de notificaciones
+  Plasma, en vez de mantener dos modelos para la misma lista.
+- Los temporizadores de sondeo de audio/brillo, Wi-Fi, tema y reproductor solo
+  corren mientras el popover del Centro de Control está abierto. Al abrirlo, se
+  refrescan los valores actuales; al cerrarlo, los temporizadores se detienen.
+- No se quita ningún servicio ni aplicación base; se conserva la funcionalidad
+  del panel cuando está abierto.
+- Es una reducción concreta de objetos residentes del plasmoid y de consultas
+  en reposo, no una cifra certificada de RAM total. Para cuantificar MiB hay que
+  comparar la misma ISO, VM, sesión y estado de widgets antes/después (PSS por
+  proceso y memoria `MemAvailable`), con varias mediciones repetidas.

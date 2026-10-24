@@ -3,7 +3,6 @@ import QtQuick.Layouts
 import QtQuick.Controls as QQC2
 import QtQuick.Effects
 import org.kde.kirigami as Kirigami
-import org.kde.notificationmanager as NotificationManager
 
 // Panel de Notificaciones — Bloque 3: modelo REAL de notificaciones.
 // ⚠️ Parte más riesgosa del bloque: si "org.kde.notificationmanager" no carga,
@@ -11,6 +10,7 @@ import org.kde.notificationmanager as NotificationManager
 // error exacto de la terminal para ajustar nombres de roles/métodos.
 Rectangle {
     id: root
+    property var notificationModel
 
     readonly property color cBlack:      Qt.rgba(10 / 255, 10 / 255, 12 / 255, 0.88)
     readonly property color cGray:       "#1A1A1A"
@@ -32,13 +32,6 @@ Rectangle {
         shadowBlur: 0.7
         shadowVerticalOffset: 10
         shadowHorizontalOffset: 0
-    }
-
-    NotificationManager.Notifications {
-        id: notificationsModel
-        showExpired: false
-        showJobs: false
-        limit: 50
     }
 
     ColumnLayout {
@@ -67,7 +60,7 @@ Rectangle {
             Rectangle {
                 width: 24; height: 24; radius: 12
                 color: cCrimson
-                visible: notificationsModel.count > 0
+                visible: root.notificationModel.count > 0
 
                 layer.enabled: true
                 layer.effect: MultiEffect {
@@ -76,7 +69,7 @@ Rectangle {
                 }
                 QQC2.Label {
                     anchors.centerIn: parent
-                    text: notificationsModel.count
+                    text: root.notificationModel.count
                     color: cWhite; font.pixelSize: 12; font.bold: true
                 }
             }
@@ -92,7 +85,7 @@ Rectangle {
         Item {
             Layout.fillWidth: true
             Layout.fillHeight: true
-            visible: notificationsModel.count === 0
+            visible: root.notificationModel.count === 0
             ColumnLayout {
                 anchors.centerIn: parent
                 spacing: 12
@@ -116,8 +109,8 @@ Rectangle {
             Layout.fillHeight: true
             spacing: 10
             clip: true
-            visible: notificationsModel.count > 0
-            model: notificationsModel
+            visible: root.notificationModel.count > 0
+            model: root.notificationModel
 
             delegate: Rectangle {
                 width: ListView.view.width
@@ -173,7 +166,7 @@ Rectangle {
                         icon.color: "#7a7a7a"
                         flat: true
                         visible: model.closable !== false
-                        onClicked: notificationsModel.close(index)
+                        onClicked: root.notificationModel.close(index)
                     }
                 }
             }
@@ -187,8 +180,8 @@ Rectangle {
             flat: true
             visible: true
             onClicked: {
-                for (let i = notificationsModel.count - 1; i >= 0; i--) {
-                    notificationsModel.close(i)
+                for (let i = root.notificationModel.count - 1; i >= 0; i--) {
+                    root.notificationModel.close(i)
                 }
             }
         }
