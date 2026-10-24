@@ -24,7 +24,6 @@ class StagingTest(unittest.TestCase):
                      "usr/share/dylanos/workspace/qml/Main.qml",
                      "usr/share/dylanos/installer/backend/server.py",
                      "usr/share/dylanos/installer/native/main.py",
-                     "usr/share/dylanos/installer/dist/index.html",
                      "usr/share/dylanos/spotlight/qml/Main.qml",
                      "usr/share/dylanos/neofetch/logo.png",
                      "usr/share/icons/hicolor/512x512/apps/distributor-logo-dylanos.png",
@@ -60,6 +59,12 @@ class StagingTest(unittest.TestCase):
                      "etc/skel/.config/gtk-3.0/settings.ini",
                      "etc/skel/.config/gtk-4.0/settings.ini"]
             for path in paths: self.assertTrue((root / path).is_file(), path)
+            source_dist = ROOT / "installer/dylanos-installer/dist"
+            staged_dist = root / "usr/share/dylanos/installer/dist/index.html"
+            if source_dist.is_dir():
+                self.assertTrue(staged_dist.is_file())
+            else:
+                self.assertFalse(staged_dist.exists(), "El staging sin build no debe inventar el frontend")
             # Calamares quedó eliminado: sin branding ni lanzadores de terceros.
             self.assertFalse((root / "etc/calamares").exists())
             self.assertFalse((root / "usr/share/applications/calamares-install-debian.desktop").exists())
