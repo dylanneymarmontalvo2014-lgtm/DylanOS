@@ -32,15 +32,17 @@ PlasmoidItem {
                 const uptimeMatch = output.match(/^([0-9]+(?:\.[0-9]+)?)/)
                 if (uptimeMatch) root.uptimeSeconds = Number(uptimeMatch[1])
             } else if (sourceName === "cat /proc/stat") {
-                const cpuMatch = output.match(/^cpu\s+([0-9 ]+)/m)
-                if (cpuMatch) {
-                    const ticks = cpuMatch[1].trim().split(/\s+/).map(Number)
-                    const total = ticks.reduce((sum, value) => sum + value, 0)
-                    const idle = (ticks[3] || 0) + (ticks[4] || 0)
-                    if (root.previousCpuTotal >= 0 && total > root.previousCpuTotal) {
+                const cpuLine = output.match(/^cpu\s+[0-9 ]+/m)
+                const counters = cpuLine ? root.cpuCountersFromStatLine(cpuLine[0]) : null
+                if (counters) {
+                    const total = counters.total
+                    const idle = counters.idle
+                    if (root.previousCpuTotal >= 0) {
                         const totalDelta = total - root.previousCpuTotal
                         const idleDelta = idle - root.previousCpuIdle
-                        root.cpuUsagePercent = Math.max(0, Math.min(100, 100 * (1 - idleDelta / totalDelta)))
+                        if (totalDelta > 0 && idleDelta >= 0 && idleDelta <= totalDelta) {
+                            root.cpuUsagePercent = Math.max(0, Math.min(100, 100 * (1 - idleDelta / totalDelta)))
+                        }
                     }
                     root.previousCpuTotal = total
                     root.previousCpuIdle = idle
@@ -53,6 +55,17 @@ PlasmoidItem {
                 }
             }
         }
+    }
+    function cpuCountersFromStatLine(line) {
+        const match = line.match(/^cpu\s+([0-9 ]+)/)
+        if (!match) return null
+        const ticks = match[1].trim().split(/\s+/).map(Number)
+        if (ticks.length < 4 || ticks.some(value => !Number.isFinite(value) || value < 0)) return null
+        // Linux incluye guest y guest_nice en user/nice; restarlos evita contarlos dos veces.
+        const guestTicks = (ticks[8] || 0) + (ticks[9] || 0)
+        const total = ticks.reduce((sum, value) => sum + value, 0) - guestTicks
+        const idle = (ticks[3] || 0) + (ticks[4] || 0)
+        return total >= idle ? { total: total, idle: idle } : null
     }
     function refreshSystemInfo() {
         procReader.connectSource("cat /proc/meminfo")
