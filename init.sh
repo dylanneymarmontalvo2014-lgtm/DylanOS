@@ -85,7 +85,7 @@ install_native_dependencies() {
     local venv="${DYLANOS_VENV:-$ROOT/.venv}"
     local arch
     local apt_packages=(
-        build-essential ca-certificates curl debootstrap desktop-file-utils dosfstools
+        bash-completion build-essential ca-certificates curl debootstrap desktop-file-utils dosfstools
         gnupg gir1.2-gtk-3.0 gir1.2-gtk-4.0 grub-common grub-efi-amd64-bin
         grub-pc-bin libdbus-1-3 libegl1 libfontconfig1 libfreetype6 libgl1 libopengl0
         libx11-6 libx11-xcb1 libxcb-cursor0 libxcb-icccm4 libxcb-keysyms1
