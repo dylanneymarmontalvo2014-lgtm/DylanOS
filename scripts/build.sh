@@ -12,8 +12,14 @@ DEFAULT_BUILD_JOBS="$CPU_COUNT"
 if (( DEFAULT_BUILD_JOBS > 4 )); then DEFAULT_BUILD_JOBS=4; fi
 BUILD_JOBS="${DYLANOS_BUILD_JOBS:-$DEFAULT_BUILD_JOBS}"
 if [[ ${1:-} != --inside ]]; then
-    bash "$ROOT/scripts/build-installer.sh"
-    exec sudo unshare --mount --propagation private bash "$0" --inside "--jobs=$BUILD_JOBS" "$@"
+    INSTALLER_TMP="$(mktemp -d "${TMPDIR:-/tmp}/dylanos-installer-dist.XXXXXX")"
+    cleanup_installer_tmp() { rm -rf -- "$INSTALLER_TMP"; }
+    trap cleanup_installer_tmp EXIT
+    DYLANOS_INSTALLER_DIST="$INSTALLER_TMP/dist" bash "$ROOT/scripts/build-installer.sh"
+    sudo unshare --mount --propagation private bash "$0" --inside \
+        "--jobs=$BUILD_JOBS" "--installer-dist=$INSTALLER_TMP/dist" "$@"
+    status=$?
+    exit "$status"
 fi
 shift
 PROFILE=development
@@ -23,6 +29,7 @@ for arg in "$@"; do
         --resume) RESUME=true ;;
         --minimal) PROFILE=default ;;
         --jobs=*) BUILD_JOBS="${arg#*=}" ;;
+        --installer-dist=*) INSTALLER_DIST="${arg#*=}" ;;
         *) echo "Uso: $0 [--resume] [--minimal] [--jobs=N]" >&2; exit 2 ;;
     esac
 done
@@ -106,7 +113,12 @@ update-locale LANG=es_ES.UTF-8
 systemctl enable sddm NetworkManager
 passwd -l root
 CHROOT_SCRIPT
-python3 "$ROOT/scripts/stage.py" "$CHROOT"
+if [[ -n "${INSTALLER_DIST:-}" ]]; then
+    [[ -s "$INSTALLER_DIST/index.html" ]] || { echo "No existe el dist compilado del instalador: $INSTALLER_DIST" >&2; exit 1; }
+    python3 "$ROOT/scripts/stage.py" --installer-dist "$INSTALLER_DIST" "$CHROOT"
+else
+    python3 "$ROOT/scripts/stage.py" "$CHROOT"
+fi
 mkdir -p "$CHROOT/tmp/dylanos-src"
 for app in calculator dylanos-app-center; do
     mkdir -p "$CHROOT/tmp/dylanos-src/$app"
