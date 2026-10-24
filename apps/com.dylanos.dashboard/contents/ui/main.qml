@@ -9,6 +9,7 @@ PlasmoidItem {
     preferredRepresentation: fullRepresentation
     readonly property date today: clock.date
     property date shownMonth: new Date()
+    property date selectedDate: new Date()
     property int memoryUsed: 0
     property int memoryTotal: 0
     property real uptimeSeconds: 0
@@ -87,6 +88,17 @@ PlasmoidItem {
     }
     function shiftMonth(offset) {
         shownMonth = new Date(shownMonth.getFullYear(), shownMonth.getMonth() + offset, 1)
+    }
+    function isSameDate(a, b) {
+        return a.getFullYear() === b.getFullYear() && a.getMonth() === b.getMonth() && a.getDate() === b.getDate()
+    }
+    function selectDate(date) {
+        selectedDate = new Date(date.getFullYear(), date.getMonth(), date.getDate())
+        if (selectedDate.getMonth() !== shownMonth.getMonth() || selectedDate.getFullYear() !== shownMonth.getFullYear())
+            shownMonth = new Date(selectedDate.getFullYear(), selectedDate.getMonth(), 1)
+    }
+    function showToday() {
+        selectDate(new Date())
     }
 
     Timer {
@@ -179,6 +191,10 @@ PlasmoidItem {
                     Layout.fillWidth: true
                     QQC2.Label { text: root.monthTitle(root.shownMonth); color: "white"; font.pixelSize: 15; font.bold: true; Layout.fillWidth: true }
                     QQC2.ToolButton {
+                        text: "Hoy"; Accessible.name: "Ir al día de hoy"
+                        onClicked: root.showToday()
+                    }
+                    QQC2.ToolButton {
                         text: "‹"; Accessible.name: "Mes anterior"; onClicked: root.shiftMonth(-1)
                         contentItem: QQC2.Label { text: parent.text; color: "white"; horizontalAlignment: Text.AlignHCenter; verticalAlignment: Text.AlignVCenter }
                     }
@@ -201,21 +217,38 @@ PlasmoidItem {
                     }
                     Repeater {
                         model: 42
-                        delegate: Rectangle {
+                        delegate: QQC2.Button {
+                            id: calendarDay
                             required property int index
                             readonly property date dateValue: root.cellDate(index)
-                            implicitWidth: 25; implicitHeight: 25; radius: 13
-                            color: dateValue.getFullYear() === root.today.getFullYear() && dateValue.getMonth() === root.today.getMonth() && dateValue.getDate() === root.today.getDate() ? "#DC143C" : "transparent"
-                            QQC2.Label {
-                                anchors.centerIn: parent
-                                text: parent.dateValue.getDate()
-                                color: parent.dateValue.getMonth() === root.shownMonth.getMonth() ? "white" : "#777177"
+                            readonly property bool isToday: root.isSameDate(dateValue, root.today)
+                            readonly property bool isSelected: root.isSameDate(dateValue, root.selectedDate)
+                            implicitWidth: 25; implicitHeight: 25
+                            padding: 0
+                            Accessible.name: Qt.formatDate(dateValue, "dddd d MMMM yyyy")
+                            onClicked: root.selectDate(dateValue)
+                            contentItem: QQC2.Label {
+                                text: calendarDay.dateValue.getDate()
+                                color: calendarDay.dateValue.getMonth() === root.shownMonth.getMonth() ? "white" : "#777177"
                                 font.pixelSize: 11
+                                horizontalAlignment: Text.AlignHCenter
+                                verticalAlignment: Text.AlignVCenter
+                            }
+                            background: Rectangle {
+                                radius: width / 2
+                                color: calendarDay.isSelected ? "#DC143C" : "transparent"
+                                border.width: calendarDay.isToday && !calendarDay.isSelected ? 1 : 0
+                                border.color: "#DC143C"
                             }
                         }
                     }
                 }
                 Item { Layout.fillHeight: true }
+                QQC2.Label {
+                    text: "Seleccionado · " + Qt.formatDate(root.selectedDate, "dddd d MMMM")
+                    color: "#D7D2D6"; font.pixelSize: 12; font.bold: true
+                    Accessible.name: text
+                }
                 QQC2.Label { text: "Información local · sin datos simulados"; color: "#AAA4AA"; font.pixelSize: 10 }
             }
         }

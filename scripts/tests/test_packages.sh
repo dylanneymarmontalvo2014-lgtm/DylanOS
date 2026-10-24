@@ -107,7 +107,7 @@ dev_pkgs="$(parse_package_list "$DEV_LIST" 2>/dev/null || true)"
 
 # Paquetes del sistema base migrados del build.sh original
 for p in linux-image-amd64 systemd-sysv kde-plasma-desktop sddm parted \
-    squashfs-tools neowofetch sudo network-manager kitty imagemagick; do
+    squashfs-tools neowofetch sudo network-manager kitty imagemagick playerctl; do
     assert_contains_line "default contiene $p" "$default_pkgs" "$p"
 done
 # DylanOS Explorer no es un paquete apt: se compila desde apps/dylanos-explorer.

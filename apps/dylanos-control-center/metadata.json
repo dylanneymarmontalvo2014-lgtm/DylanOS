@@ -8,8 +8,8 @@
             }
         ],
         "Category": "System Information",
-        "Description": "Centro de Notificaciones y Centro de Control unificado de DylanOS",
-        "Description[es]": "Centro de Notificaciones y Centro de Control unificado de DylanOS",
+        "Description": "Crimson control center with system audio, appearance and notifications",
+        "Description[es]": "Centro de control Crimson con audio, apariencia y notificaciones reales",
         "Icon": "preferences-system",
         "Id": "com.dylanos.controlcenter",
         "Name": "DylanOS Control Center",
@@ -17,7 +17,7 @@
         "ServiceTypes": [
             "Plasma/Applet"
         ],
-        "Version": "0.1.0"
+        "Version": "0.2.0"
     },
     "X-Plasma-API-Minimum-Version": "6.0"
 }
