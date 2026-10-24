@@ -2,6 +2,11 @@
 # Build in an isolated mount namespace; the host desktop is never modified.
 set -euo pipefail
 ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
+if [[ ${1:-} != --inside && $EUID -eq 0 ]]; then
+    echo "No ejecutes scripts/build.sh con sudo; el script eleva privilegios internamente." >&2
+    echo "Usa: ./scripts/build.sh [--resume] [--minimal]" >&2
+    exit 2
+fi
 CPU_COUNT="$(nproc 2>/dev/null || printf '2')"
 DEFAULT_BUILD_JOBS="$CPU_COUNT"
 if (( DEFAULT_BUILD_JOBS > 4 )); then DEFAULT_BUILD_JOBS=4; fi

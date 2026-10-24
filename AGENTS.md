@@ -162,6 +162,9 @@ DYLANOS_PYTHON=/tmp/opencode/venv/bin/python bash scripts/check.sh
   Licencia del binario: la de Microsoft; documentada en `docs/licenses/assets.md`.
 - build.sh purga al final: `-dev` exclusivos, `dolphin`, `dolphin-plugins`, `kcalc`,
   `konsole`, `codium` (chroots reutilizados). KF5/KWallet quedan según dependencias reales.
+- Ejecutar `./scripts/build.sh` sin `sudo`: compila el frontend como el usuario actual y
+  eleva privilegios internamente para el chroot. Si `work/chroot` existe, usar `--resume`.
+  La entrada externa como root se rechaza para no dejar `node_modules`/`dist` con dueño root.
 - ISO: `bash scripts/iso.sh` tras build.sh; manifest en `work/packages.manifest`.
   `iso.sh` re-ejecuta `scripts/stage.py` sobre el chroot ANTES del squashfs: los rebuilds
   manuales dejan el staging desactualizado y el ISO heredaría entradas `.desktop` y pines
