@@ -102,3 +102,9 @@ reemplazo y las pruebas funcionales afectadas.
 ## Corrección de compilación validada en CI
 
 El build necesita `desktop-file-utils` únicamente para generar la caché de aplicaciones de escritorio. Se instala temporalmente antes de `update-desktop-database` y se purga inmediatamente, antes de `autoremove`; no se conserva como paquete del sistema final. La batería de paquetes comprueba que exista tanto la instalación como la purga.
+
+## Última medición disponible
+
+La build automatizada `40030658295`, asociada al commit `98170f33566808ca5f9f5dc92c5468b6e174d166`, terminó con éxito en sus pasos `build`, `iso`, `test` y carga del artefacto. GitHub publicó `DylanOS-1.0-beta-amd64` con tamaño registrado de **2,268,807,947 bytes**. El run comprobó la estructura/checksum según `scripts/test.sh`; **no ejecutó QEMU ni valida el arranque o la sesión gráfica**.
+
+Como referencia, otro artefacto anterior (`40024259258`, commit `1e1323bf1d912583b209bdfb2111ea1a24b3230a`) registró 3,195,313,060 bytes. Son builds de commits distintos y no hay una comparación controlada de manifiestos/logs de paquetes que permita atribuir la diferencia a `--no-install-recommends` o `autoremove`; por eso no se presenta como ahorro causado por la optimización. La nueva build del commit que corrige el cálculo de CPU debe medirse por separado cuando termine.
