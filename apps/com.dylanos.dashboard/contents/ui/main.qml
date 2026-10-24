@@ -18,6 +18,10 @@ PlasmoidItem {
     property double previousCpuIdle: -1
     property double diskUsedBytes: -1
     property double diskTotalBytes: -1
+    property P5Support.DataSource commandRunner: P5Support.DataSource {
+        engine: "executable"
+        connectedSources: []
+    }
     property P5Support.DataSource procReader: P5Support.DataSource {
         engine: "executable"
         connectedSources: []
@@ -67,6 +71,9 @@ PlasmoidItem {
         const total = ticks.reduce((sum, value) => sum + value, 0) - guestTicks
         const idle = (ticks[3] || 0) + (ticks[4] || 0)
         return total >= idle ? { total: total, idle: idle } : null
+    }
+    function openSystemMonitor() {
+        commandRunner.connectSource("plasma-systemmonitor")
     }
     function refreshSystemInfo() {
         procReader.connectSource("cat /proc/meminfo")
@@ -193,6 +200,14 @@ PlasmoidItem {
                 QQC2.Label {
                     text: root.uptimeSeconds > 0 ? "En ejecución  ·  " + root.formatUptime(root.uptimeSeconds) : "Tiempo activo  ·  …"
                     color: "#D7D2D6"; font.pixelSize: 12
+                }
+                QQC2.Button {
+                    Layout.fillWidth: true
+                    Layout.preferredHeight: 34
+                    text: "Abrir Monitor del sistema"
+                    icon.name: "utilities-system-monitor"
+                    Accessible.name: "Abrir Monitor del sistema de KDE"
+                    onClicked: root.openSystemMonitor()
                 }
             }
 

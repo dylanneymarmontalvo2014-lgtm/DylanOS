@@ -1,12 +1,16 @@
 # DylanOS Dashboard — plasmoid `com.dylanos.dashboard`
 
-Widget Plasma 6 instalado en el escritorio para perfiles nuevos. Combina hora/fecha, calendario local y lecturas del sistema local. Versión de paquete del applet: 0.3.1.
+Widget Plasma 6 instalado en el escritorio para perfiles nuevos. Combina hora/fecha, calendario local y lecturas del sistema local. Versión de paquete del applet: 0.4.0.
 
 ## Calendario
 
 - Cambia de mes con ‹ y ›.
 - Pulsa una fecha para seleccionarla; el panel marca el día elegido y resalta hoy. «Hoy» regresa a la fecha actual.
 - Muestra la fecha seleccionada como dato de calendario; el día actual se distingue del elegido y el lector de pantalla anuncia «hoy» y «seleccionado» cuando corresponde. Los estados hover/selección tienen transiciones breves. **No** consulta Google Calendar ni representa citas/recordatorios.
+
+## Monitor completo
+
+El botón «Abrir Monitor del sistema» ejecuta `plasma-systemmonitor`, instalado desde el perfil base de DylanOS. Abre el monitor de KDE para consultar procesos y métricas más detalladas; si el comando no está disponible en una instalación personalizada, no se inicia una aplicación externa de reemplazo.
 
 ## Métricas
 
