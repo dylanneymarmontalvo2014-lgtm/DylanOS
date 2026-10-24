@@ -9,12 +9,12 @@ import org.kde.kirigami as Kirigami
 Rectangle {
     id: root
 
-    readonly property color cBlack:      "#0A0A0A"
+    readonly property color cBlack:      Qt.rgba(10 / 255, 10 / 255, 12 / 255, 0.88)
     readonly property color cGray:       "#1A1A1A"
     readonly property color cCrimson:    "#DC143C"
     readonly property color cWhite:      "#FFFFFF"
     readonly property color cLightGray:  "#B3B3B3"
-    readonly property color cCardBorder: Qt.rgba(1, 1, 1, 0.08)
+    readonly property color cCardBorder: Qt.rgba(1, 1, 1, 0.12)
 
     color: cBlack
     radius: 22

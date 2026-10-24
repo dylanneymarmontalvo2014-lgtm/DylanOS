@@ -74,6 +74,8 @@ class StagingTest(unittest.TestCase):
                      "usr/share/grub/themes/dylanos/theme.txt",
                      "usr/share/plymouth/themes/dylanos/dylanos.script",
                      "usr/share/plasma/look-and-feel/org.dylanos.crimson/contents/layouts/org.kde.plasma.desktop-layout.js",
+                     "usr/share/plasma/desktoptheme/DylanOS-Crimson/translucent/widgets/panel-background.svg",
+                     "usr/share/plasma/desktoptheme/DylanOS-Crimson/translucent/dialogs/background.svg",
                      "usr/share/themes/DylanOS-Crimson/gtk-3.0/gtk.css",
                      "usr/share/themes/DylanOS-Crimson/gtk-4.0/gtk.css",
                      "usr/share/themes/DylanOS-Crimson/index.theme",
@@ -147,7 +149,7 @@ class StagingTest(unittest.TestCase):
             self.assertIn("delegate: QQC2.Button", dashboard_qml)
             self.assertIn("Día seleccionado · ", dashboard_qml)
             dash_meta = json.loads((dashboard / "metadata.json").read_text())
-            self.assertEqual(dash_meta["KPlugin"]["Version"], "0.6.0")
+            self.assertEqual(dash_meta["KPlugin"]["Version"], "0.7.0")
             self.assertIn("function usagePercent(used, total)", dashboard_qml)
             self.assertIn("Accessible.name: \"Uso de memoria: \"", dashboard_qml)
             self.assertEqual(dashboard_qml.count("Behavior on width { NumberAnimation { duration: 320; easing.type: Easing.OutCubic } }"), 3)
@@ -187,7 +189,7 @@ class StagingTest(unittest.TestCase):
             self.assertIn("DylanOSDark", status_qml)
             self.assertIn("interval: 15000", status_qml)
             cc_meta = json.loads((cc_root / "metadata.json").read_text())
-            self.assertEqual(cc_meta["KPlugin"]["Version"], "0.2.0")
+            self.assertEqual(cc_meta["KPlugin"]["Version"], "0.3.0")
             shell_layout = (root / "usr/share/plasma/look-and-feel/org.dylanos.crimson/contents/layouts/org.kde.plasma.desktop-layout.js").read_text()
             self.assertIn("com.dylanos.search", shell_layout)
             self.assertIn('allDesktops[i].addWidget("com.dylanos.dashboard"', shell_layout)

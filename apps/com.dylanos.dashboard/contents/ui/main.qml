@@ -197,9 +197,22 @@ PlasmoidItem {
         implicitWidth: 500
         implicitHeight: 470
         radius: 24
-        color: "#E6101014"
-        border.color: "#40FFFFFF"
+        color: "#D9101014"
+        border.color: "#48FFFFFF"
         border.width: 1
+
+        Rectangle {
+            anchors.fill: parent
+            radius: parent.radius
+            z: 0
+            gradient: Gradient {
+                GradientStop { position: 0; color: Qt.rgba(1, 1, 1, 0.075) }
+                GradientStop { position: 0.42; color: Qt.rgba(1, 1, 1, 0.018) }
+                GradientStop { position: 1; color: "transparent" }
+            }
+            opacity: 0.72
+            Accessible.ignored: true
+        }
 
         RowLayout {
             anchors.fill: parent
@@ -422,8 +435,8 @@ PlasmoidItem {
                     Layout.fillWidth: true
                     Layout.preferredHeight: 112
                     radius: 16
-                    color: "#171116"
-                    border.color: root.pomodoroRunning ? "#70DC143C" : "#26FFFFFF"
+                    color: "#D9171116"
+                    border.color: root.pomodoroRunning ? "#70DC143C" : "#38FFFFFF"
                     border.width: 1
                     Behavior on border.color { ColorAnimation { duration: 180; easing.type: Easing.OutCubic } }
 
