@@ -1,6 +1,6 @@
 # DylanOS Dashboard — plasmoid `com.dylanos.dashboard`
 
-Widget Plasma 6 instalado en el escritorio para perfiles nuevos. Combina hora/fecha, calendario local y lecturas del sistema local. Versión de paquete del applet: 0.4.1.
+Widget Plasma 6 instalado en el escritorio para perfiles nuevos. Combina hora/fecha, calendario local y lecturas del sistema local. Versión de paquete del applet: 0.5.0.
 
 ## Calendario
 
@@ -15,6 +15,10 @@ El panel refresca las métricas cada 10 segundos. «Actualizar» solicita una le
 ## Monitor completo
 
 El botón «Abrir Monitor del sistema» ejecuta `plasma-systemmonitor`, instalado desde el perfil base de DylanOS. Abre el monitor de KDE para consultar procesos y métricas más detalladas; si el comando no está disponible en una instalación personalizada, no se inicia una aplicación externa de reemplazo.
+
+## Tendencia de CPU
+
+La gráfica reúne hasta 24 lecturas válidas reales de CPU tomadas de `/proc/stat`. Se amplía con cada lectura; no fabrica puntos para completar el gráfico. Cada lectura automática ocurre aproximadamente cada 10 segundos (ventana aproximada de cuatro minutos, salvo actualizaciones manuales). Al inicio muestra que espera datos; el texto accesible comunica el número de muestras y el último porcentaje.
 
 ## Métricas
 
