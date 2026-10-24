@@ -18,9 +18,15 @@ def stage(destination, installer_dist=None):
     def copy(source, target):
         # El frontend recién compilado se copia abajo desde installer_dist;
         # no intentes leer un dist viejo o inexistente dentro del checkout.
-        if source == "installer/dylanos-installer/dist" and installer_dist is not None:
-            return
         source, target = ROOT / source, dest / target.lstrip("/")
+        if source == ROOT / "installer/dylanos-installer/dist":
+            if installer_dist is not None:
+                return
+            # iso.sh re-stages the current repository over a chroot that already
+            # contains the fresh build output. Keep it instead of requiring a
+            # second copy in the checkout (the build deliberately uses /tmp).
+            if not source.is_dir() and target.is_dir():
+                return
         target.parent.mkdir(parents=True, exist_ok=True)
         if source.is_dir():
             shutil.copytree(source, target, dirs_exist_ok=True, ignore=shutil.ignore_patterns("__pycache__", "*.pyc", "tests"))
