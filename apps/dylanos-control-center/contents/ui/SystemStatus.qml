@@ -129,6 +129,20 @@ QtObject {
     function mprisNext() { exec.connectSource("playerctl next") }
     function mprisPrevious() { exec.connectSource("playerctl previous") }
 
+    // Polling solo mientras el desplegable está abierto; los cambios de
+    // audio/red/tema son de lectura bajo demanda, no servicios residentes.
+    property bool monitoringActive: false
+
+    function setMonitoringActive(active) {
+        if (monitoringActive === active) return
+        monitoringActive = active
+        if (active) {
+            refreshAudioAndBrightness()
+            refreshMediaAndAppearance()
+            exec.connectSource("nmcli radio wifi")
+        }
+    }
+
     // =====================================================================
     // MOTOR DE EJECUCIÓN COMPARTIDO
     // =====================================================================
@@ -219,23 +233,18 @@ QtObject {
     }
 
     property Timer fastPoll: Timer {
-        interval: 5000; repeat: true; running: true
+        interval: 5000; repeat: true; running: root.monitoringActive
         onTriggered: root.refreshAudioAndBrightness()
     }
 
     property Timer slowPoll: Timer {
-        interval: 15000; repeat: true; running: true
+        interval: 15000; repeat: true; running: root.monitoringActive
         onTriggered: root.refreshMediaAndAppearance()
     }
 
     property Timer wifiPoll: Timer {
-        interval: 15000; repeat: true; running: true
+        interval: 15000; repeat: true; running: root.monitoringActive
         onTriggered: exec.connectSource("nmcli radio wifi")
     }
 
-    Component.onCompleted: {
-        refreshAudioAndBrightness()
-        refreshMediaAndAppearance()
-        exec.connectSource("nmcli radio wifi")
-    }
 }
