@@ -36,7 +36,8 @@ class SddmThemeTest(unittest.TestCase):
         self.assertIn('Qt.formatDateTime(new Date()', (THEME / "components/LocalTimeCard.qml").read_text(encoding="utf-8"))
         self.assertIn('Introducir contraseña', main)
         self.assertIn('echoMode: TextInput.Password', main)
-        self.assertIn('radius: 21', main)
+        self.assertIn('radius: 16', main)
+        self.assertIn('radius: 24', main)
         for removed_component in ("WeatherCard.qml", "EventCard.qml", "MediaCard.qml", "SystemCard.qml", "CalendarCard.qml", "RemindersCard.qml", "ShortcutsCard.qml"):
             self.assertFalse((THEME / "components" / removed_component).exists(), removed_component)
         theme_sources = "\n".join(p.read_text(encoding="utf-8") for p in (THEME / "components").glob("*.qml"))
