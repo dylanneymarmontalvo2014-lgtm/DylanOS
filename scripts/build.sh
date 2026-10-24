@@ -13,6 +13,7 @@ if (( DEFAULT_BUILD_JOBS > 4 )); then DEFAULT_BUILD_JOBS=4; fi
 BUILD_JOBS="${DYLANOS_BUILD_JOBS:-$DEFAULT_BUILD_JOBS}"
 if [[ ${1:-} != --inside ]]; then
     INSTALLER_TMP="$(mktemp -d "${TMPDIR:-/tmp}/dylanos-installer-dist.XXXXXX")"
+    # shellcheck disable=SC2317 # Invoked by EXIT trap.
     cleanup_installer_tmp() { rm -rf -- "$INSTALLER_TMP"; }
     trap cleanup_installer_tmp EXIT
     DYLANOS_INSTALLER_DIST="$INSTALLER_TMP/dist" bash "$ROOT/scripts/build-installer.sh"
