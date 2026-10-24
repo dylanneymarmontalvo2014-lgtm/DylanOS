@@ -11,11 +11,19 @@ const [major, minor] = process.versions.node.split(".").map(Number);
 const supported = major >= 24 || (major === 22 && minor >= 12) || (major === 20 && minor >= 19);
 if (!supported) { console.error("Unsupported Node.js " + process.versions.node + "; Vite requires 20.19+, 22.12+, or 24+."); process.exit(1); }
 '
-cd "$APP"
+BUILD_ROOT="$(mktemp -d "${TMPDIR:-/tmp}/dylanos-installer-build.XXXXXX")"
+cleanup() { rm -rf -- "$BUILD_ROOT"; }
+trap cleanup EXIT
+OUTPUT_DIR="${DYLANOS_INSTALLER_DIST:-$APP/dist}"
+mkdir -p "$OUTPUT_DIR"
+# Build from an isolated copy: npm ci deletes/recreates node_modules, which may
+# contain root-owned links after older sudo-based builds in the user checkout.
+tar --exclude='./node_modules' --exclude='./dist' --exclude='./.git' -cf - -C "$APP" . | tar -xf - -C "$BUILD_ROOT"
+cd "$BUILD_ROOT"
 npm ci --no-audit --no-fund
-npm run build
-if [[ ! -s dist/index.html ]]; then
+npm run build -- --outDir "$OUTPUT_DIR"
+if [[ ! -s "$OUTPUT_DIR/index.html" ]]; then
     printf 'Installer build did not produce a non-empty dist/index.html.\n' >&2
     exit 1
 fi
-printf 'Installer frontend built: %s\n' "$APP/dist/index.html"
+printf 'Installer frontend built in isolation: %s\n' "$OUTPUT_DIR/index.html"
