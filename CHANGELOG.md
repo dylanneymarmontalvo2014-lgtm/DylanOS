@@ -15,6 +15,7 @@ Todos los cambios relevantes de DylanOS se registran en este archivo. La intenci
 - Dashboard 0.4.0: botón para abrir el Monitor del sistema KDE y ver procesos/métricas detalladas.
 - Dashboard 0.4.1: acción «Actualizar» para solicitar métricas al instante y mostrar la hora de consulta.
 - Dashboard 0.5.0: gráfica de tendencia de CPU basada en hasta 24 muestras reales de `/proc/stat`.
+- Armonización visual de Configuration, Explorer y Workspace con los tokens Crimson oficiales y estados hover/pressed coherentes.
 
 ### Cambiado
 

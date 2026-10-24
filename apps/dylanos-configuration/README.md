@@ -10,7 +10,7 @@ Qt6/QML que replica el prototipo previews/DylanOS configuration.
 - src/services/SystemService: puente con el sistema real (ver tabla siguiente).
 - src/services/LucideProvider: proveedor image://lucide que recolorea los SVG
   Lucide de assets/icons/ en tiempo de ejecucion.
-- qml/Theme.qml: tokens del prototipo (crimson #e0182d, radios, superficies
+- qml/Theme.qml: tokens visuales alineados con el Crimson oficial #DC143C / #FF4565 / #A50F2E, radios, superficies
   glass, modo oscuro/claro detectado de kdeglobals con QFileSystemWatcher).
 - qml/components/: IconTile, Toggle, Slider, Select, Segmented, Tabs,
   Group/Panel/Row, Badge, Dialog, EmptyState, ErrorBanner, Meter, Toast...

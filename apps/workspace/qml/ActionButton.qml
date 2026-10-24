@@ -27,24 +27,28 @@ Button {
             GradientStop {
                 position: 0.0
                 color: control.primary
-                       ? (control.down ? "#9c0b28" : control.hovered ? "#ff2a54" : "#e81740")
-                       : (control.down ? "#16131c" : control.hovered ? "#322b3a" : "#241f2b")
+                       ? (control.down ? Qt.darker(control.palette.highlight, 1.25)
+                          : control.hovered ? Qt.lighter(control.palette.highlight, 1.18) : control.palette.highlight)
+                       : (control.down ? Qt.darker(control.palette.button, 1.15)
+                          : control.hovered ? Qt.lighter(control.palette.button, 1.18) : control.palette.button)
             }
             GradientStop {
                 position: 1.0
                 color: control.primary
-                       ? (control.down ? "#7a051d" : control.hovered ? "#c90e33" : "#ad0a2a")
-                       : (control.down ? "#0f0d14" : control.hovered ? "#221d28" : "#17141d")
+                       ? (control.down ? Qt.darker(control.palette.highlight, 1.45)
+                          : control.hovered ? Qt.darker(control.palette.highlight, 1.08) : Qt.darker(control.palette.highlight, 1.2))
+                       : (control.down ? Qt.darker(control.palette.button, 1.3)
+                          : control.hovered ? Qt.lighter(control.palette.button, 1.05) : Qt.darker(control.palette.button, 1.12))
             }
         }
         border.width: control.visualFocus ? 2 : 1
         border.color: control.visualFocus
                       ? "#DC143C"
                       : control.primary
-                      ? "#ff5274"
+                      ? Qt.lighter(control.palette.highlight, 1.3)
                       : control.hovered
-                      ? "#48384a"
-                      : "#2e2736"
+                      ? Qt.lighter(control.palette.mid, 1.25)
+                      : control.palette.mid
         opacity: control.enabled ? 1 : 0.45
 
         // Specular highlight line (liquid glass)
@@ -54,7 +58,7 @@ Button {
             anchors.right: parent.right
             height: 1
             radius: 20
-            color: control.primary ? "#50ffffff" : "#20ffffff"
+            color: control.primary ? "#50ffffff" : "#18ffffff"
         }
 
         scale: control.down ? 0.97 : 1.0

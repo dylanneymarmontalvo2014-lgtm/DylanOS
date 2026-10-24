@@ -69,7 +69,7 @@ sudo cmake --install build           # opcional: binario, .desktop e icono
 - Textos solo en español, sin pipeline de traducción (`tr`/`.ts`). Unidades SI (kB = 1000 B).
 - El listado de una carpeta es síncrono: no hay indicador de carga para directorios enormes (solo para operaciones de copia/mover).
 - La papelera cubre únicamente `~/.local/share/Trash`, no las papeleras de otras particiones.
-- Tema oscuro único (Crimson); no sigue el esquema de color de Plasma.
+- Tema oscuro único (Crimson); no sigue el esquema de color de Plasma. Sus tokens de acento se alinean con el crimson oficial `#DC143C` y sus tonos de hover/selección, compartidos con Configuration y Workspace.
 - La iconografía es propia (trazos SVG); no usa el tema de iconos del sistema.
 
 Ver `docs/ARCHITECTURE.md`.

@@ -138,3 +138,16 @@ no hay trazo. La etiqueta accesible anuncia cuántas muestras existen y el valor
 actual. El refresco periódico es de unos 10 segundos; actualizar manualmente
 puede añadir una lectura extra. Las pruebas de código no sustituyen la validación
 del render Canvas en una sesión Plasma 6.
+
+
+## Consistencia visual Crimson entre aplicaciones (2026-10-24)
+
+Primera pasada de armonización para Configuration, Explorer y Workspace: los
+tokens de acento dejan de usar rojos incompatibles con la marca y se alinean
+con el crimson oficial `#DC143C`, `#FF4565` para hover/énfasis y `#A50F2E` para
+presión. Botones QML de Configuration y Workspace derivan degradados de la
+paleta propia del tema; los botones de Configuration interpolan el hover en
+140 ms. Se conservan los acentos semánticos de las categorías de Configuración
+y las opciones personalizables del usuario. GTK, Plasma, SDDM, wallpapers y
+Kitty no se alteran en esta pasada. Las pruebas son estáticas y de contrato;
+no equivalen a captura/render de cada aplicación en Plasma real.
