@@ -10,6 +10,7 @@ Widget Plasma 6 que abre el panel de notificaciones y controles del escritorio. 
 - **Bluetooth**: usa el adaptador BluezQt que Plasma presenta como utilizable.
 - **Brillo**: consulta PowerDevil por D-Bus; depende de hardware/driver compatibles.
 - **Volumen/silencio**: consulta y controla el sink de salida con `pactl`; necesita PulseAudio o PipeWire Pulse.
+- **Micrófono**: muestra nivel de la fuente predeterminada, permite ajustar su volumen y alternar silencio con `pactl`; depende de una fuente de entrada disponible en PulseAudio/PipeWire Pulse. Si no existe, el control queda deshabilitado y se muestra «Micrófono no detectado».
 - **Tema**: selecciona los esquemas propios `DylanOSDark`/`DylanOSLight`, conservando la identidad Crimson.
 - **Reproducción**: `playerctl`/MPRIS si hay reproductor activo. `playerctl` se instala en el perfil base; el widget no incluye reproductor.
 - **Accesos secundarios**: KDE Connect, pantalla y perfiles de energía abren sus módulos KCM de KDE; no simulan AirDrop ni alteran directamente todas sus opciones.

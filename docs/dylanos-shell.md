@@ -81,3 +81,13 @@ agradecimiento con los nombres leídos de `/usr/share/dylanos/MAINTAINERS.txt`.
 El staging copia el archivo de mantenedores y una prueba de contrato modifica
 una copia temporal del archivo para comprobar que la salida refleja altas de
 nombres sin editar el script. No se cambia el fichero de créditos de origen.
+
+
+## Control de micrófono (2026-10-24)
+
+El Centro de Control ahora consulta `pactl get-source-volume` y `pactl get-source-mute`
+para la fuente predeterminada y permite cambiar su nivel o silenciarla con
+`pactl set-source-volume` / `set-source-mute`. Si el servidor de audio no publica
+una fuente de entrada, el control se deshabilita. Esto está cubierto por el
+contrato estático en `test_shell_contract.py`; aún requiere prueba visual y de
+hardware en Plasma para validar la interacción con distintos dispositivos.
