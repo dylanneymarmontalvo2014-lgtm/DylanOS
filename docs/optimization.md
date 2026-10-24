@@ -114,3 +114,19 @@ Como referencia, otro artefacto anterior (`40024259258`, commit `1e1323bf1d91258
 ## Limpieza de índices APT (2026-10-24)
 
 El build ejecuta `rm -rf /var/lib/apt/lists/*` al final del chroot, después de completar instalaciones, purgas y `autoremove`. Se retiran solo índices de repositorio descargados: APT los reconstruye en la próxima actualización mediante `apt-get update`; no son paquetes ni datos del usuario. La prueba `scripts/tests/test_packages.sh` verifica que la operación exista y ocurra después de `autoremove`. El ahorro exacto queda pendiente de medir con la nueva ISO; `apt-get clean` y esta limpieza actúan sobre datos distintos.
+
+## Aceleración de compilación de ISO (2026-10-24)
+
+- `scripts/build.sh` concatena las listas explícitas de cada perfil y las instala en una transacción APT, evitando resolver/configurar por separado cada lista. Mantiene los mismos paquetes declarados y `--no-install-recommends`.
+- Las cuatro aplicaciones C++ compilan con hasta 4 trabajos (o menos si hay menos núcleos). Puede limitarse con `DYLANOS_BUILD_JOBS=2 bash scripts/build.sh` o `make build BUILD_JOBS=2`; el script limita valores superiores a los núcleos disponibles. Usa un valor menor si el host tiene poca memoria.
+- `make iso-validated PROFILE=development` ejecuta en secuencia build, generación de ISO y validación de estructura/checksum. `RESUME=1` reanuda un chroot existente.
+- La aceleración es una optimización esperada, no una cifra de tiempo garantizada: se debe comparar con builds del mismo runner y perfil. La ejecución de `scripts/build.sh`, `scripts/iso.sh` y `scripts/test.sh` también depende de CI.
+
+### Qué se quita para reducir la imagen
+
+- Se purgan `dolphin`, `dolphin-plugins` y `kcalc`; sus funciones se cubren con DylanOS Explorer y DylanOS Calculator.
+- Se purgan los paquetes `-dev` usados exclusivamente para compilar DylanOS Store: `libflatpak-dev`, `libostree-dev`, `libappstreamqt-dev`, `libpackagekitqt6-dev`, `qcoro-qt6-dev`, `kirigami-addons-dev`, `libkirigami-dev`, `libkf6xmlgui-dev`, `libkf6idletime-dev`, `libkf6statusnotifieritem-dev`, `libkf6notifications-dev`, `libkf6crash-dev`, `libkf6dbusaddons-dev`, `libkf6archive-dev`, `qt6-svg-dev`, `libkf6iconthemes-dev` y `libkf6auth-dev`.
+- `desktop-file-utils` se instala solo temporalmente para generar la caché de aplicaciones y se purga inmediatamente.
+- `apt-get autoremove --purge` quita solo dependencias marcadas automáticas que ya no necesita ningún paquete explícito.
+- `apt-get clean` borra archivos de paquetes descargados; `rm -rf /var/lib/apt/lists/*` borra índices de repositorio que se regeneran con `apt-get update`. Ninguno de esos dos pasos desinstala aplicaciones.
+- No se borran las aplicaciones explícitas del perfil base, el navegador, la pila de red/sonido/Bluetooth, firmware, tienda/runtime, KIO ni componentes necesarios del instalador. El wallpaper permanece intacto.
