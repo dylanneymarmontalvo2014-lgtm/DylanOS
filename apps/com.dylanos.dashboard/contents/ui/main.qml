@@ -15,6 +15,7 @@ PlasmoidItem {
     property int memoryTotal: 0
     property real uptimeSeconds: 0
     property real cpuUsagePercent: -1
+    property var cpuHistory: []
     property double previousCpuTotal: -1
     property double previousCpuIdle: -1
     property double diskUsedBytes: -1
@@ -48,6 +49,7 @@ PlasmoidItem {
                         const idleDelta = idle - root.previousCpuIdle
                         if (totalDelta > 0 && idleDelta >= 0 && idleDelta <= totalDelta) {
                             root.cpuUsagePercent = Math.max(0, Math.min(100, 100 * (1 - idleDelta / totalDelta)))
+                            root.cpuHistory = root.cpuHistory.concat([root.cpuUsagePercent]).slice(-24)
                         }
                     }
                     root.previousCpuTotal = total
@@ -95,6 +97,10 @@ PlasmoidItem {
     }
     function progressWidth(trackWidth, used, total) {
         return trackWidth * usagePercent(used, total) / 100
+    }
+    function cpuHistoryDescription() {
+        if (cpuHistory.length === 0) return "Tendencia de CPU: esperando lecturas"
+        return "Tendencia de CPU: " + cpuHistory.length + " muestras; actual " + cpuHistory[cpuHistory.length - 1].toFixed(0) + "%"
     }
     function monthTitle(date) { return Qt.formatDate(date, "MMMM yyyy") }
     function cellDate(index) {
@@ -191,6 +197,52 @@ PlasmoidItem {
                         width: root.cpuUsagePercent >= 0 ? parent.width * Math.max(0, Math.min(100, root.cpuUsagePercent)) / 100 : 0
                         height: parent.height; radius: 3; color: "#DC143C"
                         Behavior on width { NumberAnimation { duration: 320; easing.type: Easing.OutCubic } }
+                    }
+                }
+                QQC2.Label {
+                    text: root.cpuHistory.length > 0
+                        ? "TENDENCIA CPU · " + root.cpuHistory.length + "/24 muestras"
+                        : "TENDENCIA CPU · esperando lecturas"
+                    color: "#AAA4AA"; font.pixelSize: 9; font.bold: true
+                    Accessible.name: root.cpuHistoryDescription()
+                }
+                Canvas {
+                    id: cpuTrend
+                    Layout.fillWidth: true
+                    Layout.preferredHeight: 42
+                    Accessible.ignored: true
+                    onWidthChanged: requestPaint()
+                    onHeightChanged: requestPaint()
+                    Connections {
+                        target: root
+                        function onCpuHistoryChanged() { cpuTrend.requestPaint() }
+                    }
+                    onPaint: {
+                        const ctx = getContext("2d")
+                        ctx.clearRect(0, 0, width, height)
+                        if (root.cpuHistory.length < 2 || width <= 0 || height <= 0) return
+                        ctx.lineWidth = 1
+                        ctx.strokeStyle = "rgba(255,255,255,0.12)"
+                        for (let row = 1; row <= 3; row++) {
+                            const y = height * row / 4
+                            ctx.beginPath(); ctx.moveTo(0, y); ctx.lineTo(width, y); ctx.stroke()
+                        }
+                        const points = root.cpuHistory
+                        const step = width / (points.length - 1)
+                        ctx.beginPath()
+                        for (let i = 0; i < points.length; i++) {
+                            const x = i * step
+                            const y = height - Math.max(0, Math.min(100, points[i])) * height / 100
+                            if (i === 0) ctx.moveTo(x, y); else ctx.lineTo(x, y)
+                        }
+                        ctx.strokeStyle = "#DC143C"
+                        ctx.lineWidth = 2
+                        ctx.lineJoin = "round"
+                        ctx.lineCap = "round"
+                        ctx.stroke()
+                        const lastY = height - Math.max(0, Math.min(100, points[points.length - 1])) * height / 100
+                        ctx.fillStyle = "#FF4565"
+                        ctx.beginPath(); ctx.arc(width - 2, lastY, 2.5, 0, Math.PI * 2); ctx.fill()
                     }
                 }
                 QQC2.Label {
