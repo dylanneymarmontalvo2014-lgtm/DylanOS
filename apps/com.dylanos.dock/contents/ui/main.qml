@@ -39,7 +39,7 @@ PlasmoidItem {
             "applications:org.dylanos.store.desktop",
             "applications:org.dylanos.calculator.desktop",
             "applications:org.dylanos.explorer.desktop",
-            "applications:org.kde.konsole.desktop",
+            "applications:org.dylanos.console.desktop",
             "applications:org.kde.kate.desktop",
             "applications:com.microsoft.VSCode.desktop",
             "applications:org.dylanos.configuration.desktop"

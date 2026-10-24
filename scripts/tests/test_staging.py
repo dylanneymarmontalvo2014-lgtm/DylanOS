@@ -26,7 +26,7 @@ class StagingTest(unittest.TestCase):
                      "usr/share/dylanos/installer/native/main.py",
                      "usr/share/dylanos/installer/dist/index.html",
                      "usr/share/dylanos/spotlight/qml/Main.qml",
-                     "usr/share/dylanos/fastfetch/logo.txt",
+                     "usr/share/dylanos/neofetch/logo.png",
                      "usr/share/icons/hicolor/512x512/apps/distributor-logo-dylanos.png",
                      "usr/share/aurorae/themes/DylanOS-Crimson/DylanOS-Crimsonrc",
                      "usr/share/aurorae/themes/DylanOS-Crimson-Light/DylanOS-Crimson-Lightrc",
@@ -36,10 +36,15 @@ class StagingTest(unittest.TestCase):
                      "usr/share/plasma/plasmoids/com.dylanos.activeapp/contents/ui/main.qml",
                      "usr/share/dylanos/workspace/assets/logo.png",
                      "etc/skel/.config/ksplashrc",
-                     "etc/skel/.config/konsolerc",
-                     "etc/skel/.local/share/konsole/DylanOS.profile",
-                     "etc/skel/.local/share/konsole/DylanOS-Crimson.colorscheme",
-                     "etc/skel/.config/fastfetch/config.jsonc",
+                     "etc/skel/.config/kitty/kitty.conf",
+                     "etc/xdg/kitty/kitty.conf",
+                     "etc/skel/.config/neofetch/config.conf",
+                     "etc/xdg/neofetch/config.conf",
+                     "usr/bin/dylanos-console",
+                     "usr/bin/neofetch",
+                     "usr/share/applications/org.dylanos.console.desktop",
+                     "usr/share/dylanos/shell/dylanos-ghost.sh",
+                     "usr/share/icons/hicolor/scalable/apps/dylanos-console.svg",
                      "etc/skel/.bashrc",
                      "usr/share/applications/dylanos-installer.desktop",
                      "etc/skel/Desktop/instalar-dylanos.desktop",
@@ -162,19 +167,41 @@ class StagingTest(unittest.TestCase):
             self.assertIn("/api/install", backend)
             self.assertNotIn("firefox", backend.lower())
 
-            # Terminal DylanOS: Konsole translúcido + fastfetch con logo propio.
-            colors = (root / "etc/skel/.local/share/konsole/DylanOS-Crimson.colorscheme").read_text()
-            self.assertIn("Opacity=0.82", colors)
-            profile = (root / "etc/skel/.local/share/konsole/DylanOS.profile").read_text()
-            self.assertIn("ColorScheme=DylanOS-Crimson", profile)
-            self.assertIn("DefaultProfile=DylanOS.profile",
-                          (root / "etc/skel/.config/konsolerc").read_text())
+            # Terminal DylanOS: Kitty translúcido + neofetch con logo PNG.
+            kitty = (root / "etc/skel/.config/kitty/kitty.conf").read_text()
+            self.assertIn("background_opacity 0.80", kitty)
+            self.assertIn("scrollback_lines 50000", kitty)
+            self.assertIn("#DC143C", kitty)
+            console = (root / "usr/share/applications/org.dylanos.console.desktop").read_text()
+            self.assertIn("Name=DylanOS Console", console)
+            self.assertIn("Exec=dylanos-console", console)
+            self.assertIn("StartupWMClass=org.dylanos.console", console)
+            self.assertIn("org.dylanos.console",
+                          (root / "usr/bin/dylanos-console").read_text())
             bashrc = (root / "etc/skel/.bashrc").read_text()
             self.assertIn("command_not_found_handle", bashrc)
             self.assertIn("PROMPT_COMMAND", bashrc)
-            fastfetch = (root / "etc/skel/.config/fastfetch/config.jsonc").read_text()
-            self.assertIn("logo.txt", fastfetch)
-            self.assertIn("DylanOS", (root / "usr/share/dylanos/fastfetch/logo.txt").read_text())
+            self.assertIn("dylanos-ghost.sh", bashrc)
+            self.assertIn("neofetch", bashrc)
+            self.assertNotIn("fastfetch", bashrc)
+            neofetch = (root / "etc/skel/.config/neofetch/config.conf").read_text()
+            self.assertIn('image_backend="kitty"', neofetch)
+            self.assertIn("/usr/share/dylanos/neofetch/logo.png", neofetch)
+            self.assertIn("DylanOS · Resumen del sistema", neofetch)
+            self.assertEqual((root / "usr/share/dylanos/neofetch/logo.png").read_bytes(),
+                             (ROOT / "branding/logo.png").read_bytes())
+            neofetch_wrapper = (root / "usr/bin/neofetch").read_text()
+            self.assertIn("XDG_CONFIG_HOME", neofetch_wrapper)
+            self.assertIn("/etc/xdg/neofetch/config.conf", neofetch_wrapper)
+            self.assertIn('exec /usr/bin/neowofetch --config "$config"', neofetch_wrapper)
+            self.assertFalse((root / "etc/skel/.config/konsolerc").exists())
+            self.assertFalse((root / "usr/share/dylanos/fastfetch/logo.txt").exists())
+            ghost = (root / "usr/share/dylanos/shell/dylanos-ghost.sh").read_text()
+            self.assertIn("__dylanos_tab", ghost)
+            self.assertIn(r'"\t"', ghost)
+            kdeglobals = (root / "etc/skel/.config/kdeglobals").read_text()
+            self.assertIn("TerminalApplication=dylanos-console", kdeglobals)
+            self.assertIn("TerminalService=org.dylanos.console.desktop", kdeglobals)
             # El layout del panel nunca debe incluir el cambiador de escritorios.
             layout = (root / "usr/share/plasma/look-and-feel/org.dylanos.crimson/contents/layouts/org.kde.plasma.desktop-layout.js").read_text()
             self.assertNotIn('addWidget("org.kde.plasma.pager")', layout)
@@ -203,7 +230,9 @@ class StagingTest(unittest.TestCase):
             # Las carpetas se abren con el Explorer: dolphin no se envía.
             mimeapps = (root / "etc/skel/.config/mimeapps.list").read_text()
             self.assertIn("inode/directory=org.dylanos.explorer.desktop;", mimeapps)
+            self.assertIn("x-scheme-handler/terminal=org.dylanos.console.desktop;", mimeapps)
             self.assertNotIn("dolphin", mimeapps)
+            self.assertNotIn("konsole", mimeapps)
             # Re-staging sobre un root existente: debe limpiar artefactos
             # obsoletos (autostart del instalador y restos de Discover) sin
             # sobrescribir la configuración existente del usuario.
@@ -214,6 +243,12 @@ class StagingTest(unittest.TestCase):
             stale_discover.write_text("[Desktop Entry]\nType=Application\n")
             stale_files = root / "usr/share/applications/org.dylanos.files.desktop"
             stale_files.write_text("[Desktop Entry]\nType=Application\nName=Archivos\nExec=dylanos --page files\n")
+            stale_konsole = root / "usr/share/applications/org.kde.konsole.desktop"
+            stale_konsole.write_text("[Desktop Entry]\nType=Application\nName=Konsole\n")
+            stale_konsolerc = root / "etc/skel/.config/konsolerc"
+            stale_konsolerc.write_text("[Desktop Entry]\nDefaultProfile=DylanOS.profile\n")
+            stale_kitty = root / "usr/share/applications/kitty.desktop"
+            stale_kitty.write_text("[Desktop Entry]\nType=Application\nName=kitty\n")
             stale_notifier = root / "etc/xdg/autostart/org.kde.discover.notifier.desktop"
             stale_notifier.parent.mkdir(parents=True, exist_ok=True)
             stale_notifier.write_text("[Desktop Entry]\nType=Application\n")
@@ -227,8 +262,14 @@ class StagingTest(unittest.TestCase):
                              "stage() debe borrar el autostart obsoleto del notifier de Discover")
             self.assertFalse(stale_files.exists(),
                              "stage() debe borrar la entrada obsoleta org.dylanos.files.desktop (Archivos del workspace)")
+            self.assertFalse(stale_konsole.exists(),
+                             "stage() debe borrar el lanzador de Konsole")
+            self.assertFalse(stale_konsolerc.exists(),
+                             "stage() debe borrar el perfil skel de Konsole")
+            self.assertIn("NoDisplay=true", stale_kitty.read_text(),
+                          "stage() debe ocultar el lanzador genérico de Kitty")
             self.assertEqual((root / "etc/skel/.config/kdeglobals").read_text(), original)
-            self.assertEqual(len(list((root / "usr/share/applications").glob("org.dylanos.*.desktop"))), 8)
+            self.assertEqual(len(list((root / "usr/share/applications").glob("org.dylanos.*.desktop"))), 9)
             self.assertFalse(list(root.rglob("*.otf")))
 
     def test_aurorae_required_svg_elements(self):

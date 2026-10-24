@@ -1,5 +1,8 @@
 """Regression checks for Plasma launchers and installer staging order."""
 from pathlib import Path
+import os
+import subprocess
+import tempfile
 import unittest
 
 ROOT = Path(__file__).resolve().parents[2]
@@ -49,13 +52,44 @@ class ShellContractTest(unittest.TestCase):
         self.assertIn('label: "KDE Connect"', mock_data)
         self.assertNotIn('label: "AirDrop"', mock_data)
 
-    def test_shell_keeps_wallpaper_and_konsole_profile_contract(self):
+    def test_shell_keeps_wallpaper_and_console_contract(self):
         layout = (ROOT / "themes/lookandfeel/org.dylanos.crimson/contents/layouts/org.kde.plasma.desktop-layout.js").read_text(encoding="utf-8")
-        profile = (ROOT / "configs/konsole/DylanOS.profile").read_text(encoding="utf-8")
+        kitty = (ROOT / "configs/kitty/kitty.conf").read_text(encoding="utf-8")
         wallpaper = ROOT / "branding/wallpapers/dylanos-default.png"
         self.assertIn('desktop.writeConfig("Image", "file:///usr/share/wallpapers/DylanOS/dylanos-default.png")', layout)
-        self.assertEqual(profile.count("HistorySize=50000"), 1)
+        self.assertIn("scrollback_lines 50000", kitty)
+        self.assertIn("background_opacity 0.80", kitty)
         self.assertTrue(wallpaper.is_file())
+        self.assertFalse((ROOT / "configs/konsole").exists())
+        self.assertFalse((ROOT / "configs/fastfetch").exists())
+
+    def test_console_recommender_finds_and_accepts_a_real_command(self):
+        ghost = ROOT / "configs/bash/dylanos-ghost.sh"
+        with tempfile.TemporaryDirectory() as folder:
+            command = Path(folder) / "dylanos-prueba"
+            command.write_text("#!/bin/sh\n", encoding="utf-8")
+            command.chmod(0o755)
+            script = f'''source "{ghost}"
+READLINE_LINE=dylanos-pr
+READLINE_POINT=${{#READLINE_LINE}}
+__dylanos_ghost_find
+printf 'sugerencia=%s\\n' "$DYLANOS_GHOST"
+__dylanos_ghost_accept
+printf 'aceptada=%s\\n' "$READLINE_LINE"
+'''
+            result = subprocess.run(
+                ["bash", "--noprofile", "--norc", "-c", script],
+                text=True,
+                capture_output=True,
+                env={**os.environ, "PATH": f"{folder}:{os.environ['PATH']}"},
+                check=False,
+            )
+        self.assertEqual(result.returncode, 0, result.stderr)
+        self.assertEqual(result.stderr, "")
+        self.assertEqual(
+            result.stdout,
+            "sugerencia=ueba\n\x1b[Kaceptada=dylanos-prueba\n",
+        )
 
     def test_installer_is_built_before_staging(self):
         build = (ROOT / "scripts/build.sh").read_text(encoding="utf-8")

@@ -240,7 +240,8 @@ class Backend(QObject):
 
     def launch(self, args):
         friendly = {"dylanos-store": "DylanOS Store", "dylanos-explorer": "Archivos", "plasma-systemmonitor": "Monitor del sistema",
-                    "dylanos-configuration": "DylanOS Configuration", "konsole": "Terminal", "dolphin": "Archivos"}
+                    "dylanos-configuration": "DylanOS Configuration", "dylanos-console": "DylanOS Console",
+                    "kitty": "DylanOS Console", "dolphin": "Archivos"}
         if not shutil.which(args[0]):
             self.message.emit(f"{friendly.get(args[0], args[0])} no está instalado. Puedes instalarlo desde DylanOS Store.")
             return False
@@ -267,7 +268,7 @@ class Backend(QObject):
     @Slot(str)
     def action(self, name):
         commands = {
-            "terminal": ["konsole"], "editor": ["code"], "browser": ["firefox-esr"],
+            "terminal": ["dylanos-console"], "editor": ["code"], "browser": ["firefox-esr"],
             "settings": ["dylanos-configuration"], "network": ["dylanos-configuration", "--page", "network"],
             "bluetooth": ["dylanos-configuration", "--page", "bluetooth"], "audio": ["dylanos-configuration", "--page", "sound"],
             "display": ["dylanos-configuration", "--page", "display"], "power": ["dylanos-configuration", "--page", "power"],
@@ -285,7 +286,7 @@ class Backend(QObject):
         if not Path(path).is_dir():
             self.message.emit("La carpeta del proyecto no existe.")
             return
-        if app == "terminal": self.launch(["konsole", "--workdir", path])
+        if app == "terminal": self.launch(["dylanos-console", "--directory", path])
         elif app == "editor": self.launch(["code", "--", path])
         elif app == "files": QDesktopServices.openUrl(QUrl.fromLocalFile(path))
 

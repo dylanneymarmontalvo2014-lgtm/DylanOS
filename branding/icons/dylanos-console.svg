@@ -1,0 +1,20 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
+  <defs>
+    <linearGradient id="crimson" x1="96" y1="64" x2="432" y2="448" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#ff2a54"/>
+      <stop offset="0.52" stop-color="#DC143C"/>
+      <stop offset="1" stop-color="#9c0b28"/>
+    </linearGradient>
+    <linearGradient id="screen" x1="160" y1="152" x2="356" y2="368" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#2e2736"/>
+      <stop offset="1" stop-color="#0A0A0A"/>
+    </linearGradient>
+  </defs>
+  <path fill="#DC143C" d="M64 64h208c97 0 176 79 176 176v32c0 97-79 176-176 176H64V64Z"/>
+  <path fill="#9c0b28" d="M64 64h56v384H64V64Z"/>
+  <rect x="104" y="112" width="296" height="288" rx="80" fill="#050505" stroke="#ff5274" stroke-width="8"/>
+  <rect x="120" y="128" width="264" height="256" rx="64" fill="url(#screen)"/>
+  <polyline points="184,204 250,256 184,308" fill="none" stroke="#FFFFFF" stroke-linecap="square" stroke-linejoin="miter" stroke-width="34"/>
+  <rect x="270" y="286" width="72" height="32" rx="4" fill="#FFFFFF"/>
+  <path fill="none" stroke="#ffb3c2" stroke-linecap="round" stroke-width="8" d="M116 100h170c49 0 91 24 116 61" opacity=".72"/>
+</svg>
