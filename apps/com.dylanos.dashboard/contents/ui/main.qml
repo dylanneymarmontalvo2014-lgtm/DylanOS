@@ -239,26 +239,34 @@ PlasmoidItem {
                             implicitWidth: 25; implicitHeight: 25
                             padding: 0
                             Accessible.name: Qt.formatDate(dateValue, "dddd d MMMM yyyy")
+                                + (isToday ? ", hoy" : "")
+                                + (isSelected ? ", seleccionado" : "")
                             onClicked: root.selectDate(dateValue)
                             contentItem: QQC2.Label {
                                 text: calendarDay.dateValue.getDate()
                                 color: calendarDay.dateValue.getMonth() === root.shownMonth.getMonth() ? "white" : "#777177"
                                 font.pixelSize: 11
+                                font.bold: calendarDay.isSelected || calendarDay.isToday
                                 horizontalAlignment: Text.AlignHCenter
                                 verticalAlignment: Text.AlignVCenter
                             }
                             background: Rectangle {
                                 radius: width / 2
-                                color: calendarDay.isSelected ? "#DC143C" : "transparent"
+                                color: calendarDay.isSelected
+                                    ? (calendarDay.down ? "#B01030" : calendarDay.hovered ? "#F02A50" : "#DC143C")
+                                    : calendarDay.hovered ? "#24FFFFFF" : "transparent"
                                 border.width: calendarDay.isToday && !calendarDay.isSelected ? 1 : 0
                                 border.color: "#DC143C"
+                                Behavior on color { ColorAnimation { duration: 130; easing.type: Easing.OutCubic } }
+                                Behavior on border.width { NumberAnimation { duration: 130; easing.type: Easing.OutCubic } }
                             }
                         }
                     }
                 }
                 Item { Layout.fillHeight: true }
                 QQC2.Label {
-                    text: "Seleccionado · " + Qt.formatDate(root.selectedDate, "dddd d MMMM")
+                    text: "Día seleccionado · " + Qt.formatDate(root.selectedDate, "dddd d MMMM")
+                        + (root.isSameDate(root.selectedDate, root.today) ? " · hoy" : "")
                     color: "#D7D2D6"; font.pixelSize: 12; font.bold: true
                     Accessible.name: text
                 }
