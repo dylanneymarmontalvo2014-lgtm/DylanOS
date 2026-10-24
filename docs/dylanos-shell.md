@@ -63,3 +63,12 @@ ejecutando una recomendación real y su aceptación.
 - Los dos applets actualizan metadatos a 0.2.0. Las pruebas de contrato y
   staging verifican funciones, metadatos y frecuencias; el render QML real
   debe confirmarse además en una sesión Plasma.
+
+
+## Comando `about`
+
+En una terminal, ejecuta `about` para mostrar los nombres del archivo
+`/usr/share/dylanos/MAINTAINERS.txt` en el mensaje de agradecimiento. El listado
+se obtiene de los bloques `MANTENEDOR` del archivo mantenido por el proyecto;
+si no hay nombres o no se puede leer, el comando informa el problema y termina
+con error en vez de inventar créditos.

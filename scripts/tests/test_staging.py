@@ -13,6 +13,26 @@ spec.loader.exec_module(module)
 
 
 class StagingTest(unittest.TestCase):
+    def test_about_command_uses_the_maintainers_file(self):
+        with tempfile.TemporaryDirectory() as folder:
+            root = Path(folder)
+            module.stage(root)
+            about = root / "usr/bin/about"
+            self.assertTrue(about.stat().st_mode & 0o111)
+            credits = root / "usr/share/dylanos/MAINTAINERS.txt"
+            env = {**__import__("os").environ, "DYLANOS_MAINTAINERS_FILE": str(credits)}
+            result = __import__("subprocess").run(
+                ["python3", str(about)], text=True, capture_output=True, check=False, env=env,
+            )
+            self.assertEqual(result.returncode, 0, result.stderr)
+            self.assertEqual(result.stdout, "Gracias a: Cristopher Borjas, podemos mantener este bonito sistema.\n")
+            credits.write_text(credits.read_text(encoding="utf-8") + "\nMANTENEDOR\n----------\nDylan Montalvo\n", encoding="utf-8")
+            result = __import__("subprocess").run(
+                ["python3", str(about)], text=True, capture_output=True, check=False, env=env,
+            )
+            self.assertEqual(result.returncode, 0, result.stderr)
+            self.assertEqual(result.stdout, "Gracias a: Cristopher Borjas, Dylan Montalvo, podemos mantener este bonito sistema.\n")
+
     def test_refuses_host_and_repository(self):
         for path in ("/", ROOT, ROOT.parent):
             with self.assertRaises(ValueError): module.stage(path)
