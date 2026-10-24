@@ -21,11 +21,31 @@ class ShellContractTest(unittest.TestCase):
         # El paquete `code` de Microsoft instala com.microsoft.VSCode.desktop
         # (Icon=vscode); NO existe ningún code.desktop y fijarlo deja el icono
         # del dock roto (pin sin resolver).
-        self.assertIn("applications:com.microsoft.VSCode.desktop", layout)
+        self.assertIn("applications:com.microsoft.VSCode.desktop", dock)
         self.assertIn("applications:com.microsoft.VSCode.desktop", dock)
         self.assertNotIn("applications:code.desktop", layout + dock)
         self.assertIn("code", [line.strip() for line in packages if line.strip() and not line.lstrip().startswith("#")])
         self.assertIn("packages.microsoft.com/repos/vscode", setup)
+
+    def test_default_dock_uses_smooth_neighbor_magnification(self):
+        layout = (ROOT / "themes/lookandfeel/org.dylanos.crimson/contents/layouts/org.kde.plasma.desktop-layout.js").read_text(encoding="utf-8")
+        dock = (ROOT / "apps/com.dylanos.dock/contents/ui/main.qml").read_text(encoding="utf-8")
+        delegate = (ROOT / "apps/com.dylanos.dock/contents/ui/DockItemDelegate.qml").read_text(encoding="utf-8")
+        config = (ROOT / "apps/com.dylanos.dock/contents/config/main.xml").read_text(encoding="utf-8")
+        self.assertIn('dock.addWidget("com.dylanos.dock")', layout)
+        self.assertIn('dock.addWidget("org.kde.plasma.trash")', layout)
+        self.assertNotIn('dock.addWidget("org.kde.plasma.icontasks")', layout)
+        self.assertIn("property int hoverIndex: -1", dock)
+        self.assertIn("dockRoot: dockRow", dock)
+        self.assertIn("hoverDistance === 1 ? baseSize + (hoverSize - baseSize) * 0.48", delegate)
+        self.assertIn("hoverDistance === 2 ? baseSize + (hoverSize - baseSize) * 0.18", delegate)
+        self.assertIn("NumberAnimation { duration: 170; easing.type: Easing.OutCubic }", delegate)
+        self.assertIn("onEntered: {", delegate)
+        self.assertIn("dockRoot.hoverIndex = delegateRoot.delegateIndex", delegate)
+        self.assertIn("dockRoot.hoverIndex = -1", delegate)
+        self.assertIn("<default>64</default>", config)
+        for app in ("org.dylanos.explorer.desktop", "firefox-esr.desktop", "com.microsoft.VSCode.desktop", "dylanos-app-center.desktop", "org.dylanos.store.desktop", "org.dylanos.configuration.desktop", "org.dylanos.calculator.desktop"):
+            self.assertIn("applications:" + app, dock)
 
 
     def test_dashboard_and_control_center_use_real_local_and_global_state(self):

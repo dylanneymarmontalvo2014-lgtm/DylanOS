@@ -73,32 +73,14 @@ clock.writeConfig("use24hFormat", 1);
 // Plasma floating bottom dock with intelligent auto-hide (dodgewindows).
 var dock = new Panel;
 dock.location = "bottom";
-dock.height = 72;
+dock.height = 82;
 dock.alignment = "center";
 dock.lengthMode = "fit";
 dock.floating = true;
 dock.opacity = "translucent";
 dock.hiding = "dodgewindows";
 
-var tasks = dock.addWidget("org.kde.plasma.icontasks");
-tasks.currentConfigGroup = ["General"];
-// Apps fijadas en el dock inferior, en este orden: explorador de archivos,
-// Firefox, Visual Studio Code, App Center, DylanOS Store, DylanOS
-// Configuration y Calculadora.
-// Gestor de archivos: DylanOS Explorer es el ÚNICO explorador del sistema
-// (el paquete dolphin no se envía: build.sh lo purga del chroot).
-tasks.writeConfig("launchers", [
-    "applications:org.dylanos.explorer.desktop",
-    "applications:firefox-esr.desktop",
-    "applications:com.microsoft.VSCode.desktop",
-    "applications:dylanos-app-center.desktop",
-    "applications:org.dylanos.store.desktop",
-    "applications:org.dylanos.configuration.desktop",
-    "applications:org.dylanos.calculator.desktop"
-]);
-tasks.writeConfig("showOnlyCurrentScreen", true);
-tasks.writeConfig("showOnlyCurrentDesktop", false);
-tasks.writeConfig("maxStripes", 1);
-
-// Papelera al final del dock, como en el preview.
+// Dock propio de DylanOS: ampliación suave al pasar el cursor, con los
+// iconos vecinos creciendo de forma gradual. La papelera sigue disponible.
+dock.addWidget("com.dylanos.dock");
 dock.addWidget("org.kde.plasma.trash");

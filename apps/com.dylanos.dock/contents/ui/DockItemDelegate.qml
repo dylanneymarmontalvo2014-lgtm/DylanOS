@@ -9,6 +9,8 @@ Item {
     id: delegateRoot
 
     property var appIcon
+    property Item dockRoot
+    property int delegateIndex: -1
     property string appName: ""
     property bool isRunning: false
     property bool isPinned: false
@@ -18,6 +20,12 @@ Item {
 
     readonly property real baseSize: Plasmoid.configuration.iconSize
     readonly property real hoverSize: Plasmoid.configuration.hoverSize
+    readonly property int hoverDistance: dockRoot && dockRoot.hoverIndex >= 0
+        ? Math.abs(delegateIndex - dockRoot.hoverIndex) : 999
+    readonly property real magnifiedSize: hoverDistance === 0 ? hoverSize
+        : hoverDistance === 1 ? baseSize + (hoverSize - baseSize) * 0.48
+        : hoverDistance === 2 ? baseSize + (hoverSize - baseSize) * 0.18
+        : baseSize
 
     width: hoverSize + 8
     height: hoverSize + 16
@@ -32,12 +40,10 @@ Item {
         anchors.bottom: indicator.top
         anchors.bottomMargin: 5
         transformOrigin: Item.Bottom
+        scale: delegateRoot.baseSize > 0 ? delegateRoot.magnifiedSize / delegateRoot.baseSize : 1
 
-        Behavior on width {
-            NumberAnimation { duration: 140; easing.type: Easing.OutCubic }
-        }
-        Behavior on height {
-            NumberAnimation { duration: 140; easing.type: Easing.OutCubic }
+        Behavior on scale {
+            NumberAnimation { duration: 170; easing.type: Easing.OutCubic }
         }
     }
 
@@ -204,12 +210,11 @@ Item {
         acceptedButtons: Qt.LeftButton | Qt.RightButton
 
         onEntered: {
-            icon.width = delegateRoot.hoverSize
-            icon.height = delegateRoot.hoverSize
+            if (delegateRoot.dockRoot) delegateRoot.dockRoot.hoverIndex = delegateRoot.delegateIndex
         }
         onExited: {
-            icon.width = delegateRoot.baseSize
-            icon.height = delegateRoot.baseSize
+            if (delegateRoot.dockRoot && delegateRoot.dockRoot.hoverIndex === delegateRoot.delegateIndex)
+                delegateRoot.dockRoot.hoverIndex = -1
         }
         onClicked: (mouse) => {
             if (mouse.button === Qt.RightButton) {

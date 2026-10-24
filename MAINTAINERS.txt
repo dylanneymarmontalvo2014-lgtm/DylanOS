@@ -118,3 +118,19 @@ CI del SHA 3a350001f926431ac56243106308780d2155c3d0: workflow 40138697148,
 conclusión success. No se midió el consumo en MiB en una ISO/VM comparable y
 no se realizó QA gráfico de Plasma; por ello no se declara una cifra de ahorro
 ni validación visual en runtime.
+
+
+ACTUALIZACIÓN DE MANTENIMIENTO — 2026-10-24
+------------------------------------------
+Rama: development
+Cambio: integrar `com.dylanos.dock` al panel inferior de perfiles nuevos e
+implementar ampliación graduada de iconos cercanos al cursor. Conserva los
+siete lanzadores previos, la papelera, `TaskManager.TasksModel` y compatibilidad
+con perfiles existentes sin reemplazar sus paneles.
+
+Verificación local: 27 pruebas enfocadas de contratos, staging, documentación,
+tema y cableado de Explorer/Store pasaron; `test_packages.sh`: 56 pasaron, 0
+fallaron; staging verificó plasmoid, configuración y layout. La prueba de
+layout con Node se omitió por no estar Node.js instalado. No se ejecutó Plasma
+gráfico: el render y el efecto de hover quedan pendientes de QA visual. No se
+ha construido una nueva ISO.

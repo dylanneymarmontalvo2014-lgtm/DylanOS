@@ -284,6 +284,15 @@ class StagingTest(unittest.TestCase):
             # El layout del panel nunca debe incluir el cambiador de escritorios.
             layout = (root / "usr/share/plasma/look-and-feel/org.dylanos.crimson/contents/layouts/org.kde.plasma.desktop-layout.js").read_text()
             self.assertNotIn('addWidget("org.kde.plasma.pager")', layout)
+            self.assertIn('dock.addWidget("com.dylanos.dock")', layout)
+            self.assertIn('dock.addWidget("org.kde.plasma.trash")', layout)
+            staged_dock = root / "usr/share/plasma/plasmoids/com.dylanos.dock"
+            self.assertTrue((staged_dock / "metadata.json").is_file())
+            dock_meta = json.loads((staged_dock / "metadata.json").read_text())
+            self.assertEqual(dock_meta["KPlugin"]["Version"], "0.4")
+            dock_delegate = (staged_dock / "contents/ui/DockItemDelegate.qml").read_text()
+            self.assertIn("hoverDistance === 1", dock_delegate)
+            self.assertIn("hoverDistance === 2", dock_delegate)
             for gtk_version in ("gtk-3.0", "gtk-4.0"):
                 settings_ini = (root / "etc/skel/.config" / gtk_version / "settings.ini").read_text()
                 self.assertIn("gtk-theme-name=DylanOS-Crimson", settings_ini)

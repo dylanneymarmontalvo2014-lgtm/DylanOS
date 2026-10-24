@@ -11,7 +11,7 @@
             <max>96</max>
         </entry>
         <entry name="hoverSize" type="Int">
-            <default>72</default>
+            <default>64</default>
             <min>24</min>
             <max>140</max>
         </entry>
