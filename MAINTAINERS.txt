@@ -95,3 +95,26 @@ docs/build-hosts.md      Sistemas anfitriones para compilar
 
 Este archivo describe las responsabilidades y prácticas de mantenimiento;
 no afirma que una prueba o una función esté validada si no existe evidencia.
+
+
+ACTUALIZACIÓN DE MANTENIMIENTO — 2026-10-24
+------------------------------------------
+Rama: development
+Último cambio confirmado: 3a350001f926431ac56243106308780d2155c3d0
+Cambio: reducir actividad y memoria auxiliar del Centro de Control cuando el
+panel está cerrado; reutilizar un solo modelo de notificaciones y pausar sus
+sondeos de estado hasta abrir el panel.
+
+Verificación local registrada para el cambio:
+- test_shell_contract, test_staging, test_documentation y test_theme: 24
+  pruebas pasaron.
+- suite combinada con test_pomodoro: 24 pasaron; 1 omitida porque Node.js no
+  estaba disponible.
+- test_packages.sh: 56 pasaron, 0 fallaron.
+- staging de los tres archivos QML del Centro de Control verificado.
+- Sintaxis JSON y shell comprobada.
+
+CI del SHA 3a350001f926431ac56243106308780d2155c3d0: workflow 40138697148,
+conclusión success. No se midió el consumo en MiB en una ISO/VM comparable y
+no se realizó QA gráfico de Plasma; por ello no se declara una cifra de ahorro
+ni validación visual en runtime.
