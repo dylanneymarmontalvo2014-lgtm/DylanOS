@@ -75,11 +75,14 @@ Este comando valida la base del proyecto con sintaxis, comprobaciones de shell y
 ## Construcción del ISO
 
 ```bash
-bash scripts/build.sh
+./scripts/build.sh
 bash scripts/iso.sh
 ```
 
 El proceso de build usa `scripts/build.sh` y `scripts/stage.py` para preparar el contenido del sistema, con salida en `work/chroot` y `work/iso`.
+No ejecutes `build.sh` con `sudo`: el script solicita privilegios solo cuando entra al
+chroot. Si `work/chroot` ya existe, continúa de forma explícita con
+`./scripts/build.sh --resume`; nunca se sobrescribe automáticamente.
 
 ## Límites de compatibilidad y verificación
 
