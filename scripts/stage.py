@@ -16,6 +16,10 @@ def stage(destination, installer_dist=None):
     dest.mkdir(parents=True, exist_ok=True)
 
     def copy(source, target):
+        # El frontend recién compilado se copia abajo desde installer_dist;
+        # no intentes leer un dist viejo o inexistente dentro del checkout.
+        if source == "installer/dylanos-installer/dist" and installer_dist is not None:
+            return
         source, target = ROOT / source, dest / target.lstrip("/")
         target.parent.mkdir(parents=True, exist_ok=True)
         if source.is_dir():
