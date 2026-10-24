@@ -70,9 +70,9 @@ export default function BottomBar({
               height: 7,
               background:
                 i === currentStep
-                  ? "#dc2626"
+                  ? "#DC143C"
                   : i < currentStep
-                  ? "rgba(220,38,38,0.4)"
+                  ? "rgba(220,20,60,0.4)"
                   : "rgba(255,255,255,0.15)",
             }}
           />
@@ -106,18 +106,18 @@ export default function BottomBar({
                 aria-disabled={nextDisabled}
                 className="flex items-center gap-1.5 px-5 py-2 rounded-lg text-sm font-semibold transition-all duration-150"
                 style={{
-                  background: nextDisabled ? "rgba(220,38,38,0.3)" : "#dc2626",
+                  background: nextDisabled ? "rgba(220,20,60,0.3)" : "#DC143C",
                   color: nextDisabled ? "rgba(255,255,255,0.4)" : "#fff",
                   cursor: nextDisabled ? "not-allowed" : "pointer",
-                  boxShadow: nextDisabled ? "none" : "0 0 16px rgba(220,38,38,0.25)",
+                  boxShadow: nextDisabled ? "none" : "0 0 16px rgba(220,20,60,0.25)",
                 }}
                 onMouseEnter={e => {
                   if (!nextDisabled)
-                    (e.currentTarget as HTMLButtonElement).style.background = "#ef4444";
+                    (e.currentTarget as HTMLButtonElement).style.background = "#FF2A54";
                 }}
                 onMouseLeave={e => {
                   if (!nextDisabled)
-                    (e.currentTarget as HTMLButtonElement).style.background = "#dc2626";
+                    (e.currentTarget as HTMLButtonElement).style.background = "#DC143C";
                 }}
               >
                 {nextLabel}

@@ -1,6 +1,6 @@
 body {
   background: var(--bg);
   color: var(--text);
-  font-family: 'Inter', sans-serif;
+  font-family: Inter, 'Noto Sans', Cantarell, 'Segoe UI', sans-serif;
   -webkit-font-smoothing: antialiased;
 }

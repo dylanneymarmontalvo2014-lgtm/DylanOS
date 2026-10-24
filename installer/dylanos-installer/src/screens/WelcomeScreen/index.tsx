@@ -5,17 +5,17 @@ import { useInstaller } from "@/state/installerState";
 
 const features = [
   {
-    icon: <RocketIcon size={20} color="#dc2626" />,
+    icon: <RocketIcon size={20} color="#DC143C" />,
     title: "Rápido",
     desc: "Ligero y optimizado para máximo rendimiento.",
   },
   {
-    icon: <ShieldIcon size={20} color="#dc2626" />,
+    icon: <ShieldIcon size={20} color="#DC143C" />,
     title: "Seguro",
     desc: "Protegido desde el inicio para tu tranquilidad.",
   },
   {
-    icon: <SettingsIcon size={20} color="#dc2626" />,
+    icon: <SettingsIcon size={20} color="#DC143C" />,
     title: "Personalizable",
     desc: "Hecho para adaptarse a tu estilo de trabajo.",
   },
@@ -36,7 +36,7 @@ export default function WelcomeScreen({ onCancel }: WelcomeScreenProps) {
         <div className="mb-5">
           <h1 className="text-2xl font-bold text-white">
             Bienvenido a{" "}
-            <span style={{ color: "#dc2626" }}>DylanOS</span>
+            <span style={{ color: "#DC143C" }}>DylanOS</span>
           </h1>
           <p className="text-sm mt-1.5" style={{ color: "#9ca3af" }}>
             Este asistente te guiará durante el proceso de instalación.
@@ -60,7 +60,7 @@ export default function WelcomeScreen({ onCancel }: WelcomeScreenProps) {
               }}
               onMouseEnter={e => {
                 (e.currentTarget as HTMLDivElement).style.background = "rgba(255,255,255,0.07)";
-                (e.currentTarget as HTMLDivElement).style.borderColor = "rgba(220,38,38,0.2)";
+                (e.currentTarget as HTMLDivElement).style.borderColor = "rgba(220,20,60,0.2)";
               }}
               onMouseLeave={e => {
                 (e.currentTarget as HTMLDivElement).style.background = "rgba(255,255,255,0.04)";
@@ -75,7 +75,7 @@ export default function WelcomeScreen({ onCancel }: WelcomeScreenProps) {
               {/* Bottom accent line */}
               <div
                 className="absolute bottom-0 left-4 right-4 h-0.5 rounded-full"
-                style={{ background: "#dc2626", opacity: 0.5 }}
+                style={{ background: "#DC143C", opacity: 0.5 }}
               />
             </div>
           ))}

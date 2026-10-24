@@ -53,9 +53,9 @@ export default function PartitioningScreen({ onCancel }: PartitioningScreenProps
           </div>
           <div
             className="w-14 h-14 rounded-xl flex items-center justify-center"
-            style={{ background: "rgba(220,38,38,0.1)", border: "1px solid rgba(220,38,38,0.2)" }}
+            style={{ background: "rgba(220,20,60,0.1)", border: "1px solid rgba(220,20,60,0.2)" }}
           >
-            <HardDriveIcon size={28} color="#dc2626" />
+            <HardDriveIcon size={28} color="#DC143C" />
           </div>
         </div>
 
@@ -72,15 +72,15 @@ export default function PartitioningScreen({ onCancel }: PartitioningScreenProps
               onClick={() => dispatch({ type: "SET_PARTITIONING", mode: opt.mode, disk: state.partitioning.disk })}
               className="flex items-start gap-3 p-4 rounded-xl text-left transition-all duration-150"
               style={{
-                background: state.partitioning.mode === opt.mode ? "rgba(220,38,38,0.08)" : "rgba(255,255,255,0.03)",
-                border: state.partitioning.mode === opt.mode ? "1px solid rgba(220,38,38,0.35)" : "1px solid rgba(255,255,255,0.07)",
+                background: state.partitioning.mode === opt.mode ? "rgba(220,20,60,0.08)" : "rgba(255,255,255,0.03)",
+                border: state.partitioning.mode === opt.mode ? "1px solid rgba(220,20,60,0.35)" : "1px solid rgba(255,255,255,0.07)",
               }}
             >
               <div
                 className="w-4 h-4 rounded-full mt-0.5 shrink-0 flex items-center justify-center"
                 style={{
-                  border: state.partitioning.mode === opt.mode ? "5px solid #dc2626" : "2px solid rgba(255,255,255,0.25)",
-                  background: state.partitioning.mode === opt.mode ? "#dc2626" : "transparent",
+                  border: state.partitioning.mode === opt.mode ? "5px solid #DC143C" : "2px solid rgba(255,255,255,0.25)",
+                  background: state.partitioning.mode === opt.mode ? "#DC143C" : "transparent",
                 }}
               />
               <div>
@@ -123,9 +123,9 @@ export default function PartitioningScreen({ onCancel }: PartitioningScreenProps
                     setDropdownOpen(false);
                   }}
                   className="w-full px-3 py-2 text-left text-sm flex items-center gap-2 hover:bg-white/10 text-white"
-                  style={{ background: idx === selectedIdx ? "rgba(220,38,38,0.2)" : "transparent" }}
+                  style={{ background: idx === selectedIdx ? "rgba(220,20,60,0.2)" : "transparent" }}
                 >
-                  <HardDriveIcon size={14} color="#dc2626" />
+                  <HardDriveIcon size={14} color="#DC143C" />
                   <span>{d.device} – {d.size} – {d.model}</span>
                 </button>
               ))}
@@ -175,9 +175,9 @@ export default function PartitioningScreen({ onCancel }: PartitioningScreenProps
             <div className="flex items-center gap-2 mb-3">
               <button
                 className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium transition-all"
-                style={{ background: "#dc2626", color: "#fff" }}
-                onMouseEnter={e => ((e.currentTarget as HTMLButtonElement).style.background = "#ef4444")}
-                onMouseLeave={e => ((e.currentTarget as HTMLButtonElement).style.background = "#dc2626")}
+                style={{ background: "#DC143C", color: "#fff" }}
+                onMouseEnter={e => ((e.currentTarget as HTMLButtonElement).style.background = "#FF2A54")}
+                onMouseLeave={e => ((e.currentTarget as HTMLButtonElement).style.background = "#DC143C")}
               >
                 <PlusCircleIcon size={13} color="#fff" />
                 Nueva partición
@@ -254,7 +254,7 @@ export default function PartitioningScreen({ onCancel }: PartitioningScreenProps
 
         <div className="flex items-center justify-between mt-3 text-xs" style={{ color: "#9ca3af" }}>
           <span>Dispositivo seleccionado: <span className="text-white font-medium">{disk.device} – {disk.size}</span></span>
-          <span>Espacio libre total: <span style={{ color: "#dc2626" }} className="font-semibold">204 GB</span></span>
+          <span>Espacio libre total: <span style={{ color: "#DC143C" }} className="font-semibold">204 GB</span></span>
         </div>
       </div>
 

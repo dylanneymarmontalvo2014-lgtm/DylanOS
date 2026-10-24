@@ -146,9 +146,9 @@ export default function KeyboardScreen({ onCancel }: KeyboardScreenProps) {
           </div>
           <div
             className="w-14 h-14 rounded-xl flex items-center justify-center shrink-0"
-            style={{ background: "rgba(220,38,38,0.1)", border: "1px solid rgba(220,38,38,0.2)" }}
+            style={{ background: "rgba(220,20,60,0.1)", border: "1px solid rgba(220,20,60,0.2)" }}
           >
-            <KeyboardIcon size={28} color="#dc2626" />
+            <KeyboardIcon size={28} color="#DC143C" />
           </div>
         </div>
 
@@ -178,7 +178,7 @@ export default function KeyboardScreen({ onCancel }: KeyboardScreenProps) {
                     <button key={m}
                       onClick={() => { dispatch({ type: "SET_KEYBOARD", layout: state.keyboard.layout, variant: state.keyboard.variant, model: m }); setModelOpen(false); }}
                       className="w-full text-left px-4 py-2.5 text-sm"
-                      style={{ background: state.keyboard.model === m ? "rgba(220,38,38,0.15)" : "transparent", color: state.keyboard.model === m ? "#ef4444" : "#d1d5db" }}
+                      style={{ background: state.keyboard.model === m ? "rgba(220,20,60,0.15)" : "transparent", color: state.keyboard.model === m ? "#FF2A54" : "#d1d5db" }}
                       onMouseEnter={e => { if (state.keyboard.model !== m) (e.currentTarget as HTMLButtonElement).style.background = "rgba(255,255,255,0.05)"; }}
                       onMouseLeave={e => { if (state.keyboard.model !== m) (e.currentTarget as HTMLButtonElement).style.background = "transparent"; }}
                     >{m}</button>
@@ -208,7 +208,7 @@ export default function KeyboardScreen({ onCancel }: KeyboardScreenProps) {
                     <button key={v}
                       onClick={() => { dispatch({ type: "SET_KEYBOARD", layout: state.keyboard.layout, variant: v, model: state.keyboard.model }); setVariantOpen(false); }}
                       className="w-full text-left px-4 py-2.5 text-sm"
-                      style={{ background: state.keyboard.variant === v ? "#dc2626" : "transparent", color: state.keyboard.variant === v ? "#fff" : "#d1d5db" }}
+                      style={{ background: state.keyboard.variant === v ? "#DC143C" : "transparent", color: state.keyboard.variant === v ? "#fff" : "#d1d5db" }}
                       onMouseEnter={e => { if (state.keyboard.variant !== v) (e.currentTarget as HTMLButtonElement).style.background = "rgba(255,255,255,0.05)"; }}
                       onMouseLeave={e => { if (state.keyboard.variant !== v) (e.currentTarget as HTMLButtonElement).style.background = "transparent"; }}
                     >{v}</button>
@@ -229,7 +229,7 @@ export default function KeyboardScreen({ onCancel }: KeyboardScreenProps) {
                   <button key={layout}
                     onClick={() => { const variants = keyboardVariants[layout] ?? [layout]; dispatch({ type: "SET_KEYBOARD", layout, variant: variants[0], model: state.keyboard.model }); }}
                     className="w-full text-left px-4 py-2 text-sm transition-all"
-                    style={{ background: state.keyboard.layout === layout ? "#dc2626" : "transparent", color: state.keyboard.layout === layout ? "#fff" : "#d1d5db" }}
+                    style={{ background: state.keyboard.layout === layout ? "#DC143C" : "transparent", color: state.keyboard.layout === layout ? "#fff" : "#d1d5db" }}
                     onMouseEnter={e => { if (state.keyboard.layout !== layout) (e.currentTarget as HTMLButtonElement).style.background = "rgba(255,255,255,0.05)"; }}
                     onMouseLeave={e => { if (state.keyboard.layout !== layout) (e.currentTarget as HTMLButtonElement).style.background = "transparent"; }}
                   >{layout}</button>
@@ -244,7 +244,7 @@ export default function KeyboardScreen({ onCancel }: KeyboardScreenProps) {
                   <button key={v}
                     onClick={() => dispatch({ type: "SET_KEYBOARD", layout: state.keyboard.layout, variant: v, model: state.keyboard.model })}
                     className="w-full text-left px-4 py-2 text-sm transition-all"
-                    style={{ background: state.keyboard.variant === v ? "#dc2626" : "transparent", color: state.keyboard.variant === v ? "#fff" : "#d1d5db" }}
+                    style={{ background: state.keyboard.variant === v ? "#DC143C" : "transparent", color: state.keyboard.variant === v ? "#fff" : "#d1d5db" }}
                     onMouseEnter={e => { if (state.keyboard.variant !== v) (e.currentTarget as HTMLButtonElement).style.background = "rgba(255,255,255,0.05)"; }}
                     onMouseLeave={e => { if (state.keyboard.variant !== v) (e.currentTarget as HTMLButtonElement).style.background = "transparent"; }}
                   >{v}</button>
@@ -273,7 +273,7 @@ export default function KeyboardScreen({ onCancel }: KeyboardScreenProps) {
                 background: "rgba(255,255,255,0.05)",
                 border: "1px solid rgba(255,255,255,0.1)",
                 color: "#d1d5db",
-                caretColor: "#dc2626",
+                caretColor: "#DC143C",
               }}
             />
 
@@ -295,19 +295,19 @@ export default function KeyboardScreen({ onCancel }: KeyboardScreenProps) {
                           minWidth: 0,
                           fontSize: key.action === "space" ? 11 : 12,
                           background: pressed
-                            ? "#dc2626"
+                            ? "#DC143C"
                             : active
-                            ? "rgba(220,38,38,0.25)"
+                            ? "rgba(220,20,60,0.25)"
                             : isModifier
                             ? "rgba(255,255,255,0.08)"
                             : "rgba(255,255,255,0.06)",
                           border: pressed
-                            ? "1px solid #dc2626"
+                            ? "1px solid #DC143C"
                             : active
-                            ? "1px solid rgba(220,38,38,0.5)"
+                            ? "1px solid rgba(220,20,60,0.5)"
                             : "1px solid rgba(255,255,255,0.1)",
-                          color: pressed ? "#fff" : active ? "#ef4444" : "#c9cdd4",
-                          boxShadow: pressed ? "0 0 8px rgba(220,38,38,0.4)" : "none",
+                          color: pressed ? "#fff" : active ? "#FF2A54" : "#c9cdd4",
+                          boxShadow: pressed ? "0 0 8px rgba(220,20,60,0.4)" : "none",
                           cursor: "pointer",
                         }}
                       >

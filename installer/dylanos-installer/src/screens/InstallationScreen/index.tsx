@@ -107,7 +107,7 @@ export default function InstallationScreen({ onCancel }: InstallationScreenProps
           <div>
             <h1 className="text-2xl font-bold text-white">
               Instalando{" "}
-              <span style={{ color: "#dc2626" }}>DylanOS</span>
+              <span style={{ color: "#DC143C" }}>DylanOS</span>
             </h1>
             <p className="text-sm mt-1" style={{ color: "#9ca3af" }}>
               Por favor espera mientras se instala DylanOS en tu equipo.
@@ -117,9 +117,9 @@ export default function InstallationScreen({ onCancel }: InstallationScreenProps
           </div>
           <div
             className="w-14 h-14 rounded-xl flex items-center justify-center"
-            style={{ background: "rgba(220,38,38,0.1)", border: "1px solid rgba(220,38,38,0.2)" }}
+            style={{ background: "rgba(220,20,60,0.1)", border: "1px solid rgba(220,20,60,0.2)" }}
           >
-            <DownloadIcon size={28} color="#dc2626" />
+            <DownloadIcon size={28} color="#DC143C" />
           </div>
         </div>
 
@@ -144,7 +144,7 @@ export default function InstallationScreen({ onCancel }: InstallationScreenProps
                 {state.installationPackage}
               </div>
             </div>
-            <div className="text-lg font-bold" style={{ color: "#dc2626" }}>
+            <div className="text-lg font-bold" style={{ color: "#DC143C" }}>
               {progress}%
             </div>
           </div>
@@ -184,7 +184,7 @@ export default function InstallationScreen({ onCancel }: InstallationScreenProps
                   {i > 0 && (
                     <div
                       className="flex-1 h-px transition-all duration-500"
-                      style={{ background: isDone || isActive ? "#dc2626" : "rgba(255,255,255,0.1)" }}
+                      style={{ background: isDone || isActive ? "#DC143C" : "rgba(255,255,255,0.1)" }}
                     />
                   )}
 
@@ -192,12 +192,12 @@ export default function InstallationScreen({ onCancel }: InstallationScreenProps
                     className="w-8 h-8 rounded-full flex items-center justify-center shrink-0 transition-all duration-300"
                     style={{
                       background: isDone
-                        ? "#dc2626"
+                        ? "#DC143C"
                         : isActive
-                        ? "rgba(220,38,38,0.2)"
+                        ? "rgba(220,20,60,0.2)"
                         : "rgba(255,255,255,0.06)",
-                      border: isActive ? "2px solid #dc2626" : isDone ? "2px solid #dc2626" : "2px solid rgba(255,255,255,0.1)",
-                      boxShadow: isActive ? "0 0 12px rgba(220,38,38,0.4)" : "none",
+                      border: isActive ? "2px solid #DC143C" : isDone ? "2px solid #DC143C" : "2px solid rgba(255,255,255,0.1)",
+                      boxShadow: isActive ? "0 0 12px rgba(220,20,60,0.4)" : "none",
                     }}
                   >
                     {isDone ? (
@@ -206,7 +206,7 @@ export default function InstallationScreen({ onCancel }: InstallationScreenProps
                       <div
                         className="w-2.5 h-2.5 rounded-full"
                         style={{
-                          background: "#dc2626",
+                          background: "#DC143C",
                           animation: "pulse-red 1.5s ease-in-out infinite",
                         }}
                       />
@@ -218,7 +218,7 @@ export default function InstallationScreen({ onCancel }: InstallationScreenProps
                   {i < mockInstallationSteps.length - 1 && (
                     <div
                       className="flex-1 h-px transition-all duration-500"
-                      style={{ background: isDone ? "#dc2626" : "rgba(255,255,255,0.1)" }}
+                      style={{ background: isDone ? "#DC143C" : "rgba(255,255,255,0.1)" }}
                     />
                   )}
                 </div>
@@ -240,9 +240,9 @@ export default function InstallationScreen({ onCancel }: InstallationScreenProps
         hidePrev
         hideNext
         customNext={
-          exceptional ? <button onClick={() => dispatch({ type: "SET_STEP", step: 5 })} className="px-5 py-2 rounded-lg text-sm font-semibold" style={{ background: "#dc2626", color: "#fff" }}>Volver al resumen</button> :
-          state.installationStatus === "paused" ? <button onClick={() => dispatch({ type: "SET_INSTALLATION_STATUS", status: "running" })} className="px-5 py-2 rounded-lg text-sm font-semibold" style={{ background: "#dc2626", color: "#fff" }}>Continuar</button> :
-          <button disabled className="flex items-center gap-1.5 px-5 py-2 rounded-lg text-sm font-semibold" style={{ background: "rgba(220,38,38,0.25)", color: "rgba(255,255,255,0.3)", cursor: "not-allowed" }}>Siguiente</button>
+          exceptional ? <button onClick={() => dispatch({ type: "SET_STEP", step: 5 })} className="px-5 py-2 rounded-lg text-sm font-semibold" style={{ background: "#DC143C", color: "#fff" }}>Volver al resumen</button> :
+          state.installationStatus === "paused" ? <button onClick={() => dispatch({ type: "SET_INSTALLATION_STATUS", status: "running" })} className="px-5 py-2 rounded-lg text-sm font-semibold" style={{ background: "#DC143C", color: "#fff" }}>Continuar</button> :
+          <button disabled className="flex items-center gap-1.5 px-5 py-2 rounded-lg text-sm font-semibold" style={{ background: "rgba(220,20,60,0.25)", color: "rgba(255,255,255,0.3)", cursor: "not-allowed" }}>Siguiente</button>
         }
       />
     </div>

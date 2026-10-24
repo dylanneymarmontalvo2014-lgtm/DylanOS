@@ -154,8 +154,8 @@ export default function SummaryScreen({ onCancel }: SummaryScreenProps) {
             <div
               className="mt-4 rounded-xl p-4"
               style={{
-                background: "rgba(220,38,38,0.06)",
-                border: "1px solid rgba(220,38,38,0.2)",
+                background: "rgba(220,20,60,0.06)",
+                border: "1px solid rgba(220,20,60,0.2)",
               }}
             >
               <div className="text-xs font-semibold text-white mb-1">⚠ Advertencia</div>
