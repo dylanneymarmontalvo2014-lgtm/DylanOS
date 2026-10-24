@@ -20,13 +20,14 @@ def stage(destination, installer_dist=None):
         # no intentes leer un dist viejo o inexistente dentro del checkout.
         source, target = ROOT / source, dest / target.lstrip("/")
         if source == ROOT / "installer/dylanos-installer/dist":
-            if installer_dist is not None or target.is_dir():
-                # Explicit temporary build wins; without one, do not replace an
-                # already staged frontend (iso.sh re-stages after build).
+            if installer_dist is not None:
+                return
+            if not source.is_dir() and target.is_dir():
+                # iso.sh re-stages after build; keep the fresh frontend already
+                # copied from /tmp when the checkout intentionally has no dist.
                 return
             if not source.is_dir():
-                # Unit tests and static staging may run before npm has built the
-                # frontend. The ISO build supplies installer_dist explicitly.
+                # Static staging/tests can run before npm has built the frontend.
                 return
         target.parent.mkdir(parents=True, exist_ok=True)
         if source.is_dir():
