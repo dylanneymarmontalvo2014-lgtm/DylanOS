@@ -1,6 +1,6 @@
 # DylanOS Control Center — plasmoid `com.dylanos.controlcenter`
 
-Widget Plasma 6 que abre el panel de notificaciones y controles del escritorio. Versión del applet: 0.2.0.
+Widget Plasma 6 que abre el panel de notificaciones y controles del escritorio. Versión del applet: 0.3.0.
 
 ## Funciones conectadas
 
@@ -22,3 +22,12 @@ El sondeo está escalonado: audio/brillo cada 5 segundos; Wi-Fi y estado de tema
 El contrato de estado se cubre parcialmente con `scripts/tests/test_shell_contract.py`; staging verifica el payload. Las pruebas estáticas no confirman que BluezQt, NotificationManager, D-Bus, audio o hardware funcionen en cada equipo. La carga del panel debe verificarse en una sesión real de Plasma 6.
 
 Ver el [Dashboard](../com.dylanos.dashboard/README.md), la [guía general](../../docs/guia-de-uso.md) y el [documento de shell](../../docs/dylanos-shell.md).
+
+## Acabado visual
+
+En 0.3.0, las superficies exteriores del Centro de Control y Notificaciones
+tienen una transparencia discreta y un borde claro suave. Las tarjetas internas
+conservan contraste para que los controles y las alertas sigan siendo fáciles
+de leer. El blur detrás de los plasmoids lo proporciona KWin/Plasma cuando el
+compositor y `BlurBehindEffect` están disponibles; la transparencia por sí
+sola no garantiza desenfoque.

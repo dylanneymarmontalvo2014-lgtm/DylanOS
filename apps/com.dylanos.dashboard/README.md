@@ -1,6 +1,6 @@
 # DylanOS Dashboard — plasmoid `com.dylanos.dashboard`
 
-Widget Plasma 6 instalado en el escritorio para perfiles nuevos. Combina hora/fecha, calendario local y lecturas del sistema local. Versión de paquete del applet: 0.6.0.
+Widget Plasma 6 instalado en el escritorio para perfiles nuevos. Combina hora/fecha, calendario local y lecturas del sistema local. Versión de paquete del applet: 0.7.0.
 
 ## Calendario
 
@@ -48,3 +48,13 @@ no se guarda historial ni se envían notificaciones.
 tiempo restante y progreso. `scripts/tests/test_pomodoro.py` los prueba con Node
 cuando está disponible; el contrato de QML también se comprueba en las pruebas
 de shell y staging. El render final requiere QA en una sesión Plasma 6.
+
+
+## Acabado visual tipo glass
+
+Dashboard 0.7.0 usa una superficie semitransparente oscura, borde blanco
+delicado y un reflejo superior tenue; la tarjeta Pomodoro también deja pasar
+un poco de fondo. Se mantiene la opacidad suficiente para leer texto y métricas.
+El desenfoque real del fondo depende del compositor/KWin y del soporte
+`BlurBehindEffect` de Plasma; el widget no simula blur ni promete que exista en
+todos los equipos.
