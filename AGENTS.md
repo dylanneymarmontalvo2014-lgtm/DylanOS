@@ -116,15 +116,17 @@ técnica viva: `docs/architecture.md`. Este archivo es el índice operativo de r
   `branding/icons/dylanos-console.{svg,png}`. Los lanzadores genéricos de Kitty se ocultan
   y `build.sh` purga `konsole` de chroots reutilizados.
 - Configuración: `configs/kitty/kitty.conf` (JetBrains Mono, paleta Crimson,
-  opacidad 0,58, blur 24, pestañas minimalistas, 50.000 líneas); se instala tanto en
+  opacidad 0,40, blur 24, pestañas minimalistas, 50.000 líneas); se instala tanto en
   `/etc/xdg/kitty` como en el skel.
 - Neofetch sustituye a Fastfetch. Debian 13 ya no publica el paquete original: se instala
   `neowofetch` (fork compatible mantenido) y `/usr/bin/neofetch` es el wrapper estable de
   DylanOS. `configs/neofetch/config.conf` usa el backend gráfico `kitty` y la imagen real
   `branding/logo.png`, instalada como `/usr/share/dylanos/neofetch/logo.png`; no hay ASCII.
-- `configs/bash/dylanos-ghost.sh` completa desde historial o comandos, pinta el sufijo
-  con ANSI faint/gris y lo acepta con Tab o flecha derecha. Solo registra binds de
-  Readline en Bash interactivo; debe poder sourcearse sin ruido en modo no interactivo.
+- `configs/bash/dylanos-ghost.sh` completa desde historial o comandos y lo acepta con
+  Tab o flecha derecha. No repinta la línea al teclear: los bindings por carácter
+  encadenaban macros de Readline ("maximum macro execution nesting level exceeded") y
+  bloqueaban la entrada. Solo registra binds en Bash interactivo; debe poder sourcearse
+  sin ruido en modo no interactivo.
 - QA principal: `test_shell_contract.py` ejecuta una recomendación real y su aceptación;
   `test_staging.py` valida launcher, app id, iconos, Neofetch, limpieza heredada y defaults;
   `test_packages.sh` valida Kitty/Neowofetch/ImageMagick, el wrapper y la ausencia de

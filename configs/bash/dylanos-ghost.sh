@@ -1,4 +1,4 @@
-# Recomendador de DylanOS Console: sugerencia fantasma (dim) y Tab para aceptarla.
+# Recomendador de DylanOS Console: completa desde el historial o los comandos.
 # shellcheck shell=bash
 # Se carga solo desde shells interactivos (dylanos.bashrc).
 
@@ -30,17 +30,8 @@ __dylanos_ghost_find() {
     fi
 }
 
-__dylanos_ghost_paint() {
-    __dylanos_ghost_find
-    printf '\e[K'
-    if [ -n "$DYLANOS_GHOST" ]; then
-        # \e[2m = faint: más transparente que el texto normal.
-        printf '\e[2m\e[38;5;240m%s\e[0m' "$DYLANOS_GHOST"
-        printf '\e[%sD' "${#DYLANOS_GHOST}"
-    fi
-}
-
 __dylanos_ghost_accept() {
+    [ -z "${DYLANOS_GHOST:-}" ] && __dylanos_ghost_find
     if [ -n "${DYLANOS_GHOST:-}" ] && [ "${READLINE_POINT-0}" -eq "${#READLINE_LINE}" ]; then
         READLINE_LINE="${READLINE_LINE}${DYLANOS_GHOST}"
         READLINE_POINT=${#READLINE_LINE}
@@ -73,7 +64,6 @@ __dylanos_tab() {
         local extra="${comps[0]#"$token"}"
         READLINE_LINE="${line:0:point}${extra}${line:point}"
         READLINE_POINT=$((point + ${#extra}))
-        __dylanos_ghost_paint
     elif [ "$n" -gt 1 ]; then
         printf '\n'
         printf '%s  ' "${comps[@]:0:30}"
@@ -94,18 +84,9 @@ __dylanos_right() {
 }
 
 if [[ $- == *i* ]] && [ -n "${BASH_VERSION:-}" ] && [ "${BASH_VERSINFO[0]}" -ge 4 ]; then
-    bind -x '"\C-x\C-g": __dylanos_ghost_paint'
+    # La sugerencia se calcula al pulsar Tab o flecha derecha. Pintarla tras
+    # cada tecla con macros de Readline provocaba "maximum macro execution
+    # nesting level exceeded" y bloqueaba la entrada de comandos.
     bind -x '"\t": __dylanos_tab'
     bind -x '"\e[C": __dylanos_right'
-
-    local_char=""
-    for local_char in {a..z} {A..Z} {0..9}; do
-        bind "\"${local_char}\": \"${local_char}\\C-x\\C-g\""
-    done
-    for local_char in ' ' '-' '_' '.' '/' '~' '='; do
-        bind "\"${local_char}\": \"${local_char}\\C-x\\C-g\""
-    done
-    bind '"\C-h": "\C-h\C-x\C-g"'
-    bind '"\177": "\177\C-x\C-g"'
-    unset local_char
 fi
