@@ -39,3 +39,20 @@ El último ajuste añade un panel translúcido independiente para el acceso, con
 En resoluciones menores que 1280×700, las dos columnas laterales se ocultan para priorizar el login. Esto se comprobó estructuralmente en QML, pero no mediante captura renderizada. La suite `scripts.tests.test_sddm_theme` quedó extendida para fijar el contrato visual y de interacción; en el entorno local pasó la parte estática (2 pruebas) y omitió el smoke test real porque `sddm-greeter` no está instalado. El CI del commit `18c29c3a6368eac9e1aee95ca5d4f5cc04ad589a` finalizó correctamente; no es por sí solo una prueba de renderizado del greeter.
 
 La build ISO `40120360056` fue generada desde el commit anterior `a2541314762bf9aa9d1142b4392b44c5f9382f57` y su checksum y estructura pasaron `scripts/test.sh`; no incluye necesariamente este refinamiento. Esa prueba tampoco arranca la ISO en QEMU. Una nueva build del HEAD es necesaria para comprobar el empaquetado del SDDM actualizado; el arranque de la ISO y una captura del greeter siguen siendo validaciones separadas.
+
+
+## Ajuste del panel de acceso en pantallas estrechas (2026-10-24)
+
+La tarjeta de login ahora calcula su ancho a partir del formulario y su escala
+real, con 32 px de margen horizontal, limitado por el ancho disponible de la
+pantalla. Esto evita que el fondo de vidrio siga midiendo 408 px cuando el
+formulario ya se ha reducido para una pantalla pequeña. La altura mantiene el
+contenido y el espacio vertical existente; no cambia el orden de usuario,
+contraseña, sesión ni las llamadas al greeter.
+
+La suite `python3 -m unittest scripts.tests.test_sddm_theme -v` comprueba el
+contrato responsive junto a login, avatar, teclado y acciones reales. El test
+`sddm-greeter --test-mode` solo corre donde está instalado el greeter; una
+prueba estática no demuestra la apariencia renderizada. La medición visual en
+resoluciones pequeñas y el arranque completo siguen requiriendo una sesión
+SDDM/VM real.
