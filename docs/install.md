@@ -40,6 +40,12 @@ certifica por sí sola que el greeter se haya renderizado o que una sesión haya
 terminado de cargar. El límite por defecto es 420 segundos y se puede cambiar
 con `DYLANOS_QEMU_BOOT_TIMEOUT`.
 
+## Primer uso del escritorio
+
+Tras iniciar la sesión live, abre el instalador solo si vas a instalar en una VM o en un disco elegido deliberadamente. Para explorar el sistema sin instalar: el Workspace está en el menú; el buscador Spotlight abre con `Ctrl+Espacio`; el Dashboard está en el escritorio; y el Centro de Control se abre desde su icono en la barra superior. El comando `about` muestra los mantenedores registrados.
+
+La [guía de uso y estado](guia-de-uso.md) enumera las apps, comandos, widgets, perfiles y límites conocidos (incluidos controles que aún son visuales y filtros de búsqueda incompletos). No trates los previews ni animaciones de fallback como prueba de operación real.
+
 ## Instalación desde el instalador propio
 
 El flujo actual del proyecto usa el instalador incluido en `installer/dylanos-installer` y no depende de Calamares. Antes de confirmar la instalación, revisa:

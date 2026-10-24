@@ -7,8 +7,7 @@ carpetas, tabla de recientes), y todas las funciones de datos usan el mismo moto
 - **KDirLister** para listar carpetas y todos los protocolos KIO (`trash:/`, `remote:/`, `smb:/`, `mtp:/`),
   con refresco automático y lotes progresivos.
 - **KFilePlacesModel** para dispositivos y lugares (con montaje bajo demanda vía Solid).
-- **KIO::trash / del / emptyTrash / restoreFromTrash** para la papelera freedesktop multi-dispositivo,
-  **deshacibles con Ctrl+Z** (KIO::FileUndoManager, el mismo gestor que usa Dolphin).
+- Operaciones KIO de papelera/restauración y deshacer mediante `KIO::FileUndoManager` (atajo Ctrl+Z).
 - **KIO::OpenUrlJob** para abrir con la aplicación predeterminada del sistema.
 
 > **Estado de verificación:** compilado y verificado en el chroot de DylanOS (Debian trixie, Qt 6.8.2):
@@ -64,7 +63,6 @@ sudo cmake --install build           # opcional: binario, .desktop e icono
 
 - **Barra de menús y dock** de la captura son parte del escritorio, no de la aplicación; no se incluyen.
 - Navegación con flechas del teclado, selección por rectángulo y arrastrar y soltar: pendientes.
-- Sin deshacer.
 - Red: *Red local* abre `remote:/` (KIO) y *Servidor DLN* usa la URL configurada en Configuración (vacía por defecto).
   No hay navegación SMB/NFS propia.
 - La vista de columnas es una aproximación (flujo compacto), no columnas jerárquicas.

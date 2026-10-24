@@ -72,3 +72,12 @@ En una terminal, ejecuta `about` para mostrar los nombres del archivo
 se obtiene de los bloques `MANTENEDOR` del archivo mantenido por el proyecto;
 si no hay nombres o no se puede leer, el comando informa el problema y termina
 con error en vez de inventar créditos.
+
+
+## Verificación del widget `about` (2026-10-24)
+
+El comando `about` se instala como `/usr/bin/about`; imprime el texto de
+agradecimiento con los nombres leídos de `/usr/share/dylanos/MAINTAINERS.txt`.
+El staging copia el archivo de mantenedores y una prueba de contrato modifica
+una copia temporal del archivo para comprobar que la salida refleja altas de
+nombres sin editar el script. No se cambia el fichero de créditos de origen.
