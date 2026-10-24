@@ -91,6 +91,14 @@ printf 'aceptada=%s\\n' "$READLINE_LINE"
             "sugerencia=ueba\n\x1b[Kaceptada=dylanos-prueba\n",
         )
 
+    def test_iso_validated_make_target_runs_build_then_iso_and_test(self):
+        makefile = (ROOT / "Makefile").read_text(encoding="utf-8")
+        self.assertIn("iso-validated:", makefile)
+        recipe = makefile.split("iso-validated:", 1)[1].split("\nqemu-test:", 1)[0]
+        self.assertLess(recipe.index("$(MAKE) build"), recipe.index("$(MAKE) iso"))
+        self.assertLess(recipe.index("$(MAKE) iso"), recipe.index("$(MAKE) test-iso"))
+        self.assertIn("BUILD_JOBS", makefile)
+
     def test_installer_is_built_before_staging(self):
         build = (ROOT / "scripts/build.sh").read_text(encoding="utf-8")
         check = (ROOT / "scripts/check.sh").read_text(encoding="utf-8")
