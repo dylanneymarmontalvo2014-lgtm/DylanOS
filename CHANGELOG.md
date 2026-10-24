@@ -12,6 +12,7 @@ Todos los cambios relevantes de DylanOS se registran en este archivo. La intenci
 - Control de volumen y silencio del micrófono predeterminado en el Centro de Control mediante `pactl`, con estado no disponible cuando no hay fuente de entrada.
 - Dashboard 0.3.0: porcentajes claros y barras Crimson con animación suave y descripciones accesibles para RAM, CPU y filesystem raíz.
 - Dashboard 0.3.1: estados de hoy/selección accesibles y transiciones suaves del calendario.
+- Dashboard 0.4.0: botón para abrir el Monitor del sistema KDE y ver procesos/métricas detalladas.
 
 ### Cambiado
 
