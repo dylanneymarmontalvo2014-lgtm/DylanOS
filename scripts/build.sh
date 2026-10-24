@@ -140,6 +140,8 @@ apt-get -y purge dolphin dolphin-plugins kcalc
 # Retira únicamente dependencias automáticas que APT confirme como huérfanas.
 apt-get -y autoremove --purge
 apt-get clean
+# Los índices se regeneran con apt-get update; no hacen falta para arrancar.
+rm -rf /var/lib/apt/lists/*
 rm -f /usr/sbin/policy-rc.d
 rm -rf /tmp/dylanos-packages /tmp/dylanos-src
 truncate -s 0 /etc/machine-id
