@@ -18,7 +18,7 @@ for t in scripts/tests/test_*.py; do
     echo "── unittest $(basename "$t" .py)"
     QT_QPA_PLATFORM=offscreen QT_QUICK_BACKEND=software "$PYTHON" -m unittest "scripts.tests.$(basename "$t" .py)"
 done
-"$PYTHON" -m compileall -q apps/workspace scripts/stage.py scripts/lib/generate-theme.py
+"$PYTHON" -m compileall -q apps/workspace scripts/stage.py scripts/check_boot_log.py scripts/lib/generate-theme.py
 staging="$(mktemp -d)"
 trap 'rm -rf "$staging"' EXIT
 "$PYTHON" scripts/stage.py "$staging/root"

@@ -152,11 +152,25 @@ El build ejecuta `rm -rf /var/lib/apt/lists/*` al final del chroot, después de 
 
 - El workflow manual de build instala `qemu-system-x86` y, después de crear y
   validar la ISO, ejecuta `scripts/test-boot-qemu.sh`. El smoke test arranca el
-  kernel/initramfs de esa misma ISO con QEMU TCG, captura el log serial y exige
-  `graphical.target` y el inicio de `sddm.service` antes del timeout.
+  kernel/initramfs de esa misma ISO con QEMU TCG, captura el log serial (normalizando códigos ANSI de systemd) y exige
+  `graphical.target` y el inicio de `sddm.service` antes del timeout. QEMU usa
+  CPU virtual `qemu64` para evitar exponer instrucciones AVX no necesarias en
+  una prueba de arranque software-emulada.
 - El script informa el tiempo kernel→servicio SDDM en segundos. Esta métrica
   permite comparar builds equivalentes, pero no mide GRUB/firmware ni prueba
   el renderizado del greeter o la carga completa de Plasma. La reducción del
   timeout de GRUB live (10→3 s) sigue siendo una mejora separada.
-- Dependencias: `qemu-system-x86` y `xorriso`; límite predeterminado 300 s,
+- Dependencias: `qemu-system-x86` y `xorriso`; límite predeterminado 420 s,
   ajustable con `DYLANOS_QEMU_BOOT_TIMEOUT`.
+
+
+### Resultado de la primera prueba QEMU (2026-10-24)
+
+La ISO alcanzó `multi-user.target`, `graphical.target` y el log registró el
+inicio de `sddm.service`, pero la prueba terminó por timeout porque systemd
+emitió los marcadores con secuencias ANSI de color que el detector literal no
+reconocía. El log también registra un segfault de `llvmpipe`; por tanto, ese
+intento no se considera una medición aprobada ni prueba que el greeter se haya
+renderizado. El detector ahora elimina secuencias ANSI, añade un margen de
+tiempo y usa un CPU QEMU sin AVX explícito; el siguiente build debe confirmar
+si el fallo gráfico desaparece y registrar el tiempo real.
