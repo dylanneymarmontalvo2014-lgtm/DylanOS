@@ -2,6 +2,19 @@
 set -euo pipefail
 if [[ $EUID -ne 0 ]]; then exec sudo bash "$0" "$@"; fi
 ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
+CPU_COUNT="$(nproc 2>/dev/null || printf '2')"
+DEFAULT_SQUASHFS_PROCESSORS="$CPU_COUNT"
+if (( DEFAULT_SQUASHFS_PROCESSORS > 4 )); then DEFAULT_SQUASHFS_PROCESSORS=4; fi
+SQUASHFS_PROCESSORS="${DYLANOS_SQUASHFS_PROCESSORS:-$DEFAULT_SQUASHFS_PROCESSORS}"
+if [[ ! "$SQUASHFS_PROCESSORS" =~ ^[1-9][0-9]*$ ]]; then
+    echo "DYLANOS_SQUASHFS_PROCESSORS debe ser un entero positivo." >&2
+    exit 2
+fi
+if (( SQUASHFS_PROCESSORS > CPU_COUNT )); then
+    echo "Ajustando SquashFS a los $CPU_COUNT núcleos disponibles." >&2
+    SQUASHFS_PROCESSORS="$CPU_COUNT"
+fi
+echo "SquashFS: $SQUASHFS_PROCESSORS procesador(es). Ajusta con DYLANOS_SQUASHFS_PROCESSORS=N."
 WORK="$ROOT/work"
 CHROOT="$WORK/chroot"
 IMAGE="$WORK/iso"
@@ -26,7 +39,7 @@ mkdir -p "$IMAGE/live" "$IMAGE/boot/grub"
 # Excluir solo el CONTENIDO de los dirs virtuales: el root fusionado necesita
 # /dev /proc /sys /run /tmp como puntos de montaje o /init muere en panic
 # (ver docs/auditoria-boot-hang-initramfs.md).
-sudo mksquashfs "$CHROOT" "$IMAGE/live/filesystem.squashfs.new" -noappend -comp zstd -Xcompression-level 15 -processors 2 -wildcards -e 'dev/*' 'proc/*' 'sys/*' 'run/*' 'tmp/*'
+sudo mksquashfs "$CHROOT" "$IMAGE/live/filesystem.squashfs.new" -noappend -comp zstd -Xcompression-level 15 -processors "$SQUASHFS_PROCESSORS" -wildcards -e 'dev/*' 'proc/*' 'sys/*' 'run/*' 'tmp/*'
 sudo mv "$IMAGE/live/filesystem.squashfs.new" "$IMAGE/live/filesystem.squashfs"
 KERNEL="$(find "$CHROOT/boot" -maxdepth 1 -name 'vmlinuz-*' -printf '%f\n' | sort -V | tail -1)"
 [[ -n "$KERNEL" ]] || { echo 'No se encontró el kernel.' >&2; exit 1; }
