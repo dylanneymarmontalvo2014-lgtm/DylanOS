@@ -27,6 +27,10 @@ PlasmoidItem {
 
     preferredRepresentation: compactRepresentation
 
+    // Do not poll audio/network/appearance while the popover is closed.
+    onExpandedChanged: SystemStatus.setMonitoringActive(root.expanded)
+    Component.onCompleted: SystemStatus.setMonitoringActive(root.expanded)
+
     compactRepresentation: Item {
         Layout.minimumWidth: 38
         Layout.minimumHeight: 26
@@ -98,6 +102,7 @@ PlasmoidItem {
             spacing: 16
 
             NotificationsPanel {
+                notificationModel: notifModel
                 Layout.fillHeight: true
                 Layout.preferredWidth: parent.width * 0.52
             }
