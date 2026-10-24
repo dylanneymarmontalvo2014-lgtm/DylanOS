@@ -37,7 +37,7 @@ La prueba usa el kernel e initramfs de la ISO, captura la consola serial y
 registra el tiempo desde el inicio del kernel hasta `graphical.target` y el
 servicio SDDM. Es una medida del arranque live hasta el servicio de login; no
 certifica por sí sola que el greeter se haya renderizado o que una sesión haya
-terminado de cargar. El límite por defecto es 300 segundos y se puede cambiar
+terminado de cargar. El límite por defecto es 420 segundos y se puede cambiar
 con `DYLANOS_QEMU_BOOT_TIMEOUT`.
 
 ## Instalación desde el instalador propio
