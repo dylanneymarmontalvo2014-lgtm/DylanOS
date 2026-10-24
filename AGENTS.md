@@ -19,7 +19,8 @@ técnica viva: `docs/architecture.md`. Este archivo es el índice operativo de r
   Los demás centros (systemsettings, kinfocenter, otros DE) se ocultan con NoDisplay desde
   `scripts/stage.py`. El paquete `systemsettings` SE CONSERVA: aporta `kcmshell6`.
 - **Una sola app por función**: sin kcalc (la oficial es `dylanos-calculator`), sin
-  VSCodium (el editor es Visual Studio Code, paquete `code`, repo apt oficial de Microsoft).
+  VSCodium (el editor es Visual Studio Code, paquete `code`, repo apt oficial de Microsoft)
+  y sin Konsole (la terminal oficial es `dylanos-console`, basada en Kitty).
 - **NUNCA mostrar "Discover/plasma-discover" al usuario**: la tienda es `dylanos-store`.
 - **KWallet se mantiene** (plasma-nm guarda credenciales Wi-Fi con él).
 - stage.py SIEMPRE hace staging a un root explícito y es idempotente (borra artefactos
@@ -84,10 +85,11 @@ técnica viva: `docs/architecture.md`. Este archivo es el índice operativo de r
 - `branding/` — logo.png (`distributor-logo-dylanos`), colors/, wallpapers/, icons/.
 - `themes/` — look-and-feel `org.dylanos.crimson` (layout de 2 paneles), aurorae (negra),
   SDDM `DylanOS-Crimson`, GRUB, Plymouth, GTK DylanOS-Crimson(+Light, GTK3+GTK4), color-schemes.
-- `configs/` — skel de Plasma (kwinrc aurorae, kdeglobals, gtk settings.ini con el tema
-  GTK, konsole translúcido + fastfetch, mimeapps con Explorer por defecto), bashrc propio.
+- `configs/` — skel de Plasma (kwinrc aurorae, kdeglobals, GTK, mimeapps), configuración
+  de Kitty/Neofetch y bashrc propio con prompt y recomendaciones fantasma.
 - `Makefile` — incluye `make iso-validated` (build → ISO → test-iso en secuencia) y `BUILD_JOBS=N`.
-- `scripts/` — `build.sh` (chroot aislado; transacción APT agrupada, hasta 4 jobs CMake configurables con `DYLANOS_BUILD_JOBS`, purga -dev, dolphin, kcalc al final),
+- `scripts/` — `build.sh` (chroot aislado; transacción APT agrupada, hasta 4 jobs CMake
+  configurables con `DYLANOS_BUILD_JOBS`, purga -dev, dolphin, kcalc y konsole al final),
   `iso.sh`, `stage.py`, `check.sh`, `test_QEMU.sh`, `lib/generate-theme.py` (aurorae etc.),
   `lib/packages.sh`. `scripts/tests/` — unittest Python + test_packages.sh.
 - `installer/dylanos-installer/` — Instalador nativo Qt WebEngine.
@@ -106,6 +108,26 @@ técnica viva: `docs/architecture.md`. Este archivo es el índice operativo de r
   tras 1,2 s (vacío en producción). Validación: `QT_QPA_PLATFORM=offscreen sddm-greeter
   --test-mode --theme <copia con background local>`; los errores deben mostrar
   ReferenceError/TypeError/fallback ausentes. Métricas en `artifacts/sddm-qa/`.
+
+## DylanOS Console
+
+- **Única terminal**: Kitty, lanzada siempre mediante `/usr/bin/dylanos-console`; nombre
+  visible `DylanOS Console`, desktop/app id `org.dylanos.console`, icono propio
+  `branding/icons/dylanos-console.{svg,png}`. Los lanzadores genéricos de Kitty se ocultan
+  y `build.sh` purga `konsole` de chroots reutilizados.
+- Configuración: `configs/kitty/kitty.conf` (JetBrains Mono, paleta Crimson, 80 % de
+  opacidad, blur, 50.000 líneas); se instala tanto en `/etc/xdg/kitty` como en el skel.
+- Neofetch sustituye a Fastfetch. Debian 13 ya no publica el paquete original: se instala
+  `neowofetch` (fork compatible mantenido) y `/usr/bin/neofetch` es el wrapper estable de
+  DylanOS. `configs/neofetch/config.conf` usa el backend gráfico `kitty` y la imagen real
+  `branding/logo.png`, instalada como `/usr/share/dylanos/neofetch/logo.png`; no hay ASCII.
+- `configs/bash/dylanos-ghost.sh` completa desde historial o comandos, pinta el sufijo
+  con ANSI faint/gris y lo acepta con Tab o flecha derecha. Solo registra binds de
+  Readline en Bash interactivo; debe poder sourcearse sin ruido en modo no interactivo.
+- QA principal: `test_shell_contract.py` ejecuta una recomendación real y su aceptación;
+  `test_staging.py` valida launcher, app id, iconos, Neofetch, limpieza heredada y defaults;
+  `test_packages.sh` valida Kitty/Neowofetch/ImageMagick, el wrapper y la ausencia de
+  Konsole/Fastfetch.
 
 ## QA (ejecutar antes de entregar)
 
@@ -138,7 +160,7 @@ DYLANOS_PYTHON=/tmp/opencode/venv/bin/python bash scripts/check.sh
   paquete NO es el nombre del .desktop) y fijarlo deja el icono del dock roto.
   Licencia del binario: la de Microsoft; documentada en `docs/licenses/assets.md`.
 - build.sh purga al final: `-dev` exclusivos, `dolphin`, `dolphin-plugins`, `kcalc`,
-  `codium` (chroots reutilizados). KF5/KWallet quedan según dependencias reales.
+  `konsole`, `codium` (chroots reutilizados). KF5/KWallet quedan según dependencias reales.
 - ISO: `bash scripts/iso.sh` tras build.sh; manifest en `work/packages.manifest`.
   `iso.sh` re-ejecuta `scripts/stage.py` sobre el chroot ANTES del squashfs: los rebuilds
   manuales dejan el staging desactualizado y el ISO heredaría entradas `.desktop` y pines

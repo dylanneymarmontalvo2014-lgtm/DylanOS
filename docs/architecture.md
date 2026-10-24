@@ -26,7 +26,7 @@ la arquitectura **real** del repositorio tras la iteración de ingeniería de 20
   arrastrar). Ninguna app DylanOS muestra la decoración tradicional. La identidad de cada
   ventana se fija con `QGuiApplication::setDesktopFileName("<id>")` (Wayland app_id) y
   `StartupWMClass` (X11); el `.desktop` de cada app usa el MISMO id (`org.dylanos.*`).
-- **Apps de terceros** (Firefox, Konsole, Kate…): decoración SSD de KWin con el tema
+- **Apps de terceros** (Firefox, Kitty, Kate…): decoración SSD de KWin con el tema
   **Aurorae DylanOS-Crimson** (regenerable: `python3 scripts/lib/generate-theme.py aurorae`):
   marco negro `#0f0f11` con esquinas redondeadas, título tenue centrado y botones semáforo
   a la izquierda (`kwinrc`: `ButtonsOnLeft=XIA`). No existe banda gris de decoración.
@@ -91,6 +91,12 @@ así que se ajusta a la potencia de dos más próxima si queda a ≤10 % (7,6→
 - `packages/default`: base + KDE + apps predeterminadas. **Sin `dolphin` ni `kcalc`**
   (Explorer y `dylanos-calculator` son los oficiales; el build los purga para chroots
   reutilizados). `systemsettings` se conserva (provee `kcmshell6`) pero oculto del menú.
+- La terminal única es **DylanOS Console**, una distribución de Kitty identificada por
+  `org.dylanos.console`. Konsole se purga al final del build. Kitty usa la paleta Crimson,
+  transparencia/blur y 50.000 líneas; el fork mantenido `neowofetch` de Debian se expone
+  mediante el wrapper estable `neofetch` y muestra `branding/logo.png` con el protocolo
+  gráfico de Kitty. El Bash interactivo ofrece sugerencias atenuadas desde el
+  historial o los comandos disponibles y las acepta con Tab o flecha derecha.
 - `packages/development`: incluye **Visual Studio Code** (`code`) desde el repo apt
   oficial de Microsoft (`packages.microsoft.com/repos/vscode`, suite `stable`, keyring
   propio). VSCodium fue retirado (icono incorrecto, fuente no legítima); `setup-repos.sh`

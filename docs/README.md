@@ -7,7 +7,7 @@ Este directorio reúne la documentación activa y útil del proyecto DylanOS Cri
 - [install.md](install.md): instalación, arranque live y validación.
 - [optimization.md](optimization.md): estrategia y verificación de optimización del sistema/ISO.
 - [architecture.md](architecture.md): arquitectura y principios del proyecto.
-- [dylanos-shell.md](dylanos-shell.md): dashboard, Control Center y Konsole.
+- [dylanos-shell.md](dylanos-shell.md): dashboard, Control Center y DylanOS Console.
 - [roadmap.md](roadmap.md): hoja de ruta y evolución del sistema.
 - [contributing.md](contributing.md): flujo de colaboración y estándares.
 - [auditoria-boot-hang-initramfs.md](auditoria-boot-hang-initramfs.md): informe histórico de boot y initramfs.

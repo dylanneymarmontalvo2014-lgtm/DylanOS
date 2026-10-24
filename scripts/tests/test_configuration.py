@@ -66,8 +66,9 @@ class TestDylanOSConfiguration(unittest.TestCase):
             for oculta in ocultas:
                 if oculta.exists():
                     self.assertIn("NoDisplay=true", oculta.read_text())
-            # El total de entradas org.dylanos.* del menu se mantiene en 8.
-            self.assertEqual(len(list((root / "usr/share/applications").glob("org.dylanos.*.desktop"))), 8)
+            # El total de entradas org.dylanos.* del menu se mantiene en 9
+            # (workspace + explorer + configuration + store + spotlight + console).
+            self.assertEqual(len(list((root / "usr/share/applications").glob("org.dylanos.*.desktop"))), 9)
 
 
 if __name__ == "__main__":

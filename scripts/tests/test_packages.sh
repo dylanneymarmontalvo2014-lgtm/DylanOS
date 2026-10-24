@@ -107,13 +107,21 @@ dev_pkgs="$(parse_package_list "$DEV_LIST" 2>/dev/null || true)"
 
 # Paquetes del sistema base migrados del build.sh original
 for p in linux-image-amd64 systemd-sysv kde-plasma-desktop sddm parted \
-    squashfs-tools fastfetch sudo network-manager konsole; do
+    squashfs-tools neowofetch sudo network-manager kitty imagemagick; do
     assert_contains_line "default contiene $p" "$default_pkgs" "$p"
 done
 # DylanOS Explorer no es un paquete apt: se compila desde apps/dylanos-explorer.
 assert_eq "explorer se compila en build" "si" "$(grep -q 'dylanos-src/dylanos-explorer' "$ROOT/scripts/build.sh" && echo si || echo no)"
 assert_eq "default ya no contiene dolphin" "no" \
     "$(printf '%s' "$default_pkgs" | grep -qx dolphin && echo si || echo no)"
+assert_eq "default ya no contiene konsole" "no" \
+    "$(printf '%s' "$default_pkgs" | grep -qx konsole && echo si || echo no)"
+assert_eq "default ya no contiene fastfetch" "no" \
+    "$(printf '%s' "$default_pkgs" | grep -qx fastfetch && echo si || echo no)"
+assert_eq "default no pide el paquete obsoleto neofetch" "no" \
+    "$(printf '%s' "$default_pkgs" | grep -qx neofetch && echo si || echo no)"
+assert_eq "el build purga konsole" "si" \
+    "$(grep -q 'purge dolphin dolphin-plugins kcalc konsole' "$ROOT/scripts/build.sh" && echo si || echo no)"
 
 # Calamares quedó eliminado: el instalador propio debe ocupar su lugar.
 assert_eq "default ya no contiene calamares" "no" \

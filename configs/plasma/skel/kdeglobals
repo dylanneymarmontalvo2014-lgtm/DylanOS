@@ -2,10 +2,12 @@
 ColorScheme=DylanOSDark
 Name=DylanOSDark
 font=Inter,10,-1,5,50,0,0,0,0,0
-fixed=DejaVu Sans Mono,10,-1,5,50,0,0,0,0,0
+fixed=JetBrains Mono,10,-1,5,50,0,0,0,0,0
 smallestReadableFont=Inter,9,-1,5,50,0,0,0,0,0
 toolBarFont=Inter,10,-1,5,50,0,0,0,0,0
 menuFont=Inter,10,-1,5,50,0,0,0,0,0
+TerminalApplication=dylanos-console
+TerminalService=org.dylanos.console.desktop
 
 [KDE]
 LookAndFeelPackage=org.dylanos.crimson
