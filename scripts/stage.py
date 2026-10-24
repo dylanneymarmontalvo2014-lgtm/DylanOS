@@ -96,6 +96,7 @@ def stage(destination, installer_dist=None):
         ("branding/logo.png", "/usr/share/dylanos/neofetch/logo.png"),
         ("configs/bash/dylanos.bashrc", "/etc/skel/.bashrc"),
         ("configs/bash/dylanos-ghost.sh", "/usr/share/dylanos/shell/dylanos-ghost.sh"),
+        ("MAINTAINERS.txt", "/usr/share/dylanos/MAINTAINERS.txt"),
         ("branding/icons/dylanos-console.svg", "/usr/share/icons/hicolor/scalable/apps/dylanos-console.svg"),
         ("branding/icons/dylanos-console.png", "/usr/share/icons/hicolor/512x512/apps/dylanos-console.png"),
     ]:
@@ -125,6 +126,7 @@ def stage(destination, installer_dist=None):
     with globals_path.open("a") as handle:
         handle.write("\n" + scheme[scheme.index("[Colors:"):])
     write("/usr/bin/dylanos", '#!/bin/sh\nexec /usr/bin/python3 /usr/share/dylanos/workspace/main.py "$@"\n', 0o755)
+    write("/usr/bin/about", '#!/usr/bin/python3\n"""Show DylanOS maintainers from the project\'s maintained credits file."""\nfrom pathlib import Path\nimport os\nimport re\nimport sys\n\nMAINTAINERS = Path(os.environ.get("DYLANOS_MAINTAINERS_FILE", "/usr/share/dylanos/MAINTAINERS.txt"))\ntry:\n    text = MAINTAINERS.read_text(encoding="utf-8")\nexcept OSError as error:\n    print(f"about: no se pudo leer la lista de mantenedores: {error}", file=sys.stderr)\n    raise SystemExit(1)\nlines = text.splitlines()\nnames = [lines[i + 2].strip() for i in range(len(lines) - 2) if lines[i].strip() == "MANTENEDOR" and lines[i + 1] and set(lines[i + 1]) == {"-"} and lines[i + 2].strip()]\nif not names:\n    print("about: no hay mantenedores registrados.", file=sys.stderr)\n    raise SystemExit(1)\nprint("Gracias a: " + ", ".join(name.strip() for name in names) + ", podemos mantener este bonito sistema.")\n', 0o755)
     write("/usr/bin/dylanos-spotlight", '#!/bin/sh\nexec /usr/bin/python3 /usr/share/dylanos/spotlight/main.py "$@"\n', 0o755)
     write("/usr/share/applications/org.dylanos.spotlight.desktop", "[Desktop Entry]\nType=Application\nName=DylanOS Spotlight\nGenericName=Búsqueda rápida\nComment=Buscar aplicaciones, proyectos, archivos y cálculos\nExec=dylanos-spotlight\nIcon=system-search\nTerminal=false\nCategories=Utility;\nStartupNotify=false\n")
     write("/usr/bin/dylanos-installer", '''#!/bin/sh
