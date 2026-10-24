@@ -1,7 +1,7 @@
 # DylanOS Crimson 1.0
 
 <p align="center">
-	<img src="branding/logo.png" alt="Logotipo de DylanOS" width="112">
+	<img src="https://raw.githubusercontent.com/dylanneymarmontalvo2014-lgtm/DylanOS/development/branding/logo.png" alt="Logotipo de DylanOS" width="112">
 </p>
 
 <p align="center">
@@ -19,7 +19,7 @@
 </p>
 
 <p align="center">
-	<img src="previews/DylanOS%20shell/escritorio_preview.png" alt="Vista de referencia del escritorio DylanOS Crimson" width="100%">
+	<img src="https://raw.githubusercontent.com/dylanneymarmontalvo2014-lgtm/DylanOS/development/previews/DylanOS%20shell/escritorio_preview.png" alt="Vista de referencia del escritorio DylanOS Crimson" width="100%">
 </p>
 
 > [!NOTE]
@@ -30,8 +30,8 @@
 DylanOS combina la base de Debian con KDE Plasma y una capa visual propia. El rojo carmesí identifica acciones y detalles; los fondos negros y grises dan profundidad, mientras el blanco y el gris claro mantienen la interfaz legible.
 
 <p align="center">
-	<img src="previews/DylanOS%20shell/controlcenter_preview.png" alt="Concepto visual del centro de control DylanOS" width="49%">
-	<img src="previews/DylanOS%20shell/sddm_preview.png" alt="Concepto visual de la pantalla de inicio de sesión DylanOS" width="49%">
+	<img src="https://raw.githubusercontent.com/dylanneymarmontalvo2014-lgtm/DylanOS/development/previews/DylanOS%20shell/controlcenter_preview.png" alt="Concepto visual del centro de control DylanOS" width="49%">
+	<img src="https://raw.githubusercontent.com/dylanneymarmontalvo2014-lgtm/DylanOS/development/previews/DylanOS%20shell/sddm_preview.png" alt="Concepto visual de la pantalla de inicio de sesión DylanOS" width="49%">
 </p>
 
 ## Aplicaciones DylanOS
@@ -46,8 +46,8 @@ El proyecto reúne aplicaciones y herramientas propias alrededor de tareas cotid
 - **Calculator**: calculadora de escritorio Qt.
 
 <p align="center">
-	<img src="previews/DylanOS%20explorer/explorer-home.png" alt="Pantalla de inicio de DylanOS Explorer" width="49%">
-	<img src="previews/DylanOS%20store/preview_shop.png" alt="Vista de DylanOS Store" width="49%">
+	<img src="https://raw.githubusercontent.com/dylanneymarmontalvo2014-lgtm/DylanOS/development/previews/DylanOS%20explorer/explorer-home.png" alt="Pantalla de inicio de DylanOS Explorer" width="49%">
+	<img src="https://raw.githubusercontent.com/dylanneymarmontalvo2014-lgtm/DylanOS/development/previews/DylanOS%20store/preview_shop.png" alt="Vista de DylanOS Store" width="49%">
 </p>
 
 Las capturas son referencias del aspecto visual de estas experiencias. Para conocer su estado actual, consulta el código de cada aplicación y la [guía de arquitectura](docs/architecture.md).
@@ -57,7 +57,7 @@ Las capturas son referencias del aspecto visual de estas experiencias. Para cono
 La paleta se mantiene en [`branding/colors/dylanos.conf`](branding/colors/dylanos.conf) y guía los recursos gráficos del sistema.
 
 <p align="center">
-	<img src="docs/assets/crimson-palette.svg" alt="Paleta DylanOS: Crimson #DC143C, Black #0A0A0A, White #FFFFFF, Gray #1A1A1A y Light Gray #B3B3B3" width="100%">
+	<img src="https://raw.githubusercontent.com/dylanneymarmontalvo2014-lgtm/DylanOS/development/docs/assets/crimson-palette.svg" alt="Paleta DylanOS: Crimson #DC143C, Black #0A0A0A, White #FFFFFF, Gray #1A1A1A y Light Gray #B3B3B3" width="100%">
 </p>
 
 | Color | HEX | Aplicación |
@@ -119,7 +119,6 @@ Para la configuración de desarrollo, los criterios de prueba y las precauciones
 
 - [Instalación y QA](docs/install.md)
 - [Optimización del sistema e ISO](docs/optimization.md)
-- [Optimización de paquetes e ISO](docs/optimization.md)
 - [Arquitectura](docs/architecture.md)
 - [Roadmap](docs/roadmap.md)
 - [Branding](branding/README.md)
