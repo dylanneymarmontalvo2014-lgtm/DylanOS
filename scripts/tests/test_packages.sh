@@ -149,6 +149,11 @@ assert_eq "el límite predeterminado de trabajos es cuatro" "si" \
 assert_eq "los trabajos se limitan a los núcleos disponibles" "si" \
     "$(grep -q 'BUILD_JOBS > CPU_COUNT' "$build_script" && echo si || echo no)"
 
+assert_eq "SquashFS usa procesadores configurables" "si" \
+    "$(grep -q -- '-processors "\$SQUASHFS_PROCESSORS"' "$ROOT/scripts/iso.sh" && echo si || echo no)"
+assert_eq "SquashFS limita procesadores a núcleos disponibles" "si" \
+    "$(grep -q 'SQUASHFS_PROCESSORS > CPU_COUNT' "$ROOT/scripts/iso.sh" && echo si || echo no)"
+
 # Apps declaradas en configs/default-apps.conf deben instalarse por defecto
 conf_apps="$(grep -vE '^\[|^$|^[[:space:]]*[#;]' "$ROOT/configs/default-apps.conf")"
 while IFS= read -r app; do
