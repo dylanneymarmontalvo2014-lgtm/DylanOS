@@ -40,7 +40,7 @@ function InstallerApp() {
   return (
     <div
       className="w-full h-full flex flex-col select-none"
-      style={{ background: "#0d0d0d", fontFamily: "'Inter', sans-serif" }}
+      style={{ background: "#0d0d0d", fontFamily: "Inter, 'Noto Sans', Cantarell, 'Segoe UI', sans-serif" }}
     >
       {/* Window chrome */}
       <div className="flex items-center justify-end px-4 py-2.5 shrink-0" style={{ borderBottom: "1px solid rgba(255,255,255,0.04)" }}>
@@ -48,7 +48,7 @@ function InstallerApp() {
           {[
             { color: "#374151", hoverColor: "#6b7280", title: "Minimizar", symbol: "—" },
             { color: "#374151", hoverColor: "#6b7280", title: "Maximizar", symbol: "□" },
-            { color: "#374151", hoverColor: "#dc2626", title: "Cerrar", symbol: "×" },
+            { color: "#374151", hoverColor: "#DC143C", title: "Cerrar", symbol: "×" },
           ].map(btn => (
             <button
               key={btn.title}
@@ -101,9 +101,9 @@ function InstallerApp() {
             <div className="flex items-center gap-3 mb-3">
               <div
                 className="w-10 h-10 rounded-lg flex items-center justify-center"
-                style={{ background: "rgba(220,38,38,0.12)", border: "1px solid rgba(220,38,38,0.2)" }}
+                style={{ background: "rgba(220,20,60,0.12)", border: "1px solid rgba(220,20,60,0.2)" }}
               >
-                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#dc2626" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#DC143C" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
                   <circle cx="12" cy="12" r="10"/>
                   <line x1="12" y1="16" x2="12" y2="12"/>
                   <line x1="12" y1="8" x2="12.01" y2="8"/>

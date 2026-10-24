@@ -22,27 +22,43 @@ void AppModel::loadApps()
         return a->name().compare(b->name(), Qt::CaseInsensitive) < 0;
     });
 
+    m_visibleAppIndexes.clear();
+    m_visibleAppsDirty = true;
     endResetModel();
 }
 
 void AppModel::refresh() { loadApps(); }
 
-QList<KService::Ptr> AppModel::visibleApps() const
+void AppModel::rebuildVisibleApps() const
 {
-    if (m_filter.isEmpty()) return m_apps;
-    QList<KService::Ptr> result;
-    for (const auto &s : m_apps)
-        if ((s->name().contains(m_filter, Qt::CaseInsensitive) || s->comment().contains(m_filter, Qt::CaseInsensitive)))
-            result.append(s);
-    return result;
+    if (!m_visibleAppsDirty)
+        return;
+
+    m_visibleAppIndexes.clear();
+    m_visibleAppIndexes.reserve(m_apps.size());
+    for (int i = 0; i < m_apps.size(); ++i) {
+        const auto &service = m_apps.at(i);
+        if (m_filter.isEmpty() || service->name().contains(m_filter, Qt::CaseInsensitive)
+            || service->comment().contains(m_filter, Qt::CaseInsensitive))
+            m_visibleAppIndexes.append(i);
+    }
+    m_visibleAppsDirty = false;
 }
 
-void AppModel::setFilter(const QString &text) { m_filter = text.trimmed(); }
+void AppModel::setFilter(const QString &text)
+{
+    const QString filter = text.trimmed();
+    if (m_filter == filter)
+        return;
+    m_filter = filter;
+    m_visibleAppsDirty = true;
+}
 
 int AppModel::pageCount(int pageSize) const
 {
     if (pageSize <= 0) return 0;
-    return (visibleApps().count() + pageSize - 1) / pageSize;
+    rebuildVisibleApps();
+    return (m_visibleAppIndexes.count() + pageSize - 1) / pageSize;
 }
 
 QVariantList AppModel::itemsForPage(int page, int pageSize) const
@@ -50,12 +66,12 @@ QVariantList AppModel::itemsForPage(int page, int pageSize) const
     QVariantList result;
     if (pageSize <= 0 || page < 0) return result;
 
-    const auto apps = visibleApps();
+    rebuildVisibleApps();
     const int start = page * pageSize;
-    const int end = qMin(start + pageSize, apps.count());
+    const int end = qMin(start + pageSize, m_visibleAppIndexes.count());
 
     for (int i = start; i < end; ++i) {
-        const KService::Ptr &s = apps.at(i);
+        const KService::Ptr &s = m_apps.at(m_visibleAppIndexes.at(i));
         QVariantMap item;
         item["name"] = s->name();
         item["icon"] = s->icon();

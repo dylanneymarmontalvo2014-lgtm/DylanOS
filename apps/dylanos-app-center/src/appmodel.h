@@ -27,7 +27,9 @@ signals:
 
 private:
     void loadApps();
-    QList<KService::Ptr> visibleApps() const;
+    void rebuildVisibleApps() const;
     QList<KService::Ptr> m_apps;
     QString m_filter;
+    mutable QList<int> m_visibleAppIndexes;
+    mutable bool m_visibleAppsDirty = true;
 };

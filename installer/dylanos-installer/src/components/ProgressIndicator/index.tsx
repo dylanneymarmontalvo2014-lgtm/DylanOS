@@ -14,7 +14,7 @@ export default function ProgressIndicator({ progress, animated = true, height = 
         className={`absolute inset-y-0 left-0 rounded-full transition-all duration-300 ${animated ? "progress-bar-animated" : ""}`}
         style={{
           width: `${progress}%`,
-          background: animated ? undefined : "#dc2626",
+          background: animated ? undefined : "#DC143C",
         }}
       />
     </div>

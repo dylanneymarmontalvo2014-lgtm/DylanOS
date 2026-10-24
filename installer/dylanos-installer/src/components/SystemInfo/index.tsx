@@ -41,7 +41,7 @@ export default function SystemInfo() {
 
   return (
     <div
-      className="flex flex-col h-full relative overflow-hidden"
+      className="installer-system-info flex flex-col h-full relative overflow-hidden"
       style={{
         width: 300,
         minWidth: 300,
@@ -92,9 +92,9 @@ export default function SystemInfo() {
           </p>
           <button
             className="flex items-center gap-1.5 mt-3 text-xs font-medium transition-colors duration-150"
-            style={{ color: "#dc2626" }}
-            onMouseEnter={e => ((e.currentTarget as HTMLButtonElement).style.color = "#ef4444")}
-            onMouseLeave={e => ((e.currentTarget as HTMLButtonElement).style.color = "#dc2626")}
+            style={{ color: "#DC143C" }}
+            onMouseEnter={e => ((e.currentTarget as HTMLButtonElement).style.color = "#FF2A54")}
+            onMouseLeave={e => ((e.currentTarget as HTMLButtonElement).style.color = "#DC143C")}
           >
             Conocer más en dylanos.com
             <ExternalLinkIcon size={12} color="currentColor" />
@@ -146,8 +146,8 @@ export default function SystemInfo() {
                 }}
                 className="w-full text-left px-4 py-2.5 text-sm transition-colors duration-100"
                 style={{
-                  background: state.language === lang.code ? "rgba(220,38,38,0.15)" : "transparent",
-                  color: state.language === lang.code ? "#ef4444" : "#d1d5db",
+                  background: state.language === lang.code ? "rgba(220,20,60,0.15)" : "transparent",
+                  color: state.language === lang.code ? "#FF2A54" : "#d1d5db",
                 }}
                 onMouseEnter={e => {
                   if (state.language !== lang.code)
@@ -155,7 +155,7 @@ export default function SystemInfo() {
                 }}
                 onMouseLeave={e => {
                   (e.currentTarget as HTMLButtonElement).style.background =
-                    state.language === lang.code ? "rgba(220,38,38,0.15)" : "transparent";
+                    state.language === lang.code ? "rgba(220,20,60,0.15)" : "transparent";
                 }}
               >
                 {lang.name}

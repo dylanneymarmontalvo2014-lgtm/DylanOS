@@ -29,7 +29,7 @@ export default function Sidebar({ onAbout }: SidebarProps) {
 
   return (
     <div
-      className="flex flex-col h-full relative"
+      className="installer-sidebar flex flex-col h-full relative"
       style={{
         width: 270,
         minWidth: 270,
@@ -48,7 +48,7 @@ export default function Sidebar({ onAbout }: SidebarProps) {
       />
 
       {/* Logo & title */}
-      <div className="flex flex-col items-center pt-8 pb-6 px-6">
+      <div className="installer-sidebar-brand flex flex-col items-center pt-8 pb-6 px-6">
         <DylanOSLogo size={60} />
         <div className="mt-4 text-center">
           <div className="font-semibold text-white text-base leading-tight">Instalar DylanOS</div>
@@ -75,7 +75,7 @@ export default function Sidebar({ onAbout }: SidebarProps) {
               disabled={!isClickable || isActive}
               className="w-full flex items-center gap-3 px-3 py-2.5 rounded-lg mb-1 text-left transition-all duration-150"
               style={{
-                background: isActive ? "rgba(220,38,38,0.12)" : "transparent",
+                background: isActive ? "rgba(220,20,60,0.12)" : "transparent",
                 cursor: isClickable && !isActive ? "pointer" : "default",
               }}
               onMouseEnter={e => {
@@ -84,7 +84,7 @@ export default function Sidebar({ onAbout }: SidebarProps) {
                 }
               }}
               onMouseLeave={e => {
-                (e.currentTarget as HTMLButtonElement).style.background = isActive ? "rgba(220,38,38,0.12)" : "transparent";
+                (e.currentTarget as HTMLButtonElement).style.background = isActive ? "rgba(220,20,60,0.12)" : "transparent";
               }}
             >
               {/* Step indicator */}
@@ -94,12 +94,12 @@ export default function Sidebar({ onAbout }: SidebarProps) {
                   width: 26,
                   height: 26,
                   background: isActive
-                    ? "#dc2626"
+                    ? "#DC143C"
                     : isCompleted
-                    ? "rgba(220,38,38,0.7)"
+                    ? "rgba(220,20,60,0.7)"
                     : "rgba(255,255,255,0.08)",
                   color: isActive || isCompleted ? "#fff" : "#6b7280",
-                  boxShadow: isActive ? "0 0 8px rgba(220,38,38,0.4)" : "none",
+                  boxShadow: isActive ? "0 0 8px rgba(220,20,60,0.4)" : "none",
                 }}
               >
                 {isCompleted ? (
@@ -114,7 +114,7 @@ export default function Sidebar({ onAbout }: SidebarProps) {
                 <div
                   className="text-sm font-medium leading-tight truncate"
                   style={{
-                    color: isActive ? "#dc2626" : isCompleted ? "rgba(255,255,255,0.75)" : "#6b7280",
+                    color: isActive ? "#DC143C" : isCompleted ? "rgba(255,255,255,0.75)" : "#6b7280",
                   }}
                 >
                   {step.label}

@@ -1,7 +1,19 @@
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
 @import 'tailwindcss';
 @import './styles/colors.css';
 @import './styles/spacing.css';
 @import './styles/typography.css';
 @import './styles/borders.css';
 @import './styles/effects.css';
+
+/* Keep the native installer usable on compact live-session displays. */
+@media (max-width: 1120px) {
+  .installer-system-info { display: none !important; }
+  .installer-sidebar { width: 224px !important; min-width: 224px !important; }
+}
+@media (max-height: 700px) {
+  .installer-sidebar-brand { padding-top: 1.25rem !important; padding-bottom: 1rem !important; }
+  .installer-sidebar-brand img { width: 44px; height: 44px; }
+}
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { animation-duration: 0.01ms !important; animation-iteration-count: 1 !important; scroll-behavior: auto !important; transition-duration: 0.01ms !important; }
+}

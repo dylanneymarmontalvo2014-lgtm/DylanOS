@@ -141,7 +141,7 @@ def main():
 
     settings = view.page().settings()
     settings.setAttribute(QWebEngineSettings.WebAttribute.ScrollAnimatorEnabled, True)
-    settings.setAttribute(QWebEngineSettings.WebAttribute.LocalContentCanAccessRemoteUrls, True)
+    settings.setAttribute(QWebEngineSettings.WebAttribute.LocalContentCanAccessRemoteUrls, False)
     # Sin menú contextual del navegador: la ventana es una app de escritorio.
     view.setContextMenuPolicy(Qt.ContextMenuPolicy.NoContextMenu)
 

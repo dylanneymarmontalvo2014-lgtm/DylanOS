@@ -73,7 +73,7 @@ export default function FinishScreen({ onCancel }: FinishScreenProps) {
         >
           <div className="flex-1">
             <div className="flex items-center gap-2 mb-3">
-              <RocketIcon size={16} color="#dc2626" />
+              <RocketIcon size={16} color="#DC143C" />
               <span className="text-sm font-semibold text-white">Siguientes pasos recomendados:</span>
             </div>
             <ul className="space-y-2">
@@ -83,7 +83,7 @@ export default function FinishScreen({ onCancel }: FinishScreenProps) {
                 "Inicia sesión con tu usuario y contraseña.",
               ].map((step, i) => (
                 <li key={i} className="flex items-center gap-2 text-xs" style={{ color: "#9ca3af" }}>
-                  <div className="w-1.5 h-1.5 rounded-full shrink-0" style={{ background: "#dc2626" }} />
+                  <div className="w-1.5 h-1.5 rounded-full shrink-0" style={{ background: "#DC143C" }} />
                   {step}
                 </li>
               ))}
@@ -93,7 +93,7 @@ export default function FinishScreen({ onCancel }: FinishScreenProps) {
           {/* Mini illustration */}
           <div
             className="w-28 h-24 rounded-xl flex items-center justify-center shrink-0"
-            style={{ background: "rgba(220,38,38,0.08)", border: "1px solid rgba(220,38,38,0.15)" }}
+            style={{ background: "rgba(220,20,60,0.08)", border: "1px solid rgba(220,20,60,0.15)" }}
           >
             <DylanOSLogo size={40} />
           </div>
@@ -120,9 +120,9 @@ export default function FinishScreen({ onCancel }: FinishScreenProps) {
             <button
               onClick={() => setShowRebootDialog(false)}
               className="w-full py-2.5 rounded-lg text-sm font-semibold"
-              style={{ background: "#dc2626", color: "#fff" }}
-              onMouseEnter={e => ((e.currentTarget as HTMLButtonElement).style.background = "#ef4444")}
-              onMouseLeave={e => ((e.currentTarget as HTMLButtonElement).style.background = "#dc2626")}
+              style={{ background: "#DC143C", color: "#fff" }}
+              onMouseEnter={e => ((e.currentTarget as HTMLButtonElement).style.background = "#FF2A54")}
+              onMouseLeave={e => ((e.currentTarget as HTMLButtonElement).style.background = "#DC143C")}
             >
               Entendido
             </button>
@@ -139,9 +139,9 @@ export default function FinishScreen({ onCancel }: FinishScreenProps) {
             <button
               onClick={handleReboot}
               className="flex items-center gap-2 px-5 py-2 rounded-lg text-sm font-semibold transition-all"
-              style={{ background: "#dc2626", color: "#fff", boxShadow: "0 0 16px rgba(220,38,38,0.3)" }}
-              onMouseEnter={e => ((e.currentTarget as HTMLButtonElement).style.background = "#ef4444")}
-              onMouseLeave={e => ((e.currentTarget as HTMLButtonElement).style.background = "#dc2626")}
+              style={{ background: "#DC143C", color: "#fff", boxShadow: "0 0 16px rgba(220,20,60,0.3)" }}
+              onMouseEnter={e => ((e.currentTarget as HTMLButtonElement).style.background = "#FF2A54")}
+              onMouseLeave={e => ((e.currentTarget as HTMLButtonElement).style.background = "#DC143C")}
             >
               <RefreshCwIcon />
               Reiniciar ahora
