@@ -1,138 +1,88 @@
-# DylanOS Crimson 1.0
+# DylanOS Alpha
 
 <p align="center">
-	<img src="branding/logo.png" alt="Logotipo de DylanOS" width="112">
+	<img src="branding/logo.svg" alt="Logotipo de DylanOS" width="112">
 </p>
 
 <p align="center">
-	<strong>Un escritorio Linux con identidad propia.</strong><br>
-	Debian 13 · KDE Plasma 6 · Qt 6 · DylanOS Crimson
+	<strong>Una distribución Linux basada en Debian Live y KDE Plasma.</strong><br>
+	Debian Stable · amd64 · versión Alpha
 </p>
 
 <p align="center">
-	<a href="docs/install.md">Instalación</a> ·
-	<a href="docs/build-hosts.md">Hosts de compilación</a> ·
-	<a href="MAINTAINERS.txt">Mantenedores</a> ·
+	<a href="docs/install.md">Probar e instalar</a> ·
+	<a href="docs/build.md">Construir</a> ·
 	<a href="docs/architecture.md">Arquitectura</a> ·
 	<a href="docs/roadmap.md">Roadmap</a> ·
-	<a href="CONTRIBUTING.md">Contribuir</a>
+	<a href="docs/contributing.md">Contribuir</a>
 </p>
 
-<p align="center">
-	<img src="previews/DylanOS%20shell/escritorio_preview.png" alt="Vista de referencia del escritorio DylanOS Crimson" width="100%">
-</p>
+> [!CAUTION]
+> DylanOS está en fase Alpha. La configuración de Calamares y un arranque de prueba no certifican una instalación completa ni compatibilidad con hardware. Prueba en una máquina virtual y respalda tus datos antes de instalar.
 
-> [!NOTE]
-> Las imágenes de `previews/` muestran el objetivo visual del proyecto. Pueden incluir diseños en progreso y no representan por sí solas funciones verificadas en una ISO.
+## Qué incluye
 
-## La experiencia Crimson
+DylanOS usa Debian Live para construir una imagen `amd64` con KDE Plasma, SDDM, GRUB, Plymouth y Calamares. El repositorio añade configuraciones y recursos propios, y tres utilidades locales: diagnóstico (`dylanos-info`), bienvenida (`dylanos-welcome`) y aplicación manual del wallpaper (`dylanos-wallpaper`).
 
-DylanOS combina la base de Debian con KDE Plasma y una capa visual propia. El rojo carmesí identifica acciones y detalles; los fondos negros y grises dan profundidad, mientras el blanco y el gris claro mantienen la interfaz legible.
+Las listas de paquetes están separadas en `default`, `development`, `gaming` e `iot`, pero **las cuatro se incluyen en cada build actual**; todavía no son perfiles seleccionables. La apariencia se apoya en Breeze y en los temas/configuraciones de este repositorio. La [guía de identidad visual](docs/desktop.md) documenta los colores presentes en esos recursos.
 
-<p align="center">
-	<img src="previews/DylanOS%20shell/controlcenter_preview.png" alt="Concepto visual del centro de control DylanOS" width="49%">
-	<img src="previews/DylanOS%20shell/sddm_preview.png" alt="Concepto visual de la pantalla de inicio de sesión DylanOS" width="49%">
-</p>
+La presencia de estos componentes en el código no significa que todas las funciones se hayan validado en una ISO. Consulta [estado del proyecto](docs/status.md) y [alcance de las pruebas](docs/testing.md).
 
-## Aplicaciones DylanOS
+## Construir desde Debian o Ubuntu
 
-El proyecto reúne aplicaciones y herramientas propias alrededor de tareas cotidianas del escritorio:
-
-- **Workspace**: bienvenida, archivos, notas, desarrollo, monitor y ajustes.
-- **DylanOS Explorer**: gestor de archivos nativo basado en KIO.
-- **DylanOS Store**: catálogo, instalación y actualización de software.
-- **App Center**: acceso a las aplicaciones instaladas.
-- **Spotlight**: búsqueda rápida.
-- **Calculator**: calculadora de escritorio Qt.
-
-<p align="center">
-	<img src="previews/DylanOS%20explorer/explorer-home.png" alt="Pantalla de inicio de DylanOS Explorer" width="49%">
-	<img src="previews/DylanOS%20store/preview_shop.png" alt="Vista de DylanOS Store" width="49%">
-</p>
-
-Las capturas son referencias del aspecto visual de estas experiencias. Para conocer su estado actual, consulta el código de cada aplicación y la [guía de arquitectura](docs/architecture.md).
-
-## Paleta oficial
-
-La paleta se mantiene en [`branding/colors/dylanos.conf`](branding/colors/dylanos.conf) y guía los recursos gráficos del sistema.
-
-<p align="center">
-	<img src="docs/assets/crimson-palette.svg" alt="Paleta DylanOS: Crimson #DC143C, Black #0A0A0A, White #FFFFFF, Gray #1A1A1A y Light Gray #B3B3B3" width="100%">
-</p>
-
-| Color | HEX | Aplicación |
-|---|---|---|
-| DylanOS Crimson | `#DC143C` | Acentos, acciones e identidad |
-| DylanOS Black | `#0A0A0A` | Fondos profundos |
-| DylanOS White | `#FFFFFF` | Texto y contraste |
-| DylanOS Gray | `#1A1A1A` | Paneles y superficies |
-| DylanOS Light Gray | `#B3B3B3` | Texto secundario y detalles |
-
-## Componentes del sistema
-
-| Ruta | Propósito |
-|---|---|
-| `apps/` | Aplicaciones de DylanOS |
-| `branding/` | Logo, colores, iconos y fondos |
-| `configs/` | Ajustes del sistema y del entorno de usuario |
-| `installer/` | Componentes del instalador |
-| `packages/` | Selección de paquetes del sistema |
-| `scripts/` | Construcción, staging y comprobaciones |
-| `themes/` | Temas de Plasma, SDDM, GRUB, GTK y Plymouth |
-| `previews/` | Capturas y referencias del diseño objetivo |
-
-## Construir y probar
-
-Desde la raíz del repositorio ejecuta `bash init.sh`. Detecta el sistema: en Debian/Ubuntu amd64 instala dependencias nativas y prepara `.venv`; en otras distribuciones Linux amd64 usa Docker. Si falta Docker o Compose, intenta instalarlos y arrancar el servicio automáticamente en Arch, Fedora/RHEL, openSUSE y Alpine; en otras distribuciones Docker debe estar instalado. Consulta la [matriz de hosts de compilación](docs/build-hosts.md) para conocer los requisitos. Antes de instalar paquetes, iniciar el daemon o construir la imagen, muestra lo que hará y pide confirmación. Si respondes que no, no hace cambios.
+Se necesita `amd64`, conexión a Internet y privilegios de administrador para las operaciones de Debian Live. Instala las herramientas requeridas y construye desde la raíz del checkout:
 
 ```bash
-bash init.sh
+sudo ./install-deps.sh
+sudo scripts/build.sh
 ```
 
-Después de preparar las dependencias nativas en Debian/Ubuntu, ejecuta:
+El script de dependencias usa APT. La ISO y los archivos de trabajo quedan en `build/live-build/`. Puedes cambiar la suite o el directorio de build mediante `DYLANOS_SUITE` y `DYLANOS_BUILD_DIR`; los detalles están en [Construcción](docs/build.md).
+
+## Construir con Docker
+
+En un host Linux `amd64` con Docker Engine, construye el contenedor y ejecuta el constructor con el checkout montado:
 
 ```bash
-make check PYTHON=.venv/bin/python
-make build
-make iso
-make test-iso
+docker build --tag dylanos-builder .
+docker run --rm --privileged \
+  --volume "$PWD:/workspace" \
+  --workdir /workspace \
+  dylanos-builder
 ```
 
-`make` sin argumentos muestra la ayuda. `make build PROFILE=minimal` construye el perfil base; el perfil predeterminado es `development`. Para continuar un chroot existente usa `make build RESUME=1`. `make qemu-test` ejecuta la prueba de arranque en QEMU sobre una ISO ya creada. También puedes invocar los scripts de `scripts/` directamente.
+El contenedor necesita modo privilegiado para las operaciones de Debian Live. Usa este método solo con código de confianza. Los archivos de build pueden quedar propiedad de `root`.
 
-### Construir con Docker
+## Comprobar cambios y probar una ISO
 
-También puedes usar el entorno de construcción incluido. Requiere Docker Engine y Compose v2 en un host Linux amd64, además de al menos 25 GB libres. El contenedor del builder usa modo privilegiado para permitir los namespaces y montajes del chroot; ejecútalo solo con código de confianza.
+Las pruebas estáticas no construyen ni arrancan una ISO:
 
 ```bash
-docker compose build builder
-docker compose run --rm builder make check
-docker compose run --rm builder make build
-docker compose run --rm builder make iso test-iso
+scripts/test.sh
 ```
 
-Para el perfil base usa `docker compose run --rm builder make build PROFILE=minimal`; para continuar un chroot existente, agrega `RESUME=1`. La ISO queda en la raíz del repositorio. Los archivos generados pueden quedar propiedad de `root`. Si tu usuario no tiene acceso al daemon, antepone `sudo` a los comandos `docker compose`. La prueba gráfica de QEMU se ejecuta en el host, con QEMU instalado, usando `make qemu-test`.
+ShellCheck es una comprobación adicional (`shellcheck --severity=warning install-deps.sh scripts/*.sh`). Para el smoke test de BIOS y UEFI, primero construye una imagen con la consola serial activada y luego prueba el archivo generado:
 
-Para la configuración de desarrollo, los criterios de prueba y las precauciones antes de instalar, sigue la [guía de instalación y QA](docs/install.md). Una prueba automatizada correcta no sustituye la validación de arranque e instalación en una máquina virtual.
+```bash
+sudo env DYLANOS_SERIAL_CONSOLE=1 scripts/build.sh
+iso="$(find build/live-build -maxdepth 1 -type f -name '*.iso' -print -quit)"
+scripts/test-iso.sh "$iso"
+```
+
+Se requieren `xorriso`, `squashfs-tools`, `qemu-system-x86_64` y firmware OVMF. El smoke test espera que el sistema llegue a SDDM; **no completa la instalación de Calamares**. Revisa [Pruebas y alcance de CI](docs/testing.md).
+
+## Obtener una ISO
+
+Consulta la [página de GitHub Releases](https://github.com/dylanneymarmontalvo2014-lgtm/DylanOS/releases). Una Release de producción con etiqueta `v*` adjunta la ISO amd64 y su checksum SHA-256. Sigue [la guía de descarga y prueba](docs/install.md) y verifica el checksum antes de iniciar.
 
 ## Documentación
 
-- [Instalación y QA](docs/install.md)
-- [Optimización del sistema e ISO](docs/optimization.md)
-- [Optimización de paquetes e ISO](docs/optimization.md)
+- [Descargar y probar DylanOS](docs/install.md)
+- [Construir DylanOS](docs/build.md)
 - [Arquitectura](docs/architecture.md)
+- [Identidad visual y escritorio](docs/desktop.md)
+- [Herramientas incluidas](docs/commands.md)
+- [Pruebas y alcance de CI](docs/testing.md)
+- [Estado del proyecto](docs/status.md)
 - [Roadmap](docs/roadmap.md)
-- [Branding](branding/README.md)
-- [Licencias de recursos](docs/licenses/assets.md)
-- [Índice de documentación](docs/README.md)
-- [Contribuir](CONTRIBUTING.md)
-
-Los informes y auditorías fechados en `docs/` se conservan como contexto histórico; consulta las guías anteriores para el estado vigente.
-
-## Contribuir
-
-Las contribuciones son bienvenidas. Lee [`CONTRIBUTING.md`](CONTRIBUTING.md), mantén los cambios enfocados y describe las pruebas realizadas.
-
-## Licencia
-
-El código de DylanOS se distribuye bajo la [GNU General Public License v3.0 o posterior](LICENSE), salvo que un archivo o recurso indique expresamente otra licencia.
+- [Licencia](LICENSE)
