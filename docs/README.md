@@ -18,7 +18,7 @@ Este directorio reúne la documentación activa y útil del proyecto DylanOS Cri
 - [apps/dylanos-control-center/README.md](../apps/dylanos-control-center/README.md): funciones, servicios requeridos y QA del centro de control.
 - [apps/com.dylanos.activeapp/README.md](../apps/com.dylanos.activeapp/README.md): plasmoid de aplicación activa.
 - [apps/com.dylanos.search/README.md](../apps/com.dylanos.search/README.md): botón de búsqueda de Spotlight.
-- [apps/com.dylanos.dock/README.md](../apps/com.dylanos.dock/README.md): configuración del dock alternativo.
+- [apps/com.dylanos.dock/README.md](../apps/com.dylanos.dock/README.md): configuración y zoom progresivo del dock predeterminado.
 - [installer/dylanos-installer/docs/README.md](../installer/dylanos-installer/docs/README.md): backend, API y diferencia entre vista previa e instalación real.
 - [MAINTAINERS.txt](../MAINTAINERS.txt): mantenedores y responsabilidades.
 

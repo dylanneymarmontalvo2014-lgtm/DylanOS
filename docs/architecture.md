@@ -15,8 +15,8 @@ la arquitectura **real** del repositorio tras la iteración de ingeniería de 20
 3. **Shell del escritorio**: paneles Plasma generados por el layout del look-and-feel
    (`org.dylanos.crimson`) con plasmoids propios (`com.dylanos.activeapp`,
    `com.dylanos.search`, `com.dylanos.controlcenter`, `com.dylanos.dashboard`) y
-   `org.kde.plasma.icontasks` como dock inferior. `com.dylanos.dock` es un plasmoid
-   alternativo disponible pero no fijo. El Dashboard muestra calendario interactivo,
+   `com.dylanos.dock` como dock inferior con zoom suave al pasar el cursor. El
+   Dashboard muestra calendario interactivo,
    RAM, CPU, disco raíz y uptime; el Centro de Control integra notificaciones,
    interruptores y audio con datos locales/de Plasma. Ver [DylanOS Shell](dylanos-shell.md)
    y la [guía de uso](guia-de-uso.md) para disponibilidad y límites.
@@ -37,7 +37,7 @@ la arquitectura **real** del repositorio tras la iteración de ingeniería de 20
 - **Barra superior (menú)**: panel Plasma con `hiding=letwindowscover` — KWin cubre la
   barra solo con ventanas a **pantalla completa real** (integración con el gestor de
   ventanas, sin temporizadores ni heurísticas de tamaño). Ventanas maximizadas NO la cubren.
-- **Dock inferior**: panel flotante `dodgewindows` con icontasks centrado.
+- **Dock inferior**: panel flotante `dodgewindows` centrado con el plasmoid `com.dylanos.dock` y la papelera. El applet usa `TaskManager.TasksModel`; al pasar el cursor agranda el icono enfocado y escala suavemente los dos vecinos a cada lado.
 
 ## 3. DylanOS Explorer (apps/dylanos-explorer)
 

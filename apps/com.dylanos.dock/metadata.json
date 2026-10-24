@@ -11,7 +11,7 @@
         "Icon": "user-desktop",
         "Id": "com.dylanos.dock",
         "Name": "DylanOS Dock",
-        "Version": "0.3"
+        "Version": "0.4"
     },
     "KPackageStructure": "Plasma/Applet",
     "X-Plasma-API-Minimum-Version": "6.0"

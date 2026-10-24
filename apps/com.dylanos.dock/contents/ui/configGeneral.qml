@@ -18,14 +18,14 @@ Kirigami.FormLayout {
 
     QQC2.SpinBox {
         id: iconSizeField
-        Kirigami.FormData.label: "Tamano de icono:"
+        Kirigami.FormData.label: "Tamaño normal del icono:"
         from: 24
         to: 96
     }
 
     QQC2.SpinBox {
         id: hoverSizeField
-        Kirigami.FormData.label: "Tamano al pasar el cursor:"
+        Kirigami.FormData.label: "Tamaño máximo al pasar el cursor:"
         from: 24
         to: 140
     }

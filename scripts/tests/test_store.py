@@ -132,7 +132,8 @@ class StoreStructureTest(unittest.TestCase):
         dock = (ROOT / "apps/com.dylanos.dock/contents/ui/main.qml").read_text(encoding="utf-8")
         self.assertIn("applications:org.dylanos.store.desktop", dock)
         layout = (ROOT / "themes/lookandfeel/org.dylanos.crimson/contents/layouts/org.kde.plasma.desktop-layout.js").read_text(encoding="utf-8")
-        self.assertIn("applications:org.dylanos.store.desktop", layout)
+        self.assertIn('dock.addWidget("com.dylanos.dock")', layout)
+        self.assertIn('dock.addWidget("org.kde.plasma.trash")', layout)
         # la barra superior se oculta bajo ventanas a pantalla completa
         self.assertIn('menuBar.hiding = "letwindowscover"', layout)
 
