@@ -12,6 +12,7 @@ const supported = major >= 24 || (major === 22 && minor >= 12) || (major === 20 
 if (!supported) { console.error("Unsupported Node.js " + process.versions.node + "; Vite requires 20.19+, 22.12+, or 24+."); process.exit(1); }
 '
 BUILD_ROOT="$(mktemp -d "${TMPDIR:-/tmp}/dylanos-installer-build.XXXXXX")"
+# shellcheck disable=SC2317 # Invoked by EXIT trap.
 cleanup() { rm -rf -- "$BUILD_ROOT"; }
 trap cleanup EXIT
 OUTPUT_DIR="${DYLANOS_INSTALLER_DIST:-$BUILD_ROOT/dist}"
