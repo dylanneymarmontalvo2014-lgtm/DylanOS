@@ -9,7 +9,7 @@ import re
 ROOT = Path(__file__).resolve().parent.parent
 
 
-def stage(destination):
+def stage(destination, installer_dist=None):
     dest = Path(destination).resolve()
     if dest == Path("/") or dest == ROOT or dest in ROOT.parents:
         raise ValueError("El destino debe ser un directorio de staging independiente.")
@@ -97,6 +97,14 @@ def stage(destination):
             legacy_lf.symlink_to("../look-and-feel/org.dylanos.crimson")
         except FileExistsError:
             pass
+    if installer_dist is not None:
+        source = Path(installer_dist).resolve()
+        if not (source / "index.html").is_file():
+            raise FileNotFoundError(f"Falta index.html del frontend del instalador en {source}")
+        target = dest / "usr/share/dylanos/installer/dist"
+        if target.exists():
+            shutil.rmtree(target)
+        shutil.copytree(source, target)
     globals_path = dest / "etc/skel/.config/kdeglobals"
     scheme = (ROOT / "themes/colors/DylanOSDark.colors").read_text()
     with globals_path.open("a") as handle:
@@ -319,4 +327,6 @@ fi
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
     parser.add_argument("destination")
-    stage(parser.parse_args().destination)
+    parser.add_argument("--installer-dist", type=Path)
+    args = parser.parse_args()
+    stage(args.destination, args.installer_dist)
