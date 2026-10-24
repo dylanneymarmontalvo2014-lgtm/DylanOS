@@ -69,6 +69,19 @@ required_dirs = [
     'themes/plasma', 'themes/sddm',
 ]
 errors = []
+# Catch broken local links in Markdown guides before publishing documentation.
+from urllib.parse import unquote, urlsplit
+markdown_link = re.compile(r'!?\[[^\]]*\]\(([^)]+)\)')
+for document in sorted(root.rglob('*.md')):
+    for destination in markdown_link.findall(document.read_text(encoding='utf-8')):
+        destination = destination.strip().split(maxsplit=1)[0].strip('<>')
+        parsed = urlsplit(destination)
+        if parsed.scheme or parsed.netloc or not parsed.path:
+            continue
+        target = (document.parent / unquote(parsed.path)).resolve()
+        if not target.exists():
+            errors.append(f'broken local Markdown link: {document} -> {destination}')
+
 for name in required_dirs:
     path = root / name
     if not path.is_dir() or not any(p.is_file() and p.name != '.gitkeep' for p in path.rglob('*')):
