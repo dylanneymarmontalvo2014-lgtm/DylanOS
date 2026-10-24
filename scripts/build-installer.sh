@@ -14,7 +14,7 @@ if (!supported) { console.error("Unsupported Node.js " + process.versions.node +
 BUILD_ROOT="$(mktemp -d "${TMPDIR:-/tmp}/dylanos-installer-build.XXXXXX")"
 cleanup() { rm -rf -- "$BUILD_ROOT"; }
 trap cleanup EXIT
-OUTPUT_DIR="${DYLANOS_INSTALLER_DIST:-$APP/dist}"
+OUTPUT_DIR="${DYLANOS_INSTALLER_DIST:-$BUILD_ROOT/dist}"
 mkdir -p "$OUTPUT_DIR"
 # Build from an isolated copy: npm ci deletes/recreates node_modules, which may
 # contain root-owned links after older sudo-based builds in the user checkout.
