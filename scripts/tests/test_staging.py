@@ -1,5 +1,6 @@
 """Check that the installed payload is complete and safe to regenerate."""
 import importlib.util
+import json
 from pathlib import Path
 import tempfile
 import unittest
@@ -122,9 +123,21 @@ class StagingTest(unittest.TestCase):
             self.assertIn("/proc/meminfo", dashboard_qml)
             self.assertIn("/proc/uptime", dashboard_qml)
             self.assertIn("Mes anterior", dashboard_qml)
+            self.assertIn("function selectDate(date)", dashboard_qml)
+            self.assertIn("delegate: QQC2.Button", dashboard_qml)
+            self.assertIn("Seleccionado · ", dashboard_qml)
+            dash_meta = json.loads((dashboard / "metadata.json").read_text())
+            self.assertEqual(dash_meta["KPlugin"]["Version"], "0.2.0")
             self.assertTrue((root / "usr/share/plasma/plasmoids/com.dylanos.controlcenter/metadata.json").is_file())
-            cc_main = (root / "usr/share/plasma/plasmoids/com.dylanos.controlcenter/contents/ui/main.qml").read_text()
+            cc_root = root / "usr/share/plasma/plasmoids/com.dylanos.controlcenter"
+            cc_main = (cc_root / "contents/ui/main.qml").read_text()
             self.assertIn("compactRepresentation", cc_main)
+            status_qml = (cc_root / "contents/ui/SystemStatus.qml").read_text()
+            self.assertIn("function toggleMute()", status_qml)
+            self.assertIn("DylanOSDark", status_qml)
+            self.assertIn("interval: 15000", status_qml)
+            cc_meta = json.loads((cc_root / "metadata.json").read_text())
+            self.assertEqual(cc_meta["KPlugin"]["Version"], "0.2.0")
             shell_layout = (root / "usr/share/plasma/look-and-feel/org.dylanos.crimson/contents/layouts/org.kde.plasma.desktop-layout.js").read_text()
             self.assertIn("com.dylanos.search", shell_layout)
             self.assertIn('allDesktops[i].addWidget("com.dylanos.dashboard"', shell_layout)
@@ -156,7 +169,7 @@ class StagingTest(unittest.TestCase):
                           (root / "usr/share/sddm/themes/DylanOS-Crimson/theme.conf").read_text())
             self.assertTrue((root / "usr/share/sddm/themes/DylanOS-Crimson/logo.png").is_file())
             # En el sistema instalado el GRUB arranca DylanOS sin menú; el
-            # menú visible solo existe en el LIVE (scripts/iso.sh, timeout=10).
+            # menú visible solo existe en el LIVE (scripts/iso.sh, timeout=3).
             grubcfg = (root / "etc/default/grub.d/dylanos.cfg").read_text()
             self.assertIn("GRUB_TIMEOUT=0", grubcfg)
             self.assertIn("GRUB_TIMEOUT_STYLE=hidden", grubcfg)

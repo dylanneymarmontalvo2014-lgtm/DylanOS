@@ -289,6 +289,8 @@ Rectangle {
                 Layout.fillWidth: true
                 from: 0; to: 1
                 enabled: SystemStatus.volumeAvailable
+                Accessible.name: "Volumen de salida"
+                Accessible.value: Math.round(value * 100) + "%"
                 onMoved: SystemStatus.setVolume(value)
 
                 Binding {
@@ -313,6 +315,17 @@ Rectangle {
                     width: 18; height: 18; radius: 9; color: cWhite
                 }
             }
+        }
+
+        QQC2.ToolButton {
+            Layout.alignment: Qt.AlignRight
+            icon.name: SystemStatus.volumeMuted ? "audio-volume-muted" : "audio-volume-high"
+            icon.color: SystemStatus.volumeMuted ? cCrimson : cLightGray
+            text: SystemStatus.volumeMuted ? "Activar sonido" : "Silenciar"
+            display: QQC2.AbstractButton.TextBesideIcon
+            enabled: SystemStatus.volumeAvailable
+            Accessible.name: text
+            onClicked: SystemStatus.toggleMute()
         }
 
         // Accesos secundarios (comandos reales: kcmshell6)
