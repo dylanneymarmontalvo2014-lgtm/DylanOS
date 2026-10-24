@@ -51,6 +51,28 @@ class ColorSchemeTest(unittest.TestCase):
         self.assertIn("220,20,60", content.split("[WM]")[0])   # acento en colores, no solo en WM
 
 
+class QmlBrandConsistencyTest(unittest.TestCase):
+    def test_primary_qml_apps_share_the_official_crimson_accent(self):
+        configuration = (ROOT / "apps/dylanos-configuration/qml/theme/Theme.qml").read_text(encoding="utf-8")
+        explorer = (ROOT / "apps/dylanos-explorer/qml/theme/Theme.qml").read_text(encoding="utf-8")
+        config_button = (ROOT / "apps/dylanos-configuration/qml/components/ActionButton.qml").read_text(encoding="utf-8")
+        workspace_button = (ROOT / "apps/workspace/qml/ActionButton.qml").read_text(encoding="utf-8")
+        personalization = (ROOT / "apps/dylanos-configuration/qml/pages/PersonalizationPage.qml").read_text(encoding="utf-8")
+        self.assertIn('property color accent: "#DC143C"', configuration)
+        self.assertIn('property color accentStrong: "#FF4565"', configuration)
+        self.assertIn('property color accentPressed: "#A50F2E"', configuration)
+        self.assertIn('property color accent: "#DC143C"', explorer)
+        self.assertIn('property color accentBright: "#FF4565"', explorer)
+        self.assertIn('Theme.accentPressed', config_button)
+        self.assertIn('mouse.containsMouse ? Theme.accentStrong : Theme.accent', config_button)
+        self.assertIn('hoverEnabled: true', config_button)
+        self.assertIn('Behavior on color { ColorAnimation { duration: 140; easing.type: Easing.OutCubic } }', config_button)
+        self.assertIn('Qt.lighter(control.palette.highlight, 1.18)', workspace_button)
+        self.assertIn('"#DC143C"', personalization)
+        for legacy in ("#e0182d", "#ff2a40", "#e0222d", "#ff4a55"):
+            self.assertNotIn(legacy, configuration + explorer + config_button + workspace_button + personalization)
+
+
 class StagedAppsUseCrimsonTest(unittest.TestCase):
     def test_no_legacy_accent_left_in_qml(self):
         legacy = ("#e11d2a", "#e3485b", "#E50914", "#e11d2e")

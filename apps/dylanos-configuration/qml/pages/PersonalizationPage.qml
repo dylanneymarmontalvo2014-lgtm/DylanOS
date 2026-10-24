@@ -135,7 +135,7 @@ ScrollView {
                         anchors.verticalCenter: parent.verticalCenter
                         spacing: 12
                     Repeater {
-                        model: ["#e0182d", "#ff5a36", "#f5a524", "#3ecf6e", "#1f9aa6", "#2f7be8", "#7b4fe0", "#d63fa0"]
+                        model: ["#DC143C", "#ff5a36", "#f5a524", "#3ecf6e", "#1f9aa6", "#2f7be8", "#7b4fe0", "#d63fa0"]
                         delegate: Rectangle {
                             required property var modelData
                             width: 40

@@ -8,8 +8,10 @@ QtObject {
     property bool dark: true
 
     // --accent / --accent-strong
-    readonly property color accent: "#e0182d"
-    readonly property color accentStrong: "#ff2a40"
+    // Acento de marca oficial compartido con Plasma, GTK y los demás componentes.
+    readonly property color accent: "#DC143C"
+    readonly property color accentStrong: "#FF4565"
+    readonly property color accentPressed: "#A50F2E"
 
     // Radios
     readonly property int radiusWindow: 26

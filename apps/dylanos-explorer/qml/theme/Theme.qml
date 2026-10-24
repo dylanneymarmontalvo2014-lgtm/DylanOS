@@ -24,13 +24,13 @@ QtObject {
     readonly property color textFaint: "#857a7c"
 
     // brand
-    readonly property color accent: "#e0222d"
-    readonly property color accentBright: "#ff4a55"
-    readonly property color accentLabel: "#e5323d"
-    readonly property color accentDeep: "#8f1b21"
-    readonly property color accentDark: "#5e1016"
-    readonly property color selection: Qt.rgba(0.88, 0.13, 0.18, 0.22)
-    readonly property color selectionBorder: Qt.rgba(0.95, 0.25, 0.3, 0.55)
+    readonly property color accent: "#DC143C"
+    readonly property color accentBright: "#FF4565"
+    readonly property color accentLabel: "#FF7188"
+    readonly property color accentDeep: "#A50F2E"
+    readonly property color accentDark: "#690A1E"
+    readonly property color selection: Qt.rgba(0.86, 0.08, 0.24, 0.22)
+    readonly property color selectionBorder: Qt.rgba(0.95, 0.20, 0.35, 0.55)
 
     // status
     readonly property color danger: "#ff5a64"
