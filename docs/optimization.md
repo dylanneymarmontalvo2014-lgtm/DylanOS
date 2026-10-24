@@ -23,7 +23,9 @@ predeterminadas. `scripts/build.sh`:
    calculadora de DylanOS los sustituyen;
 5. ejecuta `apt-get autoremove --purge` para retirar dependencias marcadas
    automáticamente que ya no necesite ningún paquete;
-6. limpia la caché de APT antes de crear la ISO.
+6. limpia la caché de APT antes de crear la ISO;
+7. elimina los índices descargados de APT (`/var/lib/apt/lists/*`), que se
+   regeneran con `apt-get update` cuando el usuario actualiza el sistema.
 
 `--no-install-recommends` evita incluir paquetes recomendados que no estén
 solicitados explícitamente o que no sean dependencias obligatorias. Los paquetes
@@ -108,3 +110,7 @@ El build necesita `desktop-file-utils` únicamente para generar la caché de apl
 La build automatizada `40030658295`, asociada al commit `98170f33566808ca5f9f5dc92c5468b6e174d166`, terminó con éxito en sus pasos `build`, `iso`, `test` y carga del artefacto. GitHub publicó `DylanOS-1.0-beta-amd64` con tamaño registrado de **2,268,807,947 bytes**. El run comprobó la estructura/checksum según `scripts/test.sh`; **no ejecutó QEMU ni valida el arranque o la sesión gráfica**.
 
 Como referencia, otro artefacto anterior (`40024259258`, commit `1e1323bf1d912583b209bdfb2111ea1a24b3230a`) registró 3,195,313,060 bytes. Son builds de commits distintos y no hay una comparación controlada de manifiestos/logs de paquetes que permita atribuir la diferencia a `--no-install-recommends` o `autoremove`; por eso no se presenta como ahorro causado por la optimización. La nueva build del commit que corrige el cálculo de CPU debe medirse por separado cuando termine.
+
+## Limpieza de índices APT (2026-10-24)
+
+El build ejecuta `rm -rf /var/lib/apt/lists/*` al final del chroot, después de completar instalaciones, purgas y `autoremove`. Se retiran solo índices de repositorio descargados: APT los reconstruye en la próxima actualización mediante `apt-get update`; no son paquetes ni datos del usuario. La prueba `scripts/tests/test_packages.sh` verifica que la operación exista y ocurra después de `autoremove`. El ahorro exacto queda pendiente de medir con la nueva ISO; `apt-get clean` y esta limpieza actúan sobre datos distintos.
