@@ -130,6 +130,17 @@ assert_eq "APT limpia los índices descargados tras purgar paquetes" "si" \
 assert_eq "desktop-file-utils es temporal para generar la caché de escritorio" "si" \
     "$(grep -q 'apt-get -y install --no-install-recommends desktop-file-utils' "$build_script" && grep -q 'apt-get -y purge desktop-file-utils' "$build_script" && echo si || echo no)"
 
+assert_eq "los perfiles se instalan en una sola transacción APT" "si" \
+    "$(grep -q 'all_packages=/tmp/dylanos-packages/all-packages.txt' "$build_script" && \
+      grep -q 'xargs -r -a \"$all_packages\" apt-get' "$build_script" && \
+      ! grep -q 'xargs -r -a \"$list\" apt-get' "$build_script" && echo si || echo no)"
+assert_eq "CMake usa trabajos configurables" "si" \
+    "$(grep -q -- '--parallel \"$BUILD_JOBS\"' "$build_script" && echo si || echo no)"
+assert_eq "el límite predeterminado de trabajos es cuatro" "si" \
+    "$(grep -q 'DEFAULT_BUILD_JOBS > 4' "$build_script" && echo si || echo no)"
+assert_eq "los trabajos se limitan a los núcleos disponibles" "si" \
+    "$(grep -q 'BUILD_JOBS > CPU_COUNT' "$build_script" && echo si || echo no)"
+
 # Apps declaradas en configs/default-apps.conf deben instalarse por defecto
 conf_apps="$(grep -vE '^\[|^$|^[[:space:]]*[#;]' "$ROOT/configs/default-apps.conf")"
 while IFS= read -r app; do
