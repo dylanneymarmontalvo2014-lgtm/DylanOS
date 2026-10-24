@@ -3,6 +3,7 @@ import QtQuick.Layouts
 import QtQuick.Controls as QQC2
 import org.kde.plasma.plasmoid
 import org.kde.plasma.plasma5support as P5Support
+import "PomodoroClock.js" as PomodoroClock
 
 PlasmoidItem {
     id: root
@@ -20,6 +21,18 @@ PlasmoidItem {
     property double previousCpuIdle: -1
     property double diskUsedBytes: -1
     property double diskTotalBytes: -1
+    property string pomodoroMode: "focus"
+    property int pomodoroRemainingSeconds: 25 * 60
+    property int completedFocusSessions: 0
+    property bool pomodoroRunning: false
+    property bool pomodoroStarted: false
+    property bool pomodoroComplete: false
+    property double pomodoroDeadlineMs: 0
+    readonly property int pomodoroDurationSeconds: PomodoroClock.durationSeconds(pomodoroMode)
+    readonly property string pomodoroStatus: pomodoroComplete
+        ? (pomodoroMode === "focus" ? "Enfoque listo · descanso de 5 min" : "Descanso listo · vuelve a enfocarte")
+        : pomodoroRunning ? (pomodoroMode === "focus" ? "Enfoque en curso" : "Descanso en curso")
+        : pomodoroStarted ? "Temporizador en pausa" : "Listo para empezar"
     property P5Support.DataSource commandRunner: P5Support.DataSource {
         engine: "executable"
         connectedSources: []
@@ -122,6 +135,52 @@ PlasmoidItem {
     function showToday() {
         selectDate(new Date())
     }
+    function startPomodoro() {
+        if (pomodoroComplete) {
+            pomodoroMode = PomodoroClock.nextMode(pomodoroMode)
+            pomodoroRemainingSeconds = PomodoroClock.durationSeconds(pomodoroMode)
+            pomodoroComplete = false
+            pomodoroStarted = false
+        }
+        if (pomodoroRemainingSeconds <= 0)
+            pomodoroRemainingSeconds = PomodoroClock.durationSeconds(pomodoroMode)
+        pomodoroDeadlineMs = Date.now() + pomodoroRemainingSeconds * 1000
+        pomodoroRunning = true
+        pomodoroStarted = true
+    }
+    function pausePomodoro() {
+        if (!pomodoroRunning) return
+        pomodoroRemainingSeconds = PomodoroClock.remainingSeconds(pomodoroDeadlineMs, Date.now())
+        if (pomodoroRemainingSeconds <= 0) {
+            updatePomodoro()
+            return
+        }
+        pomodoroRunning = false
+        pomodoroDeadlineMs = 0
+    }
+    function resetPomodoro() {
+        pomodoroRunning = false
+        pomodoroStarted = false
+        pomodoroComplete = false
+        pomodoroDeadlineMs = 0
+        pomodoroRemainingSeconds = PomodoroClock.durationSeconds(pomodoroMode)
+    }
+    function updatePomodoro() {
+        if (!pomodoroRunning) return
+        pomodoroRemainingSeconds = PomodoroClock.remainingSeconds(pomodoroDeadlineMs, Date.now())
+        if (pomodoroRemainingSeconds > 0) return
+        pomodoroRunning = false
+        pomodoroStarted = true
+        pomodoroComplete = true
+        pomodoroDeadlineMs = 0
+        if (pomodoroMode === "focus") completedFocusSessions++
+    }
+    function formatPomodoroTime(seconds) {
+        const safeSeconds = Math.max(0, seconds)
+        const minutes = Math.floor(safeSeconds / 60)
+        const remainder = safeSeconds % 60
+        return (minutes < 10 ? "0" : "") + minutes + ":" + (remainder < 10 ? "0" : "") + remainder
+    }
 
     Timer {
         id: clock
@@ -132,10 +191,11 @@ PlasmoidItem {
         onTriggered: date = new Date()
     }
     Timer { interval: 10000; repeat: true; running: true; triggeredOnStart: true; onTriggered: root.refreshSystemInfo() }
+    Timer { interval: 1000; repeat: true; running: root.pomodoroRunning; onTriggered: root.updatePomodoro() }
 
     fullRepresentation: Rectangle {
         implicitWidth: 500
-        implicitHeight: 360
+        implicitHeight: 470
         radius: 24
         color: "#E6101014"
         border.color: "#40FFFFFF"
@@ -356,6 +416,96 @@ PlasmoidItem {
                     Accessible.name: text
                 }
                 QQC2.Label { text: "Información local · sin datos simulados"; color: "#AAA4AA"; font.pixelSize: 10 }
+
+                Rectangle {
+                    id: pomodoroCard
+                    Layout.fillWidth: true
+                    Layout.preferredHeight: 112
+                    radius: 16
+                    color: "#171116"
+                    border.color: root.pomodoroRunning ? "#70DC143C" : "#26FFFFFF"
+                    border.width: 1
+                    Behavior on border.color { ColorAnimation { duration: 180; easing.type: Easing.OutCubic } }
+
+                    ColumnLayout {
+                        anchors.fill: parent
+                        anchors.margins: 11
+                        spacing: 5
+                        RowLayout {
+                            Layout.fillWidth: true
+                            QQC2.Label {
+                                text: root.pomodoroMode === "focus" ? "ENFOQUE" : "DESCANSO"
+                                color: root.pomodoroMode === "focus" ? "#FF7188" : "#B9A8B0"
+                                font.pixelSize: 10; font.bold: true; font.letterSpacing: 1.2
+                                Layout.fillWidth: true
+                            }
+                            QQC2.Label {
+                                text: "Ciclos · " + root.completedFocusSessions
+                                color: "#AAA4AA"; font.pixelSize: 10
+                                Accessible.name: "Sesiones de enfoque completadas: " + root.completedFocusSessions
+                            }
+                        }
+                        RowLayout {
+                            Layout.fillWidth: true
+                            QQC2.Label {
+                                text: root.formatPomodoroTime(root.pomodoroRemainingSeconds)
+                                color: "white"; font.pixelSize: 27; font.weight: Font.DemiBold
+                                font.family: "monospace"
+                                Accessible.name: "Tiempo restante: " + root.pomodoroRemainingSeconds + " segundos"
+                            }
+                            Item { Layout.fillWidth: true }
+                            QQC2.Button {
+                                id: pomodoroStartButton
+                                Layout.preferredWidth: 112
+                                Layout.preferredHeight: 34
+                                text: root.pomodoroComplete
+                                    ? (root.pomodoroMode === "focus" ? "Iniciar descanso" : "Iniciar enfoque")
+                                    : root.pomodoroRunning ? "Pausar"
+                                    : root.pomodoroStarted ? "Continuar" : "Iniciar enfoque"
+                                Accessible.name: text + ". " + root.pomodoroStatus
+                                onClicked: root.pomodoroRunning ? root.pausePomodoro() : root.startPomodoro()
+                                contentItem: QQC2.Label {
+                                    text: pomodoroStartButton.text
+                                    color: "white"; font.pixelSize: 11; font.bold: true
+                                    horizontalAlignment: Text.AlignHCenter; verticalAlignment: Text.AlignVCenter
+                                    elide: Text.ElideRight
+                                }
+                                background: Rectangle {
+                                    radius: 17
+                                    color: pomodoroStartButton.down ? "#A50F2E"
+                                        : pomodoroStartButton.hovered ? "#F02A50" : "#DC143C"
+                                    Behavior on color { ColorAnimation { duration: 130; easing.type: Easing.OutCubic } }
+                                }
+                            }
+                            QQC2.ToolButton {
+                                text: "↺"
+                                Accessible.name: "Reiniciar temporizador de enfoque o descanso"
+                                onClicked: root.resetPomodoro()
+                                contentItem: QQC2.Label {
+                                    text: "↺"; color: "#D7D2D6"; font.pixelSize: 19
+                                    horizontalAlignment: Text.AlignHCenter; verticalAlignment: Text.AlignVCenter
+                                }
+                            }
+                        }
+                        Rectangle {
+                            Layout.fillWidth: true
+                            height: 4; radius: 2; color: "#38FFFFFF"
+                            Accessible.role: Accessible.ProgressBar
+                            Accessible.name: "Progreso del bloque: "
+                                + Math.round(100 * PomodoroClock.progress(root.pomodoroRemainingSeconds, root.pomodoroDurationSeconds)) + "%"
+                            Rectangle {
+                                width: parent.width * PomodoroClock.progress(root.pomodoroRemainingSeconds, root.pomodoroDurationSeconds)
+                                height: parent.height; radius: 2; color: "#DC143C"
+                                Behavior on width { NumberAnimation { duration: 260; easing.type: Easing.OutCubic } }
+                            }
+                        }
+                        QQC2.Label {
+                            text: root.pomodoroStatus
+                            color: "#AAA4AA"; font.pixelSize: 10
+                            Accessible.name: text
+                        }
+                    }
+                }
             }
         }
     }

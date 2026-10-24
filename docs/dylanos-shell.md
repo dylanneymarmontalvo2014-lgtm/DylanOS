@@ -151,3 +151,21 @@ paleta propia del tema; los botones de Configuration interpolan el hover en
 y las opciones personalizables del usuario. GTK, Plasma, SDDM, wallpapers y
 Kitty no se alteran en esta pasada. Las pruebas son estáticas y de contrato;
 no equivalen a captura/render de cada aplicación en Plasma real.
+
+
+## Temporizador Pomodoro local del Dashboard (2026-10-24)
+
+Dashboard 0.6.0 aumenta la altura del widget a 470 px y añade enfoque de 25 min y descanso de 5 min, con controles para
+iniciar, pausar, continuar y reiniciar, estado accesible, indicador de progreso
+animado y contador de ciclos de enfoque completados. El paso de enfoque a
+descanso y viceversa es manual: al terminar, el botón propone el bloque
+siguiente y espera una pulsación. El tiempo restante se calcula con un deadline basado en
+`Date.now()` para que el temporizador no dependa del número de ticks del
+Timer; no se guardan ajustes, historial ni progreso al cerrar el widget.
+
+**Archivos afectados:** `apps/com.dylanos.dashboard/contents/ui/main.qml`,
+`apps/com.dylanos.dashboard/contents/ui/PomodoroClock.js`,
+`apps/com.dylanos.dashboard/metadata.json`, documentación del applet/guía,
+y pruebas de contrato y empaquetado. **Pruebas:** cálculos puros probados con
+Node si está disponible, además de las suites `test_shell_contract.py` y
+`test_staging.py`; no son una prueba de render gráfico en Plasma.
