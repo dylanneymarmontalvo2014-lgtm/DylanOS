@@ -78,7 +78,7 @@ for group in "${groups[@]}"; do
         cp "$ROOT/packages/$group/setup-repos.sh" "$CHROOT/tmp/dylanos-packages/$group.setup-repos.sh"
     fi
 done
-chroot "$CHROOT" /bin/bash <<'CHROOT_SCRIPT'
+chroot "$CHROOT" /usr/bin/env BUILD_JOBS="$BUILD_JOBS" /bin/bash <<'CHROOT_SCRIPT'
 set -euo pipefail
 export DEBIAN_FRONTEND=noninteractive
 apt-get -o Acquire::Retries=3 update
