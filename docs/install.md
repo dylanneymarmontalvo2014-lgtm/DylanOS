@@ -27,6 +27,19 @@ Si tu sistema no expone `/dev/kvm`, elimina `-enable-kvm`. La emulación será m
 
 La sesión live debe arrancar con el entorno de DylanOS y mostrar la experiencia visual Crimson con el escritorio Plasma customizado. El instalador puede lanzarse desde el escritorio o desde el acceso del menú del sistema.
 
+Para medir el arranque desde CI o un host con QEMU y xorriso instalados:
+
+```bash
+bash scripts/test-boot-qemu.sh
+```
+
+La prueba usa el kernel e initramfs de la ISO, captura la consola serial y
+registra el tiempo desde el inicio del kernel hasta `graphical.target` y el
+servicio SDDM. Es una medida del arranque live hasta el servicio de login; no
+certifica por sí sola que el greeter se haya renderizado o que una sesión haya
+terminado de cargar. El límite por defecto es 300 segundos y se puede cambiar
+con `DYLANOS_QEMU_BOOT_TIMEOUT`.
+
 ## Instalación desde el instalador propio
 
 El flujo actual del proyecto usa el instalador incluido en `installer/dylanos-installer` y no depende de Calamares. Antes de confirmar la instalación, revisa:

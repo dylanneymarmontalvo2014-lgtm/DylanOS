@@ -14,10 +14,12 @@ jobs:
           node-version: 22
           cache: npm
           cache-dependency-path: installer/dylanos-installer/package-lock.json
-      - run: sudo apt-get update && sudo apt-get install -y debootstrap gnupg squashfs-tools xorriso grub-pc-bin grub-efi-amd64-bin mtools dosfstools
+      - run: sudo apt-get update && sudo apt-get install -y debootstrap gnupg squashfs-tools xorriso grub-pc-bin grub-efi-amd64-bin mtools dosfstools qemu-system-x86
       - run: bash scripts/build.sh
       - run: bash scripts/iso.sh
       - run: bash scripts/test.sh
+      - name: Boot ISO in headless QEMU
+        run: bash scripts/test-boot-qemu.sh
       - uses: actions/upload-artifact@v4
         with:
           name: DylanOS-1.0-beta-amd64
