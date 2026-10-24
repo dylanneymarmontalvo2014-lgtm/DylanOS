@@ -11,6 +11,7 @@ Cambios importantes del proyecto, inspirados en el formato Keep a Changelog y ve
 
 ### Cambiado
 
+- Se corrige el README para usar rutas de documentación que existen e instrucciones reales de build, pruebas y Docker.
 - Se amplía la documentación de arquitectura, instalación, construcción, herramientas, contribución y roadmap para distinguir configuración de validación real.
 - Se separa el build manual de artefactos del workflow que publica Releases etiquetadas, evitando dos publicadores para el mismo tag.
 - Se retira de la CI por PR el smoke test QEMU que reconstruía la ISO completa; `scripts/test-iso.sh` sigue disponible para pruebas manuales.
