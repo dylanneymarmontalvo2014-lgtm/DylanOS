@@ -31,3 +31,11 @@ bash scripts/test_QEMU.sh
 ```
 
 En esta sesión no se pudo ejecutar arranque QEMU: faltaba `qemu-system-x86_64`; `bash scripts/test_QEMU.sh --dry-run` se intentó y se detuvo por esa dependencia, por lo que ni siquiera certificó el comando completo. VirtualBox tampoco estaba disponible. No se afirma que la interfaz haya cargado en SDDM ni que la ISO haya arrancado en QEMU/VirtualBox. El smoke test SDDM y el arranque VM deben completarse en el CI/builder o host que disponga de esas herramientas.
+
+## Refinamiento visual de acceso (2026-10-24)
+
+El último ajuste añade un panel translúcido independiente para el acceso, con borde y acento carmesí ligados al foco de la contraseña; amplía ligeramente el avatar, incorpora una bienvenida y un indicador de actividad mientras SDDM autentica. El botón de acceso gana contraste y animación de hover, y cualquier error previo se limpia al volver a escribir. El wallpaper y las APIs reales de login, energía, usuario y sesión permanecen intactos.
+
+En resoluciones menores que 1280×700, las dos columnas laterales se ocultan para priorizar el login. Esto se comprobó estructuralmente en QML, pero no mediante captura renderizada. La suite `scripts.tests.test_sddm_theme` quedó extendida para fijar el contrato visual y de interacción; en el entorno local pasó la parte estática (2 pruebas) y omitió el smoke test real porque `sddm-greeter` no está instalado. El CI del commit `18c29c3a6368eac9e1aee95ca5d4f5cc04ad589a` finalizó correctamente; no es por sí solo una prueba de renderizado del greeter.
+
+La build ISO `40120360056` fue generada desde el commit anterior `a2541314762bf9aa9d1142b4392b44c5f9382f57` y su checksum y estructura pasaron `scripts/test.sh`; no incluye necesariamente este refinamiento. Esa prueba tampoco arranca la ISO en QEMU. Una nueva build del HEAD es necesaria para comprobar el empaquetado del SDDM actualizado; el arranque de la ISO y una captura del greeter siguen siendo validaciones separadas.
