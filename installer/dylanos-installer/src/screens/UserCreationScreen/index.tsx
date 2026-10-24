@@ -12,7 +12,7 @@ interface UserCreationScreenProps {
 
 function passwordStrength(pw: string): { label: string; color: string; bars: number } {
   if (pw.length === 0) return { label: "", color: "", bars: 0 };
-  if (pw.length < 6) return { label: "Débil", color: "#ef4444", bars: 1 };
+  if (pw.length < 6) return { label: "Débil", color: "#FF2A54", bars: 1 };
   if (pw.length < 10) return { label: "Media", color: "#f59e0b", bars: 2 };
   if (pw.length < 14 || !/[^a-zA-Z0-9]/.test(pw)) return { label: "Fuerte", color: "#22c55e", bars: 3 };
   return { label: "Muy fuerte", color: "#10b981", bars: 4 };
@@ -81,7 +81,7 @@ export default function UserCreationScreen({ onCancel }: UserCreationScreenProps
 
   const fields = [
     {
-      icon: <UserIcon size={18} color="#dc2626" />,
+      icon: <UserIcon size={18} color="#DC143C" />,
       label: "Nombre completo",
       sub: "Tu nombre real.",
       input: (
@@ -105,7 +105,7 @@ export default function UserCreationScreen({ onCancel }: UserCreationScreenProps
       ),
     },
     {
-      icon: <UserIcon size={18} color="#dc2626" />,
+      icon: <UserIcon size={18} color="#DC143C" />,
       label: "Nombre de usuario",
       sub: "El nombre que usarás para iniciar sesión.",
       input: (
@@ -118,7 +118,7 @@ export default function UserCreationScreen({ onCancel }: UserCreationScreenProps
             placeholder="dylan"
             onBlur={() => { setAttempted(true); setUsernameError(""); }}
             aria-invalid={attempted && (!username || !isValidUsername(username) || !!usernameError)}
-            style={{ borderColor: attempted && (!usernameValid || !!usernameError) ? "#dc2626" : undefined }}
+            style={{ borderColor: attempted && (!usernameValid || !!usernameError) ? "#DC143C" : undefined }}
           />
           {attempted && !username && <div className="dylan-field-error">Introduce un nombre de usuario.</div>}
           {usernameError && <div className="dylan-field-error">{usernameError}</div>}
@@ -127,14 +127,14 @@ export default function UserCreationScreen({ onCancel }: UserCreationScreenProps
             <div className="absolute right-3 top-1/2 -translate-y-1/2">
               {isValidUsername(username)
                 ? <CheckIcon size={14} color="#22c55e" />
-                : <XIcon size={14} color="#dc2626" />}
+                : <XIcon size={14} color="#DC143C" />}
             </div>
           )}
         </div>
       ),
     },
     {
-      icon: <LockIcon size={18} color="#dc2626" />,
+      icon: <LockIcon size={18} color="#DC143C" />,
       label: "Contraseña de usuario",
       sub: "Elige una contraseña segura.",
       input: (
@@ -183,11 +183,11 @@ export default function UserCreationScreen({ onCancel }: UserCreationScreenProps
               placeholder="Confirmar contraseña"
             onBlur={() => setAttempted(true)}
               aria-invalid={attempted && (!confirmPw || passwordsMismatch)}
-              style={{ borderColor: attempted && (passwordsMismatch || !confirmPw) ? "#dc2626" : undefined }}
+              style={{ borderColor: attempted && (passwordsMismatch || !confirmPw) ? "#DC143C" : undefined }}
             />
             {confirmPw.length > 0 && (
               <div className="absolute right-3 top-1/2 -translate-y-1/2">
-                {passwordsMatch ? <CheckIcon size={14} color="#22c55e" /> : <XIcon size={14} color="#dc2626" />}
+                {passwordsMatch ? <CheckIcon size={14} color="#22c55e" /> : <XIcon size={14} color="#DC143C" />}
               </div>
             )}
           </div>
@@ -197,7 +197,7 @@ export default function UserCreationScreen({ onCancel }: UserCreationScreenProps
       ),
     },
     {
-      icon: <ShieldIcon size={18} color="#dc2626" />,
+      icon: <ShieldIcon size={18} color="#DC143C" />,
       label: "Contraseña de root",
       sub: "Contraseña para la cuenta de administrador.",
       input: (
@@ -241,7 +241,7 @@ export default function UserCreationScreen({ onCancel }: UserCreationScreenProps
       ),
     },
     {
-      icon: <MonitorIcon size={18} color="#dc2626" />,
+      icon: <MonitorIcon size={18} color="#DC143C" />,
       label: "Nombre de la máquina",
       sub: "Identifica tu equipo en la red.",
       input: (
@@ -254,7 +254,7 @@ export default function UserCreationScreen({ onCancel }: UserCreationScreenProps
             placeholder="DylanOS-PC"
             onBlur={() => { setAttempted(true); setHostnameError(""); }}
             aria-invalid={attempted && (!hostname || !isValidHostname(hostname) || !!hostnameError)}
-            style={{ borderColor: attempted && (!hostnameValid || !!hostnameError) ? "#dc2626" : undefined }}
+            style={{ borderColor: attempted && (!hostnameValid || !!hostnameError) ? "#DC143C" : undefined }}
           />
           {hostnameError && <div className="dylan-field-error">{hostnameError}</div>}
           {attempted && (!hostname || !isValidHostname(hostname)) && <div className="dylan-field-error">El nombre de la máquina no es válido.</div>}
@@ -262,7 +262,7 @@ export default function UserCreationScreen({ onCancel }: UserCreationScreenProps
             <div className="absolute right-3 top-1/2 -translate-y-1/2">
               {isValidHostname(hostname)
                 ? <CheckIcon size={14} color="#22c55e" />
-                : <XIcon size={14} color="#dc2626" />}
+                : <XIcon size={14} color="#DC143C" />}
             </div>
           )}
         </div>
@@ -285,9 +285,9 @@ export default function UserCreationScreen({ onCancel }: UserCreationScreenProps
           </div>
           <div
             className="w-14 h-14 rounded-xl flex items-center justify-center"
-            style={{ background: "rgba(220,38,38,0.1)", border: "1px solid rgba(220,38,38,0.2)" }}
+            style={{ background: "rgba(220,20,60,0.1)", border: "1px solid rgba(220,20,60,0.2)" }}
           >
-            <UserIcon size={28} color="#dc2626" />
+            <UserIcon size={28} color="#DC143C" />
           </div>
         </div>
 
@@ -306,7 +306,7 @@ export default function UserCreationScreen({ onCancel }: UserCreationScreenProps
             >
               <div
                 className="w-10 h-10 rounded-lg flex items-center justify-center shrink-0 mt-0.5"
-                style={{ background: "rgba(220,38,38,0.1)", border: "1px solid rgba(220,38,38,0.15)" }}
+                style={{ background: "rgba(220,20,60,0.1)", border: "1px solid rgba(220,20,60,0.15)" }}
               >
                 {field.icon}
               </div>

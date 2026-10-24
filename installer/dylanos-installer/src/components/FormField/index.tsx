@@ -13,7 +13,7 @@ export default function FormField({ label, hint, icon, children }: FormFieldProp
       {icon && (
         <div
           className="w-10 h-10 rounded-lg flex items-center justify-center shrink-0 mt-0.5"
-          style={{ background: "rgba(220,38,38,0.1)", border: "1px solid rgba(220,38,38,0.15)" }}
+          style={{ background: "rgba(220,20,60,0.1)", border: "1px solid rgba(220,20,60,0.15)" }}
         >
           {icon}
         </div>

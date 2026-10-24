@@ -31,9 +31,9 @@ export default function CancelDialog({ onConfirm, onClose }: CancelDialogProps) 
 
         <div
           className="w-12 h-12 rounded-full flex items-center justify-center mb-4"
-          style={{ background: "rgba(220,38,38,0.15)", border: "1px solid rgba(220,38,38,0.3)" }}
+          style={{ background: "rgba(220,20,60,0.15)", border: "1px solid rgba(220,20,60,0.3)" }}
         >
-          <XIcon size={20} color="#dc2626" />
+          <XIcon size={20} color="#DC143C" />
         </div>
 
         <h2 className="text-white font-semibold text-lg mb-2">¿Cancelar la instalación?</h2>
@@ -58,9 +58,9 @@ export default function CancelDialog({ onConfirm, onClose }: CancelDialogProps) 
           <button
             onClick={onConfirm}
             className="flex-1 py-2.5 rounded-lg text-sm font-semibold transition-all"
-            style={{ background: "#dc2626", color: "#fff" }}
-            onMouseEnter={e => ((e.currentTarget as HTMLButtonElement).style.background = "#ef4444")}
-            onMouseLeave={e => ((e.currentTarget as HTMLButtonElement).style.background = "#dc2626")}
+            style={{ background: "#DC143C", color: "#fff" }}
+            onMouseEnter={e => ((e.currentTarget as HTMLButtonElement).style.background = "#FF2A54")}
+            onMouseLeave={e => ((e.currentTarget as HTMLButtonElement).style.background = "#DC143C")}
           >
             Sí, cancelar
           </button>

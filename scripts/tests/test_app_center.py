@@ -36,6 +36,14 @@ class AppCenterContractTest(unittest.TestCase):
         # el logotipo de DylanOS), instalado por CMake en hicolor 512x512.
         self.assertIn("Icon=dylanos-app-center", DESKTOP)
 
+    def test_filter_results_are_cached_until_filter_or_apps_change(self):
+        self.assertIn("mutable QList<int> m_visibleAppIndexes", MODEL_H)
+        self.assertIn("mutable bool m_visibleAppsDirty = true", MODEL_H)
+        self.assertIn("if (!m_visibleAppsDirty)", MODEL_CPP)
+        self.assertIn("m_visibleAppsDirty = true", MODEL_CPP)
+        self.assertIn("m_apps.at(m_visibleAppIndexes.at(i))", MODEL_CPP)
+        self.assertNotIn("visibleApps()", MODEL_CPP)
+
     def test_keyboard_navigation_keeps_focus_visible(self):
         # El desplazamiento por teclado debe seguir al elemento enfocado: al
         # mover la selección con flechas o AvPág/RePág, la cuadrícula pide

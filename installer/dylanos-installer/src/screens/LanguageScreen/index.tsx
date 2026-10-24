@@ -44,9 +44,9 @@ export default function LanguageScreen({ onCancel }: LanguageScreenProps) {
           </div>
           <div
             className="w-14 h-14 rounded-xl flex items-center justify-center"
-            style={{ background: "rgba(220,38,38,0.1)", border: "1px solid rgba(220,38,38,0.2)" }}
+            style={{ background: "rgba(220,20,60,0.1)", border: "1px solid rgba(220,20,60,0.2)" }}
           >
-            <GlobeIcon size={28} color="#dc2626" />
+            <GlobeIcon size={28} color="#DC143C" />
           </div>
         </div>
 
@@ -94,7 +94,7 @@ export default function LanguageScreen({ onCancel }: LanguageScreenProps) {
                     className="w-full text-left px-4 py-2.5 text-sm transition-all duration-100 flex items-center"
                     style={{
                       background:
-                        state.language === lang.code ? "#dc2626" : "transparent",
+                        state.language === lang.code ? "#DC143C" : "transparent",
                       color: state.language === lang.code ? "#fff" : "#d1d5db",
                       borderLeft:
                         state.language === lang.code
@@ -123,9 +123,9 @@ export default function LanguageScreen({ onCancel }: LanguageScreenProps) {
             <div className="flex flex-col items-center justify-center p-8 text-center">
               <div
                 className="w-16 h-16 rounded-full flex items-center justify-center mb-4"
-                style={{ background: "rgba(220,38,38,0.12)", border: "1px solid rgba(220,38,38,0.25)" }}
+                style={{ background: "rgba(220,20,60,0.12)", border: "1px solid rgba(220,20,60,0.25)" }}
               >
-                <GlobeIcon size={30} color="#dc2626" />
+                <GlobeIcon size={30} color="#DC143C" />
               </div>
               <div className="text-lg font-semibold text-white mb-2">{selected.name}</div>
               <p className="text-sm" style={{ color: "#9ca3af" }}>

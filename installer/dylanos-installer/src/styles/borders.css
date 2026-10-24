@@ -52,5 +52,5 @@
   color: #fff;
 }
 
-.dylan-input[aria-invalid="true"], .dylan-select[aria-invalid="true"] { border-color: var(--red); box-shadow: 0 0 0 1px rgba(220,38,38,0.12); }
+.dylan-input[aria-invalid="true"], .dylan-select[aria-invalid="true"] { border-color: var(--red); box-shadow: 0 0 0 1px rgba(220,20,60,0.12); }
 .dylan-field-error { color: var(--red); font-size: 12px; margin-top: 6px; }

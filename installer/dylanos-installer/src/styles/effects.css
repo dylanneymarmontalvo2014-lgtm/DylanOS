@@ -1,5 +1,5 @@
 .step-active-glow {
-  box-shadow: 0 0 12px rgba(220, 38, 38, 0.3);
+  box-shadow: 0 0 12px rgba(220, 20, 60, 0.3);
 }
 
 @keyframes pulse-red {
@@ -18,7 +18,7 @@
 }
 
 .progress-bar-animated {
-  background: linear-gradient(90deg, var(--red) 0%, #ef4444 40%, var(--red) 60%, #991b1b 100%);
+  background: linear-gradient(90deg, var(--red) 0%, #FF2A54 40%, var(--red) 60%, #9C0B28 100%);
   background-size: 200% 100%;
   animation: progress-shimmer 2s linear infinite;
 }
