@@ -11,7 +11,8 @@ sddm
 # El único gestor de archivos es DylanOS Explorer (apps/dylanos-explorer,
 # motor KIO de Dolphin); el paquete dolphin ya no se envía.
 # kcalc tampoco: la calculadora oficial es la nativa dylanos-calculator.
-konsole
+# La terminal oficial es DylanOS Console (Kitty); konsole no se envía.
+kitty
 systemsettings
 
 # Instalador propio DylanOS (dylanos-installer)
@@ -39,8 +40,10 @@ os-prober
 plymouth
 plymouth-themes
 fonts-inter
-# Terminal DylanOS: fastfetch con logo propio
-fastfetch
+fonts-jetbrains-mono
+# Terminal DylanOS: Kitty + neofetch con logo PNG (icat requiere ImageMagick)
+imagemagick
+neowofetch
 breeze-icon-theme
 kde-style-breeze
 breeze-gtk-theme

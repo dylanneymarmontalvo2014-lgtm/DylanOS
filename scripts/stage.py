@@ -77,10 +77,15 @@ def stage(destination):
         ("installer/dylanos-installer/dist", "/usr/share/dylanos/installer/dist"),
         ("installer/dylanos-installer/backend", "/usr/share/dylanos/installer/backend"),
         ("installer/dylanos-installer/native", "/usr/share/dylanos/installer/native"),
-        ("configs/konsole", "/etc/skel/.local/share/konsole"),
-        ("configs/fastfetch", "/etc/skel/.config/fastfetch"),
-        ("configs/fastfetch/logo.txt", "/usr/share/dylanos/fastfetch/logo.txt"),
+        ("configs/kitty/kitty.conf", "/etc/skel/.config/kitty/kitty.conf"),
+        ("configs/kitty/kitty.conf", "/etc/xdg/kitty/kitty.conf"),
+        ("configs/neofetch/config.conf", "/etc/skel/.config/neofetch/config.conf"),
+        ("configs/neofetch/config.conf", "/etc/xdg/neofetch/config.conf"),
+        ("branding/logo.png", "/usr/share/dylanos/neofetch/logo.png"),
         ("configs/bash/dylanos.bashrc", "/etc/skel/.bashrc"),
+        ("configs/bash/dylanos-ghost.sh", "/usr/share/dylanos/shell/dylanos-ghost.sh"),
+        ("branding/icons/dylanos-console.svg", "/usr/share/icons/hicolor/scalable/apps/dylanos-console.svg"),
+        ("branding/icons/dylanos-console.png", "/usr/share/icons/hicolor/512x512/apps/dylanos-console.png"),
     ]:
         copy(source, target)
     legacy_lf = dest / "usr/share/plasma/lookandfeel/org.dylanos.crimson"
@@ -145,6 +150,15 @@ exec /usr/bin/python3 /usr/share/dylanos/installer/native/main.py "$@"
     # reutilizados de builds anteriores).
     remove("/usr/share/applications/org.kde.dolphin.desktop")
     remove("/usr/share/applications/org.kde.kcalc.desktop")
+    # DylanOS Console (Kitty) sustituye a Konsole y al lanzador genérico de Kitty.
+    remove("/usr/share/applications/org.kde.konsole.desktop")
+    remove("/usr/share/applications/konsole.desktop")
+    # Artefactos de Konsole/fastfetch en chroots reutilizados.
+    remove("/etc/skel/.config/konsolerc")
+    remove("/etc/skel/.local/share/konsole/DylanOS.profile")
+    remove("/etc/skel/.local/share/konsole/DylanOS-Crimson.colorscheme")
+    remove("/etc/skel/.config/fastfetch/config.jsonc")
+    remove("/usr/share/dylanos/fastfetch/logo.txt")
     # DylanOS Configuration sustituye al lanzador del workspace "Ajustes DylanOS"
     # (dylanos --page settings): la entrada obsoleta no debe volver a aparecer.
     remove("/usr/share/applications/org.dylanos.settings.desktop")
@@ -171,6 +185,23 @@ exec /usr/bin/python3 /usr/share/dylanos/installer/native/main.py "$@"
     # archivo después del staging (fallback idempotente).
     copy("apps/dylanos-explorer/assets/org.dylanos.explorer.desktop",
          "/usr/share/applications/org.dylanos.explorer.desktop")
+    write("/usr/bin/dylanos-console",
+          "#!/bin/sh\n"
+          "exec kitty --class org.dylanos.console --title \"DylanOS Console\" \"$@\"\n",
+          0o755)
+    write("/usr/bin/neofetch",
+          "#!/bin/sh\n"
+          "config=\"${XDG_CONFIG_HOME:-${HOME:-/root}/.config}/neofetch/config.conf\"\n"
+          "[ -r \"$config\" ] || config=/etc/xdg/neofetch/config.conf\n"
+          "exec /usr/bin/neowofetch --config \"$config\" \"$@\"\n",
+          0o755)
+    write("/usr/share/applications/org.dylanos.console.desktop",
+          "[Desktop Entry]\nType=Application\nName=DylanOS Console\n"
+          "GenericName=Terminal\nComment=Terminal oficial de DylanOS\n"
+          "Exec=dylanos-console\nTryExec=kitty\nIcon=dylanos-console\n"
+          "Terminal=false\nCategories=System;TerminalEmulator;\n"
+          "StartupNotify=true\nStartupWMClass=org.dylanos.console\n"
+          "Keywords=terminal;console;shell;kitty;\n")
     # DylanOS Configuration: única aplicación de configuración visible.
     # Fallback idempotente previo al build; CMake instala la canónica después.
     write("/usr/share/applications/org.dylanos.configuration.desktop",
@@ -201,6 +232,8 @@ exec /usr/bin/python3 /usr/share/dylanos/installer/native/main.py "$@"
         "/usr/share/applications/org.gnome.Settings.desktop",
         "/usr/share/applications/xfce-settings-manager.desktop",
         "/usr/share/applications/lightdm-settings.desktop",
+        "/usr/share/applications/kitty.desktop",
+        "/usr/share/applications/kitty-open.desktop",
     ]:
         hide_duplicate(duplicate)
     write("/usr/bin/dylanos-welcome", '''#!/bin/sh

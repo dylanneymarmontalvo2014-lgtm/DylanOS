@@ -35,7 +35,7 @@ toolchain y herramientas para quien las necesita.
 
 ## Funciones que se conservan deliberadamente
 
-No se eliminan del perfil base el navegador, Konsole, herramientas de sistema,
+No se eliminan del perfil base el navegador, DylanOS Console, herramientas de sistema,
 red, sonido, Bluetooth, energía, utilidades de accesibilidad, firmware, runtime
 de la tienda, componentes KDE/KIO usados por el explorador ni las herramientas
 del instalador. Antes de proponer quitar cualquiera de esos paquetes hay que

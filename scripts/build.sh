@@ -154,7 +154,9 @@ apt-get -y purge libflatpak-dev libostree-dev libappstreamqt-dev libpackagekitqt
 # (dylanos-calculator): dolphin y kcalc entran como dependencias del
 # metapaquete kde-plasma-desktop y se retiran del sistema final. El motor KIO
 # del Explorer (libkf6kio*) y el resto de la pila Plasma permanecen intactos.
-apt-get -y purge dolphin dolphin-plugins kcalc
+# DylanOS Console (Kitty) es la única terminal: konsole entra a veces como
+# recomendación de kde-plasma-desktop y se retira del sistema final.
+apt-get -y purge dolphin dolphin-plugins kcalc konsole
 # Retira únicamente dependencias automáticas que APT confirme como huérfanas.
 apt-get -y autoremove --purge
 apt-get clean

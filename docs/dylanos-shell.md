@@ -4,7 +4,29 @@ The first-run Plasma desktop layout adds the DylanOS dashboard to each desktop u
 
 The Control Center's Do Not Disturb toggle now uses Plasma's public `NotificationManager.Settings` API. A user-initiated toggle inhibits notifications for eight hours and can be cleared from the same control. An application-owned inhibition is shown as such and is not overridden. The notification list continues to display the real Plasma notification model, including while Do Not Disturb is active. The compact badge shows the number of current notifications, not an unread count. The secondary action opens KDE Connect by its proper name, not the unrelated AirDrop brand.
 
-Konsole retains the DylanOS Crimson profile and current-session-directory behavior; its scrollback history is increased to 50,000 lines. No wallpaper configuration or image is changed by these shell enhancements. Fastfetch remains unchanged pending approval of its separate logo preview.
+## DylanOS Console
+
+DylanOS Console es la única terminal visible del sistema. Usa Kitty como motor y el
+lanzador estable `dylanos-console`, con app id `org.dylanos.console`, nombre e icono
+propios. El staging oculta los lanzadores genéricos de Kitty y elimina los restos de
+Konsole; el build purga su paquete si reaparece como recomendación de Plasma.
+
+La configuración compartida vive en `configs/kitty/kitty.conf`: JetBrains Mono, paleta
+Crimson, fondo `#0A0A0A` con opacidad 0,80 y blur, pestañas carmesí y 50.000 líneas de
+historial. `dylanos-console --directory <ruta>` conserva el flujo de abrir un proyecto
+directamente en su carpeta.
+
+Neofetch sustituye a Fastfetch y se ejecuta al abrir el primer Bash interactivo. Debian
+13 ya no distribuye el paquete original, por lo que DylanOS instala `neowofetch` —su fork
+compatible y mantenido— detrás del nombre estable `/usr/bin/neofetch`. El backend `kitty`
+dibuja la imagen PNG real de `branding/logo.png`, no arte ASCII; el panel usa etiquetas
+en español, separador con nombre y la paleta oficial. ImageMagick prepara la imagen.
+
+El recomendador Bash consulta primero el historial reciente y después los comandos
+disponibles. Dibuja únicamente el sufijo sugerido con ANSI `faint` y gris, sin incorporarlo
+a la línea hasta que el usuario pulsa Tab o flecha derecha. Si no hay sugerencia, Tab
+conserva el completado de comandos/archivos. El módulo solo registra atajos Readline en
+sesiones interactivas y se prueba ejecutando una recomendación real y su aceptación.
 
 
 ## Seguimiento de la identidad visual y la optimización

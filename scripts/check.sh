@@ -5,7 +5,7 @@ cd "$ROOT"
 PYTHON="${DYLANOS_PYTHON:-python3}"
 bash -n init.sh
 while IFS= read -r script; do bash -n "$script"; done < <(find scripts packages -name '*.sh' -type f)
-shellcheck init.sh scripts/build.sh scripts/build-installer.sh scripts/iso.sh scripts/test.sh scripts/check.sh scripts/lib/packages.sh packages/development/setup-repos.sh
+shellcheck -x init.sh scripts/build.sh scripts/build-installer.sh scripts/iso.sh scripts/test.sh scripts/check.sh scripts/lib/packages.sh packages/development/setup-repos.sh configs/bash/dylanos.bashrc configs/bash/dylanos-ghost.sh
 make --no-print-directory --dry-run help installer check build iso test-iso qemu-test >/dev/null
 make --no-print-directory --dry-run build PROFILE=minimal RESUME=1 >/dev/null
 "$PYTHON" -c 'import yaml; config = yaml.safe_load(open("compose.yaml", encoding="utf-8")); assert config["services"]["builder"]["privileged"] is True'
