@@ -10,6 +10,7 @@ PlasmoidItem {
     readonly property date today: clock.date
     property date shownMonth: new Date()
     property date selectedDate: new Date()
+    property date lastRefreshRequested: new Date(0)
     property int memoryUsed: 0
     property int memoryTotal: 0
     property real uptimeSeconds: 0
@@ -76,6 +77,7 @@ PlasmoidItem {
         commandRunner.connectSource("plasma-systemmonitor")
     }
     function refreshSystemInfo() {
+        root.lastRefreshRequested = new Date()
         procReader.connectSource("cat /proc/meminfo")
         procReader.connectSource("cat /proc/uptime")
         procReader.connectSource("cat /proc/stat")
@@ -153,7 +155,16 @@ PlasmoidItem {
                     color: "#D7D2D6"; font.pixelSize: 14
                 }
                 Item { Layout.fillHeight: true }
-                QQC2.Label { text: "ESTADO DEL SISTEMA"; color: "#AAA4AA"; font.pixelSize: 10; font.bold: true }
+                RowLayout {
+                    Layout.fillWidth: true
+                    QQC2.Label { text: "ESTADO DEL SISTEMA"; color: "#AAA4AA"; font.pixelSize: 10; font.bold: true; Layout.fillWidth: true }
+                    QQC2.ToolButton {
+                        text: "Actualizar"
+                        icon.name: "view-refresh"
+                        Accessible.name: "Actualizar las métricas del sistema ahora"
+                        onClicked: root.refreshSystemInfo()
+                    }
+                }
                 QQC2.Label {
                     text: root.memoryTotal > 0
                         ? "Memoria  ·  " + root.usagePercent(root.memoryUsed, root.memoryTotal).toFixed(0) + "%  ·  " + (root.memoryUsed / 1048576).toFixed(1) + " / " + (root.memoryTotal / 1048576).toFixed(1) + " GiB"
@@ -200,6 +211,13 @@ PlasmoidItem {
                 QQC2.Label {
                     text: root.uptimeSeconds > 0 ? "En ejecución  ·  " + root.formatUptime(root.uptimeSeconds) : "Tiempo activo  ·  …"
                     color: "#D7D2D6"; font.pixelSize: 12
+                }
+                QQC2.Label {
+                    text: root.lastRefreshRequested.getTime() > 0
+                        ? "Consulta · " + Qt.formatTime(root.lastRefreshRequested, "hh:mm:ss")
+                        : "Consulta · esperando datos"
+                    color: "#AAA4AA"; font.pixelSize: 10
+                    Accessible.name: text
                 }
                 QQC2.Button {
                     Layout.fillWidth: true
