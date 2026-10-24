@@ -45,6 +45,18 @@ class ColorSchemeTest(unittest.TestCase):
             self.assertNotIn("10,132,255", content, scheme)      # azul viejo
             self.assertNotIn("0,122,255", content, scheme)       # azul stock
 
+    def test_translucent_plasma_surfaces_keep_nine_patch_contract_and_soft_opacity(self):
+        theme = ROOT / "themes/plasma/DylanOS-Crimson"
+        desktop_entry = (theme / "metadata.desktop").read_text(encoding="utf-8")
+        self.assertIn("[BlurBehindEffect]\nenabled=true", desktop_entry)
+        for relative in ("translucent/widgets/panel-background.svg", "translucent/dialogs/background.svg"):
+            content = (theme / relative).read_text(encoding="utf-8")
+            self.assertIn('<g opacity="0.84">', content)
+            self.assertIn('id="center"', content)
+            self.assertIn('id="hint-stretch-borders"', content)
+            self.assertIn('id="hint-apply-color-scheme"', content)
+            self.assertEqual(content.count("<g "), content.count("</g>"))
+
     def test_dark_scheme_keeps_neutral_backgrounds(self):
         content = (ROOT / "themes/colors/DylanOSDark.colors").read_text(encoding="utf-8")
         self.assertIn("30,30,32", content)                      # window neutral oscura

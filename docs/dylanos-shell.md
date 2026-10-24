@@ -169,3 +169,22 @@ Timer; no se guardan ajustes, historial ni progreso al cerrar el widget.
 y pruebas de contrato y empaquetado. **Pruebas:** cálculos puros probados con
 Node si está disponible, además de las suites `test_shell_contract.py` y
 `test_staging.py`; no son una prueba de render gráfico en Plasma.
+
+
+## Superficies glass sutiles (2026-10-24)
+
+Dashboard 0.7.0 incorpora fondo oscuro semitransparente con un reflejo superior
+leve, borde fino claro y tarjeta Pomodoro ligeramente translúcida. Centro de
+Control y Notificaciones 0.3.0 dejan pasar discretamente el fondo en su panel
+exterior y conservan sus tarjetas funcionales con contraste. El tema Plasma
+genera sus variantes `translucent` con opacidad 0.84 para barras y diálogos,
+para equilibrar transparencia y legibilidad. `BlurBehindEffect` permite que
+KWin desenfoque el fondo cuando el compositor lo soporta/está activo; QML no
+inventa el blur como imagen estática ni garantiza la función en equipos sin
+compositor. No se cambia wallpaper, Kitty ni el tema de color personalizado.
+
+**Archivos afectados:** `apps/com.dylanos.dashboard/contents/ui/main.qml` y
+`metadata.json`; paneles QML y metadatos del Centro de Control;
+`scripts/lib/generate-theme.py`; pruebas de contrato/tema/staging; guías de uso.
+**Validación:** pruebas de suites estáticas, generación y staging; QA visual real
+requiere una sesión Plasma 6 con composición habilitada.

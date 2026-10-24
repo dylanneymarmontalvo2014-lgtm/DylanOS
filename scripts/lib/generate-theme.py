@@ -107,7 +107,7 @@ def main():
     write("themes/plasma/DylanOS-Crimson/metadata.desktop", "[Desktop Entry]\nName=DylanOS Crimson\nX-KDE-PluginInfo-Name=DylanOS-Crimson\nX-KDE-PluginInfo-License=GPL-3.0-or-later\n\n[ContrastEffect]\nenabled=false\n\n[BlurBehindEffect]\nenabled=true\n")
     for element in ("widgets/panel-background", "dialogs/background"):
         write(f"themes/plasma/DylanOS-Crimson/{element}.svg", '<svg xmlns="http://www.w3.org/2000/svg" width="80" height="80">' + frame("#242429", edge=16, size=48) + '<rect id="hint-stretch-borders" width="1" height="1" fill="none"/><rect id="hint-apply-color-scheme" width="1" height="1" fill="none"/></svg>')
-        write(f"themes/plasma/DylanOS-Crimson/translucent/{element}.svg", '<svg xmlns="http://www.w3.org/2000/svg" width="80" height="80"><g opacity="0.72">' + frame("#242429", edge=16, size=48) + '</g><rect id="hint-stretch-borders" width="1" height="1" fill="none"/><rect id="hint-apply-color-scheme" width="1" height="1" fill="none"/></svg>')
+        write(f"themes/plasma/DylanOS-Crimson/translucent/{element}.svg", '<svg xmlns="http://www.w3.org/2000/svg" width="80" height="80"><g opacity="0.84">' + frame("#242429", edge=16, size=48) + '</g><rect id="hint-stretch-borders" width="1" height="1" fill="none"/><rect id="hint-apply-color-scheme" width="1" height="1" fill="none"/></svg>')
     aurorae()
 
 
