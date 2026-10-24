@@ -12,7 +12,8 @@ propios. El staging oculta los lanzadores genéricos de Kitty y elimina los rest
 Konsole; el build purga su paquete si reaparece como recomendación de Plasma.
 
 La configuración compartida vive en `configs/kitty/kitty.conf`: JetBrains Mono, paleta
-Crimson, fondo `#0A0A0A` con opacidad 0,74 y blur reforzado, pestañas minimalistas y 50.000 líneas de
+Crimson, fondo `#0A0A0A` con opacidad 0,58 y blur 24 inspirado en la consola de referencia,
+pestañas minimalistas y 50.000 líneas de
 historial. `dylanos-console --directory <ruta>` conserva el flujo de abrir un proyecto
 directamente en su carpeta.
 
