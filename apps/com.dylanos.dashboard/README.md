@@ -1,12 +1,16 @@
 # DylanOS Dashboard — plasmoid `com.dylanos.dashboard`
 
-Widget Plasma 6 instalado en el escritorio para perfiles nuevos. Combina hora/fecha, calendario local y lecturas del sistema local. Versión de paquete del applet: 0.4.0.
+Widget Plasma 6 instalado en el escritorio para perfiles nuevos. Combina hora/fecha, calendario local y lecturas del sistema local. Versión de paquete del applet: 0.4.1.
 
 ## Calendario
 
 - Cambia de mes con ‹ y ›.
 - Pulsa una fecha para seleccionarla; el panel marca el día elegido y resalta hoy. «Hoy» regresa a la fecha actual.
 - Muestra la fecha seleccionada como dato de calendario; el día actual se distingue del elegido y el lector de pantalla anuncia «hoy» y «seleccionado» cuando corresponde. Los estados hover/selección tienen transiciones breves. **No** consulta Google Calendar ni representa citas/recordatorios.
+
+## Actualización de métricas
+
+El panel refresca las métricas cada 10 segundos. «Actualizar» solicita una lectura inmediatamente y la etiqueta «Consulta» muestra la hora local de la última solicitud; al inicio indica que está esperando la primera lectura. Las solicitudes leen memoria, uptime, CPU y el filesystem raíz desde las fuentes locales habituales.
 
 ## Monitor completo
 
