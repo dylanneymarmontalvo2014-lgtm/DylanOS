@@ -19,7 +19,7 @@ Rectangle {
     readonly property color cCrimson: "#DC143C"
     readonly property color cWhite: "#FFFFFF"
     readonly property color cGray: "#B3B3B3"
-    readonly property int avatarSize: Math.max(58, Math.min(72, height * 0.085))
+    readonly property int avatarSize: Math.max(60, Math.min(78, height * 0.09))
     readonly property real layoutScale: Math.min(1, width / 1280, height / 800)
     readonly property real railScale: Math.min(1, width / 1280, (height - 170) / 824)
     readonly property string accountsAvatarSource: user.currentText.length > 0
@@ -228,11 +228,40 @@ Rectangle {
         }
     }
     // ============================================================ acceso real
+    // Panel de vidrio para separar claramente el acceso del fondo sin cambiar
+    // el wallpaper del sistema. Su altura sigue el contenido en resoluciones
+    // pequeñas y el borde carmesí marca el foco visual.
+    Rectangle {
+        id: loginPanel
+        anchors.horizontalCenter: parent.horizontalCenter
+        anchors.bottom: parent.bottom
+        anchors.bottomMargin: 12
+        width: Math.min(408, parent.width - 32)
+        height: loginBlock.implicitHeight * root.layoutScale + 48
+        radius: 24
+        color: "#D90B0B0F"
+        border.color: password.activeFocus ? "#78DC143C" : "#35FFFFFF"
+        border.width: 1
+        gradient: Gradient {
+            GradientStop { position: 0; color: "#E018181D" }
+            GradientStop { position: 1; color: "#D90A0A0D" }
+        }
+        Behavior on border.color { ColorAnimation { duration: 180 } }
+        Rectangle {
+            anchors.top: parent.top
+            anchors.horizontalCenter: parent.horizontalCenter
+            width: 54; height: 3; radius: 2
+            color: root.cCrimson
+            opacity: password.activeFocus ? 1 : 0.72
+            Behavior on opacity { NumberAnimation { duration: 180 } }
+        }
+    }
+
     Column {
         id: loginBlock
         anchors.horizontalCenter: parent.horizontalCenter
         anchors.bottom: parent.bottom
-        anchors.bottomMargin: 22
+        anchors.bottomMargin: 36
         width: 320
         spacing: 8
         scale: root.layoutScale
@@ -280,6 +309,21 @@ Rectangle {
             }
         }
 
+        Text {
+            text: "Bienvenido a DylanOS"
+            anchors.horizontalCenter: parent.horizontalCenter
+            color: root.cWhite
+            font.pixelSize: 17
+            font.weight: Font.DemiBold
+        }
+
+        Text {
+            text: "Accede a tu sesión"
+            anchors.horizontalCenter: parent.horizontalCenter
+            color: "#A8A8AE"
+            font.pixelSize: 12
+        }
+
         ComboBox {
             id: user
             model: userModel
@@ -304,11 +348,14 @@ Rectangle {
         }
 
         Rectangle {
-            width: 300; height: 42; radius: 21
+            width: 300; height: 46; radius: 16
             anchors.horizontalCenter: parent.horizontalCenter
-            color: "#40FFFFFF"
-            border.color: password.activeFocus ? root.cCrimson : "#55FFFFFF"
-            border.width: 1
+            color: password.activeFocus ? "#33280F16" : "#24FFFFFF"
+            border.color: password.activeFocus ? "#F0445F" : "#55FFFFFF"
+            border.width: password.activeFocus ? 1.5 : 1
+            Behavior on color { ColorAnimation { duration: 180 } }
+            Behavior on border.color { ColorAnimation { duration: 180 } }
+            Behavior on border.width { NumberAnimation { duration: 140 } }
 
             TextInput {
                 id: password
@@ -317,6 +364,7 @@ Rectangle {
                 anchors.verticalCenter: parent.verticalCenter
                 echoMode: TextInput.Password; color: root.cWhite; font.pixelSize: 14
                 selectionColor: root.cCrimson
+                onTextChanged: if (root.errorText !== "") root.errorText = ""
                 enabled: !root.authenticating
                 focus: true
                 onAccepted: arrow.doLogin()
@@ -334,12 +382,13 @@ Rectangle {
                 width: 28; height: 28; radius: 14
                 anchors.right: parent.right; anchors.rightMargin: 7
                 anchors.verticalCenter: parent.verticalCenter
-                color: mouseArea.containsMouse ? root.cWhite : "#D1D1D6"
+                color: mouseArea.containsMouse ? "#F53A59" : root.cCrimson
+                Behavior on color { ColorAnimation { duration: 140 } }
                 enabled: !root.authenticating && session.currentIndex >= 0
                 opacity: enabled ? 1 : 0.4
                 Accessible.name: "Iniciar sesión"
                 Accessible.role: Accessible.Button
-                Label { anchors.centerIn: parent; text: "→"; color: "#1C1C1E"; font.pixelSize: 15; font.bold: true }
+                Label { anchors.centerIn: parent; text: "→"; color: root.cWhite; font.pixelSize: 17; font.bold: true }
                 function doLogin() {
                     if (!enabled) return
                     root.authenticating = true; root.errorText = ""
@@ -366,10 +415,17 @@ Rectangle {
             anchors.horizontalCenter: parent.horizontalCenter
             wrapMode: Text.Wrap; width: 320; horizontalAlignment: Text.AlignHCenter
         }
-        Label {
+        Row {
             visible: root.authenticating
-            text: "Iniciando sesión…"; color: "#E5E5EA"; font.pixelSize: 12
             anchors.horizontalCenter: parent.horizontalCenter
+            spacing: 7
+            BusyIndicator { running: root.authenticating; width: 18; height: 18 }
+            Label {
+                text: "Iniciando sesión…"
+                color: "#E5E5EA"
+                font.pixelSize: 12
+                anchors.verticalCenter: parent.verticalCenter
+            }
         }
     }
 
@@ -389,6 +445,7 @@ Rectangle {
         anchors.left: parent.left; anchors.leftMargin: 36
         anchors.top: parent.top; anchors.topMargin: Math.max(96, 170 * root.railScale)
         width: 308; spacing: 14
+        visible: parent.width >= 1280 && parent.height >= 700
         scale: root.railScale
         transformOrigin: Item.TopLeft
 
@@ -401,6 +458,7 @@ Rectangle {
         anchors.right: parent.right; anchors.rightMargin: 36
         anchors.top: parent.top; anchors.topMargin: Math.max(96, 170 * root.railScale)
         width: 308; spacing: 14
+        visible: parent.width >= 1280 && parent.height >= 700
         scale: root.railScale
         transformOrigin: Item.TopRight
 
