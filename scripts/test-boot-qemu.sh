@@ -11,6 +11,7 @@ for tool in qemu-system-x86_64 xorriso; do
 done
 TMP="$(mktemp -d)"
 QEMU_PID=""
+# shellcheck disable=SC2317 # Invoked by the EXIT trap below.
 cleanup() {
     if [[ -n "$QEMU_PID" ]] && kill -0 "$QEMU_PID" 2>/dev/null; then
         kill "$QEMU_PID" 2>/dev/null || true
