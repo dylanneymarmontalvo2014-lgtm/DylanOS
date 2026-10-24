@@ -236,7 +236,10 @@ Rectangle {
         anchors.horizontalCenter: parent.horizontalCenter
         anchors.bottom: parent.bottom
         anchors.bottomMargin: 12
-        width: Math.min(408, parent.width - 32)
+        // La tarjeta acompaña el ancho efectivo del formulario escalado:
+        // evita un panel sobredimensionado en pantallas estrechas y mantiene
+        // 32 px de aire a cada lado cuando el formulario está a tamaño normal.
+        width: Math.min(parent.width - 32, loginBlock.width * root.layoutScale + 64)
         height: loginBlock.implicitHeight * root.layoutScale + 48
         radius: 24
         color: "#D90B0B0F"

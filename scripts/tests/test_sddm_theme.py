@@ -25,6 +25,9 @@ class SddmThemeTest(unittest.TestCase):
             'visible: parent.width >= 1280 && parent.height >= 700',
             'Behavior on border.color', 'onTextChanged: if (root.errorText !== "") root.errorText = ""',
             'BusyIndicator { running: root.authenticating',
+            'width: Math.min(parent.width - 32, loginBlock.width * root.layoutScale + 64)',
+            'height: loginBlock.implicitHeight * root.layoutScale + 48',
+            'scale: root.layoutScale',
         ):
             with self.subTest(snippet=snippet):
                 self.assertIn(snippet, main)

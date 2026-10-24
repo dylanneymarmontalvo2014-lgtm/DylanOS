@@ -134,3 +134,15 @@ fallaron; staging verificó plasmoid, configuración y layout. La prueba de
 layout con Node se omitió por no estar Node.js instalado. No se ejecutó Plasma
 gráfico: el render y el efecto de hover quedan pendientes de QA visual. No se
 ha construido una nueva ISO.
+
+
+ACTUALIZACIÓN DE MANTENIMIENTO — 2026-10-24
+------------------------------------------
+Rama: development
+Cambio: hacer que la tarjeta de acceso SDDM derive el ancho del formulario
+escalado, conservando el margen y limitándose al ancho disponible. No cambia
+la autenticación, sesión, cuenta, wallpaper ni las acciones de energía.
+Validación local: `scripts.tests.test_sddm_theme` ejecutó 2 pruebas y omitió
+1 por falta de `sddm-greeter`; `test_staging` y `test_documentation` pasaron
+(9 pruebas). No se afirma una validación visual en greeter ni VM; el greeter
+no está instalado en el entorno de edición.

@@ -1,3 +1,5 @@
+- SDDM: ajustar el ancho de la tarjeta de acceso al formulario escalado para
+  que no quede sobredimensionada en pantallas estrechas.
 - Dock predeterminado: integrar el dock propio DylanOS y añadir ampliación
   gradual de los iconos cercanos al cursor; se conservan los lanzadores y la
   papelera.
