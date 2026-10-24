@@ -60,9 +60,9 @@ ejecutando una recomendación real y su aceptación.
   cada 15 s, en lugar de lanzar toda la batería de consultas cada 2 s.
   `playerctl` se incluye en el perfil base para que los controles MPRIS no
   dependan de instalación manual.
-- Los dos applets actualizan metadatos a 0.2.0. Las pruebas de contrato y
-  staging verifican funciones, metadatos y frecuencias; el render QML real
-  debe confirmarse además en una sesión Plasma.
+- En esa actualización, ambos applets actualizaron sus metadatos a 0.2.0.
+  Dashboard avanzó después a 0.3.0 con los indicadores gráficos documentados
+  más abajo. Las pruebas de contrato y staging no sustituyen QA visual en Plasma.
 
 
 ## Comando `about`
@@ -91,3 +91,12 @@ para la fuente predeterminada y permite cambiar su nivel o silenciarla con
 una fuente de entrada, el control se deshabilita. Esto está cubierto por el
 contrato estático en `test_shell_contract.py`; aún requiere prueba visual y de
 hardware en Plasma para validar la interacción con distintos dispositivos.
+
+
+## Indicadores visuales del Dashboard (2026-10-24)
+
+Las métricas de RAM y del filesystem raíz presentan porcentaje más capacidad
+usada; CPU conserva su porcentaje. Las tres barras Crimson animan las variaciones
+entre muestras y ofrecen nombre accesible con su valor. El helper limita anchos
+a 0–100% y maneja valores sin datos. Dashboard eleva el paquete a 0.3.0. La
+prueba contractual verifica estas propiedades; no sustituye QA visual en Plasma.
