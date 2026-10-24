@@ -14,8 +14,12 @@ la arquitectura **real** del repositorio tras la iteración de ingeniería de 20
    `dylanos-calculator`, `dylanos-spotlight`, `dylanos-installer`.
 3. **Shell del escritorio**: paneles Plasma generados por el layout del look-and-feel
    (`org.dylanos.crimson`) con plasmoids propios (`com.dylanos.activeapp`,
-   `com.dylanos.search`, `com.dylanos.controlcenter`) y `org.kde.plasma.icontasks` como
-   dock inferior. `com.dylanos.dock` es un plasmoid alternativo disponible pero no fijo.
+   `com.dylanos.search`, `com.dylanos.controlcenter`, `com.dylanos.dashboard`) y
+   `org.kde.plasma.icontasks` como dock inferior. `com.dylanos.dock` es un plasmoid
+   alternativo disponible pero no fijo. El Dashboard muestra calendario interactivo,
+   RAM, CPU, disco raíz y uptime; el Centro de Control integra notificaciones,
+   interruptores y audio con datos locales/de Plasma. Ver [DylanOS Shell](dylanos-shell.md)
+   y la [guía de uso](guia-de-uso.md) para disponibilidad y límites.
 4. **Identidad visual**: `branding/` + `themes/` (aurorae, SDDM, Plymouth, GRUB, GTK,
    color-schemes, look-and-feel).
 

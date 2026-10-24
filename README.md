@@ -38,7 +38,9 @@ DylanOS combina la base de Debian con KDE Plasma y una capa visual propia. El ro
 
 El proyecto reúne aplicaciones y herramientas propias alrededor de tareas cotidianas del escritorio:
 
-- **Workspace**: bienvenida, archivos, notas, desarrollo, monitor y ajustes.
+- **Workspace**: bienvenida, archivos, notas, desarrollo, monitor y ajustes ([guía](apps/workspace/README.md)).
+- **Spotlight**: lanzador y búsqueda de aplicaciones/proyectos ([estado y límites](apps/dylanos-spotlight/README.md)).
+- **DylanOS Explorer**, **Store**, **App Center**, **Calculator** y widgets tienen [documentación de uso y estado](docs/guia-de-uso.md).
 - **DylanOS Explorer**: gestor de archivos nativo basado en KIO.
 - **DylanOS Store**: catálogo, instalación y actualización de software.
 - **App Center**: acceso a las aplicaciones instaladas.
@@ -118,6 +120,8 @@ Para la configuración de desarrollo, los criterios de prueba y las precauciones
 ## Documentación
 
 - [Instalación y QA](docs/install.md)
+- [Guía de uso y estado de las funciones](docs/guia-de-uso.md)
+- [Índice completo de documentación](docs/README.md)
 - [Optimización del sistema e ISO](docs/optimization.md)
 - [Arquitectura](docs/architecture.md)
 - [Roadmap](docs/roadmap.md)
