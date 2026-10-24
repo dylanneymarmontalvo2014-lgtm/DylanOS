@@ -91,6 +91,21 @@ QtObject {
         if (volumeAvailable) exec.connectSource("pactl set-sink-mute @DEFAULT_SINK@ toggle")
     }
 
+    // Entrada de audio: consulta y modifica la fuente predeterminada de PulseAudio/PipeWire.
+    property bool microphoneAvailable: false
+    property real microphoneVolumeValue: 0
+    property bool microphoneMuted: false
+
+    function setMicrophoneVolume(normalizedValue) {
+        const pct = Math.round(normalizedValue * 100)
+        microphoneVolumeValue = normalizedValue
+        exec.connectSource("pactl set-source-volume @DEFAULT_SOURCE@ " + pct + "%")
+    }
+
+    function toggleMicrophoneMute() {
+        if (microphoneAvailable) exec.connectSource("pactl set-source-mute @DEFAULT_SOURCE@ toggle")
+    }
+
     // =====================================================================
     // MODO OSCURO (plasma-apply-colorscheme)
     // =====================================================================
@@ -158,6 +173,16 @@ QtObject {
                 else { root.volumeAvailable = false }
             } else if (sourceName === "pactl get-sink-mute @DEFAULT_SINK@") {
                 root.volumeMuted = out.indexOf("yes") !== -1
+            } else if (sourceName === "pactl get-source-volume @DEFAULT_SOURCE@") {
+                const match = out.match(/(\d+)%/)
+                if (match && err === "") {
+                    root.microphoneVolumeValue = parseInt(match[1]) / 100
+                    root.microphoneAvailable = true
+                } else {
+                    root.microphoneAvailable = false
+                }
+            } else if (sourceName === "pactl get-source-mute @DEFAULT_SOURCE@") {
+                root.microphoneMuted = out.indexOf("yes") !== -1
 
             // ---- Modo oscuro ----
             } else if (sourceName.indexOf("kreadconfig6") === 0) {
@@ -184,6 +209,8 @@ QtObject {
         exec.connectSource("qdbus6 org.kde.Solid.PowerManagement /org/kde/Solid/PowerManagement/Actions/BrightnessControl org.kde.Solid.PowerManagement.Actions.BrightnessControl.brightness")
         exec.connectSource("pactl get-sink-volume @DEFAULT_SINK@")
         exec.connectSource("pactl get-sink-mute @DEFAULT_SINK@")
+        exec.connectSource("pactl get-source-volume @DEFAULT_SOURCE@")
+        exec.connectSource("pactl get-source-mute @DEFAULT_SOURCE@")
     }
 
     function refreshMediaAndAppearance() {

@@ -328,6 +328,59 @@ Rectangle {
             onClicked: SystemStatus.toggleMute()
         }
 
+        // ----- Micrófono (fuente predeterminada real) -----
+        RowLayout {
+            Layout.fillWidth: true
+            spacing: 10
+            Kirigami.Icon {
+                source: SystemStatus.microphoneMuted ? "microphone-sensitivity-muted" : "audio-input-microphone"
+                isMask: true; color: SystemStatus.microphoneAvailable ? cLightGray : "#666666"
+                Layout.preferredWidth: 20; Layout.preferredHeight: 20
+            }
+            QQC2.Slider {
+                id: microphoneSlider
+                Layout.fillWidth: true
+                from: 0; to: 1
+                enabled: SystemStatus.microphoneAvailable
+                Accessible.name: "Nivel del micrófono"
+                Accessible.value: Math.round(value * 100) + "%"
+                onMoved: SystemStatus.setMicrophoneVolume(value)
+
+                Binding {
+                    target: microphoneSlider; property: "value"
+                    value: SystemStatus.microphoneVolumeValue
+                    when: !microphoneSlider.pressed
+                }
+
+                background: Rectangle {
+                    x: microphoneSlider.leftPadding
+                    y: microphoneSlider.topPadding + microphoneSlider.availableHeight / 2 - height / 2
+                    width: microphoneSlider.availableWidth; height: 6; radius: 3
+                    color: cGray
+                    Rectangle {
+                        width: microphoneSlider.visualPosition * parent.width
+                        height: parent.height; radius: 3
+                        color: SystemStatus.microphoneAvailable ? cCrimson : "#666666"
+                    }
+                }
+                handle: Rectangle {
+                    x: microphoneSlider.leftPadding + microphoneSlider.visualPosition * (microphoneSlider.availableWidth - width)
+                    y: microphoneSlider.topPadding + microphoneSlider.availableHeight / 2 - height / 2
+                    width: 18; height: 18; radius: 9; color: cWhite
+                }
+            }
+            QQC2.ToolButton {
+                text: !SystemStatus.microphoneAvailable ? "Micrófono no detectado"
+                      : SystemStatus.microphoneMuted ? "Activar micrófono" : "Silenciar micrófono"
+                icon.name: SystemStatus.microphoneMuted ? "microphone-sensitivity-muted" : "audio-input-microphone"
+                icon.color: SystemStatus.microphoneMuted ? cCrimson : cLightGray
+                display: QQC2.AbstractButton.TextBesideIcon
+                enabled: SystemStatus.microphoneAvailable
+                Accessible.name: text
+                onClicked: SystemStatus.toggleMicrophoneMute()
+            }
+        }
+
         // Accesos secundarios (comandos reales: kcmshell6)
         RowLayout {
             Layout.fillWidth: true
