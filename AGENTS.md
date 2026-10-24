@@ -86,7 +86,8 @@ técnica viva: `docs/architecture.md`. Este archivo es el índice operativo de r
   SDDM `DylanOS-Crimson`, GRUB, Plymouth, GTK DylanOS-Crimson(+Light, GTK3+GTK4), color-schemes.
 - `configs/` — skel de Plasma (kwinrc aurorae, kdeglobals, gtk settings.ini con el tema
   GTK, konsole translúcido + fastfetch, mimeapps con Explorer por defecto), bashrc propio.
-- `scripts/` — `build.sh` (chroot aislado; purga -dev, dolphin, kcalc al final),
+- `Makefile` — incluye `make iso-validated` (build → ISO → test-iso en secuencia) y `BUILD_JOBS=N`.
+- `scripts/` — `build.sh` (chroot aislado; transacción APT agrupada, hasta 4 jobs CMake configurables con `DYLANOS_BUILD_JOBS`, purga -dev, dolphin, kcalc al final),
   `iso.sh`, `stage.py`, `check.sh`, `test_QEMU.sh`, `lib/generate-theme.py` (aurorae etc.),
   `lib/packages.sh`. `scripts/tests/` — unittest Python + test_packages.sh.
 - `installer/dylanos-installer/` — Instalador nativo Qt WebEngine.
