@@ -2,9 +2,13 @@
 # Build in an isolated mount namespace; the host desktop is never modified.
 set -euo pipefail
 ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
+CPU_COUNT="$(nproc 2>/dev/null || printf '2')"
+DEFAULT_BUILD_JOBS="$CPU_COUNT"
+if (( DEFAULT_BUILD_JOBS > 4 )); then DEFAULT_BUILD_JOBS=4; fi
+BUILD_JOBS="${DYLANOS_BUILD_JOBS:-$DEFAULT_BUILD_JOBS}"
 if [[ ${1:-} != --inside ]]; then
     bash "$ROOT/scripts/build-installer.sh"
-    exec sudo unshare --mount --propagation private bash "$0" --inside "$@"
+    exec sudo unshare --mount --propagation private bash "$0" --inside "--jobs=$BUILD_JOBS" "$@"
 fi
 shift
 PROFILE=development
@@ -13,9 +17,19 @@ for arg in "$@"; do
     case "$arg" in
         --resume) RESUME=true ;;
         --minimal) PROFILE=default ;;
-        *) echo "Uso: $0 [--resume] [--minimal]" >&2; exit 2 ;;
+        --jobs=*) BUILD_JOBS="${arg#*=}" ;;
+        *) echo "Uso: $0 [--resume] [--minimal] [--jobs=N]" >&2; exit 2 ;;
     esac
 done
+if [[ ! "$BUILD_JOBS" =~ ^[1-9][0-9]*$ ]]; then
+    echo "DYLANOS_BUILD_JOBS debe ser un entero positivo." >&2
+    exit 2
+fi
+if (( BUILD_JOBS > CPU_COUNT )); then
+    echo "Ajustando los trabajos de compilación a los $CPU_COUNT núcleos disponibles." >&2
+    BUILD_JOBS="$CPU_COUNT"
+fi
+echo "Compilación paralela: $BUILD_JOBS trabajo(s). Ajusta con DYLANOS_BUILD_JOBS=N."
 WORK="$ROOT/work"
 CHROOT="$WORK/chroot"
 mkdir -p "$WORK"
@@ -72,11 +86,15 @@ for setup in /tmp/dylanos-packages/*.setup-repos.sh; do
     if [[ -e "$setup" ]]; then bash "$setup"; fi
 done
 apt-get -o Acquire::Retries=3 update
+# Resuelve los perfiles en una sola transacción APT para evitar repetir
+# resolución de dependencias y configuración de dpkg por cada lista.
+all_packages=/tmp/dylanos-packages/all-packages.txt
+: > "$all_packages"
 for list in /tmp/dylanos-packages/*.list; do
-    # Evita paquetes recomendados que no se solicitan explícitamente; las
-    # dependencias necesarias siguen instalándose automáticamente.
-    xargs -r -a "$list" apt-get -o Acquire::Retries=3 install -y --no-install-recommends
+    [[ -f "$list" ]] && cat "$list" >> "$all_packages"
 done
+# Evita paquetes recomendados no solicitados; dependencias obligatorias siguen instalándose.
+xargs -r -a "$all_packages" apt-get -o Acquire::Retries=3 install -y --no-install-recommends
 sed -i 's/^# es_ES.UTF-8 UTF-8/es_ES.UTF-8 UTF-8/; s/^# en_US.UTF-8 UTF-8/en_US.UTF-8 UTF-8/' /etc/locale.gen
 locale-gen
 update-locale LANG=es_ES.UTF-8
@@ -92,14 +110,14 @@ for app in calculator dylanos-app-center; do
         if [[ -e "$ROOT/apps/$app/$extra" ]]; then cp -a "$ROOT/apps/$app/$extra" "$CHROOT/tmp/dylanos-src/$app/"; fi
     done
     chroot "$CHROOT" cmake -S "/tmp/dylanos-src/$app" -B "/tmp/dylanos-src/$app/build" -GNinja -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX=/usr
-    chroot "$CHROOT" cmake --build "/tmp/dylanos-src/$app/build" --parallel 2
+    chroot "$CHROOT" cmake --build "/tmp/dylanos-src/$app/build" --parallel "$BUILD_JOBS"
     chroot "$CHROOT" cmake --install "/tmp/dylanos-src/$app/build"
 done
 # DylanOS Explorer: gestor de archivos nativo (Qt6/QML).
 mkdir -p "$CHROOT/tmp/dylanos-src/dylanos-explorer"
 cp -a "$ROOT/apps/dylanos-explorer/." "$CHROOT/tmp/dylanos-src/dylanos-explorer/"
 chroot "$CHROOT" cmake -S /tmp/dylanos-src/dylanos-explorer -B /tmp/dylanos-src/dylanos-explorer/build -GNinja -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX=/usr
-chroot "$CHROOT" cmake --build /tmp/dylanos-src/dylanos-explorer/build --parallel 2
+chroot "$CHROOT" cmake --build /tmp/dylanos-src/dylanos-explorer/build --parallel "$BUILD_JOBS"
 chroot "$CHROOT" ctest --test-dir /tmp/dylanos-src/dylanos-explorer/build --output-on-failure
 chroot "$CHROOT" cmake --install /tmp/dylanos-src/dylanos-explorer/build
 # DylanOS Configuration: única app de configuración (Qt6/QML sobre módulos KCM).
@@ -108,14 +126,14 @@ cp -a "$ROOT/apps/dylanos-configuration/." "$CHROOT/tmp/dylanos-src/dylanos-conf
 # El logo oficial se incrusta en el binario (qrc:/assets/logo.png).
 cp -a "$ROOT/branding/logo.png" "$CHROOT/tmp/dylanos-src/dylanos-configuration/assets/logo.png"
 chroot "$CHROOT" cmake -S /tmp/dylanos-src/dylanos-configuration -B /tmp/dylanos-src/dylanos-configuration/build -GNinja -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX=/usr
-chroot "$CHROOT" cmake --build /tmp/dylanos-src/dylanos-configuration/build --parallel 2
+chroot "$CHROOT" cmake --build /tmp/dylanos-src/dylanos-configuration/build --parallel "$BUILD_JOBS"
 chroot "$CHROOT" cmake --install /tmp/dylanos-src/dylanos-configuration/build
 # DylanOS Store: fork nativo de Discover (libdiscover + UI del prototipo).
 mkdir -p "$CHROOT/tmp/dylanos-src/dylanos-store" "$CHROOT/tmp/dylanos-src/catalog"
 cp -a "$ROOT/apps/dylanos-store/src/." "$CHROOT/tmp/dylanos-src/dylanos-store/"
 cp -a "$ROOT/apps/dylanos-store/catalog/store.db" "$CHROOT/tmp/dylanos-src/catalog/"
 chroot "$CHROOT" cmake -S /tmp/dylanos-src/dylanos-store -B /tmp/dylanos-src/dylanos-store/build -GNinja -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX=/usr
-chroot "$CHROOT" cmake --build /tmp/dylanos-src/dylanos-store/build --parallel 2
+chroot "$CHROOT" cmake --build /tmp/dylanos-src/dylanos-store/build --parallel "$BUILD_JOBS"
 chroot "$CHROOT" ctest --test-dir /tmp/dylanos-src/dylanos-store/build --output-on-failure
 chroot "$CHROOT" cmake --install /tmp/dylanos-src/dylanos-store/build
 chroot "$CHROOT" /bin/bash <<'CHROOT_SCRIPT'
