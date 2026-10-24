@@ -296,8 +296,15 @@ class StagingTest(unittest.TestCase):
                              "console.log('fresh');")
             self.assertFalse((staged / "obsolete.js").exists())
             # Staging reads the isolated build result; it neither rewrites nor
-            # consumes the tracked installer source tree.
-            self.assertTrue((ROOT / "installer/dylanos-installer/dist/index.html").is_file())
+            # consumes the installer source tree. A later iso.sh restage with
+            # no checkout dist must retain the frontend already in the chroot.
+            source_dist = ROOT / "installer/dylanos-installer/dist"
+            if source_dist.is_dir():
+                self.assertTrue((source_dist / "index.html").is_file())
+            else:
+                module.stage(root)
+                self.assertEqual((staged / "index.html").read_text(encoding="utf-8"),
+                                 "<html>fresh build</html>")
             self.assertEqual((dist / "index.html").read_text(encoding="utf-8"),
                              "<html>fresh build</html>")
 
