@@ -124,6 +124,9 @@ assert_eq "APT omite recommends no solicitados" "si" \
     "$(grep -q -- '--no-install-recommends' "$build_script" && echo si || echo no)"
 assert_eq "APT elimina solo dependencias huérfanas después de las purgas" "si" \
     "$(grep -q 'apt-get -y autoremove --purge' "$build_script" && echo si || echo no)"
+assert_eq "APT limpia los índices descargados tras purgar paquetes" "si" \
+    "$(grep -q 'rm -rf /var/lib/apt/lists/\*' "$build_script" && \
+      [ "$(grep -n 'apt-get -y autoremove --purge' "$build_script" | cut -d: -f1)" -lt "$(grep -n 'rm -rf /var/lib/apt/lists/\*' "$build_script" | cut -d: -f1)" ] && echo si || echo no)"
 assert_eq "desktop-file-utils es temporal para generar la caché de escritorio" "si" \
     "$(grep -q 'apt-get -y install --no-install-recommends desktop-file-utils' "$build_script" && grep -q 'apt-get -y purge desktop-file-utils' "$build_script" && echo si || echo no)"
 
