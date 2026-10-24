@@ -14,3 +14,10 @@ Konsole retains the DylanOS Crimson profile and current-session-directory behavi
 - **Motivo/alcance:** evitar software recomendado no pedido y dependencias huérfanas, además de acercar el panel de estado a la referencia visual sin inventar datos. Esto puede reducir el tamaño de futuras imágenes; no se afirma un ahorro de bytes hasta construir y medir una ISO nueva.
 - **Verificación requerida:** `bash scripts/tests/test_packages.sh`, `python3 -m unittest scripts.tests.test_shell_contract`, `make check`, `make build`, `make iso` y `make test-iso`. Una build automatizada no demuestra el arranque del escritorio; para eso se requiere `make qemu-test` y revisar el render real.
 - **Archivos afectados:** `apps/com.dylanos.dashboard/contents/ui/main.qml` (métricas), `scripts/build.sh` (instalación/purga), `scripts/tests/test_packages.sh` y `scripts/tests/test_shell_contract.py` (regresiones) y este documento.
+
+## Corrección de CPU del dashboard (2026-10-24)
+
+- `apps/com.dylanos.dashboard/contents/ui/main.qml`: los contadores `guest` y `guest_nice` de `/proc/stat` ya no se suman dos veces (Linux ya los incluye en `user` y `nice`). Se descartan deltas incoherentes antes de actualizar el porcentaje para evitar mostrar una medición inválida.
+- `scripts/tests/test_shell_contract.py`: regresión contractual para el ajuste de contadores guest y validación del intervalo de deltas.
+- Verificación: el CI `Check beta` de `development` se ejecuta para este cambio; no es prueba de arranque ni de render gráfico en QEMU.
+- No cambia el wallpaper, la configuración de Konsole ni Fastfetch.
