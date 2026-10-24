@@ -27,8 +27,9 @@ Registro de la implementación de DylanOS Shell a partir de las referencias de
   `com.dylanos.search` (lupa que lanza `dylanos-spotlight`) + bandeja del
   sistema + `com.dylanos.controlcenter` + reloj 12 h con fecha
   (`ddd dd 'de' MMM`, `use24hFormat=1`).
-- Dock inferior: lanzadores fijados + papelera (`org.kde.plasma.trash`) al
-  final, como en el preview.
+- Dock inferior: plasmoid `com.dylanos.dock` con apps fijadas, zoom suave al
+  cursor (icono objetivo y vecinos aumentan progresivamente) + papelera
+  (`org.kde.plasma.trash`) al final.
 - Los widgets del escritorio de los previews (clima, calendario, recordatorios
   sobre el fondo) NO se implementan: así lo exige la especificación temporal.
 
@@ -101,3 +102,17 @@ DYLANOS_PYTHON=<venv con PySide6> bash scripts/check.sh
   existentes de un usuario no se tocan en re-layouts de Plasma.
 - Fondos de pantalla: sin cambios (verificado con `test_staging.py`, que
   compara bytes contra `branding/wallpapers/`).
+
+
+## Zoom del dock — 2026-10-24
+
+El panel inferior de perfiles nuevos utiliza el plasmoid `com.dylanos.dock` de
+DylanOS en lugar del gestor nativo `icontasks`; la papelera sigue fijada al
+final. Se conserva el modelo real `TaskManager.TasksModel` y la lista de siete
+lanzadores que ya tenía el dock. Al pasar el puntero, el icono seleccionado
+crece hasta 64 px, los dos vecinos de cada lado escalan en niveles menores y
+una animación OutCubic de 170 ms devuelve los iconos a 48 px al salir. Es una
+animación local, sin procesos de fondo. Se aplica al layout de perfiles nuevos;
+no se reemplazan automáticamente los paneles de perfiles ya existentes.
+Pruebas estáticas y staging verifican la conexión y los archivos instalados;
+el efecto visual aún requiere QA en Plasma 6 real.

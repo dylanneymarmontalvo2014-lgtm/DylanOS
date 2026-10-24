@@ -81,7 +81,9 @@ class ExplorerStructureTest(unittest.TestCase):
         self.assertIn("apps/dylanos-explorer/assets/org.dylanos.explorer.desktop", stage)
         self.assertIn('remove("/usr/share/applications/org.dylanos.files.desktop")', stage)
         layout = (ROOT / "themes/lookandfeel/org.dylanos.crimson/contents/layouts/org.kde.plasma.desktop-layout.js").read_text(encoding="utf-8")
-        self.assertIn("applications:org.dylanos.explorer.desktop", layout)
+        self.assertIn('dock.addWidget("com.dylanos.dock")', layout)
+        dock = (ROOT / "apps/com.dylanos.dock/contents/ui/main.qml").read_text(encoding="utf-8")
+        self.assertIn("applications:org.dylanos.explorer.desktop", dock)
         # Un solo explorador: dolphin ya no se envía en el ISO; el Explorer
         # (motor KIO de Dolphin) es el gestor de archivos del sistema.
         default = (ROOT / "packages/default/packages.list").read_text(encoding="utf-8")

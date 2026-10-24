@@ -35,14 +35,13 @@ PlasmoidItem {
         // Apps fijadas por defecto. Ajustar/quitar segun lo que exista en DylanOS:
         //   find /usr/share/applications ~/.local/share/applications -iname "*dylanos*"
         launcherList: [
+            "applications:org.dylanos.explorer.desktop",
+            "applications:firefox-esr.desktop",
+            "applications:com.microsoft.VSCode.desktop",
             "applications:dylanos-app-center.desktop",
             "applications:org.dylanos.store.desktop",
-            "applications:org.dylanos.calculator.desktop",
-            "applications:org.dylanos.explorer.desktop",
-            "applications:org.dylanos.console.desktop",
-            "applications:org.kde.kate.desktop",
-            "applications:com.microsoft.VSCode.desktop",
-            "applications:org.dylanos.configuration.desktop"
+            "applications:org.dylanos.configuration.desktop",
+            "applications:org.dylanos.calculator.desktop"
         ]
     }
 
@@ -76,11 +75,14 @@ PlasmoidItem {
                 id: dockRow
                 anchors.centerIn: parent
                 spacing: Plasmoid.configuration.iconSpacing
+                property int hoverIndex: -1
 
                 Repeater {
                     model: tasksModel
 
                     delegate: DockItemDelegate {
+                        dockRoot: dockRow
+                        delegateIndex: index
                         appIcon: model.decoration
                         appName: model.display !== undefined ? model.display : ""
                         isRunning: model.IsWindow === true

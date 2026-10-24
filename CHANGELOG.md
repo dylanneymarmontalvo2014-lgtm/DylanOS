@@ -1,3 +1,6 @@
+- Dock predeterminado: integrar el dock propio DylanOS y añadir ampliación
+  gradual de los iconos cercanos al cursor; se conservan los lanzadores y la
+  papelera.
 # Changelog
 
 Todos los cambios relevantes de DylanOS se registran en este archivo. La intención es mantener un histórico claro de la evolución del escritorio, el branding y la plataforma de instalación.
