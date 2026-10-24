@@ -274,6 +274,41 @@ class StagingTest(unittest.TestCase):
             self.assertEqual(len(list((root / "usr/share/applications").glob("org.dylanos.*.desktop"))), 9)
             self.assertFalse(list(root.rglob("*.otf")))
 
+    def test_installer_frontend_can_be_staged_from_temporary_dist(self):
+        with tempfile.TemporaryDirectory() as folder:
+            base = Path(folder)
+            dist = base / "installer-build" / "dist"
+            dist.mkdir(parents=True)
+            (dist / "index.html").write_text("<html>fresh build</html>", encoding="utf-8")
+            (dist / "assets").mkdir()
+            (dist / "assets/app.js").write_text("console.log('fresh');", encoding="utf-8")
+            root = base / "chroot"
+            root.mkdir()
+            staged = root / "usr/share/dylanos/installer/dist"
+            staged.mkdir(parents=True)
+            (staged / "obsolete.js").write_text("stale", encoding="utf-8")
+
+            module.stage(root, dist)
+
+            self.assertEqual((staged / "index.html").read_text(encoding="utf-8"),
+                             "<html>fresh build</html>")
+            self.assertEqual((staged / "assets/app.js").read_text(encoding="utf-8"),
+                             "console.log('fresh');")
+            self.assertFalse((staged / "obsolete.js").exists())
+            # Staging reads the isolated build result; it neither rewrites nor
+            # consumes the tracked installer source tree.
+            self.assertTrue((ROOT / "installer/dylanos-installer/dist/index.html").is_file())
+            self.assertEqual((dist / "index.html").read_text(encoding="utf-8"),
+                             "<html>fresh build</html>")
+
+    def test_installer_frontend_rejects_empty_index(self):
+        with tempfile.TemporaryDirectory() as folder:
+            dist = Path(folder) / "dist"
+            dist.mkdir()
+            (dist / "index.html").touch()
+            with self.assertRaises(FileNotFoundError):
+                module.stage(Path(folder) / "chroot", dist)
+
     def test_aurorae_required_svg_elements(self):
         for variant in ("DylanOS-Crimson", "DylanOS-Crimson-Light"):
             root = ROOT / "themes/aurorae" / variant

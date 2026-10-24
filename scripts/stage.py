@@ -99,8 +99,11 @@ def stage(destination, installer_dist=None):
             pass
     if installer_dist is not None:
         source = Path(installer_dist).resolve()
-        if not (source / "index.html").is_file():
-            raise FileNotFoundError(f"Falta index.html del frontend del instalador en {source}")
+        index = source / "index.html"
+        if not index.is_file() or index.stat().st_size == 0:
+            raise FileNotFoundError(
+                f"Falta index.html no vacío del frontend del instalador en {source}"
+            )
         target = dest / "usr/share/dylanos/installer/dist"
         if target.exists():
             shutil.rmtree(target)
