@@ -18,6 +18,7 @@ import shlex
 import shutil
 import signal
 import socketserver
+import stat
 import subprocess
 import threading
 import time
@@ -387,6 +388,42 @@ def _whole_disk_of(source):
     if re.match(r"^(sd|hd|vd|xvd)[a-z]+\d+$", name):   # sdb1 → sdb
         return f"/dev/{name.rstrip('0123456789')}"
     return source                                      # p. ej. ISO crudo en un USB
+
+
+def validate_install_disk(disk):
+    """Return an enumerated physical block device or reject before any writes."""
+    if os.geteuid() != 0:
+        raise RuntimeError("La instalación real requiere privilegios de root; no se simulará una instalación.")
+    disk = (disk or "").strip()
+    if not re.fullmatch(r"/dev/(?:[A-Za-z0-9._+-]+|disk/by-id/[A-Za-z0-9._+-]+)", disk):
+        raise RuntimeError("Selecciona un dispositivo de disco válido detectado por el sistema.")
+
+    listed_path = None
+    for device in lsblk_devices():
+        if not _is_real_disk(device):
+            continue
+        name = str(device.get("name") or "")
+        candidate = device.get("path") or (f"/dev/{name}" if name else "")
+        if not candidate.startswith("/dev/"):
+            continue
+        try:
+            if os.path.realpath(candidate) == os.path.realpath(disk):
+                listed_path = candidate
+                break
+        except OSError:
+            continue
+    if not listed_path:
+        raise RuntimeError("El disco seleccionado no está en la lista de dispositivos físicos detectados.")
+    try:
+        if not stat.S_ISBLK(os.stat(listed_path).st_mode):
+            raise RuntimeError("El dispositivo seleccionado no es un disco de bloques real.")
+    except OSError as exc:
+        raise RuntimeError("No se puede verificar el dispositivo de disco seleccionado.") from exc
+
+    medium = live_medium_disk()
+    if medium and os.path.realpath(listed_path) == os.path.realpath(medium):
+        raise RuntimeError("No se puede instalar sobre el medio live desde el que se inició DylanOS.")
+    return listed_path
 
 
 def live_medium_disk():
@@ -953,14 +990,13 @@ def perform_installation(config):
     language = config.get("language") or "es_419"
 
     try:
-        is_root = os.geteuid() == 0
-        is_real_device = bool(disk) and os.path.exists(disk)
-        demo = not (is_root and is_real_device)
-        install_state["demo"] = demo
-        if demo:
-            log(f"Vista previa sin escritura (root={is_root}, disco={disk!r} presente={is_real_device}).")
-        else:
-            log(f"Instalación real: disco={disk} modo={mode} usuario={username} idioma={language}.")
+        # La API desplegada nunca reporta una instalación simulada como exitosa.
+        # Validar root, inventario lsblk y medio live antes de lanzar cualquier
+        # comando que pueda alterar particiones.
+        disk = validate_install_disk(disk)
+        demo = False
+        install_state["demo"] = False
+        log(f"Instalación real: disco={disk} modo={mode} usuario={username} idioma={language}.")
 
         if not password:
             raise RuntimeError("No se recibió la contraseña del usuario; no es posible crear la cuenta.")

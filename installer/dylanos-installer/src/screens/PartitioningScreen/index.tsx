@@ -1,7 +1,7 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import BottomBar from "@/components/BottomBar";
 import { HardDriveIcon, ChevronDownIcon, PlusCircleIcon, EditIcon, TrashIcon, RefreshIcon } from "@/components/Icons";
-import { mockDisks, type Disk } from "@/data/mockDiskInfo";
+import type { Disk } from "@/data/mockDiskInfo";
 import { useInstaller } from "@/state/installerState";
 import StatusNotice from "@/components/StatusNotice";
 
@@ -11,25 +11,41 @@ interface PartitioningScreenProps {
 
 export default function PartitioningScreen({ onCancel }: PartitioningScreenProps) {
   const { state, dispatch } = useInstaller();
-  const [disks, setDisks] = useState<Disk[]>(mockDisks);
+  const [disks, setDisks] = useState<Disk[]>([]);
   const [selectedIdx, setSelectedIdx] = useState(0);
   const [dropdownOpen, setDropdownOpen] = useState(false);
+  const [loadingDisks, setLoadingDisks] = useState(true);
 
-  useEffect(() => {
-    fetch("/api/disks")
-      .then(r => r.json())
-      .then(data => {
-        if (Array.isArray(data) && data.length > 0) {
-          setDisks(data);
-          dispatch({ type: "SET_PARTITIONING", mode: state.partitioning.mode, disk: data[0].device });
-        }
-      })
-      .catch(() => {});
-  }, []);
+  const detectDisks = useCallback(async () => {
+    setLoadingDisks(true);
+    setDisks([]);
+    setSelectedIdx(0);
+    dispatch({ type: "SET_PARTITIONING", mode: state.partitioning.mode, disk: "" });
+    try {
+      const response = await fetch("/api/disks");
+      if (!response.ok) throw new Error("disk discovery request failed");
+      const data: unknown = await response.json();
+      const usable = Array.isArray(data)
+        ? (data as Disk[]).filter(d => typeof d?.device === "string" && /^\/dev\/[A-Za-z0-9._+-]+$/.test(d.device))
+        : [];
+      if (!usable.length) {
+        dispatch({ type: "SET_PARTITION_ERROR", error: "detection" });
+        return;
+      }
+      setDisks(usable);
+      dispatch({ type: "SET_PARTITIONING", mode: state.partitioning.mode, disk: usable[0].device });
+    } catch {
+      dispatch({ type: "SET_PARTITION_ERROR", error: "detection" });
+    } finally {
+      setLoadingDisks(false);
+    }
+  }, [dispatch, state.partitioning.mode]);
 
-  const disk = disks[selectedIdx] || disks[0] || mockDisks[0];
+  useEffect(() => { void detectDisks(); }, [detectDisks]);
+
+  const disk = disks[selectedIdx];
   const isAuto = state.partitioning.mode === "auto";
-  const totalGB = disk.sizeGB || 512;
+  const totalGB = disk?.sizeGB || 1;
   const partitionMessages = {
     "no-disk": ["Selecciona un disco para continuar.", "Elige un dispositivo de almacenamiento para instalar DylanOS."],
     "insufficient-space": ["No hay espacio suficiente.", "El disco seleccionado no tiene espacio suficiente para instalar DylanOS."],
@@ -59,7 +75,7 @@ export default function PartitioningScreen({ onCancel }: PartitioningScreenProps
           </div>
         </div>
 
-        {partitionNotice && <div className="mb-4"><StatusNotice title={partitionNotice[0]} action={state.partitionError === "detection" ? <button onClick={() => dispatch({ type: "SET_PARTITION_ERROR", error: "none" })} className="text-xs font-medium" style={{ color: "#fff" }}>Reintentar</button> : undefined}>{partitionNotice[1]}</StatusNotice></div>}
+        {partitionNotice && <div className="mb-4"><StatusNotice title={partitionNotice[0]} action={state.partitionError === "detection" ? <button onClick={() => void detectDisks()} disabled={loadingDisks} className="text-xs font-medium disabled:opacity-50" style={{ color: "#fff" }}>{loadingDisks ? "Detectando…" : "Reintentar"}</button> : undefined}>{partitionNotice[1]}</StatusNotice></div>}
 
         {/* Mode selector */}
         <div className="grid grid-cols-2 gap-3 mb-5">
@@ -103,7 +119,7 @@ export default function PartitioningScreen({ onCancel }: PartitioningScreenProps
             <div className="flex items-center gap-2.5">
               <HardDriveIcon size={16} color="#9ca3af" />
               <span className="text-sm text-white">
-                {disk.device} – {disk.size} – {disk.model}
+                {disk ? `${disk.device} – ${disk.size} – ${disk.model}` : loadingDisks ? "Detectando discos…" : "No hay un disco disponible"}
               </span>
             </div>
             <ChevronDownIcon size={14} color="#9ca3af" className={dropdownOpen ? "rotate-180" : ""} />
@@ -138,7 +154,7 @@ export default function PartitioningScreen({ onCancel }: PartitioningScreenProps
           <label className="text-xs font-medium mb-2 block" style={{ color: "#9ca3af" }}>Distribución actual:</label>
 
           <div className="flex rounded-lg overflow-hidden mb-3" style={{ height: 28 }}>
-            {disk.partitions.map((p, i) => (
+            {(disk?.partitions ?? []).map((p, i) => (
               <div
                 key={i}
                 style={{
@@ -151,7 +167,7 @@ export default function PartitioningScreen({ onCancel }: PartitioningScreenProps
           </div>
 
           <div className="flex flex-wrap gap-4 text-xs">
-            {disk.partitions.map((p, i) => (
+            {(disk?.partitions ?? []).map((p, i) => (
               p.device !== "Espacio libre" ? (
                 <div key={i} className="flex items-center gap-1.5">
                   <div className="w-2.5 h-2.5 rounded-sm" style={{ background: p.color }} />
@@ -226,13 +242,13 @@ export default function PartitioningScreen({ onCancel }: PartitioningScreenProps
             <span>Flags</span>
           </div>
 
-          {disk.partitions.map((p, i) => (
+          {(disk?.partitions ?? []).map((p, i) => (
             <div
               key={i}
               className="grid text-xs px-4 py-2.5 items-center transition-colors"
               style={{
                 gridTemplateColumns: "1.6fr 0.8fr 1fr 0.8fr 0.7fr 0.7fr 0.5fr",
-                borderBottom: i < disk.partitions.length - 1 ? "1px solid rgba(255,255,255,0.04)" : "none",
+                borderBottom: i < (disk?.partitions.length ?? 0) - 1 ? "1px solid rgba(255,255,255,0.04)" : "none",
                 color: "#d1d5db",
               }}
               onMouseEnter={e => ((e.currentTarget as HTMLDivElement).style.background = "rgba(255,255,255,0.03)")}
@@ -253,12 +269,12 @@ export default function PartitioningScreen({ onCancel }: PartitioningScreenProps
         </div>
 
         <div className="flex items-center justify-between mt-3 text-xs" style={{ color: "#9ca3af" }}>
-          <span>Dispositivo seleccionado: <span className="text-white font-medium">{disk.device} – {disk.size}</span></span>
+          <span>Dispositivo seleccionado: <span className="text-white font-medium">{disk ? `${disk.device} – ${disk.size}` : "ninguno"}</span></span>
           <span>Espacio libre total: <span style={{ color: "#DC143C" }} className="font-semibold">204 GB</span></span>
         </div>
       </div>
 
-      <BottomBar onCancel={onCancel} nextDisabled={state.partitionError !== "none" || !state.partitioning.disk} />
+      <BottomBar onCancel={onCancel} nextDisabled={loadingDisks || state.partitionError !== "none" || !disk || disk.device !== state.partitioning.disk} />
     </div>
   );
 }

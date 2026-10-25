@@ -34,7 +34,7 @@ const initialState: InstallerState = {
   language: "es_419", languageName: "Español (Latinoamérica)", languageLoadError: mockScenario === "language-error",
   keyboard: { layout: "Español (Latinoamérica)", variant: "Español (Latinoamérica)", model: "Genérico de 105 teclas (Internacional)" },
   keyboardInvalid: mockScenario === "keyboard-invalid",
-  partitioning: { mode: "auto", disk: mockScenario === "partition-no-disk" ? "" : "/dev/sda" },
+  partitioning: { mode: "auto", disk: "" },
   partitionError: mockScenario === "partition-no-disk" ? "no-disk" : mockScenario === "partition-space" ? "insufficient-space" : mockScenario === "partition-invalid" ? "invalid" : mockScenario === "partition-detection" ? "detection" : "none",
   user: { fullName: "", username: "", hostname: "DylanOS-PC", valid: false, password: "", rootPassword: "" },
   installationProgress: mockScenario?.startsWith("install-") ? 52 : 0, installationPhase: 2, installationPackage: "plasma-desktop (287/1254)",

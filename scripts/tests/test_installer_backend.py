@@ -499,6 +499,79 @@ class InstallRootCleanupTest(unittest.TestCase):
                 server.clear_target_root(missing)
 
 
+
+
+class InstallDiskSafetyTest(unittest.TestCase):
+    """El instalador solo puede escribir a un disco real y enumerado."""
+
+    def setUp(self):
+        self.devices = [{"name": "sdb", "path": "/dev/sdb", "type": "disk"}]
+
+    def _valid_environment(self):
+        return patch.multiple(
+            server,
+            lsblk_devices=lambda: self.devices,
+            live_medium_disk=lambda: None,
+        )
+
+    def test_rejects_missing_unsafe_and_unlisted_disks(self):
+        with patch("os.geteuid", return_value=0), self._valid_environment():
+            for disk in ("", "sdb", "/dev/../dev/sdb", "/dev/sda"):
+                with self.subTest(disk=disk), self.assertRaises(RuntimeError):
+                    server.validate_install_disk(disk)
+
+    def test_rejects_non_root_even_when_disk_is_listed(self):
+        with patch("os.geteuid", return_value=1000), self._valid_environment():
+            with self.assertRaisesRegex(RuntimeError, "root"):
+                server.validate_install_disk("/dev/sdb")
+
+    def test_rejects_live_medium(self):
+        with patch("os.geteuid", return_value=0), \
+             patch.object(server, "lsblk_devices", return_value=self.devices), \
+             patch.object(server, "live_medium_disk", return_value="/dev/sdb"), \
+             patch("os.stat", return_value=type("Stat", (), {"st_mode": 0o060000})()):
+            with self.assertRaisesRegex(RuntimeError, "medio live"):
+                server.validate_install_disk("/dev/sdb")
+
+    def test_install_rejects_live_medium_without_disk_writes(self):
+        import stat
+        with patch("os.geteuid", return_value=0), \
+             patch.object(server, "lsblk_devices", return_value=self.devices), \
+             patch.object(server, "live_medium_disk", return_value="/dev/sdb"), \
+             patch("os.stat", return_value=type("Stat", (), {"st_mode": stat.S_IFBLK | 0o600})()), \
+             patch.object(server, "run_cmd") as run_cmd:
+            server.perform_installation({"disk": "/dev/sdb", "user": {"password": "test"}})
+        self.assertEqual(server.install_state["status"], "error")
+        run_cmd.assert_not_called()
+
+    def test_accepts_authoritative_lsblk_path_for_device_symlink(self):
+        import stat
+        with patch("os.geteuid", return_value=0), self._valid_environment(), \
+             patch("os.path.realpath", side_effect=lambda path: {"/dev/disk/by-id/test": "/dev/sdb"}.get(path, path)), \
+             patch("os.stat", return_value=type("Stat", (), {"st_mode": stat.S_IFBLK | 0o600})()):
+            self.assertEqual(server.validate_install_disk("/dev/disk/by-id/test"), "/dev/sdb")
+
+    def test_accepts_enumerated_block_disk(self):
+        import stat
+        with patch("os.geteuid", return_value=0), self._valid_environment(), \
+             patch("os.stat", return_value=type("Stat", (), {"st_mode": stat.S_IFBLK | 0o600})()):
+            self.assertEqual(server.validate_install_disk("/dev/sdb"), "/dev/sdb")
+
+    def test_install_rejects_non_root_without_running_disk_commands(self):
+        with patch("os.geteuid", return_value=1000), \
+             patch.object(server, "run_cmd") as run_cmd:
+            server.perform_installation({"disk": "/dev/sdb", "user": {"password": "test"}})
+        self.assertEqual(server.install_state["status"], "error")
+        run_cmd.assert_not_called()
+
+    def test_install_rejects_unlisted_disk_without_running_disk_commands(self):
+        with patch("os.geteuid", return_value=0), \
+             patch.object(server, "lsblk_devices", return_value=[]), \
+             patch.object(server, "run_cmd") as run_cmd:
+            server.perform_installation({"disk": "/dev/sda", "user": {"password": "test"}})
+        self.assertEqual(server.install_state["status"], "error")
+        run_cmd.assert_not_called()
+
+
 if __name__ == "__main__":
     unittest.main()
-
