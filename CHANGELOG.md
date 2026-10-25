@@ -80,3 +80,4 @@ Todos los cambios relevantes de DylanOS se registran en este archivo. La intenci
 - Estructura base del proyecto.
 - Primeros recursos de documentación.
 - Diseño visual de escritorio y flujo de construcción al inicio del proyecto.
+- Build: validar `--version` antes de preparar el instalador y propagar la versión al proceso privilegiado; evita que el build versionado de tags falle por `VERSION` sin inicializar y evita side effects de build para versiones inválidas.
