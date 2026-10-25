@@ -170,6 +170,18 @@ class ShellContractTest(unittest.TestCase):
         packages = (ROOT / "packages/default/packages.list").read_text(encoding="utf-8").splitlines()
         self.assertIn("playerctl", [line.strip() for line in packages if line.strip() and not line.lstrip().startswith("#")])
 
+    def test_spotlight_search_filters_keep_web_and_calculation_scoped(self):
+        backend = (ROOT / "apps/dylanos-spotlight/backend.py").read_text(encoding="utf-8")
+        self.assertIn("from urllib.parse import quote", backend)
+        self.assertIn('quote(self._query)', backend)
+        self.assertNotIn("urllib.parse.quote", backend)
+        self.assertIn('self._filter in ("Todo", "Calcular")', backend)
+        self.assertIn('self._filter in ("Todo", "Web")', backend)
+        self.assertIn('if self._filter == "Web":', backend)
+        self.assertIn('items[:29] + [web_item]', backend)
+        self.assertNotIn('file_count = max(10992', backend)
+        self.assertIn('return f"{app_count} apps · {proj_count} proyectos"', backend)
+
     def test_shell_keeps_wallpaper_and_console_contract(self):
         layout = (ROOT / "themes/lookandfeel/org.dylanos.crimson/contents/layouts/org.kde.plasma.desktop-layout.js").read_text(encoding="utf-8")
         kitty = (ROOT / "configs/kitty/kitty.conf").read_text(encoding="utf-8")

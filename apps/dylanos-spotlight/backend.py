@@ -11,6 +11,7 @@ import re
 import shutil
 import subprocess
 import sys
+from urllib.parse import quote
 
 from PySide6.QtCore import QObject, Signal, Slot, Property
 from PySide6.QtGui import QDesktopServices
@@ -130,8 +131,7 @@ class SpotlightBackend(QObject):
     def statsText(self):
         app_count = len(self._app_cache)
         proj_count = len(self._project_cache)
-        file_count = max(10992, app_count * 50)
-        return f"{app_count} apps · {proj_count} proyectos · {file_count:,} archivos".replace(",", ".")
+        return f"{app_count} apps · {proj_count} proyectos"
 
     @Slot(str)
     def setQuery(self, q):
@@ -147,8 +147,8 @@ class SpotlightBackend(QObject):
         q = self._query.lower()
         items = []
 
-        # If math query
-        if re.match(r"^[\d\s\+\-\*\/\^\(\)\%\.\,eE]+$", self._query) and any(c in self._query for c in "+-*/%^"):
+        # Las expresiones solo aparecen en Todo/Calcular, no en filtros ajenos.
+        if self._filter in ("Todo", "Calcular") and re.match(r"^[\d\s\+\-\*\/\^\(\)\%\.\,eE]+$", self._query) and any(c in self._query for c in "+-*/%^"):
             try:
                 # Safe eval with math namespace
                 expr = self._query.replace("^", "**")
@@ -179,9 +179,11 @@ class SpotlightBackend(QObject):
                 if not q or q in proj["title"].lower() or q in proj["subtitle"].lower():
                     items.append(proj)
 
-        # Web search option
-        if self._query:
-            items.append({
+        # La opción web pertenece a Todo/Web. En Todo debe mantenerse visible
+        # incluso si hay más de 30 resultados de apps/proyectos.
+        web_item = None
+        if self._query and self._filter in ("Todo", "Web"):
+            web_item = {
                 "id": "web-search",
                 "title": f"Buscar \"{self._query}\" en la web",
                 "subtitle": "Abrir en el navegador predeterminado",
@@ -189,10 +191,16 @@ class SpotlightBackend(QObject):
                 "category": "Web",
                 "icon": "web-browser",
                 "actionType": "web",
-                "actionPayload": f"https://duckduckgo.com/?q={urllib.parse.quote(self._query)}"
-            })
+                "actionPayload": f"https://duckduckgo.com/?q={quote(self._query)}"
+            }
 
-        self._results = items[:30]
+        if self._filter == "Web":
+            items = [web_item] if web_item else []
+            self._results = items
+        elif web_item is not None:
+            self._results = items[:29] + [web_item] if len(items) >= 30 else items + [web_item]
+        else:
+            self._results = items[:30]
         self.resultsChanged.emit()
 
     @Slot(int)
