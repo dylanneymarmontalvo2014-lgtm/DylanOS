@@ -46,11 +46,13 @@ parte de esta optimización.
 
 ## Métricas reales del dashboard
 
-El panel de escritorio muestra hora, calendario, RAM, CPU, espacio usado/total
-del filesystem raíz y uptime con lecturas locales (`/proc` y `df`). No consulta
-servicios remotos ni inventa valores. El widget mide actualmente 500 × 470 para
-acomodar las métricas y el temporizador Pomodoro sin solaparlos. El primer render después de iniciar puede mostrar
-la CPU como «leyendo…» hasta obtener dos muestras del contador.
+El muro de tarjetas del escritorio muestra hora, calendario, RAM, CPU, espacio
+usado/total del filesystem raíz y uptime con lecturas locales (`/proc` y `df`).
+No consulta servicios remotos ni inventa valores. El widget se ancla al borde
+derecho del escritorio: 720 px de ancho, 8 px bajo la barra superior y hasta
+920 px de alto (mínimo 584 px); la columna izquierda queda libre para el acceso
+«Instalar DylanOS» de la primera celda. El primer render después de iniciar
+puede mostrar la CPU como «leyendo…» hasta obtener dos muestras del contador.
 
 ## Comandos de validación
 

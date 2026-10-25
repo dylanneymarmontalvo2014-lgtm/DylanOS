@@ -7,11 +7,48 @@ for (var i = 0; i < allDesktops.length; i++) {
     desktop.writeConfig("Image", "file:///usr/share/wallpapers/DylanOS/dylanos-default.png");
 }
 
-// Dashboard inicial sobre el escritorio: calendario interactivo, reloj y
-// datos de memoria/tiempo activo leídos del sistema local. Se añade solo al
-// layout de perfiles nuevos, sin tocar los paneles ni cambiar el wallpaper.
+// Muro de tarjetas de vidrio sobre el escritorio: reloj, métricas del
+// sistema, reproducción real (playerctl), calendario, recordatorios guardados
+// y enfoque. Se añade solo al layout de perfiles nuevos, sin tocar los
+// paneles ni cambiar el wallpaper.
+//
+// La columna se ancla al BORDE DERECHO del escritorio: Plasma coloca el
+// acceso directo del instalador (~/Escritorio/instalar-dylanos.desktop) en la
+// PRIMERA celda de la retícula de iconos (superior izquierda), así que la
+// mitad izquierda del escritorio debe seguir libre para que el icono quede a
+// la vista. El muro arranca 8 px por debajo de la barra superior (unit*2 de
+// alto) y reserva 44 px de franja superior + 82 px del dock + 8 px de aire
+// (134 en total) antes del borde inferior; nunca baja de 584 px ni sube de
+// 920 px para que las seis tarjetas quepan completas.
+var anchoMuro = 720;
+// Geometría segura de la pantalla del escritorio. Si la API de plasmashell
+// (screenGeometry) no está disponible o devuelve un rectángulo sin sentido,
+// se asume 1280x800 en lugar de fallar el layout.
+function rectaDeEscritorio(containment) {
+    var reserva = { width: 1280, height: 800 };
+    if (typeof screenGeometry !== "function") return reserva;
+    try {
+        var recta = screenGeometry(containment.screenId);
+        if (!recta || !isFinite(recta.width) || !isFinite(recta.height)
+                || recta.width <= 0 || recta.height <= 0) {
+            return reserva;
+        }
+        return recta;
+    } catch (e) {
+        return reserva;
+    }
+}
 for (var i = 0; i < allDesktops.length; i++) {
-    allDesktops[i].addWidget("com.dylanos.dashboard", 48, 96, 500, 470);
+    var recta = rectaDeEscritorio(allDesktops[i]);
+    // Coordenadas locales del containment: en multi-monitor NO se suma
+    // recta.x, cada containment ya es relativo a su pantalla.
+    // Pantallas muy anchas (>1600 px) ganan 40 px de margen para que la
+    // columna no quede pegada al borde; el resto usa 20 px.
+    var margenDerecho = recta.width > 1600 ? 40 : 20;
+    var xMuro = Math.max(0, Math.round(recta.width) - anchoMuro - margenDerecho);
+    var yMuro = (typeof gridUnit === "number" && gridUnit > 0 ? Math.round(gridUnit * 2) : 36) + 8;
+    var altoMuro = Math.max(584, Math.min(920, Math.round(recta.height) - 134));
+    allDesktops[i].addWidget("com.dylanos.dashboard", xMuro, yMuro, anchoMuro, altoMuro);
 }
 
 // Barra superior tipo barra de menú (estilo macOS Tahoe): logotipo, nombre de
