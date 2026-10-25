@@ -1167,6 +1167,26 @@ def perform_installation(config):
 class InstallerRequestHandler(http.server.SimpleHTTPRequestHandler):
     """Atiende la API REST y sirve la interfaz React desde dist/."""
 
+    LOCAL_HOSTS = {"127.0.0.1:8088", "localhost:8088", "[::1]:8088"}
+    LOCAL_ORIGINS = {"http://127.0.0.1:8088", "http://localhost:8088", "http://[::1]:8088"}
+
+    def _local_request_allowed(self):
+        """Reject DNS-rebinding and cross-site requests to this privileged API."""
+        host = self.headers.get("Host", "").lower()
+        origin = self.headers.get("Origin")
+        fetch_site = self.headers.get("Sec-Fetch-Site", "").lower()
+        return (
+            host in self.LOCAL_HOSTS
+            and (origin is None or origin in self.LOCAL_ORIGINS)
+            and fetch_site != "cross-site"
+        )
+
+    def _reject_non_local_request(self):
+        if self._local_request_allowed():
+            return False
+        self.send_error(403, "Only same-origin local installer requests are accepted")
+        return True
+
     def __init__(self, *args, **kwargs):
         super().__init__(*args, directory=str(DIST_DIR), **kwargs)
 
@@ -1174,6 +1194,8 @@ class InstallerRequestHandler(http.server.SimpleHTTPRequestHandler):
         log(f"HTTP {self.address_string()} {fmt % args}")
 
     def do_GET(self):
+        if self._reject_non_local_request():
+            return
         path = urllib.parse.urlparse(self.path).path
 
         if path == "/api/health":
@@ -1200,6 +1222,8 @@ class InstallerRequestHandler(http.server.SimpleHTTPRequestHandler):
             super().do_GET()
 
     def do_POST(self):
+        if self._reject_non_local_request():
+            return
         path = urllib.parse.urlparse(self.path).path
         length = int(self.headers.get("Content-Length", 0))
         raw = self.rfile.read(length).decode("utf-8") if length > 0 else "{}"
@@ -1266,7 +1290,6 @@ class InstallerRequestHandler(http.server.SimpleHTTPRequestHandler):
         self.send_header("Content-Type", "application/json")
         self.send_header("Content-Length", str(len(body)))
         self.send_header("Cache-Control", "no-store")
-        self.send_header("Access-Control-Allow-Origin", "*")
         self.end_headers()
         self.wfile.write(body)
 
