@@ -1,3 +1,4 @@
+- Instalador: retirar del sistema instalado el sudoers `NOPASSWD` y el autologin SDDM de la sesión live, conservando la marca Crimson; aplica también si el usuario instalado se llama `dylan`.
 - Release: al etiquetar `vMAJOR.MINOR.PATCH`, compilar ISO versionada amd64, verificar checksum/estructura y arranque live QEMU, y adjuntar ISO + SHA-256 a una GitHub Release; fallos previos bloquean la publicación.
 - Configuración/Sonido: traducir el nombre interno de salida/entrada al nombre amigable de cada dispositivo; el selector ahora muestra y marca correctamente el dispositivo predeterminado.
 - Spotlight: filtrar correctamente las acciones Web/Calcular, conservar la acción web entre muchos resultados y retirar el contador ficticio de archivos.
