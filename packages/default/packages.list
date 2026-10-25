@@ -53,6 +53,8 @@ kwin-addons
 plasma-nm
 plasma-pa
 powerdevil
+# Backend requerido por DylanOS Configuration para perfiles de energía.
+power-profiles-daemon
 bluedevil
 bluez
 pipewire-audio

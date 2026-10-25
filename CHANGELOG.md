@@ -15,6 +15,11 @@ Todos los cambios relevantes de DylanOS se registran en este archivo. La intenci
 
 ### Corregido
 
+- Configuración/Energía: incluir `power-profiles-daemon` en el perfil base. La
+  interfaz consultaba `powerprofilesctl` y permitía cambiar perfiles, pero la
+  imagen no instalaba el backend que proporciona el comando; ahora queda
+  incluido en el conjunto de paquetes de la imagen.
+
 - Spotlight: lanzar entradas de aplicaciones `.desktop` con argv y sin `shell=True`; los metacaracteres no se interpretan como código de shell y las comillas malformadas se rechazan. Se añadieron pruebas para argumentos citados, códigos de archivo y separadores de shell.
 
 
