@@ -4,7 +4,6 @@ Indexes applications, projects, recent files, and evaluates inline math expressi
 """
 
 from glob import glob
-import math
 import os
 from pathlib import Path
 import re
@@ -13,6 +12,7 @@ import subprocess
 import sys
 from urllib.parse import quote
 from exec_utils import desktop_exec_argv
+from calculator import safe_calculate
 
 from PySide6.QtCore import QObject, Signal, Slot, Property
 from PySide6.QtGui import QDesktopServices
@@ -151,9 +151,8 @@ class SpotlightBackend(QObject):
         # Las expresiones solo aparecen en Todo/Calcular, no en filtros ajenos.
         if self._filter in ("Todo", "Calcular") and re.match(r"^[\d\s\+\-\*\/\^\(\)\%\.\,eE]+$", self._query) and any(c in self._query for c in "+-*/%^"):
             try:
-                # Safe eval with math namespace
-                expr = self._query.replace("^", "**")
-                res = eval(expr, {"__builtins__": None, "math": math}, {})
+                # Bounded arithmetic parser; never evaluate Python expressions.
+                res = safe_calculate(self._query)
                 formatted = f"{res:g}" if isinstance(res, (int, float)) else str(res)
                 items.append({
                     "id": "calc",

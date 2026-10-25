@@ -6,6 +6,32 @@ import unittest
 ROOT = Path(__file__).resolve().parents[2]
 sys.path.insert(0, str(ROOT / "apps/dylanos-spotlight"))
 from exec_utils import desktop_exec_argv
+from calculator import safe_calculate
+
+
+class SpotlightCalculatorTest(unittest.TestCase):
+    def test_basic_arithmetic_and_caret_power(self):
+        self.assertEqual(safe_calculate("2 + 3 * 4"), 14)
+        self.assertEqual(safe_calculate("2^3"), 8)
+        self.assertEqual(safe_calculate("-5 / 2"), -2.5)
+
+    def test_rejects_unbounded_exponent_before_computing(self):
+        with self.assertRaisesRegex(ValueError, "exponente"):
+            safe_calculate("9**99999999")
+
+    def test_rejects_result_outside_supported_range(self):
+        with self.assertRaisesRegex(ValueError, "rango"):
+            safe_calculate("99**100")
+
+    def test_rejects_python_constructs_and_overlong_input(self):
+        for expression in ("__import__('os')", "(1, 2)", "9" * 129):
+            with self.subTest(expression=expression[:20]):
+                with self.assertRaises((ValueError, SyntaxError)):
+                    safe_calculate(expression)
+
+    def test_rejects_division_by_zero(self):
+        with self.assertRaises(ZeroDivisionError):
+            safe_calculate("1/0")
 
 
 class DesktopExecTest(unittest.TestCase):
