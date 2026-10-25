@@ -1,6 +1,11 @@
 #!/usr/bin/env bash
 set -euo pipefail
-if [[ $EUID -ne 0 ]]; then exec sudo bash "$0" "$@"; fi
+VERSION="${1:-${DYLANOS_VERSION:-1.0-beta}}"
+if [[ ! "$VERSION" =~ ^([0-9]+\.[0-9]+\.[0-9]+([+-][A-Za-z0-9.-]+)?|1\.0-beta)$ ]]; then
+    echo "Versión DylanOS inválida: $VERSION" >&2
+    exit 2
+fi
+if [[ $EUID -ne 0 ]]; then exec sudo env DYLANOS_VERSION="$VERSION" bash "$0" "$VERSION"; fi
 ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 CPU_COUNT="$(nproc 2>/dev/null || printf '2')"
 DEFAULT_SQUASHFS_PROCESSORS="$CPU_COUNT"
@@ -18,7 +23,8 @@ echo "SquashFS: $SQUASHFS_PROCESSORS procesador(es). Ajusta con DYLANOS_SQUASHFS
 WORK="$ROOT/work"
 CHROOT="$WORK/chroot"
 IMAGE="$WORK/iso"
-OUTPUT="$ROOT/DylanOS-1.0-beta-amd64.iso"
+VERSION="${DYLANOS_VERSION:-1.0-beta}"
+OUTPUT="$ROOT/DylanOS-${VERSION}-amd64.iso"
 [[ -f "$WORK/build-complete" ]] || { echo 'Primero completa scripts/build.sh' >&2; exit 1; }
 exec 9>"$WORK/build.lock"
 flock -n 9 || { echo 'La construcción del sistema todavía está en marcha.' >&2; exit 1; }
@@ -33,7 +39,7 @@ fi
 # rebuilds manuales (p. ej. recompilar una sola app) dejan el staging
 # desactualizado y el ISO hereda entradas .desktop y pines del dock viejos;
 # stage.py es idempotente, así que re-ejecutarlo aquí lo garantiza.
-python3 "$ROOT/scripts/stage.py" "$CHROOT"
+python3 "$ROOT/scripts/stage.py" --version "$VERSION" "$CHROOT"
 mkdir -p "$IMAGE/live" "$IMAGE/boot/grub"
 # Keep /boot in the filesystem: the installed system needs its own kernel.
 # Excluir solo el CONTENIDO de los dirs virtuales: el root fusionado necesita
@@ -53,7 +59,7 @@ cp -a "$CHROOT/usr/share/grub/themes/dylanos/." "$IMAGE/boot/grub/themes/dylanos
 if [[ -f "$CHROOT/usr/share/grub/unicode.pf2" ]]; then
     cp "$CHROOT/usr/share/grub/unicode.pf2" "$IMAGE/boot/grub/fonts/unicode.pf2"
 fi
-printf 'DylanOS 1.0 Beta amd64\n' > "$IMAGE/.disk/info"
+printf 'DylanOS %s amd64\n' "$VERSION" > "$IMAGE/.disk/info"
 cat > "$IMAGE/boot/grub/grub.cfg" <<'EOF'
 set default=0
 # En el LIVE el menú GRUB es visible para elegir sesión antes de arrancar.
@@ -64,17 +70,18 @@ set timeout=3
 # escritorio (~/Desktop y ~/Escritorio) y en el menú, pero NO se abre solo:
 # el usuario decide cuándo instalar. live-config inicia la sesión gráfica con
 # SDDM → plasmax11.desktop.
-menuentry "DylanOS 1.0 Beta — Sesión live (probar o instalar)" {
+menuentry "DylanOS @VERSION@ — Sesión live (probar o instalar)" {
     linux /live/vmlinuz boot=live components hostname=dylanos username=dylan user-fullname="DylanOS Live" locales=es_ES.UTF-8 keyboard-layouts=latam quiet splash
     initrd /live/initrd.img
 }
 
 # Modo gráficos seguros: desactiva aceleración de hardware (QEMU/hardware antiguo)
-menuentry "DylanOS 1.0 Beta — Sesión live, gráficos seguros" {
+menuentry "DylanOS @VERSION@ — Sesión live, gráficos seguros" {
     linux /live/vmlinuz boot=live components hostname=dylanos username=dylan user-fullname="DylanOS Live" locales=es_ES.UTF-8 keyboard-layouts=latam nomodeset vga=normal quiet splash
     initrd /live/initrd.img
 }
 EOF
+sed -i "s/@VERSION@/$VERSION/g" "$IMAGE/boot/grub/grub.cfg"
 grub-mkrescue -o "$OUTPUT.partial" "$IMAGE"
 mv "$OUTPUT.partial" "$OUTPUT"
 (cd "$ROOT" && sha256sum "$(basename "$OUTPUT")" > "$(basename "$OUTPUT").sha256")

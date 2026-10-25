@@ -9,7 +9,7 @@ import re
 ROOT = Path(__file__).resolve().parent.parent
 
 
-def stage(destination, installer_dist=None):
+def stage(destination, installer_dist=None, version=None):
     dest = Path(destination).resolve()
     if dest == Path("/") or dest == ROOT or dest in ROOT.parents:
         raise ValueError("El destino debe ser un directorio de staging independiente.")
@@ -332,8 +332,13 @@ fi
             pass
     write("/etc/hostname", "dylanos\n")
     write("/etc/hosts", "127.0.0.1 localhost\n127.0.1.1 dylanos\n::1 localhost ip6-localhost ip6-loopback\n")
-    write("/etc/dylanos-release", "DylanOS 1.0 Beta\nBase: Debian 13 (trixie)\n")
-    write("/usr/lib/os-release", 'PRETTY_NAME="DylanOS 1.0 Beta"\nNAME="DylanOS"\nID=dylanos\nID_LIKE=debian\nVERSION_ID="1.0"\nVERSION="1.0 Beta (trixie)"\nVERSION_CODENAME=trixie\nHOME_URL="https://github.com/dylanneymarmontalvo2014-lgtm/DylanOS"\n')
+    version = (version or os.environ.get("DYLANOS_VERSION", "1.0-beta")).strip()
+    if not re.fullmatch(r"[0-9]+\.[0-9]+\.[0-9]+(?:[-+][A-Za-z0-9.-]+)?|1\.0-beta", version):
+        raise ValueError(f"Versión DylanOS inválida: {version!r}")
+    version_label = "1.0 Beta" if version == "1.0-beta" else version
+    version_id = "1.0" if version == "1.0-beta" else version.split("+", 1)[0]
+    write("/etc/dylanos-release", f"DylanOS {version_label}\nBase: Debian 13 (trixie)\n")
+    write("/usr/lib/os-release", f'PRETTY_NAME="DylanOS {version_label}"\nNAME="DylanOS"\nID=dylanos\nID_LIKE=debian\nVERSION_ID="{version_id}"\nVERSION="{version_label} (trixie)"\nVERSION_CODENAME=trixie\nHOME_URL="https://github.com/dylanneymarmontalvo2014-lgtm/DylanOS"\n')
     # DylanOS usa su instalador propio (installer/dylanos-installer);
     # Calamares ya no forma parte de la imagen.
     write("/etc/initramfs-tools/conf.d/dylanos-permissions", "UMASK=0077\n")
@@ -345,5 +350,6 @@ if __name__ == "__main__":
     parser = argparse.ArgumentParser()
     parser.add_argument("destination")
     parser.add_argument("--installer-dist", type=Path)
+    parser.add_argument("--version")
     args = parser.parse_args()
-    stage(args.destination, args.installer_dist)
+    stage(args.destination, args.installer_dist, args.version)

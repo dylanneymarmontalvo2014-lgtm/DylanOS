@@ -69,6 +69,23 @@ El flujo actual del proyecto usa el instalador incluido en `installer/dylanos-in
 7. Instalar en un disco virtual y reiniciar sin la ISO.
 8. Repetir prueba de audio, Wi‑Fi, suspensión y pantalla en hardware real.
 
+## Publicación por etiqueta de versión
+
+Al crear una etiqueta válida `vMAJOR.MINOR.PATCH` (opcionalmente con sufijo
+`-rc.1`), el workflow de release ejecuta las comprobaciones del proyecto,
+construye el sistema, crea `DylanOS-MAJOR.MINOR.PATCH-amd64.iso`, valida el
+checksum/estructura y hace el smoke-test de arranque live en QEMU. Solo después
+publica una GitHub Release con la ISO y su `.sha256`. La versión se refleja en
+`/etc/os-release`, `/etc/dylanos-release`, el nombre ISO, `.disk/info` y el
+menú GRUB. Un fallo en cualquier prueba previa bloquea la publicación.
+
+La etiqueta de release debe apuntar al commit que se quiere publicar; una
+validación satisfactoria no acredita una instalación en disco o una sesión
+gráfica visual, que requieren QA aparte. Los builds manuales conservan
+`1.0-beta` como valor por defecto; para producir otro artefacto local, usa
+`DYLANOS_VERSION=2.4.1 bash scripts/build.sh --version=2.4.1` y después
+`sudo DYLANOS_VERSION=2.4.1 bash scripts/iso.sh 2.4.1`.
+
 ## Preparar dependencias y validar
 
 Desde la raíz del repo, ejecuta `bash init.sh`. Debian/Ubuntu usan dependencias nativas; los demás Linux amd64 usan el builder Docker. Si falta Docker/Compose v2, la instalación automática se ofrece solo en Arch y derivados, Fedora, RHEL/CentOS/Rocky/AlmaLinux, openSUSE y Alpine. En otros Linux configura el engine y Compose v2 manualmente. El script muestra el plan y solicita confirmación antes de instalar paquetes, configurar repositorios, iniciar servicios o construir la imagen. `--yes` omite el diálogo, así que úsalo solo para cambios previamente aprobados.
