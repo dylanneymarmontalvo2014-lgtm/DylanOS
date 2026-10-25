@@ -19,7 +19,7 @@ Item {
     signal togglePin()
 
     readonly property real baseSize: Plasmoid.configuration.iconSize
-    readonly property real hoverSize: Plasmoid.configuration.hoverSize
+    readonly property real hoverSize: Math.max(baseSize, Plasmoid.configuration.hoverSize)
     readonly property int hoverDistance: dockRoot && dockRoot.hoverIndex >= 0
         ? Math.abs(delegateIndex - dockRoot.hoverIndex) : 999
     readonly property real magnifiedSize: hoverDistance === 0 ? hoverSize
@@ -27,8 +27,10 @@ Item {
         : hoverDistance === 2 ? baseSize + (hoverSize - baseSize) * 0.18
         : baseSize
 
-    width: hoverSize + 8
-    height: hoverSize + 16
+    // Reservar la caja del icono base y del zoom para evitar recortes cuando
+    // una configuración guardada deja iconSize mayor que hoverSize.
+    width: Math.max(baseSize, hoverSize) + 8
+    height: Math.max(baseSize, hoverSize) + 16
 
     Kirigami.Icon {
         id: icon
