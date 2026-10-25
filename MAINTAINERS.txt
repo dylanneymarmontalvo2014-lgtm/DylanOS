@@ -289,3 +289,19 @@ añadieron contratos de workflow y pruebas de metadatos/versiones inseguras.
 La suite local y el CI del commit nuevo deben ejecutarse y registrarse antes
 de considerar validado el cambio. Aunque CI apruebe, no significa que se haya
 hecho una instalación real en disco ni QA visual del escritorio.
+
+
+SEGURIDAD DE CUENTA LIVE — 2026-10-25
+-------------------------------------
+Hallazgo confirmado en el payload instalado: `stage.py` prepara autologin SDDM
+y `sudoers.d/dylan` sin contraseña para el usuario efímero del live. En una
+instalación con nombre distinto, `userdel -r dylan` borraba la cuenta pero no
+esos archivos; si `dylan` se recreaba, heredaba sudo root sin contraseña.
+Además, el nombre predeterminado `dylan` no pasa por ese userdel.
+
+Corrección: antes de configurar la cuenta, el instalador elimina el sudoers
+live y remueve la sección `[Autologin]` del archivo SDDM instalado para todos
+los nombres, preservando la sección Theme y otras opciones. Añadidas pruebas
+unitarias para limpieza/retención del tema y para el caso de conservar `dylan`.
+Esto es una corrección de código con prueba local; no se afirma instalación
+real ni arranque de sistema instalado en VM.

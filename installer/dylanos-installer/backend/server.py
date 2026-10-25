@@ -782,12 +782,44 @@ def spawn_progress_monitor(total_bytes, base, span, phase, label):
     return stop
 
 
+def sanitize_installed_live_access(target=Path("/target")):
+    """Remove live-only passwordless access from the installed target.
+
+    The ISO needs SDDM autologin and a passwordless sudo rule for its ephemeral
+    live account. Neither setting belongs in the installed OS, including when
+    the installer keeps the same account name (dylan).
+    """
+    target = Path(target)
+    sudoers = target / "etc/sudoers.d/dylan"
+    if sudoers.is_symlink() or sudoers.is_file():
+        sudoers.unlink()
+
+    sddm_config = target / "etc/sddm.conf.d/10-dylanos.conf"
+    if not sddm_config.is_file():
+        return
+    lines = sddm_config.read_text(encoding="utf-8", errors="replace").splitlines()
+    kept = []
+    in_autologin = False
+    for line in lines:
+        stripped = line.strip()
+        if stripped.startswith("[") and stripped.endswith("]"):
+            in_autologin = stripped.casefold() == "[autologin]"
+            if not in_autologin:
+                kept.append(line)
+        elif not in_autologin:
+            kept.append(line)
+    while kept and not kept[-1].strip():
+        kept.pop()
+    sddm_config.write_text("\n".join(kept) + ("\n" if kept else ""), encoding="utf-8")
+
+
 def create_target_user(username, fullname, password, root_password):
     """Crea la cuenta del usuario en el sistema instalado de forma segura.
 
     chpasswd recibe las claves por stdin (sin shell), de modo que nunca
     aparecen en la línea de comandos ni en el registro de instalación.
     """
+    sanitize_installed_live_access()
     exists = run_cmd(f"chroot /target id -u {shlex.quote(username)}", check=False)
     if not exists:
         run_cmd(
