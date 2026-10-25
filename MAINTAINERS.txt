@@ -156,3 +156,15 @@ no válida para el control en Qt Quick. Se eliminaron ambas asignaciones;
 `Accessible.name` se conserva y `Slider` anuncia su valor mediante su API
 nativa. Pruebas específicas y estado de CI de la corrección se registran al
 confirmarse. No se modificó SDDM en esta corrección.
+
+
+CORRECCIÓN DEL DOCK VACÍO — 2026-10-24
+--------------------------------------
+La captura mostraba la papelera pero no los iconos del dock. El ancho del
+applet se calculaba leyendo `dockRow.implicitWidth`, aunque `dockRow` está
+dentro del Component `dockContent` y no está en alcance del objeto exterior.
+El applet ahora calcula el ancho mínimo con el número de elementos de
+`TaskManager.TasksModel`, anchura del delegado, separación y padding. Se añadió
+una aserción al contrato del dock. Validación de esta actualización: prueba
+estática local y resultado CI en curso al publicar. QA visual en una sesión
+Plasma sigue pendiente; no se afirma todavía que el render se haya comprobado.
