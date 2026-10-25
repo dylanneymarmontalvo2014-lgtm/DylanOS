@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect, useCallback, useRef } from "react";
 import BottomBar from "@/components/BottomBar";
 import { HardDriveIcon, ChevronDownIcon, PlusCircleIcon, EditIcon, TrashIcon, RefreshIcon } from "@/components/Icons";
 import type { Disk } from "@/data/mockDiskInfo";
@@ -15,12 +15,14 @@ export default function PartitioningScreen({ onCancel }: PartitioningScreenProps
   const [selectedIdx, setSelectedIdx] = useState(0);
   const [dropdownOpen, setDropdownOpen] = useState(false);
   const [loadingDisks, setLoadingDisks] = useState(true);
+  const modeRef = useRef(state.partitioning.mode);
+  modeRef.current = state.partitioning.mode;
 
   const detectDisks = useCallback(async () => {
     setLoadingDisks(true);
     setDisks([]);
     setSelectedIdx(0);
-    dispatch({ type: "SET_PARTITIONING", mode: state.partitioning.mode, disk: "" });
+    dispatch({ type: "SET_PARTITIONING", mode: modeRef.current, disk: "" });
     try {
       const response = await fetch("/api/disks");
       if (!response.ok) throw new Error("disk discovery request failed");
@@ -33,13 +35,13 @@ export default function PartitioningScreen({ onCancel }: PartitioningScreenProps
         return;
       }
       setDisks(usable);
-      dispatch({ type: "SET_PARTITIONING", mode: state.partitioning.mode, disk: usable[0].device });
+      dispatch({ type: "SET_PARTITIONING", mode: modeRef.current, disk: usable[0].device });
     } catch {
       dispatch({ type: "SET_PARTITION_ERROR", error: "detection" });
     } finally {
       setLoadingDisks(false);
     }
-  }, [dispatch, state.partitioning.mode]);
+  }, [dispatch]);
 
   useEffect(() => { void detectDisks(); }, [detectDisks]);
 
