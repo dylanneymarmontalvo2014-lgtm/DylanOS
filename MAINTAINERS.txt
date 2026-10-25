@@ -357,3 +357,14 @@ Corrección: retirar la ruta de éxito simulada. Tras POST fallido, consultar
 la operación; solo marcar completado tras estado/progreso real, y mostrar error
 si el backend no confirma la instalación. Añadido test contractual del flujo.
 - Instalador: la pantalla de particionado comienza sin destino y habilita continuar únicamente con un dispositivo `/dev/...` detectado. El backend vuelve a comprobar root, inventario de `lsblk`, tipo block device y exclusión del medio live antes de cualquier escritura; la API de producción no simula instalaciones exitosas. Pruebas unitarias locales: `python3 scripts/tests/test_installer_backend.py` (50 OK) y `python3 scripts/tests/test_installer_frontend.py` (2 OK), incluyendo rechazos sin comandos de disco. La ejecución local no valida hardware real ni una instalación completa.
+
+
+AUDITORÍA DE CONFIGURACIÓN — 2026-10-25 (selectores de audio)
+-------------------------------------------------------------
+Hallazgo: pactlDevices usaba `pactl list short` y mostraba la última columna
+(estado RUNNING/SUSPENDED) como descripción, por lo que los selectores de
+entrada/salida podían mostrar el estado en vez del nombre legible del dispositivo.
+
+Corrección: leer los registros detallados de pactl, extraer Name y Description
+explícitamente y usar Name como fallback si no hay Description. Añadida prueba
+contractual para impedir volver a tomar el campo final de la salida short.
