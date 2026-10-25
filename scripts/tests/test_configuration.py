@@ -50,6 +50,17 @@ class TestDylanOSConfiguration(unittest.TestCase):
         self.assertIn("Icon=dylanos-configuration", entry)
         self.assertNotIn("systemsettings", entry)
 
+    def test_sound_selectors_map_device_names_to_friendly_descriptions(self):
+        sound = (APP / "qml/pages/SoundPage.qml").read_text(encoding="utf-8")
+        self.assertIn("function sinkDescription(name)", sound)
+        self.assertIn("function sourceDescription(name)", sound)
+        self.assertIn("devices[i].name === name", sound)
+        self.assertIn("return devices[i].description || devices[i].name", sound)
+        self.assertIn("value: root.sinkDescription(state.defaultSink)", sound)
+        self.assertIn("value: root.sourceDescription(state.defaultSource)", sound)
+        self.assertIn("System.setDefaultSink(root.findSink(v))", sound)
+        self.assertIn("System.setDefaultSource(root.findSource(v))", sound)
+
     def test_staging_registra_dylanos_configuration(self):
         with tempfile.TemporaryDirectory() as folder:
             root = Path(folder)

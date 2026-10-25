@@ -27,6 +27,21 @@ ScrollView {
             list.push(devices[i].description || devices[i].name)
         return list
     }
+    function sinkDescription(name) {
+        const devices = state.sinks || []
+        for (let i = 0; i < devices.length; i++)
+            if (devices[i].name === name)
+                return devices[i].description || devices[i].name
+        return name || "—"
+    }
+    function sourceDescription(name) {
+        const devices = state.sources || []
+        for (let i = 0; i < devices.length; i++)
+            if (devices[i].name === name)
+                return devices[i].description || devices[i].name
+        return name || "—"
+    }
+
     function findSink(desc) {
         const devices = state.sinks || []
         for (let i = 0; i < devices.length; i++)
@@ -67,7 +82,7 @@ ScrollView {
                 title: "Dispositivo de salida"
                 DSelect {
                     anchors.verticalCenter: parent.verticalCenter
-                    value: state.defaultSink || "—"
+                    value: root.sinkDescription(state.defaultSink)
                     options: root.sinkNames()
                     onPicked: function (v) {
                         System.setDefaultSink(root.findSink(v))
@@ -152,7 +167,7 @@ ScrollView {
                 title: "Dispositivo de entrada"
                 DSelect {
                     anchors.verticalCenter: parent.verticalCenter
-                    value: state.defaultSource || "—"
+                    value: root.sourceDescription(state.defaultSource)
                     options: root.sourceNames()
                     onPicked: function (v) {
                         System.setDefaultSource(root.findSource(v))
