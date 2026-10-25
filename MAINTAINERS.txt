@@ -271,3 +271,21 @@ la pestaña por AppsPage; `CHANGELOG.md` registra el cambio.
 Prueba dirigida: `python3 -m unittest scripts.tests.test_configuration -v`.
 Es prueba de contrato estática; no hay runtime Qt/QML en este entorno, así que
 no se afirma validación interactiva ni visual.
+
+
+AUDITORÍA DE PUBLICACIÓN DE VERSIONES — 2026-10-25
+---------------------------------------------------
+Hallazgo confirmado: `.github/workflows/release.yml` solo ejecutaba check.sh
+con `contents: read`; las etiquetas v* no construían ni publicaban artefactos.
+Además, iso.sh, stage.py, test.sh y el smoke-test fijaban el identificador
+1.0-beta, lo que habría etiquetado incorrectamente una ISO de producción.
+
+Cambio: el workflow de tag valida y deriva la versión, ejecuta check/build,
+construye la ISO versionada, valida checksum/estructura, corre el smoke test
+QEMU y solo entonces crea la GitHub Release adjuntando ISO amd64 y SHA-256.
+La versión llega a os-release, el nombre de ISO, `.disk/info` y GRUB. Se
+añadieron contratos de workflow y pruebas de metadatos/versiones inseguras.
+
+La suite local y el CI del commit nuevo deben ejecutarse y registrarse antes
+de considerar validado el cambio. Aunque CI apruebe, no significa que se haya
+hecho una instalación real en disco ni QA visual del escritorio.

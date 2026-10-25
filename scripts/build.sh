@@ -19,22 +19,28 @@ if [[ ${1:-} != --inside ]]; then
     trap cleanup_installer_tmp EXIT
     DYLANOS_INSTALLER_DIST="$INSTALLER_TMP/dist" bash "$ROOT/scripts/build-installer.sh"
     sudo unshare --mount --propagation private bash "$0" --inside \
-        "--jobs=$BUILD_JOBS" "--installer-dist=$INSTALLER_TMP/dist" "$@"
+        "--jobs=$BUILD_JOBS" "--installer-dist=$INSTALLER_TMP/dist" "--version=$VERSION" "$@"
     status=$?
     exit "$status"
 fi
 shift
 PROFILE=development
 RESUME=false
+VERSION="${DYLANOS_VERSION:-1.0-beta}"
 for arg in "$@"; do
     case "$arg" in
         --resume) RESUME=true ;;
         --minimal) PROFILE=default ;;
         --jobs=*) BUILD_JOBS="${arg#*=}" ;;
+        --version=*) VERSION="${arg#*=}" ;;
         --installer-dist=*) INSTALLER_DIST="${arg#*=}" ;;
         *) echo "Uso: $0 [--resume] [--minimal] [--jobs=N]" >&2; exit 2 ;;
     esac
 done
+if [[ ! "$VERSION" =~ ^([0-9]+\.[0-9]+\.[0-9]+([+-][A-Za-z0-9.-]+)?|1\.0-beta)$ ]]; then
+    echo "Versión DylanOS inválida: $VERSION" >&2
+    exit 2
+fi
 if [[ ! "$BUILD_JOBS" =~ ^[1-9][0-9]*$ ]]; then
     echo "DYLANOS_BUILD_JOBS debe ser un entero positivo." >&2
     exit 2
@@ -117,9 +123,9 @@ passwd -l root
 CHROOT_SCRIPT
 if [[ -n "${INSTALLER_DIST:-}" ]]; then
     [[ -s "$INSTALLER_DIST/index.html" ]] || { echo "No existe el dist compilado del instalador: $INSTALLER_DIST" >&2; exit 1; }
-    python3 "$ROOT/scripts/stage.py" --installer-dist "$INSTALLER_DIST" "$CHROOT"
+    python3 "$ROOT/scripts/stage.py" --version "$VERSION" --installer-dist "$INSTALLER_DIST" "$CHROOT"
 else
-    python3 "$ROOT/scripts/stage.py" "$CHROOT"
+    python3 "$ROOT/scripts/stage.py" --version "$VERSION" "$CHROOT"
 fi
 mkdir -p "$CHROOT/tmp/dylanos-src"
 for app in calculator dylanos-app-center; do

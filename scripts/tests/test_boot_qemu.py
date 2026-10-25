@@ -39,6 +39,33 @@ class BootQemuSmokeTest(unittest.TestCase):
         self.assertNotIn("--reset", script)
         self.assertNotIn(".qcow2", script)
 
+    def test_iso_naming_and_boot_test_follow_release_version(self):
+        iso_script = (ROOT / "scripts/iso.sh").read_text(encoding="utf-8")
+        test_script = (ROOT / "scripts/test.sh").read_text(encoding="utf-8")
+        boot_script = (ROOT / "scripts/test-boot-qemu.sh").read_text(encoding="utf-8")
+        self.assertIn('VERSION="${DYLANOS_VERSION:-1.0-beta}"', iso_script)
+        self.assertIn('DylanOS-${VERSION}-amd64.iso', iso_script)
+        self.assertIn('DylanOS %s amd64', iso_script)
+        self.assertIn('DylanOS @VERSION@ — Sesión live', iso_script)
+        self.assertIn('DylanOS-${VERSION}-amd64.iso', test_script)
+        self.assertIn('DylanOS-${VERSION}-amd64.iso', boot_script)
+
+    def test_tag_release_builds_versioned_iso_and_publishes_only_after_qa(self):
+        workflow = (ROOT / ".github/workflows/release.yml").read_text(encoding="utf-8")
+        for required in (
+            "tags: ['v*']", "contents: write", "DYLANOS_VERSION=$version",
+            'bash scripts/build.sh --minimal "--version=$DYLANOS_VERSION"',
+            'sudo env DYLANOS_VERSION="$DYLANOS_VERSION" bash scripts/iso.sh "$DYLANOS_VERSION"',
+            "prerelease: ${{ contains(github.ref_name, '-') }}",
+            'bash scripts/test.sh', 'bash scripts/test-boot-qemu.sh',
+            'softprops/action-gh-release@v2',
+            'DylanOS-${{ env.DYLANOS_VERSION }}-amd64.iso',
+            'DylanOS-${{ env.DYLANOS_VERSION }}-amd64.iso.sha256',
+        ):
+            self.assertIn(required, workflow)
+        self.assertLess(workflow.index('bash scripts/test-boot-qemu.sh'),
+                        workflow.index('softprops/action-gh-release@v2'))
+
     def test_manual_build_workflow_runs_qemu_boot_test_after_iso_validation(self):
         workflow = (ROOT / ".github/workflows/build.yml").read_text(encoding="utf-8")
         self.assertIn("qemu-system-x86", workflow)
