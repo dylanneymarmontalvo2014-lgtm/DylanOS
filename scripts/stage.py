@@ -273,8 +273,8 @@ fi
     # directamente. El menú del LIVE lo genera scripts/iso.sh (timeout=10).
     # DylanOS Explorer es el gestor de archivos predeterminado del sistema:
     # cualquier "Abrir carpeta" (navegador, GTK, Qt) lo abre él.
-    write("/usr/share/applications/mimeapps.info",
-          "[Default Applications]\ninode/directory=org.dylanos.explorer.desktop\nx-directory/normal=org.dylanos.explorer.desktop\n")
+    write("/usr/share/applications/mimeapps.list",
+          "[Default Applications]\ninode/directory=org.dylanos.explorer.desktop;\nx-directory/normal=org.dylanos.explorer.desktop;\n")
     write("/etc/default/grub.d/dylanos.cfg", 'GRUB_DISTRIBUTOR="DylanOS"\nGRUB_THEME="/usr/share/grub/themes/dylanos/theme.txt"\nGRUB_CMDLINE_LINUX_DEFAULT="quiet splash"\nGRUB_TIMEOUT=0\nGRUB_TIMEOUT_STYLE=hidden\n')
     write("/etc/sudoers.d/dylan", "dylan ALL=(ALL) NOPASSWD: ALL\n", 0o440)
     passwd_path = dest / "etc/passwd"

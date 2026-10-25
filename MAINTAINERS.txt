@@ -210,3 +210,10 @@ y enlaces, y rechazo de una ruta no montada. Verificado localmente con
 `python3 -m unittest scripts.tests.test_installer_backend.InstallRootCleanupTest -v`
 y la suite del instalador. No se ejecutó una instalación real ni una prueba
 visual/VM/ISO en esta auditoría.
+
+
+AUDITORÍA Y CORRECCIÓN MIME — 2026-10-25
+-----------------------------------------
+Hallazgo confirmado en `scripts/stage.py`: el staging escribía las asociaciones MIME globales como `mimeapps.info`, nombre que XDG no reconoce (`mimeapps.list` es el nombre requerido), y además omitía el terminador `;` de los IDs de escritorio. El archivo por usuario ya configuraba Explorer; esta corrección repara las asociaciones de nivel sistema.
+
+Regresión añadida en `scripts/tests/test_staging.py`: verifica el archivo global `mimeapps.list`, el valor terminado en punto y coma y la ausencia del nombre inválido. La ejecución local de la suite no fue válida en la copia de trabajo disponible: ésta difiere de la rama confirmada (incluye una variante antigua de staging que exige `configs/kitty/kitty.conf`, archivo ausente del HEAD actual). El resultado del CI del SHA publicado debe consultarse antes de declarar la corrección validada. No se realizaron pruebas visuales, de VM ni de ISO.
