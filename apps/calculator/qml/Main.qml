@@ -124,10 +124,11 @@ ApplicationWindow {
         border.width: 1
         border.color: "#2e2736"
 
-        // Arrastre de la ventana desde la cabecera.
+        // Arrastre de la ventana: cubre el frame completo con z -1, así solo
+        // recibe eventos del área muerta (título, huecos) y no interfiere con
+        // los controles. No puede anclar a headerRow porque no es hermano.
         MouseArea {
-            anchors.left: parent.left; anchors.right: parent.right
-            anchors.top: parent.top; anchors.bottom: headerRow.bottom
+            anchors.fill: parent
             z: -1
             onPressed: root.startSystemMove()
             onDoubleClicked: root.visibility === Window.Maximized ? root.showNormal() : root.showMaximized()
