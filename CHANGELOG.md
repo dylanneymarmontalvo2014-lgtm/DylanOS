@@ -1,3 +1,4 @@
+- App Center: recalcular el contenido y páginas al cambiar el tamaño de la ventana/resolución, ya que pageSize depende de ancho y alto.
 - Seguridad del instalador: bloquear peticiones con origen externo/DNS rebinding a la API loopback y quitar CORS comodín que permitía a sitios ajenos leer información local del sistema.
 - Instalador: retirar del sistema instalado el sudoers `NOPASSWD` y el autologin SDDM de la sesión live, conservando la marca Crimson; aplica también si el usuario instalado se llama `dylan`.
 - Release: al etiquetar `vMAJOR.MINOR.PATCH`, compilar ISO versionada amd64, verificar checksum/estructura y arranque live QEMU, y adjuntar ISO + SHA-256 a una GitHub Release; fallos previos bloquean la publicación.
