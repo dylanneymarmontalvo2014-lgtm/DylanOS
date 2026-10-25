@@ -368,3 +368,21 @@ entrada/salida podían mostrar el estado en vez del nombre legible del dispositi
 Corrección: leer los registros detallados de pactl, extraer Name y Description
 explícitamente y usar Name como fallback si no hay Description. Añadida prueba
 contractual para impedir volver a tomar el campo final de la salida short.
+
+
+CORRECCIÓN DE WIDGETS Y DOCK — 2026-10-25
+-----------------------------------------
+Rama: development.
+Hallazgo: las opciones independientes iconSize (24–96) y hoverSize (24–140)
+permitían iconSize > hoverSize. El dock reservaba la anchura/altura usando solo
+hoverSize; el icono base podía sobresalir de su delegado, invadir al vecino o
+recortarse por el ancho calculado del panel.
+
+Corrección: usar max(iconSize, hoverSize) como extensión efectiva en el ancho
+del dock, la altura del applet y la caja de cada delegado; tratar un hoverSize
+menor que el icono base como sin reducción. Se añadió contrato de regresión
+y se documentó el límite.
+
+Pruebas locales tras el cambio: se ejecutarán `test_shell_contract`,
+`test_desktop` y `test_staging`; la inspección es estática/contractual. No se
+realizó sesión Plasma visual ni arranque de ISO en esta modificación.
