@@ -343,3 +343,16 @@ Corrección: sustituir eval por un parser AST con operadores numéricos
 permitidos, máximo de longitud/nodos, exponente absoluto <= 100 y magnitud
 finita <= 1e100. Añadidas pruebas unitarias para aritmética normal, exponentes
 extremos, rango, Python no aritmético, entradas largas y división por cero.
+
+
+AUDITORÍA DEL INSTALADOR — 2026-10-25 (confirmación de instalación)
+---------------------------------------------------------------------
+Hallazgo: si POST /api/install fallaba o no respondía, InstallationScreen
+arrancaba startSimulatedInstallation y podía avanzar a Finish como si el
+sistema estuviera instalado. Esto ocultaba fallos del backend y podía inducir
+a reiniciar un equipo sin instalación real.
+
+Corrección: retirar la ruta de éxito simulada. Tras POST fallido, consultar
+/api/install/status para reanudar el polling si el backend ya había aceptado
+la operación; solo marcar completado tras estado/progreso real, y mostrar error
+si el backend no confirma la instalación. Añadido test contractual del flujo.

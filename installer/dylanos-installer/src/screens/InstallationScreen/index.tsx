@@ -5,7 +5,6 @@ import { CheckIcon, DownloadIcon, LocationIcon, ClockIcon, KeyboardIcon, HardDri
 import { mockInstallationSteps } from "@/data/mockInstallation";
 import { useInstaller } from "@/state/installerState";
 import StatusNotice from "@/components/StatusNotice";
-import { startSimulatedInstallation } from "@/services/simulatedInstallation";
 
 // El POST /api/install lanza la instalación real del backend (particionado,
 // extracción del squashfs, usuarios y GRUB); este componente hace polling
@@ -24,6 +23,65 @@ export default function InstallationScreen({ onCancel }: InstallationScreenProps
     let pollInterval: any = null;
     let fallbackStop: (() => void) | null = null;
 
+    const startPolling = () => {
+      if (pollInterval) return;
+      pollInterval = setInterval(() => {
+        fetch("/api/install/status")
+          .then(r => {
+            if (!r.ok) throw new Error("No se pudo consultar el estado de instalación.");
+            return r.json();
+          })
+          .then(status => {
+            if (status.status === "error") {
+              dispatch({ type: "SET_INSTALLATION_ERROR", error: status.error || "Error desconocido durante la instalación." });
+              clearInterval(pollInterval);
+              pollInterval = null;
+              return;
+            }
+            dispatch({
+              type: "SET_INSTALLATION_PROGRESS",
+              progress: status.progress,
+              phase: status.phase,
+              pkg: status.pkg || status.phaseLabel,
+            });
+            if (status.complete || status.progress >= 100) {
+              clearInterval(pollInterval);
+              pollInterval = null;
+              dispatch({ type: "SET_INSTALLATION_COMPLETE" });
+              setTimeout(() => dispatch({ type: "NEXT_STEP" }), 1200);
+            }
+          })
+          // A lost status response is not evidence that installation succeeded.
+          // Keep retrying instead of showing a simulated completion.
+          .catch(() => {});
+      }, 400);
+    };
+
+    const reconcileBackend = () => {
+      fetch("/api/install/status")
+        .then(r => {
+          if (!r.ok) throw new Error("El backend del instalador no respondió correctamente.");
+          return r.json();
+        })
+        .then(status => {
+          if (status.status === "running") {
+            startPolling();
+          } else if (status.status === "complete" || status.complete) {
+            dispatch({ type: "SET_INSTALLATION_COMPLETE" });
+            setTimeout(() => dispatch({ type: "NEXT_STEP" }), 1200);
+          } else {
+            dispatch({
+              type: "SET_INSTALLATION_ERROR",
+              error: status.error || "El backend no confirmó el inicio de la instalación. No se mostró una finalización simulada.",
+            });
+          }
+        })
+        .catch(() => dispatch({
+          type: "SET_INSTALLATION_ERROR",
+          error: "No se pudo contactar el backend del instalador. No se realizó ni se confirmó ninguna instalación.",
+        }));
+    };
+
     fetch("/api/install", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
@@ -35,51 +93,12 @@ export default function InstallationScreen({ onCancel }: InstallationScreenProps
         user: state.user,
       }),
     })
-      .then(res => res.json())
-      .then(data => {
-        if (data && data.ok) {
-          pollInterval = setInterval(() => {
-            fetch("/api/install/status")
-              .then(r => r.json())
-              .then(status => {
-                if (status.status === "error") {
-                  dispatch({ type: "SET_INSTALLATION_ERROR", error: status.error || "Error desconocido durante la instalación." });
-                  clearInterval(pollInterval);
-                  return;
-                }
-                dispatch({
-                  type: "SET_INSTALLATION_PROGRESS",
-                  progress: status.progress,
-                  phase: status.phase,
-                  pkg: status.pkg || status.phaseLabel,
-                });
-                if (status.complete || status.progress >= 100) {
-                  clearInterval(pollInterval);
-                  dispatch({ type: "SET_INSTALLATION_COMPLETE" });
-                  setTimeout(() => dispatch({ type: "NEXT_STEP" }), 1200);
-                }
-              })
-              .catch(() => {});
-          }, 400);
-        } else {
-          fallbackStop = startSimulatedInstallation(({ progress, phase, pkg, complete }) => {
-            dispatch({ type: "SET_INSTALLATION_PROGRESS", progress, phase, pkg });
-            if (complete) {
-              dispatch({ type: "SET_INSTALLATION_COMPLETE" });
-              setTimeout(() => dispatch({ type: "NEXT_STEP" }), 1000);
-            }
-          });
-        }
+      .then(async res => {
+        const data = await res.json();
+        if (res.ok && data && data.ok) startPolling();
+        else reconcileBackend();
       })
-      .catch(() => {
-        fallbackStop = startSimulatedInstallation(({ progress, phase, pkg, complete }) => {
-          dispatch({ type: "SET_INSTALLATION_PROGRESS", progress, phase, pkg });
-          if (complete) {
-            dispatch({ type: "SET_INSTALLATION_COMPLETE" });
-            setTimeout(() => dispatch({ type: "NEXT_STEP" }), 1000);
-          }
-        });
-      });
+      .catch(reconcileBackend);
 
     return () => {
       if (pollInterval) clearInterval(pollInterval);
