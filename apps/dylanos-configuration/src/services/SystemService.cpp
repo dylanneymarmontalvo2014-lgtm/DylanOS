@@ -522,19 +522,38 @@ static QVariantList pactlDevices(const QString &kind)
 {
     QVariantList result;
     QProcess process;
-    process.start(QStringLiteral("pactl"), {QStringLiteral("list"), QStringLiteral("short"), kind});
-    if (!process.waitForFinished(4000))
+    process.start(QStringLiteral("pactl"), {QStringLiteral("list"), kind});
+    if (!process.waitForFinished(4000) || process.exitStatus() != QProcess::NormalExit || process.exitCode() != 0)
         return result;
-    const QStringList lines = QString::fromUtf8(process.readAllStandardOutput())
-                                  .split(QLatin1Char('\n'), Qt::SkipEmptyParts);
-    for (const QString &line : lines) {
-        const QStringList fields = line.split(QLatin1Char('\t'));
-        if (fields.size() < 2)
+
+    // `pactl list short` ends each row with its state (RUNNING/SUSPENDED),
+    // not a human-readable description. Read the detailed records instead.
+    QVariantMap current;
+    const QString output = QString::fromUtf8(process.readAllStandardOutput());
+    for (const QString &line : output.split(QLatin1Char('\n'))) {
+        if (line.startsWith(kind == QLatin1String("sinks") ? QLatin1String("Sink #")
+                                                            : QLatin1String("Source #"))) {
+            if (!current.isEmpty()) {
+                if (!current.contains(QStringLiteral("description")))
+                    current.insert(QStringLiteral("description"), current.value(QStringLiteral("name")));
+                result.append(current);
+            }
+            current = {};
             continue;
-        QVariantMap dev;
-        dev.insert(QStringLiteral("name"), fields.value(1));
-        dev.insert(QStringLiteral("description"), fields.value(fields.size() - 1, fields.value(1)));
-        result.append(dev);
+        }
+        static const QRegularExpression namePattern(QStringLiteral("^\\s*Name: (.+)$"));
+        static const QRegularExpression descriptionPattern(QStringLiteral("^\\s*Description: (.+)$"));
+        const auto nameMatch = namePattern.match(line);
+        const auto descriptionMatch = descriptionPattern.match(line);
+        if (nameMatch.hasMatch())
+            current.insert(QStringLiteral("name"), nameMatch.captured(1).trimmed());
+        else if (descriptionMatch.hasMatch())
+            current.insert(QStringLiteral("description"), descriptionMatch.captured(1).trimmed());
+    }
+    if (!current.isEmpty()) {
+        if (!current.contains(QStringLiteral("description")))
+            current.insert(QStringLiteral("description"), current.value(QStringLiteral("name")));
+        result.append(current);
     }
     return result;
 }

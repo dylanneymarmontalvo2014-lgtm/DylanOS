@@ -73,6 +73,14 @@ class TestDylanOSConfiguration(unittest.TestCase):
         self.assertIn("System.setDefaultSink(root.findSink(v))", sound)
         self.assertIn("System.setDefaultSource(root.findSource(v))", sound)
 
+    def test_sound_device_parser_reads_description_not_short_list_state(self):
+        cpp = (APP / "src/services/SystemService.cpp").read_text(encoding="utf-8")
+        self.assertIn('QStringLiteral("list"), kind', cpp)
+        self.assertIn('Description: (.+)$', cpp)
+        self.assertIn('Name: (.+)$', cpp)
+        self.assertIn('current.insert(QStringLiteral("name"), nameMatch.captured(1).trimmed())', cpp)
+        self.assertNotIn('fields.value(fields.size() - 1, fields.value(1))', cpp)
+
     def test_staging_registra_dylanos_configuration(self):
         with tempfile.TemporaryDirectory() as folder:
             root = Path(folder)
