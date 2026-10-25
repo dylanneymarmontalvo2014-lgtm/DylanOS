@@ -356,3 +356,4 @@ Corrección: retirar la ruta de éxito simulada. Tras POST fallido, consultar
 /api/install/status para reanudar el polling si el backend ya había aceptado
 la operación; solo marcar completado tras estado/progreso real, y mostrar error
 si el backend no confirma la instalación. Añadido test contractual del flujo.
+- Instalador: la pantalla de particionado comienza sin destino y habilita continuar únicamente con un dispositivo `/dev/...` detectado. El backend vuelve a comprobar root, inventario de `lsblk`, tipo block device y exclusión del medio live antes de cualquier escritura; la API de producción no simula instalaciones exitosas. Pruebas unitarias locales: `python3 scripts/tests/test_installer_backend.py` (50 OK) y `python3 scripts/tests/test_installer_frontend.py` (2 OK), incluyendo rechazos sin comandos de disco. La ejecución local no valida hardware real ni una instalación completa.
