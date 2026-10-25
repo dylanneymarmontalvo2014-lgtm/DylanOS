@@ -14,7 +14,7 @@ Este directorio reúne la documentación activa y útil del proyecto DylanOS Cri
 - [apps/dylanos-app-center/README.md](../apps/dylanos-app-center/README.md): enumeración y lanzamiento de aplicaciones.
 - [apps/dylanos-store/README.md](../apps/dylanos-store/README.md): uso vigente de la tienda y dependencias de sus operaciones.
 - [apps/calculator/README.md](../apps/calculator/README.md): uso y punto de entrada de Calculator.
-- [apps/com.dylanos.dashboard/README.md](../apps/com.dylanos.dashboard/README.md): calendario y métricas locales del widget.
+- [apps/com.dylanos.dashboard/README.md](../apps/com.dylanos.dashboard/README.md): tarjetas de reloj, métricas, medios, calendario, recordatorios y enfoque del widget.
 - [apps/dylanos-control-center/README.md](../apps/dylanos-control-center/README.md): funciones, servicios requeridos y QA del centro de control.
 - [apps/com.dylanos.activeapp/README.md](../apps/com.dylanos.activeapp/README.md): plasmoid de aplicación activa.
 - [apps/com.dylanos.search/README.md](../apps/com.dylanos.search/README.md): botón de búsqueda de Spotlight.
