@@ -2,6 +2,16 @@
 # Build in an isolated mount namespace; the host desktop is never modified.
 set -euo pipefail
 ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
+VERSION="${DYLANOS_VERSION:-1.0-beta}"
+for arg in "$@"; do
+    case "$arg" in
+        --version=*) VERSION="${arg#*=}" ;;
+    esac
+done
+if [[ ! "$VERSION" =~ ^([0-9]+\.[0-9]+\.[0-9]+([+-][A-Za-z0-9.-]+)?|1\.0-beta)$ ]]; then
+    echo "Versión DylanOS inválida: $VERSION" >&2
+    exit 2
+fi
 if [[ ${1:-} != --inside && $EUID -eq 0 ]]; then
     echo "No ejecutes scripts/build.sh con sudo; el script eleva privilegios internamente." >&2
     echo "Usa: ./scripts/build.sh [--resume] [--minimal]" >&2
@@ -20,13 +30,10 @@ if [[ ${1:-} != --inside ]]; then
     DYLANOS_INSTALLER_DIST="$INSTALLER_TMP/dist" bash "$ROOT/scripts/build-installer.sh"
     sudo unshare --mount --propagation private bash "$0" --inside \
         "--jobs=$BUILD_JOBS" "--installer-dist=$INSTALLER_TMP/dist" "--version=$VERSION" "$@"
-    status=$?
-    exit "$status"
 fi
 shift
 PROFILE=development
 RESUME=false
-VERSION="${DYLANOS_VERSION:-1.0-beta}"
 for arg in "$@"; do
     case "$arg" in
         --resume) RESUME=true ;;
@@ -37,10 +44,6 @@ for arg in "$@"; do
         *) echo "Uso: $0 [--resume] [--minimal] [--jobs=N]" >&2; exit 2 ;;
     esac
 done
-if [[ ! "$VERSION" =~ ^([0-9]+\.[0-9]+\.[0-9]+([+-][A-Za-z0-9.-]+)?|1\.0-beta)$ ]]; then
-    echo "Versión DylanOS inválida: $VERSION" >&2
-    exit 2
-fi
 if [[ ! "$BUILD_JOBS" =~ ^[1-9][0-9]*$ ]]; then
     echo "DYLANOS_BUILD_JOBS debe ser un entero positivo." >&2
     exit 2
