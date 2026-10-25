@@ -1,3 +1,4 @@
+- Configuración: corregir los nombres de dispositivos de audio; `pactl list short` entregaba el estado como descripción en los selectores.
 - Instalador: no simular como exitosa una instalación cuando no responde el backend; reconciliar el estado real y mostrar error si no se confirma.
 - Spotlight: reemplazar `eval` sin límite en el cálculo en línea; el evaluador nuevo limita longitud, complejidad, exponentes y magnitud para evitar bloqueos/agotar memoria por consultas como `9**99999999`.
 - App Center: recalcular el contenido y páginas al cambiar el tamaño de la ventana/resolución, ya que pageSize depende de ancho y alto.
