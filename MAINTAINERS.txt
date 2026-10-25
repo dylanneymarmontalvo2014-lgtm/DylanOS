@@ -1,1 +1,212 @@
-TUFOVEVORURPUkVTIERFIERZTEFOT1MKPT09PT09PT09PT09PT09PT09PT09PQoKUFJPWUVDVE8KLS0tLS0tLS0KTm9tYnJlOiBEeWxhbk9TIENyaW1zb24KUmVwb3NpdG9yaW86IGR5bGFubmV5bWFybW9udGFsdm8yMDE0LWxndG0vRHlsYW5PUwpSYW1hIGRlIHRyYWJham8gYWN0aXZhIHBhcmEgbG9zIGNhbWJpb3MgYWN0dWFsZXM6IGRldmVsb3BtZW50CgpNQU5URU5FRE9SCi0tLS0tLS0tLS0KQ3Jpc3RvcGhlciBCb3JqYXMKQ3VlbnRhIGRlIEdpdEh1YjogQ1JJU1RPUC1ib3QKUGVyZmlsOiBodHRwczovL2dpdGh1Yi5jb20vQ1JJU1RPUC1ib3QKCkNyaXN0b3BoZXIgQm9yamFzIGVzIHVuYSBwZXJzb25hIHkgbWFudGVuZWRvciBodW1hbm8gZGUgRHlsYW5PUy4gQ1JJU1RPUC1ib3QKZXMgc3UgY3VlbnRhIHBlcnNvbmFsIGRlIEdpdEh1Yjsgbm8gZXMgdW4gYm90IGF1dG9tYXRpemFkby4gRWwgbm9tYnJlIGRlIGxhCmN1ZW50YSBubyBkZXNjcmliZSBzdSBuYXR1cmFsZXphLiBMYXMgY29udHJpYnVjaW9uZXMgeSBkZWNpc2lvbmVzIGhlY2hhcwpwZXJzb25hbG1lbnRlIGRlc2RlIGVzYSBjdWVudGEgY29ycmVzcG9uZGVuIGEgQ3Jpc3RvcGhlci4gTGFzIGFjY2lvbmVzLAp3b3JrZmxvd3MgeSBvdHJvcyBwcm9jZXNvcyBhdXRvbWF0aXphZG9zIGRlbCByZXBvc2l0b3JpbyBzb24gaW5kZXBlbmRpZW50ZXMKZGUgbGEgY3VlbnRhLgoKUkVTUE9OU0FCSUxJREFERVMgREUgTUFOVEVOSU1JRU5UTwotLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tCkVsIG1hbnRlbmltaWVudG8gZGVsIHByb3llY3RvIGluY2x1eWU6Ci0gY29uc2VydmFyIGxhIGNvaGVyZW5jaWEgZGUgYXJxdWl0ZWN0dXJhLCBicmFuZGluZyB5IGV4cGVyaWVuY2lhIGRlIER5bGFuT1M7Ci0gcmV2aXNhciBjYW1iaW9zIGRlIGPDs2RpZ28sIGNvbmZpZ3VyYWNpw7NuLCBkb2N1bWVudGFjacOzbiB5IGF1dG9tYXRpemFjaW9uZXM7Ci0gdmVyaWZpY2FyIHF1ZSBsYXMgYWZpcm1hY2lvbmVzIHNvYnJlIGZ1bmNpb25lcyB5IGNvbXBhdGliaWxpZGFkIGNvaW5jaWRhbgogIGNvbiBsbyBxdWUgcmVhbG1lbnRlIHNlIGltcGxlbWVudMOzIHkgcHJvYsOzOwotIG1hbnRlbmVyIGluc3RydWNjaW9uZXMgcmVwcm9kdWNpYmxlcyBwYXJhIHByZXBhcmFyLCBjb21waWxhciB5IHZhbGlkYXI7Ci0gY29ycmVnaXIgcmVncmVzaW9uZXMgeSBkb2N1bWVudGFyIGxpbWl0YWNpb25lcyBjb25vY2lkYXM7Ci0gY29uc2VydmFyIGxhcyBkZWNpc2lvbmVzIGV4cGzDrWNpdGFzIGRlIGFsY2FuY2UgeSBubyBtZXpjbGFyIGNhbWJpb3MgYWplbm9zOwotIHJldmlzYXIgbG9zIHJlc3VsdGFkb3MgcmVhbGVzIGRlbCBDSSBhbnRlcyBkZSBkZWNsYXJhciB1bmEgdmFsaWRhY2nDs24gYXByb2JhZGEuCgpGTFVKTyBERSBDQU1CSU9TCi0tLS0tLS0tLS0tLS0tLQoxLiBDb25maXJtYXIgZWwgcmVwb3NpdG9yaW8geSBsYSByYW1hIGRlIGRlc3Rpbm8gYW50ZXMgZGUgZWRpdGFyLgoyLiBQcmVmZXJpciBjYW1iaW9zIGVuZm9jYWRvcyBxdWUgcmVzcGV0ZW4gbGEgYXJxdWl0ZWN0dXJhIHkgbG9zIGNvbXBvbmVudGVzCiAgIGV4aXN0ZW50ZXM7IHJldmlzYXIgZWwgY8OzZGlnbyBhY3R1YWwgcGFyYSBldml0YXIgZHVwbGljYWRvcy4KMy4gTWFudGVuZXIgZWwgZm9uZG8gZGUgcGFudGFsbGEgeSBvdHJvcyByZWN1cnNvcyBkZSBpZGVudGlkYWQgaW50YWN0b3Mgc2Fsdm8KICAgcXVlIGVsIGNhbWJpbyBzb2xpY2l0YWRvIGxvcyBpbmNsdXlhIGV4cHJlc2FtZW50ZS4KNC4gQcOxYWRpciBvIGFjdHVhbGl6YXIgZG9jdW1lbnRhY2nDs24gcGFyYSBjYWRhIGNvbXBvcnRhbWllbnRvIG51ZXZvLCBjYW1iaW8gZGUKICAgY29uZmlndXJhY2nDs24sIHJlcXVpc2l0bywgY29tYW5kbyBkZSB1c28gbyBsaW1pdGFjacOzbiByZWxldmFudGUuCjUuIEVqZWN1dGFyIGxhcyBwcnVlYmFzIHBlcnRpbmVudGVzIGFsIGNhbWJpbyB5IHJlZ2lzdHJhciBzdXMgcmVzdWx0YWRvcwogICBleGFjdG9zLiBObyBkZXNjcmliaXIgdW5hIHBydWViYSBjb21vIGVqZWN1dGFkYSBzaSBubyBzZSBlamVjdXTDsy4KNi4gUmV2aXNhciBlbCBlc3RhZG8gZGUgQ0kgYXNvY2lhZG8gYWwgU0hBIGV4YWN0byBxdWUgc2UgbW9kaWZpY8OzLiBVbiB3b3JrZmxvdwogICBlbiBjdXJzbyBubyBlcyB1bmEgYXByb2JhY2nDs24uCjcuIENvbXByb2JhciBsb3MgYXJjaGl2b3MgeSBlbCBjb250ZW5pZG8gZmluYWwgZGUgbGEgcmFtYSBkZXNwdcOpcyBkZSBwdWJsaWNhcgogICBjYW1iaW9zLiBObyBhbHRlcmFyIG1haW4gY3VhbmRvIGxhIHRhcmVhIGluZGljYSBkZXZlbG9wbWVudC4KCkNSSVRFUklPUyBERSBWRVJJRklDQUNJw5NOCi0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0KLSBEaXN0aW5ndWlyIGNsYXJhbWVudGUgZW50cmUgaW1wbGVtZW50YWRvLCBwcm9iYWRvLCBleHBlcmltZW50YWwgeSBwZW5kaWVudGUuCi0gTGFzIHBydWViYXMgZXN0w6F0aWNhcywgZGUgc3RhZ2luZyBvIGRlIENJIG5vIGRlbXVlc3RyYW4gcG9yIHPDrSBzb2xhcyBxdWUgdW5hCiAgSVNPIGFycmFucXVlLCBxdWUgdW4gaW5zdGFsYWRvciBjb21wbGV0ZSB1bmEgaW5zdGFsYWNpw7NuIG8gcXVlIHVuYSBmdW5jacOzbgogIHRyYWJhamUgZW4gaGFyZHdhcmUgcmVhbC4KLSBJbmZvcm1hciBwb3Igc2VwYXJhZG8gbG9zIHJlc3VsdGFkb3MgZGUgY29tcGlsYWNpw7NuLCBjcmVhY2nDs24gZGUgSVNPLAogIHBydWViYXMgYXV0b21hdGl6YWRhcywgYXJyYW5xdWUgZW4gbcOhcXVpbmEgdmlydHVhbCB5IHBydWViYXMgZGUgaGFyZHdhcmUuCi0gU2kgdW5hIHBydWViYSBmYWxsYSwgY29uc2VydmFyIGVsIGVycm9yIG9ic2VydmFkbywgY29ycmVnaXIgbGEgY2F1c2EgY3VhbmRvCiAgY29ycmVzcG9uZGEgeSB2b2x2ZXIgYSBlamVjdXRhciBsYSB2YWxpZGFjacOzbiBhZmVjdGFkYS4KLSBObyBkZWNsYXJhciBjb21wYXRpYmlsaWRhZCBjb24gdW4gc2lzdGVtYSBhbmZpdHJpw7NuIGJhc8OhbmRvc2Ugw7puaWNhbWVudGUgZW4KICBxdWUgZWwgY8OzZGlnbyByZWNvbm9jZSBzdSBub21icmU6IGNvbXByb2JhciBzdXMgZGVwZW5kZW5jaWFzIHkgYnVpbGQgcmVhbC4KLSBObyBhw7FhZGlyIGRhdG9zIHNpbXVsYWRvcyBjb21vIHNpIGZ1ZXJhbiBsZWN0dXJhcyBkZWwgc2lzdGVtYSBvIHJlc3VsdGFkb3MKICByZWFsZXMuCgpET0NVTUVOVEFDScOTTiBZIFJFUE9SVEVTCi0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLQpQYXJhIGNhZGEgY29uanVudG8gZGUgY2FtYmlvcywgZG9jdW1lbnRhcjoKLSBhcmNoaXZvcyBhZmVjdGFkb3MgeSBwcm9ww7NzaXRvIGRlIGNhZGEgbW9kaWZpY2FjacOzbjsKLSBjb21hbmRvcyBuZWNlc2FyaW9zIHBhcmEgdXNhciBvIHJlcHJvZHVjaXIgbGEgZnVuY2nDs247Ci0gcHJ1ZWJhcyBlamVjdXRhZGFzLCBzdXMgcmVzdWx0YWRvcyB5IGVsIFNIQSBldmFsdWFkbzsKLSBsaW1pdGFjaW9uZXMsIGRlcGVuZGVuY2lhcyB5IHZhbGlkYWNpb25lcyB0b2RhdsOtYSBwZW5kaWVudGVzLgoKTGEgZG9jdW1lbnRhY2nDs24gZGVsIGVzdGFkbyB2aWdlbnRlIHNlIG1hbnRpZW5lIGp1bnRvIGFsIGPDs2RpZ28geSBlbiBsYXMKcMOhZ2luYXMgZW5sYXphZGFzIGRlc2RlIFJFQURNRS5tZC4gTG9zIGluZm9ybWVzIGFudGlndW9zIHNlIGNvbnNpZGVyYW4gY29udGV4dG8KaGlzdMOzcmljbyB5IG5vIHN1c3RpdHV5ZW4gbGFzIHZlcmlmaWNhY2lvbmVzIGFjdHVhbGVzLgoKU0VHVVJJREFEIFkgQ0FNQklPUyBERUwgU0lTVEVNQQotLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tCi0gRXhwbGljYXIgY29uIGNsYXJpZGFkIGxhcyBvcGVyYWNpb25lcyBwcml2aWxlZ2lhZGFzLCBpbnN0YWxhY2lvbmVzIGRlCiAgcGFxdWV0ZXMsIGNvbmZpZ3VyYWNpw7NuIGRlIHJlcG9zaXRvcmlvcyB5IHNlcnZpY2lvcy4KLSBQZWRpciBjb25maXJtYWNpw7NuIGFudGVzIGRlIGFwbGljYXIgY2FtYmlvcyBxdWUgbW9kaWZpcXVlbiBlbCBzaXN0ZW1hIGRlbAogIHVzdWFyaW8gbyBhbnRlcyBkZSBhY2Npb25lcyBleHRlcm5hcyBxdWUgbG8gcmVwcmVzZW50ZW4uCi0gTm8gaW5jbHVpciB0b2tlbnMsIGNvbnRyYXNlw7FhcywgY2xhdmVzIHByaXZhZGFzIG5pIG90cm9zIHNlY3JldG9zIGVuIGVsCiAgcmVwb3NpdG9yaW8sIGxvZ3MgbyBkb2N1bWVudGFjacOzbi4KLSBObyBlbGltaW5hciBmdWVudGVzLCBwcm95ZWN0b3MgbyBkYXRvcyBkZWwgdXN1YXJpbyBhbCBsaW1waWFyIGFydGVmYWN0b3MuCgpET0NVTUVOVE9TIFJFTEFDSU9OQURPUwotLS0tLS0tLS0tLS0tLS0tLS0tLS0tLQpSRUFETUUubWQgICAgICAgICAgICAgICAgIFJlc3VtZW4gZGVsIHByb3llY3RvIHkgY29tYW5kb3MgaW5pY2lhbGVzCkNPTlRSSUJVVElORy5tZCAgICAgICAgICAgRmx1am8gcGFyYSBjb250cmlidWNpb25lcwpkb2NzL2FyY2hpdGVjdHVyZS5tZCAgICAgQXJxdWl0ZWN0dXJhIGRlbCBzaXN0ZW1hCmRvY3MvaW5zdGFsbC5tZCAgICAgICAgICBDb25zdHJ1Y2Npw7NuLCBpbnN0YWxhY2nDs24geSBRQQpkb2NzL2J1aWxkLWhvc3RzLm1kICAgICAgU2lzdGVtYXMgYW5maXRyaW9uZXMgcGFyYSBjb21waWxhcgoKRXN0ZSBhcmNoaXZvIGRlc2NyaWJlIGxhcyByZXNwb25zYWJpbGlkYWRlcyB5IHByw6FjdGljYXMgZGUgbWFudGVuaW1pZW50bzsKbm8gYWZpcm1hIHF1ZSB1bmEgcHJ1ZWJhIG8gdW5hIGZ1bmNpw7NuIGVzdMOpIHZhbGlkYWRhIHNpIG5vIGV4aXN0ZSBldmlkZW5jaWEuCgoKQUNUVUFMSVpBQ0nDk04gREUgTUFOVEVOSU1JRU5UTyDigJQgMjAyNi0xMC0yNAotLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0KUmFtYTogZGV2ZWxvcG1lbnQKw5psdGltbyBjYW1iaW8gY29uZmlybWFkbzogM2EzNTAwMDFmOTI2NDMxYWM1NjI0MzEwNjMwODc4MGQyMTU1YzNkMApDYW1iaW86IHJlZHVjaXIgYWN0aXZpZGFkIHkgbWVtb3JpYSBhdXhpbGlhciBkZWwgQ2VudHJvIGRlIENvbnRyb2wgY3VhbmRvIGVsCnBhbmVsIGVzdMOhIGNlcnJhZG87IHJldXRpbGl6YXIgdW4gc29sbyBtb2RlbG8gZGUgbm90aWZpY2FjaW9uZXMgeSBwYXVzYXIgc3VzCnNvbmRlb3MgZGUgZXN0YWRvIGhhc3RhIGFicmlyIGVsIHBhbmVsLgoKVmVyaWZpY2FjacOzbiBsb2NhbCByZWdpc3RyYWRhIHBhcmEgZWwgY2FtYmlvOgotIHRlc3Rfc2hlbGxfY29udHJhY3QsIHRlc3Rfc3RhZ2luZywgdGVzdF9kb2N1bWVudGF0aW9uIHkgdGVzdF90aGVtZTogMjQKICBwcnVlYmFzIHBhc2Fyb24uCi0gc3VpdGUgY29tYmluYWRhIGNvbiB0ZXN0X3BvbW9kb3JvOiAyNCBwYXNhcm9uOyAxIG9taXRpZGEgcG9ycXVlIE5vZGUuanMgbm8KICBlc3RhYmEgZGlzcG9uaWJsZS4KLSB0ZXN0X3BhY2thZ2VzLnNoOiA1NiBwYXNhcm9uLCAwIGZhbGxhcm9uLgotIHN0YWdpbmcgZGUgbG9zIHRyZXMgYXJjaGl2b3MgUU1MIGRlbCBDZW50cm8gZGUgQ29udHJvbCB2ZXJpZmljYWRvLgotIFNpbnRheGlzIEpTT04geSBzaGVsbCBjb21wcm9iYWRhLgoKQ0kgZGVsIFNIQSAzYTM1MDAwMWY5MjY0MzFhYzU2MjQzMTA2MzA4NzgwZDIxNTVjM2QwOiB3b3JrZmxvdyA0MDEzODY5NzE0OCwKY29uY2x1c2nDs24gc3VjY2Vzcy4gTm8gc2UgbWlkacOzIGVsIGNvbnN1bW8gZW4gTWlCIGVuIHVuYSBJU08vVk0gY29tcGFyYWJsZSB5Cm5vIHNlIHJlYWxpesOzIFFBIGdyw6FmaWNvIGRlIFBsYXNtYTsgcG9yIGVsbG8gbm8gc2UgZGVjbGFyYSB1bmEgY2lmcmEgZGUgYWhvcnJvCm5pIHZhbGlkYWNpw7NuIHZpc3VhbCBlbiBydW50aW1lLgoKCkFDVFVBTElaQUNJw5NOIERFIE1BTlRFTklNSUVOVE8g4oCUIDIwMjYtMTAtMjQKLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tClJhbWE6IGRldmVsb3BtZW50CkNhbWJpbzogaW50ZWdyYXIgYGNvbS5keWxhbm9zLmRvY2tgIGFsIHBhbmVsIGluZmVyaW9yIGRlIHBlcmZpbGVzIG51ZXZvcyBlCmltcGxlbWVudGFyIGFtcGxpYWNpw7NuIGdyYWR1YWRhIGRlIGljb25vcyBjZXJjYW5vcyBhbCBjdXJzb3IuIENvbnNlcnZhIGxvcwpzaWV0ZSBsYW56YWRvcmVzIHByZXZpb3MsIGxhIHBhcGVsZXJhLCBgVGFza01hbmFnZXIuVGFza3NNb2RlbGAgeSBjb21wYXRpYmlsaWRhZApjb24gcGVyZmlsZXMgZXhpc3RlbnRlcyBzaW4gcmVlbXBsYXphciBzdXMgcGFuZWxlcy4KClZlcmlmaWNhY2nDs24gbG9jYWw6IDI3IHBydWViYXMgZW5mb2NhZGFzIGRlIGNvbnRyYXRvcywgc3RhZ2luZywgZG9jdW1lbnRhY2nDs24sCnRlbWEgeSBjYWJsZWFkbyBkZSBFeHBsb3Jlci9TdG9yZSBwYXNhcm9uOyBgdGVzdF9wYWNrYWdlcy5zaGA6IDU2IHBhc2Fyb24sIDAKZmFsbGFyb247IHN0YWdpbmcgdmVyaWZpY8OzIHBsYXNtb2lkLCBjb25maWd1cmFjacOzbiB5IGxheW91dC4gTGEgcHJ1ZWJhIGRlCmxheW91dCBjb24gTm9kZSBzZSBvbWl0acOzIHBvciBubyBlc3RhciBOb2RlLmpzIGluc3RhbGFkby4gTm8gc2UgZWplY3V0w7MgUGxhc21hCmdyw6FmaWNvOiBlbCByZW5kZXIgeSBlbCBlZmVjdG8gZGUgaG92ZXIgcXVlZGFuIHBlbmRpZW50ZXMgZGUgUUEgdmlzdWFsLiBObyBzZQpoYSBjb25zdHJ1aWRvIHVuYSBudWV2YSBJU08uCgoKQUNUVUFMSVpBQ0nDk04gREUgTUFOVEVOSU1JRU5UTyDigJQgMjAyNi0xMC0yNAotLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0KUmFtYTogZGV2ZWxvcG1lbnQKQ2FtYmlvOiBoYWNlciBxdWUgbGEgdGFyamV0YSBkZSBhY2Nlc28gU0RETSBkZXJpdmUgZWwgYW5jaG8gZGVsIGZvcm11bGFyaW8KZXNjYWxhZG8sIGNvbnNlcnZhbmRvIGVsIG1hcmdlbiB5IGxpbWl0w6FuZG9zZSBhbCBhbmNobyBkaXNwb25pYmxlLiBObyBjYW1iaWEKbGEgYXV0ZW50aWNhY2nDs24sIHNlc2nDs24sIGN1ZW50YSwgd2FsbHBhcGVyIG5pIGxhcyBhY2Npb25lcyBkZSBlbmVyZ8OtYS4KVmFsaWRhY2nDs24gbG9jYWw6IGBzY3JpcHRzLnRlc3RzLnRlc3Rfc2RkbV90aGVtZWAgZWplY3V0w7MgMiBwcnVlYmFzIHkgb21pdGnDswoxIHBvciBmYWx0YSBkZSBgc2RkbS1ncmVldGVyYDsgYHRlc3Rfc3RhZ2luZ2AgeSBgdGVzdF9kb2N1bWVudGF0aW9uYCBwYXNhcm9uCig5IHBydWViYXMpLiBObyBzZSBhZmlybWEgdW5hIHZhbGlkYWNpw7NuIHZpc3VhbCBlbiBncmVldGVyIG5pIFZNOyBlbCBncmVldGVyCm5vIGVzdMOhIGluc3RhbGFkbyBlbiBlbCBlbnRvcm5vIGRlIGVkaWNpw7NuLgoKCkNPUlJFQ0NJw5NOIFVSR0VOVEUg4oCUIDIwMjYtMTAtMjQKLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLQpMYSBjYXB0dXJhIGRlbCB1c3VhcmlvIHJldmVsw7MgcXVlIGVsIENlbnRybyBkZSBDb250cm9sIG5vIGNhcmdhYmE6CmBDb250cm9sQ2VudGVyUGFuZWwucW1sYCBhc2lnbmFiYSBgQWNjZXNzaWJsZS52YWx1ZWAgZW4gZG9zIHNsaWRlcnMsIHByb3BpZWRhZApubyB2w6FsaWRhIHBhcmEgZWwgY29udHJvbCBlbiBRdCBRdWljay4gU2UgZWxpbWluYXJvbiBhbWJhcyBhc2lnbmFjaW9uZXM7CmBBY2Nlc3NpYmxlLm5hbWVgIHNlIGNvbnNlcnZhIHkgYFNsaWRlcmAgYW51bmNpYSBzdSB2YWxvciBtZWRpYW50ZSBzdSBBUEkKbmF0aXZhLiBQcnVlYmFzIGVzcGVjw61maWNhcyB5IGVzdGFkbyBkZSBDSSBkZSBsYSBjb3JyZWNjacOzbiBzZSByZWdpc3RyYW4gYWwKY29uZmlybWFyc2UuIE5vIHNlIG1vZGlmaWPDsyBTRERNIGVuIGVzdGEgY29ycmVjY2nDs24uCgoKQ09SUkVDQ0nDk04gREVMIERPQ0sgVkFDw41PIOKAlCAyMDI2LTEwLTI0Ci0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tCkxhIGNhcHR1cmEgbW9zdHJhYmEgbGEgcGFwZWxlcmEgcGVybyBubyBsb3MgaWNvbm9zIGRlbCBkb2NrLiBFbCBhbmNobyBkZWwKYXBwbGV0IHNlIGNhbGN1bGFiYSBsZXllbmRvIGBkb2NrUm93LmltcGxpY2l0V2lkdGhgLCBhdW5xdWUgYGRvY2tSb3dgIGVzdMOhCmRlbnRybyBkZWwgQ29tcG9uZW50IGBkb2NrQ29udGVudGAgeSBubyBlc3TDoSBlbiBhbGNhbmNlIGRlbCBvYmpldG8gZXh0ZXJpb3IuCkVsIGFwcGxldCBhaG9yYSBjYWxjdWxhIGVsIGFuY2hvIG3DrW5pbW8gY29uIGVsIG7Dum1lcm8gZGUgZWxlbWVudG9zIGRlCmBUYXNrTWFuYWdlci5UYXNrc01vZGVsYCwgYW5jaHVyYSBkZWwgZGVsZWdhZG8sIHNlcGFyYWNpw7NuIHkgcGFkZGluZy4gU2UgYcOxYWRpw7MKdW5hIGFzZXJjacOzbiBhbCBjb250cmF0byBkZWwgZG9jay4gVmFsaWRhY2nDs24gZGUgZXN0YSBhY3R1YWxpemFjacOzbjogcHJ1ZWJhCmVzdMOhdGljYSBsb2NhbCB5IHJlc3VsdGFkbyBDSSBlbiBjdXJzbyBhbCBwdWJsaWNhci4gUUEgdmlzdWFsIGVuIHVuYSBzZXNpw7NuClBsYXNtYSBzaWd1ZSBwZW5kaWVudGU7IG5vIHNlIGFmaXJtYSB0b2RhdsOtYSBxdWUgZWwgcmVuZGVyIHNlIGhheWEgY29tcHJvYmFkby4KCgpBVURJVE9Sw41BIFkgQ09SUkVDQ0nDk04gU1BPVExJR0hUIOKAlCAyMDI2LTEwLTI0Ci0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tCkhhbGxhemdvIGNvbmZpcm1hZG86IGBiYWNrZW5kLnB5YCBsbGFtYWJhIGEgYHVybGxpYi5wYXJzZS5xdW90ZWAgc2luIGltcG9ydGFyCmB1cmxsaWJgLCBsbyBxdWUgbGFuemFiYSBgTmFtZUVycm9yYCBhbCBhY3R1YWxpemFyIGxhIGLDunNxdWVkYSB5IGHDsWFkaXIgZWwKcmVzdWx0YWRvIHdlYi4gU2UgaW1wb3J0YSBgcXVvdGVgIGV4cGzDrWNpdGFtZW50ZSB5IHNlIGHDsWFkZSB1biBjb250cmF0byBkZQpyZWdyZXNpw7NuLiBTZSBhY3R1YWxpemEgbGEgZ3XDrWEsIHF1ZSBhZHZlcnTDrWEgZGVsIGZhbGxvIGFudGVyaW9yLiBMYSBiw7pzcXVlZGEKZGUgYXJjaGl2b3MgeSBlbCBtb2RvIGNhbGN1bGFkb3JhIHNpZ3VlbiBpbmNvbXBsZXRvcyB5IHNlIGRvY3VtZW50YW4gY29tbwpsaW1pdGFjaW9uZXMsIG5vIHNlIGhhbiBwcmVzZW50YWRvIGNvbW8gZnVuY2lvbmVzIHJlcGFyYWRhcyBlbiBlc3RhIHRhcmVhLgoKQXVkaXRvcsOtYSBsb2NhbCBkZWwgw6FyYm9sIGludGVncmFkbzogYHVuaXR0ZXN0IGRpc2NvdmVyYCBlamVjdXTDsyAxMzAgcHJ1ZWJhczsKMSBmYWxsw7MgcG9ycXVlIGVsIFpJUCBkZXNjYXJnYWRvIG5vIGNvbnNlcnZhIGVsIGJpdCBlamVjdXRhYmxlIGRlCmBzY3JpcHRzL2J1aWxkLnNoYCwgMiBkaWVyb24gZXJyb3IgcG9ycXVlIGVzdGEgc2VzacOzbiBubyB0aWVuZQpgL3Vzci9iaW4vcHl0aG9uM2AgcGFyYSBlamVjdXRhciBlbCBwYXJzZXIgR1RLOyAxMiBzZSBvbWl0aWVyb24gcG9yCmRlcGVuZGVuY2lhcyBvcGNpb25hbGVzIGF1c2VudGVzLiBFbCBDSSBkZWwgZG9jayBwYXJhIGVsIFNIQSBhdWRpdGFkbyB5YQpmaW5hbGl6w7MgY29ycmVjdGFtZW50ZS4KCgpBVURJVE9Sw41BIERFIFNQT1RMSUdIVCDigJQgMjAyNi0xMC0yNCAoaGFsbGF6Z29zIGFkaWNpb25hbGVzKQotLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLQpTZSBjb3JyaWdpw7MgZWwgYWxjYW5jZSBkZSBmaWx0cm9zOiBXZWIgbXVlc3RyYSBzb2xvIHN1IGFjY2nDs247IENhbGN1bGFyIHNvbG8KZXhwb25lIGV4cHJlc2lvbmVzIGFyaXRtw6l0aWNhczsgZW4gVG9kbywgbGEgYWNjacOzbiB3ZWIgcGVybWFuZWNlIGRlbnRybyBkZWwKbMOtbWl0ZSBkZSByZXN1bHRhZG9zLiBTZSBxdWl0w7MgZWwgcmVjdWVudG8gZmljdGljaW8gZGUgYXJjaGl2b3MgZGVsIHBpZS4KQXJjaGl2b3MgY29udGluw7phIHNpbiBtb3RvciBkZSBiw7pzcXVlZGEgeSBlc3TDoSBkb2N1bWVudGFkbyBjb21vIHBlbmRpZW50ZS4KUHJ1ZWJhcyBkZSBjb250cmF0byBkZSBTcG90bGlnaHQgeSB0ZXN0IGRlIHNoZWxsIGVqZWN1dGFkb3MgbG9jYWxtZW50ZTsgbm8gc2UKaGEgZWplY3V0YWRvIHJ1bnRpbWUgUXQgcG9ycXVlIFB5U2lkZTYgbm8gZXN0w6EgaW5zdGFsYWRvIGVuIGVzdGUgZW50b3Juby4KCgpBVURJVE9Sw41BIERFTCBJTlNUQUxBRE9SIOKAlCAyMDI2LTEwLTI1Ci0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLQpIYWxsYXpnbyBjb25maXJtYWRvIGVuIGBpbnN0YWxsZXIvZHlsYW5vcy1pbnN0YWxsZXIvYmFja2VuZC9zZXJ2ZXIucHlgOiBlbAptb2RvIG1hbnVhbCByZXV0aWxpemFiYSB1bmEgcGFydGljacOzbiBleHQ0IHNpbiBsaW1waWFyIHN1cyBhcmNoaXZvcyBwcmV2aW9zLgpgdW5zcXVhc2hmcyAtZmAgc29icmVzY3JpYmUgcnV0YXMgcHJlc2VudGVzIGVuIGxhIGltYWdlbiwgcGVybyBubyByZXRpcmEgb3Ryb3MKYXJjaGl2b3MgZXhpc3RlbnRlczsgdW5hIHJlaW5zdGFsYWNpw7NuIHBvZMOtYSBkZWphciBkYXRvcyB5IGNvbmZpZ3VyYWNpw7NuCmFudGlndW9zIG1lemNsYWRvcyBjb24gZWwgc2lzdGVtYSBudWV2by4gQWhvcmEgbGEgcmHDrXogbW9udGFkYSBzZSBsaW1waWEgYW50ZXMKZGUgbW9udGFyIGxhIEVTUCB5IGV4dHJhZXIgbGEgaW1hZ2VuOyBzZSBlbGltaW5hbiBlbmxhY2VzIHNpbiBzZWd1aXJsb3MuClJlZ3Jlc2nDs24gY3ViaWVydGEgcG9yIGRvcyBwcnVlYmFzIHVuaXRhcmlhczogbGltcGllemEgZGUgYXJjaGl2b3MvZGlyZWN0b3Jpb3MKeSBlbmxhY2VzLCB5IHJlY2hhem8gZGUgdW5hIHJ1dGEgbm8gbW9udGFkYS4gVmVyaWZpY2FkbyBsb2NhbG1lbnRlIGNvbgpgcHl0aG9uMyAtbSB1bml0dGVzdCBzY3JpcHRzLnRlc3RzLnRlc3RfaW5zdGFsbGVyX2JhY2tlbmQuSW5zdGFsbFJvb3RDbGVhbnVwVGVzdCAtdmAKeSBsYSBzdWl0ZSBkZWwgaW5zdGFsYWRvci4gTm8gc2UgZWplY3V0w7MgdW5hIGluc3RhbGFjacOzbiByZWFsIG5pIHVuYSBwcnVlYmEKdmlzdWFsL1ZNL0lTTyBlbiBlc3RhIGF1ZGl0b3LDrWEuCg==
+MANTENEDORES DE DYLANOS
+======================
+
+PROYECTO
+--------
+Nombre: DylanOS Crimson
+Repositorio: dylanneymarmontalvo2014-lgtm/DylanOS
+Rama de trabajo activa para los cambios actuales: development
+
+MANTENEDOR
+----------
+Cristopher Borjas
+Cuenta de GitHub: CRISTOP-bot
+Perfil: https://github.com/CRISTOP-bot
+
+Cristopher Borjas es una persona y mantenedor humano de DylanOS. CRISTOP-bot
+es su cuenta personal de GitHub; no es un bot automatizado. El nombre de la
+cuenta no describe su naturaleza. Las contribuciones y decisiones hechas
+personalmente desde esa cuenta corresponden a Cristopher. Las acciones,
+workflows y otros procesos automatizados del repositorio son independientes
+de la cuenta.
+
+RESPONSABILIDADES DE MANTENIMIENTO
+----------------------------------
+El mantenimiento del proyecto incluye:
+- conservar la coherencia de arquitectura, branding y experiencia de DylanOS;
+- revisar cambios de código, configuración, documentación y automatizaciones;
+- verificar que las afirmaciones sobre funciones y compatibilidad coincidan
+  con lo que realmente se implementó y probó;
+- mantener instrucciones reproducibles para preparar, compilar y validar;
+- corregir regresiones y documentar limitaciones conocidas;
+- conservar las decisiones explícitas de alcance y no mezclar cambios ajenos;
+- revisar los resultados reales del CI antes de declarar una validación aprobada.
+
+FLUJO DE CAMBIOS
+---------------
+1. Confirmar el repositorio y la rama de destino antes de editar.
+2. Preferir cambios enfocados que respeten la arquitectura y los componentes
+   existentes; revisar el código actual para evitar duplicados.
+3. Mantener el fondo de pantalla y otros recursos de identidad intactos salvo
+   que el cambio solicitado los incluya expresamente.
+4. Añadir o actualizar documentación para cada comportamiento nuevo, cambio de
+   configuración, requisito, comando de uso o limitación relevante.
+5. Ejecutar las pruebas pertinentes al cambio y registrar sus resultados
+   exactos. No describir una prueba como ejecutada si no se ejecutó.
+6. Revisar el estado de CI asociado al SHA exacto que se modificó. Un workflow
+   en curso no es una aprobación.
+7. Comprobar los archivos y el contenido final de la rama después de publicar
+   cambios. No alterar main cuando la tarea indica development.
+
+CRITERIOS DE VERIFICACIÓN
+-------------------------
+- Distinguir claramente entre implementado, probado, experimental y pendiente.
+- Las pruebas estáticas, de staging o de CI no demuestran por sí solas que una
+  ISO arranque, que un instalador complete una instalación o que una función
+  trabaje en hardware real.
+- Informar por separado los resultados de compilación, creación de ISO,
+  pruebas automatizadas, arranque en máquina virtual y pruebas de hardware.
+- Si una prueba falla, conservar el error observado, corregir la causa cuando
+  corresponda y volver a ejecutar la validación afectada.
+- No declarar compatibilidad con un sistema anfitrión basándose únicamente en
+  que el código reconoce su nombre: comprobar sus dependencias y build real.
+- No añadir datos simulados como si fueran lecturas del sistema o resultados
+  reales.
+
+DOCUMENTACIÓN Y REPORTES
+------------------------
+Para cada conjunto de cambios, documentar:
+- archivos afectados y propósito de cada modificación;
+- comandos necesarios para usar o reproducir la función;
+- pruebas ejecutadas, sus resultados y el SHA evaluado;
+- limitaciones, dependencias y validaciones todavía pendientes.
+
+La documentación del estado vigente se mantiene junto al código y en las
+páginas enlazadas desde README.md. Los informes antiguos se consideran contexto
+histórico y no sustituyen las verificaciones actuales.
+
+SEGURIDAD Y CAMBIOS DEL SISTEMA
+-------------------------------
+- Explicar con claridad las operaciones privilegiadas, instalaciones de
+  paquetes, configuración de repositorios y servicios.
+- Pedir confirmación antes de aplicar cambios que modifiquen el sistema del
+  usuario o antes de acciones externas que lo representen.
+- No incluir tokens, contraseñas, claves privadas ni otros secretos en el
+  repositorio, logs o documentación.
+- No eliminar fuentes, proyectos o datos del usuario al limpiar artefactos.
+
+DOCUMENTOS RELACIONADOS
+-----------------------
+README.md                 Resumen del proyecto y comandos iniciales
+CONTRIBUTING.md           Flujo para contribuciones
+docs/architecture.md     Arquitectura del sistema
+docs/install.md          Construcción, instalación y QA
+docs/build-hosts.md      Sistemas anfitriones para compilar
+
+Este archivo describe las responsabilidades y prácticas de mantenimiento;
+no afirma que una prueba o una función esté validada si no existe evidencia.
+
+
+ACTUALIZACIÓN DE MANTENIMIENTO — 2026-10-24
+------------------------------------------
+Rama: development
+Último cambio confirmado: 3a350001f926431ac56243106308780d2155c3d0
+Cambio: reducir actividad y memoria auxiliar del Centro de Control cuando el
+panel está cerrado; reutilizar un solo modelo de notificaciones y pausar sus
+sondeos de estado hasta abrir el panel.
+
+Verificación local registrada para el cambio:
+- test_shell_contract, test_staging, test_documentation y test_theme: 24
+  pruebas pasaron.
+- suite combinada con test_pomodoro: 24 pasaron; 1 omitida porque Node.js no
+  estaba disponible.
+- test_packages.sh: 56 pasaron, 0 fallaron.
+- staging de los tres archivos QML del Centro de Control verificado.
+- Sintaxis JSON y shell comprobada.
+
+CI del SHA 3a350001f926431ac56243106308780d2155c3d0: workflow 40138697148,
+conclusión success. No se midió el consumo en MiB en una ISO/VM comparable y
+no se realizó QA gráfico de Plasma; por ello no se declara una cifra de ahorro
+ni validación visual en runtime.
+
+
+ACTUALIZACIÓN DE MANTENIMIENTO — 2026-10-24
+------------------------------------------
+Rama: development
+Cambio: integrar `com.dylanos.dock` al panel inferior de perfiles nuevos e
+implementar ampliación graduada de iconos cercanos al cursor. Conserva los
+siete lanzadores previos, la papelera, `TaskManager.TasksModel` y compatibilidad
+con perfiles existentes sin reemplazar sus paneles.
+
+Verificación local: 27 pruebas enfocadas de contratos, staging, documentación,
+tema y cableado de Explorer/Store pasaron; `test_packages.sh`: 56 pasaron, 0
+fallaron; staging verificó plasmoid, configuración y layout. La prueba de
+layout con Node se omitió por no estar Node.js instalado. No se ejecutó Plasma
+gráfico: el render y el efecto de hover quedan pendientes de QA visual. No se
+ha construido una nueva ISO.
+
+
+ACTUALIZACIÓN DE MANTENIMIENTO — 2026-10-24
+------------------------------------------
+Rama: development
+Cambio: hacer que la tarjeta de acceso SDDM derive el ancho del formulario
+escalado, conservando el margen y limitándose al ancho disponible. No cambia
+la autenticación, sesión, cuenta, wallpaper ni las acciones de energía.
+Validación local: `scripts.tests.test_sddm_theme` ejecutó 2 pruebas y omitió
+1 por falta de `sddm-greeter`; `test_staging` y `test_documentation` pasaron
+(9 pruebas). No se afirma una validación visual en greeter ni VM; el greeter
+no está instalado en el entorno de edición.
+
+
+CORRECCIÓN URGENTE — 2026-10-24
+-------------------------------
+La captura del usuario reveló que el Centro de Control no cargaba:
+`ControlCenterPanel.qml` asignaba `Accessible.value` en dos sliders, propiedad
+no válida para el control en Qt Quick. Se eliminaron ambas asignaciones;
+`Accessible.name` se conserva y `Slider` anuncia su valor mediante su API
+nativa. Pruebas específicas y estado de CI de la corrección se registran al
+confirmarse. No se modificó SDDM en esta corrección.
+
+
+CORRECCIÓN DEL DOCK VACÍO — 2026-10-24
+--------------------------------------
+La captura mostraba la papelera pero no los iconos del dock. El ancho del
+applet se calculaba leyendo `dockRow.implicitWidth`, aunque `dockRow` está
+dentro del Component `dockContent` y no está en alcance del objeto exterior.
+El applet ahora calcula el ancho mínimo con el número de elementos de
+`TaskManager.TasksModel`, anchura del delegado, separación y padding. Se añadió
+una aserción al contrato del dock. Validación de esta actualización: prueba
+estática local y resultado CI en curso al publicar. QA visual en una sesión
+Plasma sigue pendiente; no se afirma todavía que el render se haya comprobado.
+
+
+AUDITORÍA Y CORRECCIÓN SPOTLIGHT — 2026-10-24
+--------------------------------------------
+Hallazgo confirmado: `backend.py` llamaba a `urllib.parse.quote` sin importar
+`urllib`, lo que lanzaba `NameError` al actualizar la búsqueda y añadir el
+resultado web. Se importa `quote` explícitamente y se añade un contrato de
+regresión. Se actualiza la guía, que advertía del fallo anterior. La búsqueda
+de archivos y el modo calculadora siguen incompletos y se documentan como
+limitaciones, no se han presentado como funciones reparadas en esta tarea.
+
+Auditoría local del árbol integrado: `unittest discover` ejecutó 130 pruebas;
+1 falló porque el ZIP descargado no conserva el bit ejecutable de
+`scripts/build.sh`, 2 dieron error porque esta sesión no tiene
+`/usr/bin/python3` para ejecutar el parser GTK; 12 se omitieron por
+dependencias opcionales ausentes. El CI del dock para el SHA auditado ya
+finalizó correctamente.
+
+
+AUDITORÍA DE SPOTLIGHT — 2026-10-24 (hallazgos adicionales)
+-----------------------------------------------------------
+Se corrigió el alcance de filtros: Web muestra solo su acción; Calcular solo
+expone expresiones aritméticas; en Todo, la acción web permanece dentro del
+límite de resultados. Se quitó el recuento ficticio de archivos del pie.
+Archivos continúa sin motor de búsqueda y está documentado como pendiente.
+Pruebas de contrato de Spotlight y test de shell ejecutados localmente; no se
+ha ejecutado runtime Qt porque PySide6 no está instalado en este entorno.
+
+
+AUDITORÍA DEL INSTALADOR — 2026-10-25
+------------------------------------
+Hallazgo confirmado en `installer/dylanos-installer/backend/server.py`: el
+modo manual reutilizaba una partición ext4 sin limpiar sus archivos previos.
+`unsquashfs -f` sobrescribe rutas presentes en la imagen, pero no retira otros
+archivos existentes; una reinstalación podía dejar datos y configuración
+antiguos mezclados con el sistema nuevo. Ahora la raíz montada se limpia antes
+de montar la ESP y extraer la imagen; se eliminan enlaces sin seguirlos.
+Regresión cubierta por dos pruebas unitarias: limpieza de archivos/directorios
+y enlaces, y rechazo de una ruta no montada. Verificado localmente con
+`python3 -m unittest scripts.tests.test_installer_backend.InstallRootCleanupTest -v`
+y la suite del instalador. No se ejecutó una instalación real ni una prueba
+visual/VM/ISO en esta auditoría.
