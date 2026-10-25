@@ -242,3 +242,15 @@ AUDITORÍA DE ENERGÍA — 2026-10-25
 ---------------------------------
 Rama: development. Hallazgo confirmado en HEAD 707694bc356d2ae447a1985e02104f771a997795: DylanOS Configuration consultaba y cambiaba perfiles mediante `powerprofilesctl`, pero `packages/default/packages.list` no incluía `power-profiles-daemon`; la imagen base no garantizaba la herramienta/servicio y la página caía al estado «Sin gestión de energía». Se añadió el paquete al perfil base y una aserción a `test_packages.sh`.
 Verificación local tras el cambio: `bash scripts/tests/test_packages.sh` — 57 aprobadas, 0 fallidas; `python3 -m unittest scripts.tests.test_configuration scripts.tests.test_documentation -v` — 8 aprobadas. Estas pruebas son de contrato/staging/documentación; no se construyó imagen y no se comprobó el servicio en runtime, hardware o VM. Queda pendiente validar instalación y funcionamiento en build/runtime.
+
+
+AUDITORÍA DE AUDIO — 2026-10-25
+-------------------------------
+`SoundPage.qml` rellenaba los selectores con nombres amigables pero les pasaba
+como selección el nombre interno `defaultSink/defaultSource`; el componente
+`DSelect` compara el valor con la lista visible, por lo que mostraba el
+identificador crudo y no marcaba el elemento actual. Añadidos helpers que
+resuelven nombre interno → descripción, con fallback al nombre si no hay
+descripción o el dispositivo ya no está listado. Al elegir se conserva el
+nombre interno exigido por `setDefaultSink/Source`. Prueba de contrato
+añadida; validación de runtime de audio/Qt no se afirma sin servidor real.

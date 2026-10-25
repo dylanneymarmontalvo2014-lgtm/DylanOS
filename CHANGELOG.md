@@ -1,3 +1,4 @@
+- Configuración/Sonido: traducir el nombre interno de salida/entrada al nombre amigable de cada dispositivo; el selector ahora muestra y marca correctamente el dispositivo predeterminado.
 - Spotlight: filtrar correctamente las acciones Web/Calcular, conservar la acción web entre muchos resultados y retirar el contador ficticio de archivos.
 - Spotlight: importar explícitamente `urllib.parse.quote` para codificar la búsqueda web y evitar una excepción al escribir una consulta.
 - Dock: corregir el ancho del applet para que los iconos fijados se muestren; el cálculo previo referenciaba un id QML fuera de su ámbito.
