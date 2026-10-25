@@ -12,7 +12,7 @@ QtObject {
     readonly property var secondaryActions: [
         { id: "kdeconnect", icon: "kdeconnect", label: "KDE Connect", command: "kcmshell6 kcm_kdeconnect" },
         { id: "project", icon: "video-display", label: "Proyectar", command: "kcmshell6 kcm_kscreen" },
-        { id: "powersave", icon: "battery-profile-powersave", label: "Ahorro de energía", command: "kcmshell6 powerdevilprofilesconfig" }
+        { id: "powersave", icon: "battery-profile-powersave", label: "Ahorro de energía", command: "kcmshell6 kcm_powerdevilprofilesconfig" }
     ]
 
     function run(command) {

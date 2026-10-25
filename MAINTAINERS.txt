@@ -386,3 +386,15 @@ y se documentó el límite.
 Pruebas locales tras el cambio: se ejecutarán `test_shell_contract`,
 `test_desktop` y `test_staging`; la inspección es estática/contractual. No se
 realizó sesión Plasma visual ni arranque de ISO en esta modificación.
+
+
+REVISIÓN DE WIDGETS — 2026-10-25 (acceso a energía)
+---------------------------------------------------
+Hallazgo confirmado: el acceso «Ahorro de energía» del Centro de Control
+llamaba `kcmshell6 powerdevilprofilesconfig`, pero el KCM disponible y usado
+por DylanOS Configuration es `kcm_powerdevilprofilesconfig`. El botón invocaba
+un identificador incorrecto y no abría el módulo.
+
+Corrección: actualizar el comando y añadir una aserción para mantenerlo
+alineado con PowerPage.qml. Prueba de contrato; no sustituye ejecutar el KCM
+en Plasma real.

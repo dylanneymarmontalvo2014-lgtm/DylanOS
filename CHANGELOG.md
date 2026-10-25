@@ -1,3 +1,4 @@
+- Centro de Control: corregir el ID del KCM de ahorro de energía para que abra el módulo existente.
 - Dock: evitar recorte/solapamiento si iconSize configurado supera hoverSize; el panel reserva siempre la extensión mayor.
 - Configuración: corregir los nombres de dispositivos de audio; `pactl list short` entregaba el estado como descripción en los selectores.
 - Instalador: no simular como exitosa una instalación cuando no responde el backend; reconciliar el estado real y mostrar error si no se confirma.
