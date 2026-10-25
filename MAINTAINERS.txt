@@ -319,3 +319,15 @@ Corrección: validar Host loopback, Origin permitido y Sec-Fetch-Site en GET y
 POST; eliminar el encabezado CORS comodín. Añadidas pruebas de misma origen,
 origen ajeno, cross-site y DNS rebinding. Validación local no equivale a una
 prueba de seguridad en navegador o imagen instalada.
+
+
+AUDITORÍA APP CENTER — 2026-10-25
+--------------------------------
+Hallazgo: App Center calcula pageSize desde el ancho y alto de la ventana,
+pero solo actualizaba totalPages/pageItems al buscar o al resetear el modelo.
+Un cambio de resolución o tamaño dejaba paginación y contenido obsoletos.
+
+Corrección: programar reload al cambiar ancho y alto; se usa Qt.callLater para
+recalcular después de actualizar las propiedades geométricas. Se añadió una
+prueba contractual para ambos cambios y para comprobar que reload refresca
+los datos de paginación. No se hizo prueba visual/interactiva de Qt.

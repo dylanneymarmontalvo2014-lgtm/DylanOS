@@ -48,6 +48,12 @@ ApplicationWindow {
         reload()
     }
 
+    // pageSize depends on both the available width and height. Rebuild the
+    // current slice after a resize or display-resolution change so paging
+    // cannot keep stale rows or point past the end of the filtered list.
+    onWidthChanged: Qt.callLater(reload)
+    onHeightChanged: Qt.callLater(reload)
+
     // Mantiene visible la celda enfocada al navegar con el teclado. En pantallas
     // pequeñas la cuadrícula no cabe y sin esto el foco se salía de la vista al
     // usar las flechas o AvPág/RePág. Qt.callLater espera a que GridView cree el

@@ -44,6 +44,14 @@ class AppCenterContractTest(unittest.TestCase):
         self.assertIn("m_apps.at(m_visibleAppIndexes.at(i))", MODEL_CPP)
         self.assertNotIn("visibleApps()", MODEL_CPP)
 
+    def test_resize_recalculates_page_size_and_items(self):
+        # pageSize depends on window dimensions; a display mode/resize change
+        # must refresh totalPages and the currently displayed item slice.
+        self.assertIn("onWidthChanged: Qt.callLater(reload)", QML)
+        self.assertIn("onHeightChanged: Qt.callLater(reload)", QML)
+        self.assertIn("totalPages = Math.max(1, appModel.pageCount(pageSize))", QML)
+        self.assertIn("pageItems = appModel.itemsForPage(currentPage, pageSize)", QML)
+
     def test_keyboard_navigation_keeps_focus_visible(self):
         # El desplazamiento por teclado debe seguir al elemento enfocado: al
         # mover la selección con flechas o AvPág/RePág, la cuadrícula pide
