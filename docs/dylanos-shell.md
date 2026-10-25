@@ -1,6 +1,6 @@
 # DylanOS Shell
 
-The first-run Plasma desktop layout adds the DylanOS dashboard to each desktop using Plasma's positioned `Containment.addWidget` scripting API. It provides a live clock, a navigable month calendar, and local memory, CPU-usage, filesystem-capacity, and uptime readings from `/proc` and `df`; it intentionally has no fabricated weather, events, reminders, or remote-service data. Like the rest of the initial layout, this applies to new profiles and does not replace an existing user's panels or desktop widgets.
+The first-run Plasma desktop layout adds the DylanOS dashboard to each desktop as a right-anchored wall of glass cards, computed with Plasma's `screenGeometry` scripting API (with a 1280×800 fallback when that API is unavailable). The six cards are a plain-clock panel, live system readings from `/proc`/`df`, the active MPRIS player via `playerctl`, a Sunday-first interactive calendar, a real reminder list persisted in the applet's KConfig, and the 25/5 focus timer. It intentionally has no fabricated weather, events, or remote-service data, and it deliberately avoids duplicating the Control Center's quick toggles. The left desktop column stays free so the installer shortcut in the icon grid's first cell is never covered. Like the rest of the initial layout, this applies to new profiles and does not replace an existing user's panels or desktop widgets.
 
 The Control Center's Do Not Disturb toggle now uses Plasma's public `NotificationManager.Settings` API. A user-initiated toggle inhibits notifications for eight hours and can be cleared from the same control. An application-owned inhibition is shown as such and is not overridden. The notification list continues to display the real Plasma notification model, including while Do Not Disturb is active. The compact badge shows the number of current notifications, not an unread count. The secondary action opens KDE Connect by its proper name, not the unrelated AirDrop brand.
 
@@ -206,3 +206,30 @@ y sesión equivalentes antes/después.
 `NotificationsPanel.qml`, `SystemStatus.qml`, `metadata.json`, README, guía,
 contratos de shell/staging y `docs/optimization.md`. QA gráfica y memoria real
 quedan pendientes de VM Plasma 6 y medición bajo la misma carga.
+
+
+## Rediseño del dashboard (2026-10-25)
+
+Dashboard 0.8.0 convierte el applet en un muro de seis tarjetas de vidrio
+(reloj, sistema, «En reproducción», calendario, recordatorios y enfoque) que
+sustituye la vista de una sola columna. El layout de perfil nuevo ya no deja el
+widget en 48, 96: se ancla al borde derecho con `screenGeometry(desktop.screenId)`
+—x = ancho − 720 − margen (20 px, o 40 px en pantallas de más de 1600 px),
+y = unidad de retícula × 2 + 8 px bajo la barra superior, alto entre 584 y
+920 px− y cae a 1280×800 si la API no está disponible. La mitad izquierda queda
+libre para el acceso «Instalar DylanOS» de la primera celda del escritorio.
+
+Novedades funcionales: lista de recordatorios real (casilla, renombrado y
+borrado persistidos en `Plasmoid.configuration.recordatorios` vía KConfigXT),
+tarjeta de medios con el reproductor MPRIS activo por `playerctl` (estado,
+título, artista, posición con seek real y controles play-pause/siguiente/anterior),
+calendario con semana empezando en domingo y aro Canvas para CPU. El QML añade
+`pragma ComponentBehavior: Bound` y sus delegates declaran propiedades `required`.
+
+La tarjeta de clima y una segunda bandeja de controles rápidos quedaron fuera a
+propósito: exigirían servicios de red (contrario a «sin simulaciones») o
+duplicarían el Centro de Control. Las suites `test_desktop.py` (geometrías del
+layout con `screenGeometry` simulado) y `test_staging.py` cubren el nuevo
+empaquetado; el QML se lintó con qmllint de Qt 6.8 (los avisos restantes son
+del módulo `org.kde.plasma.plasmoid`, compilado dentro de `libPlasmaQuick` y
+por ello invisible al lint standalone). El render real sigue pendiente de VM.
