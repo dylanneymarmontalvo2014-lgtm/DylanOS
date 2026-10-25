@@ -17,13 +17,18 @@ PlasmoidItem {
     // dockRow vive dentro de `dockContent` (un Component) y no existe en el
     // ámbito QML del applet. Derivar el ancho de las entradas del modelo evita
     // ReferenceError y da al panel espacio para mostrar los iconos fijados.
-    readonly property int dockRowWidth: Math.max(1, tasksModel.count) * (Plasmoid.configuration.hoverSize + 8)
+    // Las opciones del usuario permiten cambiar ambos tamaños por separado.
+    // Reservar siempre el tamaño mayor para que iconSize > hoverSize no recorte
+    // iconos ni haga que los delegados se solapen en configuraciones extremas.
+    readonly property int effectiveIconExtent: Math.max(Plasmoid.configuration.iconSize,
+                                                         Plasmoid.configuration.hoverSize)
+    readonly property int dockRowWidth: Math.max(1, tasksModel.count) * (effectiveIconExtent + 8)
         + Math.max(0, tasksModel.count - 1) * Plasmoid.configuration.iconSpacing
 
     Layout.minimumWidth: dockRowWidth + (Plasmoid.configuration.dockPadding * 2)
     Layout.maximumWidth: Layout.minimumWidth
     Layout.preferredWidth: Layout.minimumWidth
-    Layout.minimumHeight: Plasmoid.configuration.hoverSize + 18
+    Layout.minimumHeight: effectiveIconExtent + 18
     Layout.preferredHeight: Layout.minimumHeight
 
     Behavior on Layout.minimumWidth {

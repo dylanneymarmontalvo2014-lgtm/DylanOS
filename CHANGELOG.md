@@ -1,3 +1,4 @@
+- Dock: evitar recorte/solapamiento si iconSize configurado supera hoverSize; el panel reserva siempre la extensión mayor.
 - Configuración: corregir los nombres de dispositivos de audio; `pactl list short` entregaba el estado como descripción en los selectores.
 - Instalador: no simular como exitosa una instalación cuando no responde el backend; reconciliar el estado real y mostrar error si no se confirma.
 - Spotlight: reemplazar `eval` sin límite en el cálculo en línea; el evaluador nuevo limita longitud, complejidad, exponentes y magnitud para evitar bloqueos/agotar memoria por consultas como `9**99999999`.

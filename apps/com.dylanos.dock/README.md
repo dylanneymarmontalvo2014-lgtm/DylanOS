@@ -24,3 +24,11 @@ alcance QML; el error impedía que Plasma asignara correctamente el espacio al
 dock y en la captura solo aparecía la papelera del panel. La prueba de contrato
 verifica el cálculo independiente del componente. El render visual final debe
 confirmarse en Plasma; la prueba de código no sustituye esa QA.
+
+
+## Tamaños seguros
+
+El tamaño base y el tamaño máximo al pasar el cursor se configuran por separado.
+El dock reserva el mayor de los dos para el ancho/alto de sus celdas y trata un
+`hoverSize` menor que `iconSize` como el tamaño base, evitando recortes o
+solapamientos con configuraciones guardadas fuera del rango visual esperado.
