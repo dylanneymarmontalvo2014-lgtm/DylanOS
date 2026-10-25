@@ -85,3 +85,4 @@ Todos los cambios relevantes de DylanOS se registran en este archivo. La intenci
 - Primeros recursos de documentación.
 - Diseño visual de escritorio y flujo de construcción al inicio del proyecto.
 - Build: validar `--version` antes de preparar el instalador y propagar la versión al proceso privilegiado; evita que el build versionado de tags falle por `VERSION` sin inicializar y evita side effects de build para versiones inválidas.
+- Instalador: iniciar la selección de disco vacía, exigir detección efectiva y permitir reintentar la consulta; el frontend descarta filas vacías/ficticias. El backend rechaza instalaciones sin root, con destino no enumerado/no block device o sobre el medio live antes de ejecutar comandos de particionado; ya no puede convertir una vista previa en instalación completada.
