@@ -13,3 +13,14 @@ local, sin procesos ni sondeos: icono bajo el puntero hasta 64 px, vecinos
 próximos con escalas intermedias y animación OutCubic de 170 ms. Al salir del
 dock, los iconos vuelven a su tamaño base de 48 px. Se conserva la lista de
 apps fijadas que tenía el layout y la papelera como widget del panel.
+
+
+## Corrección del dock vacío (2026-10-24)
+
+El ancho mínimo del applet ahora se calcula con la cantidad real de entradas
+del modelo y el tamaño configurado de cada delegado. Antes se leía
+`dockRow.implicitWidth` desde fuera de `dockContent`, donde ese id no está en
+alcance QML; el error impedía que Plasma asignara correctamente el espacio al
+dock y en la captura solo aparecía la papelera del panel. La prueba de contrato
+verifica el cálculo independiente del componente. El render visual final debe
+confirmarse en Plasma; la prueba de código no sustituye esa QA.
