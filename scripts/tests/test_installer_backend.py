@@ -403,6 +403,44 @@ class InstallPreparationTest(unittest.TestCase):
             root_part, efi_part = server.find_install_partitions("/dev/sda")
         self.assertEqual((root_part, efi_part), ("/dev/sda2", "/dev/sda1"))
 
+class InstalledLiveAccessTest(unittest.TestCase):
+    def test_removes_live_sudoers_and_sddm_autologin_preserving_theme(self):
+        import tempfile
+        with tempfile.TemporaryDirectory() as folder:
+            target = Path(folder)
+            sudoers = target / "etc/sudoers.d/dylan"
+            sudoers.parent.mkdir(parents=True)
+            sudoers.write_text("dylan ALL=(ALL) NOPASSWD: ALL\n")
+            config = target / "etc/sddm.conf.d/10-dylanos.conf"
+            config.parent.mkdir(parents=True)
+            config.write_text(
+                "[Theme]\nCurrent=DylanOS-Crimson\nCursorTheme=breeze_cursors\n\n"
+                "[General]\nInputMethod=\n\n"
+                "[Autologin]\nUser=dylan\nSession=plasmax11.desktop\nRelogin=false\n"
+            )
+            server.sanitize_installed_live_access(target)
+            self.assertFalse(sudoers.exists())
+            cleaned = config.read_text()
+            self.assertIn("[Theme]", cleaned)
+            self.assertIn("Current=DylanOS-Crimson", cleaned)
+            self.assertIn("[General]", cleaned)
+            self.assertNotIn("[Autologin]", cleaned)
+            self.assertNotIn("User=dylan", cleaned)
+
+    def test_removes_live_access_even_when_installer_keeps_dylan_username(self):
+        import tempfile
+        with tempfile.TemporaryDirectory() as folder:
+            target = Path(folder)
+            (target / "etc/sudoers.d").mkdir(parents=True)
+            (target / "etc/sudoers.d/dylan").write_text("dylan ALL=(ALL) NOPASSWD: ALL\n")
+            cfg = target / "etc/sddm.conf.d"
+            cfg.mkdir(parents=True)
+            (cfg / "10-dylanos.conf").write_text("[Autologin]\nUser=dylan\nSession=plasmax11.desktop\n")
+            server.sanitize_installed_live_access(target)
+            self.assertFalse((target / "etc/sudoers.d/dylan").exists())
+            self.assertNotIn("[Autologin]", (cfg / "10-dylanos.conf").read_text())
+
+
 class InstallRootCleanupTest(unittest.TestCase):
     def test_manual_install_root_is_cleared_without_following_symlinks(self):
         """Old files from a reused ext4 root must not survive squashfs extraction."""
