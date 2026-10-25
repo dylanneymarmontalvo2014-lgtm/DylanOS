@@ -45,9 +45,9 @@ El comando `about` lee `/usr/share/dylanos/MAINTAINERS.txt` y usa los bloques `M
 
 ### Spotlight: alcance actual
 
-La ventana busca aplicaciones leyendo entradas `.desktop` y proyectos en `~/Proyectos`, `~/Projects`, `~/DylanOS` y `~/workspace`. La consulta pretende ofrecer una búsqueda web en DuckDuckGo, pero hay un error de importación de `urllib.parse` en el código actual que puede interrumpir esa ruta; no asumir que funciona hasta corregirlo. La activación de aplicaciones usa su línea `Exec` de escritorio; las carpetas se abren con DylanOS Explorer cuando está instalado.
+La ventana busca aplicaciones leyendo entradas `.desktop` y proyectos en `~/Proyectos`, `~/Projects`, `~/DylanOS` y `~/workspace`. La consulta ofrece abrir una búsqueda web en DuckDuckGo; el texto de consulta se codifica para URL antes de abrir el navegador. La activación de aplicaciones usa su línea `Exec` de escritorio; las carpetas se abren con DylanOS Explorer cuando está instalado.
 
-**Filtros que todavía no están completos:** aunque la interfaz muestra «Archivos» y «Calcular», el backend actual no indexa archivos recientes ni implementa un modo de filtro de archivos/cálculo de extremo a extremo. La aritmética puede aparecer como resultado cuando se escribe una expresión en la consulta; no interpretar la etiqueta como garantía de un motor de cálculo completo. El contador visual de archivos es fijo/estimado, no un inventario real. La ruta que construye el enlace web también referencia `urllib.parse.quote` sin importar el módulo `urllib`, de modo que puede fallar al escribir una consulta. Estas funciones no se deben anunciar como búsqueda de archivos o web plenamente implementada hasta corregir y probar el backend.
+**Filtros que todavía no están completos:** «Archivos» no indexa ni busca archivos. «Calcular» solo devuelve expresiones aritméticas sencillas; no es un motor general. El filtro «Web» muestra únicamente la acción de búsqueda, y en «Todo» esta acción queda disponible aunque haya muchos resultados. El pie de ventana cuenta aplicaciones y proyectos indexados; no inventa una cantidad de archivos.
 
 ## Instalador: precauciones y alcance
 

@@ -168,3 +168,30 @@ El applet ahora calcula el ancho mínimo con el número de elementos de
 una aserción al contrato del dock. Validación de esta actualización: prueba
 estática local y resultado CI en curso al publicar. QA visual en una sesión
 Plasma sigue pendiente; no se afirma todavía que el render se haya comprobado.
+
+
+AUDITORÍA Y CORRECCIÓN SPOTLIGHT — 2026-10-24
+--------------------------------------------
+Hallazgo confirmado: `backend.py` llamaba a `urllib.parse.quote` sin importar
+`urllib`, lo que lanzaba `NameError` al actualizar la búsqueda y añadir el
+resultado web. Se importa `quote` explícitamente y se añade un contrato de
+regresión. Se actualiza la guía, que advertía del fallo anterior. La búsqueda
+de archivos y el modo calculadora siguen incompletos y se documentan como
+limitaciones, no se han presentado como funciones reparadas en esta tarea.
+
+Auditoría local del árbol integrado: `unittest discover` ejecutó 130 pruebas;
+1 falló porque el ZIP descargado no conserva el bit ejecutable de
+`scripts/build.sh`, 2 dieron error porque esta sesión no tiene
+`/usr/bin/python3` para ejecutar el parser GTK; 12 se omitieron por
+dependencias opcionales ausentes. El CI del dock para el SHA auditado ya
+finalizó correctamente.
+
+
+AUDITORÍA DE SPOTLIGHT — 2026-10-24 (hallazgos adicionales)
+-----------------------------------------------------------
+Se corrigió el alcance de filtros: Web muestra solo su acción; Calcular solo
+expone expresiones aritméticas; en Todo, la acción web permanece dentro del
+límite de resultados. Se quitó el recuento ficticio de archivos del pie.
+Archivos continúa sin motor de búsqueda y está documentado como pendiente.
+Pruebas de contrato de Spotlight y test de shell ejecutados localmente; no se
+ha ejecutado runtime Qt porque PySide6 no está instalado en este entorno.
