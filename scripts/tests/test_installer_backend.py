@@ -403,6 +403,36 @@ class InstallPreparationTest(unittest.TestCase):
             root_part, efi_part = server.find_install_partitions("/dev/sda")
         self.assertEqual((root_part, efi_part), ("/dev/sda2", "/dev/sda1"))
 
+class InstallerRequestOriginTest(unittest.TestCase):
+    def test_allows_same_origin_local_installer(self):
+        handler = object.__new__(server.InstallerRequestHandler)
+        handler.headers = {
+            "Host": "127.0.0.1:8088",
+            "Origin": "http://127.0.0.1:8088",
+            "Sec-Fetch-Site": "same-origin",
+        }
+        self.assertTrue(handler._local_request_allowed())
+
+    def test_rejects_cross_site_and_foreign_origin_even_with_local_host(self):
+        for headers in (
+            {"Host": "127.0.0.1:8088", "Origin": "https://attacker.example"},
+            {"Host": "127.0.0.1:8088", "Sec-Fetch-Site": "cross-site"},
+        ):
+            with self.subTest(headers=headers):
+                handler = object.__new__(server.InstallerRequestHandler)
+                handler.headers = headers
+                self.assertFalse(handler._local_request_allowed())
+
+    def test_rejects_dns_rebinding_host(self):
+        handler = object.__new__(server.InstallerRequestHandler)
+        handler.headers = {
+            "Host": "attacker.example:8088",
+            "Origin": "http://attacker.example:8088",
+            "Sec-Fetch-Site": "same-origin",
+        }
+        self.assertFalse(handler._local_request_allowed())
+
+
 class InstalledLiveAccessTest(unittest.TestCase):
     def test_removes_live_sudoers_and_sddm_autologin_preserving_theme(self):
         import tempfile

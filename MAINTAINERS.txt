@@ -305,3 +305,17 @@ los nombres, preservando la sección Theme y otras opciones. Añadidas pruebas
 unitarias para limpieza/retención del tema y para el caso de conservar `dylan`.
 Esto es una corrección de código con prueba local; no se afirma instalación
 real ni arranque de sistema instalado en VM.
+
+
+SEGURIDAD DE API LOCAL DEL INSTALADOR — 2026-10-25
+--------------------------------------------------
+La API del instalador escucha en loopback, pero respondía con
+`Access-Control-Allow-Origin: *`; una web externa podía leer respuestas con
+datos de hardware/discos. Sus endpoints POST de reinicio y cierre tampoco
+verificaban origen, por lo que una página podía intentar disparar acciones
+mediante formularios simples sin preflight.
+
+Corrección: validar Host loopback, Origin permitido y Sec-Fetch-Site en GET y
+POST; eliminar el encabezado CORS comodín. Añadidas pruebas de misma origen,
+origen ajeno, cross-site y DNS rebinding. Validación local no equivale a una
+prueba de seguridad en navegador o imagen instalada.
