@@ -15,6 +15,9 @@ Todos los cambios relevantes de DylanOS se registran en este archivo. La intenci
 
 ### Corregido
 
+- Spotlight: lanzar entradas de aplicaciones `.desktop` con argv y sin `shell=True`; los metacaracteres no se interpretan como código de shell y las comillas malformadas se rechazan. Se añadieron pruebas para argumentos citados, códigos de archivo y separadores de shell.
+
+
 - Staging: corregir el nombre del archivo de asociaciones MIME del sistema a `mimeapps.list` y terminar las asociaciones con `;`; `mimeapps.info` era ignorado por XDG, por lo que el Explorer no se establecía como aplicación predeterminada a nivel del sistema.
 
 - Instalador: limpiar el contenido previo de la partición raíz ext4 elegida en modo manual antes de extraer `filesystem.squashfs`; evita instalaciones híbridas con archivos obsoletos que `unsquashfs -f` no elimina. La limpieza no sigue enlaces simbólicos.

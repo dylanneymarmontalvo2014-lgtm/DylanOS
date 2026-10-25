@@ -12,6 +12,7 @@ import shutil
 import subprocess
 import sys
 from urllib.parse import quote
+from exec_utils import desktop_exec_argv
 
 from PySide6.QtCore import QObject, Signal, Slot, Property
 from PySide6.QtGui import QDesktopServices
@@ -212,8 +213,12 @@ class SpotlightBackend(QObject):
 
             if act_type == "app":
                 try:
-                    subprocess.Popen(payload, shell=True)
-                except Exception as e:
+                    argv = desktop_exec_argv(payload)
+                    if argv:
+                        subprocess.Popen(argv)
+                    else:
+                        print("Error lanzando app: el campo Exec está vacío")
+                except (OSError, ValueError) as e:
                     print(f"Error lanzando app: {e}")
             elif act_type == "folder":
                 # DylanOS Explorer es el único explorador de archivos del
