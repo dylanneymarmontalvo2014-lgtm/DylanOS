@@ -319,6 +319,11 @@ class StagingTest(unittest.TestCase):
             mimeapps = (root / "etc/skel/.config/mimeapps.list").read_text()
             self.assertIn("inode/directory=org.dylanos.explorer.desktop;", mimeapps)
             self.assertIn("x-scheme-handler/terminal=org.dylanos.console.desktop;", mimeapps)
+            # XDG solo lee mimeapps.list; mimeapps.info no aplica asociaciones
+            # predeterminadas del sistema.
+            system_mimeapps = (root / "usr/share/applications/mimeapps.list").read_text()
+            self.assertIn("inode/directory=org.dylanos.explorer.desktop;", system_mimeapps)
+            self.assertFalse((root / "usr/share/applications/mimeapps.info").exists())
             self.assertNotIn("dolphin", mimeapps)
             self.assertNotIn("konsole", mimeapps)
             # Re-staging sobre un root existente: debe limpiar artefactos
