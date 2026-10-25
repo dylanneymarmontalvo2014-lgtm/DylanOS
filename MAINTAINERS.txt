@@ -217,3 +217,22 @@ AUDITORÍA Y CORRECCIÓN MIME — 2026-10-25
 Hallazgo confirmado en `scripts/stage.py`: el staging escribía las asociaciones MIME globales como `mimeapps.info`, nombre que XDG no reconoce (`mimeapps.list` es el nombre requerido), y además omitía el terminador `;` de los IDs de escritorio. El archivo por usuario ya configuraba Explorer; esta corrección repara las asociaciones de nivel sistema.
 
 Regresión añadida en `scripts/tests/test_staging.py`: verifica el archivo global `mimeapps.list`, el valor terminado en punto y coma y la ausencia del nombre inválido. La ejecución local de la suite no fue válida en la copia de trabajo disponible: ésta difiere de la rama confirmada (incluye una variante antigua de staging que exige `configs/kitty/kitty.conf`, archivo ausente del HEAD actual). El resultado del CI del SHA publicado debe consultarse antes de declarar la corrección validada. No se realizaron pruebas visuales, de VM ni de ISO.
+
+AUDITORÍA SPOTLIGHT — 2026-10-25
+--------------------------------
+Hallazgo confirmado en `apps/dylanos-spotlight/backend.py`: las aplicaciones
+obtenidas del campo `Exec` de archivos `.desktop` se ejecutaban con
+`subprocess.Popen(..., shell=True)`. El campo `Exec` es un vector de argumentos,
+no un programa de shell; una entrada con metacaracteres podía ejecutar órdenes
+adicionales al activar un resultado. Ahora se analiza con `shlex` y se lanza
+sin shell, conservando argumentos entrecomillados y suprimiendo códigos de
+campo sin selección. Se rechaza una cadena con comillas inválidas.
+
+Archivos afectados: `backend.py`, nuevo `exec_utils.py`,
+`apps/dylanos-spotlight/README.md`, `scripts/tests/test_spotlight_exec.py`,
+y `CHANGELOG.md`. Prueba local ejecutada:
+`python3 -m unittest scripts.tests.test_spotlight_exec -v` (3 pruebas aprobadas).
+No se ejecutó el runtime Qt, la ISO, la instalación ni una prueba visual; este
+entorno no tiene PySide6. La prueba de CI de HEAD anterior estaba en curso al
+inicio de esta auditoría; revisar el run asociado al nuevo SHA antes de
+considerar CI aprobado.
