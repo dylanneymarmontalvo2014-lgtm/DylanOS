@@ -1,3 +1,4 @@
+- Centro de Control: quitar asignaciones QML no válidas `Accessible.value` de los sliders de volumen/micrófono que impedían cargar el plasmoid; se conserva el nombre accesible y el propio Slider anuncia su valor.
 - SDDM: ajustar el ancho de la tarjeta de acceso al formulario escalado para
   que no quede sobredimensionada en pantallas estrechas.
 - Dock predeterminado: integrar el dock propio DylanOS y añadir ampliación

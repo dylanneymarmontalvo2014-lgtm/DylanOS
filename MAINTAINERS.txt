@@ -146,3 +146,13 @@ Validación local: `scripts.tests.test_sddm_theme` ejecutó 2 pruebas y omitió
 1 por falta de `sddm-greeter`; `test_staging` y `test_documentation` pasaron
 (9 pruebas). No se afirma una validación visual en greeter ni VM; el greeter
 no está instalado en el entorno de edición.
+
+
+CORRECCIÓN URGENTE — 2026-10-24
+-------------------------------
+La captura del usuario reveló que el Centro de Control no cargaba:
+`ControlCenterPanel.qml` asignaba `Accessible.value` en dos sliders, propiedad
+no válida para el control en Qt Quick. Se eliminaron ambas asignaciones;
+`Accessible.name` se conserva y `Slider` anuncia su valor mediante su API
+nativa. Pruebas específicas y estado de CI de la corrección se registran al
+confirmarse. No se modificó SDDM en esta corrección.
