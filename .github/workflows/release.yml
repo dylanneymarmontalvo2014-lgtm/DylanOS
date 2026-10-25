@@ -1,17 +1,55 @@
-name: Validate release tag
+name: Build and publish release
 on:
   push:
     tags: ['v*']
 permissions:
-  contents: read
+  contents: write
 jobs:
-  validate:
+  build-release:
     runs-on: ubuntu-24.04
+    timeout-minutes: 240
     steps:
       - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.ref }}
+      - name: Derive and validate release version
+        shell: bash
+        run: |
+          version="${GITHUB_REF_NAME#v}"
+          if [[ ! "$GITHUB_REF_NAME" =~ ^v[0-9]+\.[0-9]+\.[0-9]+([+-][A-Za-z0-9.-]+)?$ ]]; then
+            echo "Expected tag vMAJOR.MINOR.PATCH[-suffix], got $GITHUB_REF_NAME" >&2
+            exit 2
+          fi
+          echo "DYLANOS_VERSION=$version" >> "$GITHUB_ENV"
+          echo "DYLANOS_VERSION=$version"
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+          cache-dependency-path: installer/dylanos-installer/package-lock.json
       - uses: actions/setup-python@v5
         with:
           python-version: '3.12'
-      - run: sudo apt-get update && sudo apt-get install -y shellcheck desktop-file-utils libegl1 libopengl0 libxkbcommon0
+      - name: Install validation and ISO build dependencies
+        run: sudo apt-get update && sudo apt-get install -y debootstrap gnupg squashfs-tools xorriso grub-pc-bin grub-efi-amd64-bin mtools dosfstools qemu-system-x86 shellcheck desktop-file-utils libegl1 libopengl0 libxkbcommon0
       - run: pip install -r apps/workspace/requirements-dev.txt
-      - run: bash scripts/check.sh
+      - name: Run code and component QA
+        run: bash scripts/check.sh
+      - name: Build the versioned production system
+        run: bash scripts/build.sh --minimal "--version=$DYLANOS_VERSION"
+      - name: Create the versioned amd64 ISO
+        run: sudo env DYLANOS_VERSION="$DYLANOS_VERSION" bash scripts/iso.sh "$DYLANOS_VERSION"
+      - name: Validate ISO structure and checksum
+        run: DYLANOS_VERSION="$DYLANOS_VERSION" bash scripts/test.sh
+      - name: Smoke-test live boot in QEMU
+        run: DYLANOS_VERSION="$DYLANOS_VERSION" bash scripts/test-boot-qemu.sh
+      - name: Publish ISO and SHA-256
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: ${{ github.ref_name }}
+          name: DylanOS ${{ github.ref_name }}
+          generate_release_notes: true
+          prerelease: ${{ contains(github.ref_name, '-') }}
+          files: |
+            DylanOS-${{ env.DYLANOS_VERSION }}-amd64.iso
+            DylanOS-${{ env.DYLANOS_VERSION }}-amd64.iso.sha256

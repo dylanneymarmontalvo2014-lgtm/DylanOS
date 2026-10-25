@@ -1,6 +1,7 @@
 """Check that the installed payload is complete and safe to regenerate."""
 import importlib.util
 import json
+import os
 from pathlib import Path
 import tempfile
 import unittest
@@ -36,6 +37,21 @@ class StagingTest(unittest.TestCase):
     def test_refuses_host_and_repository(self):
         for path in ("/", ROOT, ROOT.parent):
             with self.assertRaises(ValueError): module.stage(path)
+
+    def test_release_version_is_reflected_in_system_metadata(self):
+        with tempfile.TemporaryDirectory() as folder:
+            root = Path(folder)
+            module.stage(root, version="2.4.1")
+            release = (root / "etc/dylanos-release").read_text(encoding="utf-8")
+            os_release = (root / "usr/lib/os-release").read_text(encoding="utf-8")
+            self.assertIn("DylanOS 2.4.1", release)
+            self.assertIn('PRETTY_NAME="DylanOS 2.4.1"', os_release)
+            self.assertIn('VERSION_ID="2.4.1"', os_release)
+
+    def test_stage_rejects_unsafe_release_version(self):
+        with tempfile.TemporaryDirectory() as folder:
+            with self.assertRaises(ValueError):
+                module.stage(Path(folder) / "root", version="../../evil")
 
     def test_payload_and_repeat_staging(self):
         with tempfile.TemporaryDirectory() as folder:
