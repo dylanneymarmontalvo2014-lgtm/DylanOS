@@ -254,3 +254,20 @@ resuelven nombre interno → descripción, con fallback al nombre si no hay
 descripción o el dispositivo ya no está listado. Al elegir se conserva el
 nombre interno exigido por `setDefaultSink/Source`. Prueba de contrato
 añadida; validación de runtime de audio/Qt no se afirma sin servidor real.
+
+
+ACTUALIZACIÓN DE MANTENIMIENTO — 2026-10-25
+------------------------------------------
+Rama: development. Hallazgo confirmado por inspección del flujo de navegación
+integrado: `Configuration.qml` guardaba únicamente `route` en el historial aun
+cuando `go()` admite pestañas (por ejemplo, «Aplicaciones → Predeterminadas»).
+Al regresar desde otra sección, `AppsPage.qml` recibía `tab` vacío y mostraba
+«Instaladas»; se guardan y restauran ahora ruta y pestaña juntas.
+
+Archivos: `apps/dylanos-configuration/qml/Main.qml` registra las dos partes
+del estado de navegación; `scripts/tests/test_configuration.py` añade una
+regresión de contrato sobre el almacenamiento/restauración y el uso real de
+la pestaña por AppsPage; `CHANGELOG.md` registra el cambio.
+Prueba dirigida: `python3 -m unittest scripts.tests.test_configuration -v`.
+Es prueba de contrato estática; no hay runtime Qt/QML en este entorno, así que
+no se afirma validación interactiva ni visual.

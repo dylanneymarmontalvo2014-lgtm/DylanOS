@@ -38,6 +38,18 @@ class TestDylanOSConfiguration(unittest.TestCase):
                          "DisplayPage", "SoundPage", "NotificationsPage", "StoragePage"]:
             self.assertIn(esperada, pages)
 
+    def test_navigation_history_restores_route_and_selected_tab(self):
+        main = (APP / "qml/Main.qml").read_text(encoding="utf-8")
+        self.assertIn('property var history: [{ route: startPage, tab: "" }]', main)
+        self.assertIn('history = history.concat([{ route: target, tab: nextTab }])', main)
+        self.assertIn('route = prev.route', main)
+        self.assertIn('tab = prev.tab || ""', main)
+        # Tabs are real page state: returning to AppsPage must preserve the
+        # Predeterminadas tab instead of silently showing its Instaladas default.
+        apps = (APP / "qml/pages/AppsPage.qml").read_text(encoding="utf-8")
+        self.assertIn('property string tab: Window.window && Window.window.tab ? Window.window.tab : "Instaladas"', apps)
+        self.assertIn('visible: root.tab === "Predeterminadas"', apps)
+
     def test_sin_rastro_de_systemsettings_en_la_ui(self):
         for qml in APP.rglob("*.qml"):
             contenido = qml.read_text(encoding="utf-8")
