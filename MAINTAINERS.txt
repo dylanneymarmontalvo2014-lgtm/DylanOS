@@ -236,3 +236,9 @@ No se ejecutó el runtime Qt, la ISO, la instalación ni una prueba visual; este
 entorno no tiene PySide6. La prueba de CI de HEAD anterior estaba en curso al
 inicio de esta auditoría; revisar el run asociado al nuevo SHA antes de
 considerar CI aprobado.
+
+
+AUDITORÍA DE ENERGÍA — 2026-10-25
+---------------------------------
+Rama: development. Hallazgo confirmado en HEAD 707694bc356d2ae447a1985e02104f771a997795: DylanOS Configuration consultaba y cambiaba perfiles mediante `powerprofilesctl`, pero `packages/default/packages.list` no incluía `power-profiles-daemon`; la imagen base no garantizaba la herramienta/servicio y la página caía al estado «Sin gestión de energía». Se añadió el paquete al perfil base y una aserción a `test_packages.sh`.
+Verificación local tras el cambio: `bash scripts/tests/test_packages.sh` — 57 aprobadas, 0 fallidas; `python3 -m unittest scripts.tests.test_configuration scripts.tests.test_documentation -v` — 8 aprobadas. Estas pruebas son de contrato/staging/documentación; no se construyó imagen y no se comprobó el servicio en runtime, hardware o VM. Queda pendiente validar instalación y funcionamiento en build/runtime.
