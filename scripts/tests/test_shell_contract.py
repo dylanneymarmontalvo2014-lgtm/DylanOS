@@ -228,3 +228,12 @@ printf 'aceptada=%s\\n' "$READLINE_LINE"
 
 if __name__ == "__main__":
     unittest.main()
+
+
+    def test_control_center_sliders_use_supported_accessibility_properties(self):
+        panel = (ROOT / "apps/dylanos-control-center/contents/ui/ControlCenterPanel.qml").read_text(encoding="utf-8")
+        self.assertNotIn("Accessible.value:", panel)
+        self.assertIn('Accessible.name: "Volumen de salida"', panel)
+        self.assertIn('Accessible.name: "Nivel del micrófono"', panel)
+        self.assertIn("onMoved: SystemStatus.setVolume(value)", panel)
+        self.assertIn("onMoved: SystemStatus.setMicrophoneVolume(value)", panel)

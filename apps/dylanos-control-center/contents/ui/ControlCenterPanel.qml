@@ -290,7 +290,6 @@ Rectangle {
                 from: 0; to: 1
                 enabled: SystemStatus.volumeAvailable
                 Accessible.name: "Volumen de salida"
-                Accessible.value: Math.round(value * 100) + "%"
                 onMoved: SystemStatus.setVolume(value)
 
                 Binding {
@@ -343,7 +342,6 @@ Rectangle {
                 from: 0; to: 1
                 enabled: SystemStatus.microphoneAvailable
                 Accessible.name: "Nivel del micrófono"
-                Accessible.value: Math.round(value * 100) + "%"
                 onMoved: SystemStatus.setMicrophoneVolume(value)
 
                 Binding {
