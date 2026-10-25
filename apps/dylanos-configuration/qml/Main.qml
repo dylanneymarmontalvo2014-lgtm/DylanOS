@@ -18,15 +18,17 @@ Window {
 
     property string route: startPage
     property string tab: ""
-    property var history: [startPage]
+    property var history: [{ route: startPage, tab: "" }]
     readonly property bool canBack: history.length > 1
 
     function go(target, targetTab) {
-        if (history[history.length - 1] === target && tab === (targetTab || ""))
+        const nextTab = targetTab || ""
+        const current = history[history.length - 1]
+        if (current && current.route === target && (current.tab || "") === nextTab)
             return
-        history = history.concat([{ route: target }])
+        history = history.concat([{ route: target, tab: nextTab }])
         route = target
-        tab = targetTab || ""
+        tab = nextTab
         searchQuery = ""
     }
     function back() {
@@ -35,8 +37,8 @@ Window {
         const next = history.slice(0, -1)
         history = next
         const prev = next[next.length - 1]
-        route = typeof prev === "string" ? prev : prev.route
-        tab = typeof prev === "object" && prev ? (prev.tab || "") : ""
+        route = prev.route
+        tab = prev.tab || ""
     }
 
     // --- Navegación del prototipo (data/demo.ts) ---

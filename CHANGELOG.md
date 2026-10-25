@@ -16,6 +16,8 @@ Todos los cambios relevantes de DylanOS se registran en este archivo. La intenci
 
 ### Corregido
 
+- Configuración: conservar la pestaña activa en cada entrada del historial. Al volver desde otra sección, «Aplicaciones → Predeterminadas» ya no regresaba a «Instaladas» porque el historial solo guardaba la ruta.
+
 - Configuración/Energía: incluir `power-profiles-daemon` en el perfil base. La
   interfaz consultaba `powerprofilesctl` y permitía cambiar perfiles, pero la
   imagen no instalaba el backend que proporciona el comando; ahora queda
