@@ -88,7 +88,7 @@ gráfica visual, que requieren QA aparte. Los builds manuales conservan
 
 ## Preparar dependencias y validar
 
-Desde la raíz del repo, ejecuta `bash init.sh`. Debian/Ubuntu usan dependencias nativas; los demás Linux amd64 usan el builder Docker. Si falta Docker/Compose v2, la instalación automática se ofrece solo en Arch y derivados, Fedora, RHEL/CentOS/Rocky/AlmaLinux, openSUSE y Alpine. En otros Linux configura el engine y Compose v2 manualmente. El script muestra el plan y solicita confirmación antes de instalar paquetes, configurar repositorios, iniciar servicios o construir la imagen. `--yes` omite el diálogo, así que úsalo solo para cambios previamente aprobados.
+Desde la raíz del repo, ejecuta `./init.sh` (o `bash init.sh`). Los puntos de entrada `init.sh`, `scripts/build.sh`, `scripts/check.sh`, `scripts/test-build-host.sh`, `scripts/iso.sh` y `scripts/test.sh` están marcados como ejecutables en Git. Debian/Ubuntu usan dependencias nativas; los demás Linux amd64 usan el builder Docker. Si falta Docker/Compose v2, la instalación automática se ofrece solo en Arch y derivados, Fedora, RHEL/CentOS/Rocky/AlmaLinux, openSUSE y Alpine. En otros Linux configura el engine y Compose v2 manualmente. El script muestra el plan y solicita confirmación antes de instalar paquetes, configurar repositorios, iniciar servicios o construir la imagen. `--yes` omite el diálogo, así que úsalo solo para cambios previamente aprobados.
 
 ```bash
 bash init.sh
