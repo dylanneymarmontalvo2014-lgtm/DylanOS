@@ -9,8 +9,17 @@ ROOT = Path(__file__).resolve().parents[2]
 
 
 class BuildEntrypointTest(unittest.TestCase):
-    def test_build_script_can_be_invoked_directly(self):
-        self.assertTrue(os.access(ROOT / "scripts/build.sh", os.X_OK))
+    def test_build_and_setup_entrypoints_can_be_invoked_directly(self):
+        for script in (
+            "init.sh",
+            "scripts/build.sh",
+            "scripts/check.sh",
+            "scripts/test-build-host.sh",
+            "scripts/iso.sh",
+            "scripts/test.sh",
+        ):
+            with self.subTest(script=script):
+                self.assertTrue(os.access(ROOT / script, os.X_OK), f"{script} debe tener modo ejecutable en Git")
 
     def test_version_argument_is_validated_before_build_side_effects(self):
         result = subprocess.run(

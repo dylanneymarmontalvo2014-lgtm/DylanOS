@@ -398,3 +398,17 @@ un identificador incorrecto y no abría el módulo.
 Corrección: actualizar el comando y añadir una aserción para mantenerlo
 alineado con PowerPage.qml. Prueba de contrato; no sustituye ejecutar el KCM
 en Plasma real.
+
+
+CORRECCIÓN DE PERMISOS DE SCRIPTS DE BUILD — 2026-10-25
+-------------------------------------------------------
+Hallazgo confirmado en el árbol Git de development: `init.sh`,
+`scripts/check.sh` y `scripts/test-build-host.sh` contienen shebang y son
+puntos de entrada, pero estaban registrados como 100644. Ejecutarlos como
+`./init.sh`, `./scripts/check.sh` o `./scripts/test-build-host.sh` devolvía
+«permiso denegado». `scripts/build.sh`, `scripts/iso.sh` y otros entrypoints
+principales ya estaban en 100755.
+
+Corrección: guardar los tres puntos de entrada como 100755, añadir una prueba
+que protege los modos de los entrypoints, y actualizar las instrucciones de
+uso. `scripts/build-host.sh` sigue como biblioteca sourced, no como ejecutable.
