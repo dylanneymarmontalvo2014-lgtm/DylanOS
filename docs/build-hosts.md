@@ -35,7 +35,7 @@ Los paquetes/repo pueden variar por versión de la distribución. Si la instalac
 La detección usa campos exactos `ID` y `ID_LIKE` de `/etc/os-release`, no coincidencias de subcadenas arbitrarias. La tabla de detección se prueba sin privilegios:
 
 ```bash
-bash scripts/test-build-host.sh
+./scripts/test-build-host.sh
 bash -n init.sh scripts/build-host.sh scripts/test-build-host.sh
 ```
 
