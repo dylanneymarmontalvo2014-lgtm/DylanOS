@@ -1,6 +1,6 @@
 # ~/.bashrc de DylanOS
 # shellcheck shell=bash
-# Prompt Crimson, separadores con nombre, sugerencias fantasma y neofetch.
+# Prompt Crimson moderno (línea info + chevron), sugerencias fantasma y neofetch.
 
 # Sin interactividad, no hacer nada.
 case $- in
@@ -39,9 +39,6 @@ alias sistema='neofetch'
 
 # ───────────────────────── Paleta Crimson ──────────────────────────
 DYL_CRIMSON='\[\e[1;38;5;196m\]'
-DYL_WHITE='\[\e[1;38;5;255m\]'
-DYL_GRAY='\[\e[38;5;245m\]'
-DYL_BLUE='\[\e[38;5;75m\]'
 DYL_RESET='\[\e[0m\]'
 
 _DYL_RED='\e[1;38;5;196m'
@@ -51,35 +48,64 @@ _DYL_GRAY='\e[38;5;245m'
 _DYL_DIM='\e[38;5;238m'
 _DYL_OFF='\e[0m'
 
-# ─────────────── Rama de git para el prompt (si existe) ─────────────
-__dylanos_git_branch() {
-    local branch
-    branch=$(git symbolic-ref --short HEAD 2>/dev/null) || return 0
-    printf ' %b\342\226\210 %b%s%b' "$_DYL_DIM" "$_DYL_ROSE" "$branch" "$_DYL_OFF"
-}
-
-# Separador con nombre entre comandos + título de la ventana.
+# ─────────── Prompt moderno de DylanOS (info + chevron ❯) ──────────
 __dylanos_prompt_command() {
-    local columns title mark rest i
-    columns=$(tput cols 2>/dev/null) || columns=80
-    title=' DylanOS Console '
-    mark='──'
-    rest=$((columns - ${#title} - 4))
-    [ "$rest" -lt 4 ] && rest=4
-    printf '%b%s%s' "$_DYL_DIM" "$mark" "$title"
-    i=0
-    while [ "$i" -lt "$rest" ]; do
-        printf '─'
-        i=$((i + 1))
+    local ec=$?
+    local cols
+    cols=$(tput cols 2>/dev/null) || cols=80
+
+    # Título de ventana
+    printf '\e]0;DylanOS Console — %s@%s: %s\a' \
+        "${USER}" "$(hostname -s 2>/dev/null)" "${PWD/#$HOME/~}"
+
+    # Indicador: ○ éxito, ● error
+    local circle='○' circle_clr="$_DYL_WHITE"
+    if [ "$ec" -ne 0 ]; then
+        circle='●'; circle_clr="$_DYL_RED"
+    fi
+
+    local user="${USER}"
+    local dir="${PWD/#$HOME/\~}"
+    local now
+    now=$(date +%H:%M)
+
+    # Rama de git (si existe)
+    local git_seg="" git_plain=""
+    local branch
+    branch=$(git symbolic-ref --short HEAD 2>/dev/null) || true
+    if [ -n "$branch" ]; then
+        git_seg=" ${_DYL_ROSE}${branch}${_DYL_OFF}"
+        git_plain=" ${branch}"
+    fi
+
+    # Relleno punteado hasta el borde derecho
+    local plain_left="[ ${circle} ${user} ] [ ${dir} ]${git_plain} "
+    local plain_right=" © ${now}"
+    local fill=$(( cols - ${#plain_left} - ${#plain_right} ))
+    [ "$fill" -lt 3 ] && fill=3
+
+    local dots='' i=0
+    while [ "$i" -lt "$fill" ]; do
+        dots="${dots}·"; i=$((i + 1))
     done
-    printf '%s%b\n' "$mark" "$_DYL_OFF"
-    printf '\e]0;DylanOS Console — %s@%s: %s\a' "${USER}" "$(hostname -s 2>/dev/null)" "${PWD/#$HOME/~}"
+
+    # Línea informativa con relleno punteado
+    local line="${_DYL_GRAY}[ "
+    line+="${circle_clr}${circle}${_DYL_OFF} "
+    line+="${_DYL_WHITE}${user}${_DYL_OFF} "
+    line+="${_DYL_GRAY}] [ "
+    line+="${_DYL_WHITE}${dir}${_DYL_OFF} "
+    line+="${_DYL_GRAY}]${_DYL_OFF}"
+    line+="${git_seg} "
+    line+="${_DYL_DIM}${dots}${_DYL_OFF}"
+    line+=" ${_DYL_GRAY}© ${now}${_DYL_OFF}"
+    printf '%b\n' "$line"
 }
 PROMPT_COMMAND=__dylanos_prompt_command
 
 # ─────────────────────── Prompt de DylanOS ──────────────────────────
-PS1="${DYL_CRIMSON}\342\224\214\342\224\200\342\224\200${DYL_WHITE} ${DYL_CRIMSON}[${DYL_WHITE}\u${DYL_GRAY}@${DYL_WHITE}\h${DYL_CRIMSON}]${DYL_GRAY}-${DYL_CRIMSON}[${DYL_BLUE}\w${DYL_CRIMSON}]\$(__dylanos_git_branch)\n${DYL_CRIMSON}\342\224\224\342\224\200\342\224\200\342\226\266 ${DYL_RESET}"
-PS2="${DYL_CRIMSON}\342\224\200\342\226\266 ${DYL_RESET}"
+PS1="${DYL_CRIMSON}❯ ${DYL_RESET}"
+PS2="${DYL_CRIMSON}· ${DYL_RESET}"
 
 # ─────────────── Recomendaciones al escribir mal un comando ────────
 command_not_found_handle() {
