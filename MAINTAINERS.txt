@@ -455,3 +455,22 @@ cambio anterior de configuración. Se actualizaron únicamente las expectativas
 de la prueba y la nota del changelog, sin editar Kitty ni el wallpaper.
 Pruebas locales: suite de contrato (9/9) y `scripts/tests/test_packages.sh`
 (59/59). CI del nuevo SHA queda pendiente.
+
+
+COMPATIBILIDAD COMPOSE EN BUILDER — 2026-10-27
+------------------------------------------------
+El inicializador exigía exclusivamente `docker compose`, lo que excluía hosts
+con Compose v2 instalado como ejecutable standalone `docker-compose`, aunque
+ese modo es habitual en instalaciones por paquetes o manuales. Se añadió
+`/scripts/docker-compose.sh`: detecta plugin o standalone v2, rechaza v1 y usa
+el modo detectado tanto para construir como para ejecutar QA, incluso bajo sudo
+cuando el daemon solo sea accesible con sudo. Dockerfile incluye el helper que
+`init.sh` carga. La tabla de hosts y guías documentan los requisitos sin
+afirmar compatibilidad validada en cada distribución.
+
+Pruebas locales de detección cubren plugin, standalone v2 (dos formatos) y
+rechazo de v1 usando ejecutables fake; se integran en `scripts/check.sh`. El CI
+40604483812 fallaba además por un contrato obsoleto en `test_staging.py` que
+esperaba opacidad 0.40 aunque Kitty configura 0.50; se actualizó esa expectativa
+sin tocar la configuración. El build real del contenedor y QA siguen sujetos
+al CI del nuevo SHA.

@@ -70,6 +70,15 @@ class BuildEntrypointTest(unittest.TestCase):
                 if holder.stderr:
                     holder.stderr.close()
 
+    def test_docker_builder_supports_plugin_and_standalone_compose_v2(self):
+        init = (ROOT / "init.sh").read_text(encoding="utf-8")
+        dockerfile = (ROOT / "Dockerfile").read_text(encoding="utf-8")
+        self.assertIn("scripts/docker-compose.sh", init)
+        self.assertIn("dylanos_docker_compose_available", init)
+        self.assertIn("run_compose build builder", init)
+        self.assertIn('! command -v docker', init)
+        self.assertIn("COPY scripts/docker-compose.sh ./scripts/docker-compose.sh", dockerfile)
+
     def test_iso_preserves_tmpdir_when_escalating(self):
         iso = (ROOT / "scripts/iso.sh").read_text(encoding="utf-8")
         self.assertIn('TMPDIR="${TMPDIR:-/tmp}"', iso)

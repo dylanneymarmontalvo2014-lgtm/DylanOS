@@ -85,7 +85,7 @@ La paleta se mantiene en [`branding/colors/dylanos.conf`](branding/colors/dylano
 
 ## Construir y probar
 
-Desde la raíz del repositorio ejecuta `bash init.sh`. Detecta el sistema: en Debian/Ubuntu amd64 instala dependencias nativas y prepara `.venv`; en otras distribuciones Linux amd64 usa Docker. Si falta Docker o Compose, intenta instalarlos y arrancar el servicio automáticamente en Arch, Fedora/RHEL, openSUSE y Alpine; en otras distribuciones Docker debe estar instalado. Consulta la [matriz de hosts de compilación](docs/build-hosts.md) para conocer los requisitos. Antes de instalar paquetes, iniciar el daemon o construir la imagen, muestra lo que hará y pide confirmación. Si respondes que no, no hace cambios.
+Desde la raíz del repositorio ejecuta `bash init.sh`. Detecta el sistema: en Debian/Ubuntu amd64 instala dependencias nativas y prepara `.venv`; en otras distribuciones Linux amd64 usa Docker. Acepta el plugin `docker compose` y `docker-compose` v2 standalone (no Compose v1). Si falta Docker o Compose, intenta instalarlos y arrancar el servicio automáticamente en Arch, Fedora/RHEL, openSUSE y Alpine; en otras distribuciones Docker debe estar instalado. Consulta la [matriz de hosts de compilación](docs/build-hosts.md) para conocer los requisitos. Antes de instalar paquetes, iniciar el daemon o construir la imagen, muestra lo que hará y pide confirmación. Si respondes que no, no hace cambios.
 
 ```bash
 bash init.sh
@@ -111,6 +111,7 @@ docker compose build builder
 docker compose run --rm builder make check
 docker compose run --rm builder make build
 docker compose run --rm builder make iso test-iso
+# Si Compose v2 está instalado como binario standalone, reemplaza "docker compose" por "docker-compose".
 ```
 
 Para el perfil base usa `docker compose run --rm builder make build PROFILE=minimal`; para continuar un chroot existente, agrega `RESUME=1`. La ISO queda en la raíz del repositorio. Los archivos generados pueden quedar propiedad de `root`. Si tu usuario no tiene acceso al daemon, antepone `sudo` a los comandos `docker compose`. La prueba gráfica de QEMU se ejecuta en el host, con QEMU instalado, usando `make qemu-test`.
