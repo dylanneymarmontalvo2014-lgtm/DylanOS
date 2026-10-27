@@ -1,0 +1,37 @@
+#!/bin/bash
+#
+# TaskComplete Hook
+# 
+# Executes when a task completes successfully.
+# 
+# Input: { 
+#   taskId, 
+#   taskComplete: { 
+#     taskMetadata: { taskId: string, ulid: string, result: string, command: string } 
+#   }, 
+#   clineVersion, timestamp, ... 
+# }
+# Output: { cancel: boolean, contextModification?: string, errorMessage?: string }
+# 
+# Use cases:
+# - Run tests or validation
+# - Generate reports or summaries
+# - Notify stakeholders
+# - Trigger CI/CD pipelines
+
+# Read JSON input from stdin
+INPUT=$(cat)
+
+# Parse input using jq (or fallback to basic parsing)
+if command -v jq &> /dev/null; then
+  TASK_ID=$(echo "$INPUT" | jq -r '.taskComplete.taskMetadata.taskId')
+  RESULT=$(echo "$INPUT" | jq -r '.taskComplete.taskMetadata.result')
+else
+  TASK_ID="<taskId>"
+  RESULT="<result>"
+fi
+
+echo "[TaskComplete] Task completed: $TASK_ID (result: $RESULT)" >&2
+
+# Return result
+echo '{"cancel":false,"contextModification":"","errorMessage":""}'

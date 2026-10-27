@@ -1,0 +1,51 @@
+#!/bin/bash
+#
+# TaskStart Hook
+# 
+# Executes when a new task begins.
+# 
+# Input: { 
+#   taskId, 
+#   taskStart: { 
+#     taskMetadata: { taskId: string, ulid: string, initialTask: string } 
+#   }, 
+#   clineVersion, timestamp, ... 
+# }
+# Output: { cancel: boolean, contextModification?: string, errorMessage?: string }
+# 
+# Use cases:
+# - Log task start time
+# - Add context about environment or project state
+# - Check prerequisites before starting
+# - Notify external systems (Slack, issue trackers, etc.)
+
+# Read JSON input from stdin
+INPUT=$(cat)
+
+# Parse input using jq (or fallback to basic parsing)
+if command -v jq &> /dev/null; then
+  TASK=$(echo "$INPUT" | jq -r '.taskStart.taskMetadata.initialTask')
+  TASK_ID=$(echo "$INPUT" | jq -r '.taskId')
+  TIMESTAMP=$(echo "$INPUT" | jq -r '.timestamp')
+else
+  # Fallback if jq is not available
+  TASK="<task>"
+  TASK_ID="<taskId>"
+  TIMESTAMP=$(date +%s%3N)
+fi
+
+# Example: Log task start
+echo "[TaskStart] Task started: $TASK" >&2
+echo "[TaskStart] Task ID: $TASK_ID" >&2
+
+# Example: Add context to the task
+TIMESTAMP_ISO=$(date -u -d @"$((TIMESTAMP/1000))" +"%Y-%m-%dT%H:%M:%SZ" 2>/dev/null || date -u +"%Y-%m-%dT%H:%M:%SZ")
+CONTEXT_MOD="Note: Task started at $TIMESTAMP_ISO"
+
+# Return result as JSON (use jq to safely encode the variable, with a simple fallback)
+if command -v jq &> /dev/null; then
+  jq -n --arg ctx "$CONTEXT_MOD" '{"cancel":false,"contextModification":$ctx,"errorMessage":""}'
+else
+  ESCAPED_MOD=$(printf '%s' "$CONTEXT_MOD" | sed 's/\\/\\\\/g; s/"/\\"/g')
+  echo '{"cancel":false,"contextModification":"'"$ESCAPED_MOD"'","errorMessage":""}'
+fi

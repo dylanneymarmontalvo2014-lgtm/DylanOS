@@ -1,0 +1,37 @@
+#!/bin/bash
+#
+# TaskResume Hook
+# 
+# Executes when a task is resumed after being interrupted.
+# 
+# Input: { 
+#   taskId, 
+#   taskResume: { 
+#     taskMetadata: { taskId: string, ulid: string },
+#     previousState: { lastMessageTs: string, messageCount: string, conversationHistoryDeleted: string }
+#   }, 
+#   clineVersion, timestamp, ... 
+# }
+# Output: { cancel: boolean, contextModification?: string, errorMessage?: string }
+# 
+# Use cases:
+# - Check for changes since task was paused
+# - Refresh context with latest project state
+# - Notify that work is resuming
+
+# Read JSON input from stdin
+INPUT=$(cat)
+
+# Parse input using jq (or fallback to basic parsing)
+if command -v jq &> /dev/null; then
+  TASK_ID=$(echo "$INPUT" | jq -r '.taskResume.taskMetadata.taskId')
+  MSG_COUNT=$(echo "$INPUT" | jq -r '.taskResume.previousState.messageCount')
+else
+  TASK_ID="<taskId>"
+  MSG_COUNT="0"
+fi
+
+echo "[TaskResume] Resuming task: $TASK_ID (previous messages: $MSG_COUNT)" >&2
+
+# Return result
+echo '{"cancel":false,"contextModification":"","errorMessage":""}'
