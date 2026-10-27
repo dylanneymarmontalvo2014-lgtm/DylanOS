@@ -196,9 +196,9 @@ class ShellContractTest(unittest.TestCase):
         wallpaper = ROOT / "branding/wallpapers/dylanos-default.png"
         self.assertIn('desktop.writeConfig("Image", "file:///usr/share/wallpapers/DylanOS/dylanos-default.png")', layout)
         self.assertIn("scrollback_lines 50000", kitty)
-        self.assertIn("background_opacity 0.40", kitty)
+        self.assertIn("background_opacity 0.50", kitty)
         self.assertIn("background_blur 24", kitty)
-        self.assertIn("window_padding_width 16 18", kitty)
+        self.assertIn("window_padding_width 20 24", kitty)
         self.assertIn("tab_bar_style separator", kitty)
         self.assertTrue(wallpaper.is_file())
         self.assertFalse((ROOT / "configs/konsole").exists())

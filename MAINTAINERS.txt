@@ -443,3 +443,15 @@ Correcciones: cachear AppStream con `appstreamcli refresh-cache --force` antes
 de retirar las listas APT y declarar `qml6-module-qtquick-shapes` en paquetes
 base. Añadidas pruebas de orden de cacheo/limpieza y dependencia runtime. Esto
 no sustituye una ejecución visual de ambas apps en un sistema instalado.
+
+
+CI DE CONTRATO DE SHELL — 2026-10-27
+------------------------------------
+El workflow 40603688383 falló en `scripts/tests/test_shell_contract.py`: la
+prueba exigía `background_opacity 0.40` y `window_padding_width 16 18`, mientras
+que `configs/kitty/kitty.conf` vigente declara 0.50 y 20 24. No era un fallo
+del script ni de Kitty; el contrato de prueba quedó desactualizado tras un
+cambio anterior de configuración. Se actualizaron únicamente las expectativas
+de la prueba y la nota del changelog, sin editar Kitty ni el wallpaper.
+Pruebas locales: suite de contrato (9/9) y `scripts/tests/test_packages.sh`
+(59/59). CI del nuevo SHA queda pendiente.

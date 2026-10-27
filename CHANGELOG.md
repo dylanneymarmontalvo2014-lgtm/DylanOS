@@ -28,6 +28,8 @@ Todos los cambios relevantes de DylanOS se registran en este archivo. La intenci
 
 ### Corregido
 
+- Scripts/pruebas: sincronizar el contrato de Kitty con su configuración vigente (opacidad 0.50 y padding 20 24); evita que `scripts/check.sh` falle por valores obsoletos sin cambiar la configuración de Kitty.
+
 - Configuración: conservar la pestaña activa en cada entrada del historial. Al volver desde otra sección, «Aplicaciones → Predeterminadas» ya no regresaba a «Instaladas» porque el historial solo guardaba la ruta.
 
 - Configuración/Energía: incluir `power-profiles-daemon` en el perfil base. La
