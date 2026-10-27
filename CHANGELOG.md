@@ -1,3 +1,4 @@
+- Store/Explorer: preservar la caché AppStream tras limpiar listas APT e instalar el módulo QML QtQuick.Shapes requerido por el Explorer.
 - Build: mover el lock compartido fuera de work y recuperar la escritura en el directorio antes de elevar privilegios.
 - Build: restaurar permisos ejecutables de los puntos de entrada de preparación, QA y detección del host.
 - Centro de Control: corregir el ID del KCM de ahorro de energía para que abra el módulo existente.

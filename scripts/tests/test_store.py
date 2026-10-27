@@ -146,6 +146,13 @@ class StoreStructureTest(unittest.TestCase):
         self.assertIn("GRUB_TIMEOUT=0", stage)
         self.assertIn("GRUB_TIMEOUT_STYLE=hidden", stage)
 
+    def test_appstream_cache_survives_apt_index_cleanup(self):
+        build = (ROOT / "scripts/build.sh").read_text(encoding="utf-8")
+        cache = build.index("appstreamcli refresh-cache --force")
+        cleanup = build.index("rm -rf /var/lib/apt/lists/*")
+        self.assertLess(cache, cleanup)
+        self.assertIn("qml6-module-qtquick-shapes", (ROOT / "packages/default/packages.list").read_text())
+
     def test_packages_and_build_wiring(self):
         default = (ROOT / "packages/default/packages.list").read_text(encoding="utf-8")
         self.assertNotIn("plasma-discover", default)

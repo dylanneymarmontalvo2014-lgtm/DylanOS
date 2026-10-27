@@ -113,6 +113,8 @@ for p in linux-image-amd64 systemd-sysv kde-plasma-desktop sddm parted \
 done
 # DylanOS Explorer no es un paquete apt: se compila desde apps/dylanos-explorer.
 assert_eq "explorer se compila en build" "si" "$(grep -q 'dylanos-src/dylanos-explorer' "$ROOT/scripts/build.sh" && echo si || echo no)"
+assert_contains_line "Explorer tiene el módulo QML QtQuick.Shapes en runtime" \
+    "$default_pkgs" "qml6-module-qtquick-shapes"
 assert_eq "default ya no contiene dolphin" "no" \
     "$(printf '%s' "$default_pkgs" | grep -qx dolphin && echo si || echo no)"
 assert_eq "default ya no contiene konsole" "no" \
@@ -136,6 +138,10 @@ assert_eq "APT elimina solo dependencias huérfanas después de las purgas" "si"
 assert_eq "APT limpia los índices descargados tras purgar paquetes" "si" \
     "$(grep -q 'rm -rf /var/lib/apt/lists/\*' "$build_script" && \
       [ "$(grep -n 'apt-get -y autoremove --purge' "$build_script" | cut -d: -f1)" -lt "$(grep -n 'rm -rf /var/lib/apt/lists/\*' "$build_script" | cut -d: -f1)" ] && echo si || echo no)"
+appstream_cache_line="$(grep -n 'appstreamcli refresh-cache --force' "$build_script" | cut -d: -f1)"
+apt_lists_cleanup_line="$(grep -n 'rm -rf /var/lib/apt/lists/\*' "$build_script" | cut -d: -f1)"
+assert_eq "AppStream crea su caché antes de borrar índices APT" "si" \
+    "$([ -n "$appstream_cache_line" ] && [ -n "$apt_lists_cleanup_line" ] && [ "$appstream_cache_line" -lt "$apt_lists_cleanup_line" ] && echo si || echo no)"
 assert_eq "desktop-file-utils es temporal para generar la caché de escritorio" "si" \
     "$(grep -q 'apt-get -y install --no-install-recommends desktop-file-utils' "$build_script" && grep -q 'apt-get -y purge desktop-file-utils' "$build_script" && echo si || echo no)"
 

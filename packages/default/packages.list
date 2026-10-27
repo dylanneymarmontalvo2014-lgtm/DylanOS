@@ -84,6 +84,8 @@ python3-pyside6.qtwebenginewidgets
 python3-psutil
 qml6-module-qtquick
 qml6-module-qtquick-controls
+# DylanOS Explorer importa QtQuick.Shapes; quitar el módulo impide crear la ventana QML.
+qml6-module-qtquick-shapes
 qml6-module-qtquick-layouts
 qml6-module-qtquick-window
 qml6-module-qtquick-templates

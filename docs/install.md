@@ -143,3 +143,12 @@ verifica que `work/` pertenezca al usuario y, si es necesario, corrige solo el
 propietario de ese directorio; no cambia recursivamente el chroot ni sus
 artefactos. Actualiza el checkout antes de volver a ejecutar
 `./scripts/build.sh`.
+
+### Store vacía o Explorer no abre
+
+La Store necesita el índice AppStream de los repositorios para convertir las
+entradas editoriales en aplicaciones instalables. El build ahora ejecuta
+`appstreamcli refresh-cache --force` antes de quitar las listas APT, conservando
+la caché usada por libdiscover. DylanOS Explorer importa `QtQuick.Shapes`; el
+paquete QML `qml6-module-qtquick-shapes` debe estar presente en el sistema
+instalado aunque no sea dependencia del binario ELF.

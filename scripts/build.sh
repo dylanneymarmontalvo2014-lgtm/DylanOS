@@ -200,7 +200,11 @@ apt-get -y purge dolphin dolphin-plugins kcalc konsole
 # Retira únicamente dependencias automáticas que APT confirme como huérfanas.
 apt-get -y autoremove --purge
 apt-get clean
-# Los índices se regeneran con apt-get update; no hacen falta para arrancar.
+# Store/libdiscover consulta AppStream para resolver componentes y mostrar apps.
+# Materializar la caché antes de borrar los índices APT: quitarlos sin cachear
+# deja la tienda vacía aunque el catálogo editorial tenga entradas.
+appstreamcli refresh-cache --force
+# Los índices APT descargados sí pueden retirarse: el caché AppStream ya quedó.
 rm -rf /var/lib/apt/lists/*
 rm -f /usr/sbin/policy-rc.d
 rm -rf /tmp/dylanos-packages /tmp/dylanos-src

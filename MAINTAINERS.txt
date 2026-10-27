@@ -428,3 +428,18 @@ crea `work/` y si no pertenece al usuario o no es escribible corrige solo el
 propietario del directorio, no el chroot ni sus contenidos. Se añadió prueba
 con dos procesos concurrentes y contrato sobre la recuperación del directorio.
 Las pruebas no ejecutan un build completo ni ISO.
+
+
+STORE VACÍA Y EXPLORER SIN VENTANA — 2026-10-27
+------------------------------------------------
+Hallazgos confirmados en el build declarado: al final de la creación del chroot
+se eliminaban `/var/lib/apt/lists/*` sin materializar antes el índice AppStream,
+pero libdiscover/PackageKit usa ese índice para poblar sus recursos; el catálogo
+SQLite solo organiza y presenta recursos que ya resolvió AppStream. Además, la
+QML del Explorer importa `QtQuick.Shapes` y el paquete de ese módulo no estaba
+en el perfil base, así que el binario no puede completar la carga QML en el ISO.
+
+Correcciones: cachear AppStream con `appstreamcli refresh-cache --force` antes
+de retirar las listas APT y declarar `qml6-module-qtquick-shapes` en paquetes
+base. Añadidas pruebas de orden de cacheo/limpieza y dependencia runtime. Esto
+no sustituye una ejecución visual de ambas apps en un sistema instalado.
