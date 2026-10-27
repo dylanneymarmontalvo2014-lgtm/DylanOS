@@ -88,7 +88,7 @@ gráfica visual, que requieren QA aparte. Los builds manuales conservan
 
 ## Preparar dependencias y validar
 
-Desde la raíz del repo, ejecuta `./init.sh` (o `bash init.sh`). Los puntos de entrada `init.sh`, `scripts/build.sh`, `scripts/check.sh`, `scripts/test-build-host.sh`, `scripts/iso.sh` y `scripts/test.sh` están marcados como ejecutables en Git. Debian/Ubuntu usan dependencias nativas; los demás Linux amd64 usan el builder Docker. Si falta Docker/Compose v2, la instalación automática se ofrece solo en Arch y derivados, Fedora, RHEL/CentOS/Rocky/AlmaLinux, openSUSE y Alpine. En otros Linux configura el engine y Compose v2 manualmente. El script muestra el plan y solicita confirmación antes de instalar paquetes, configurar repositorios, iniciar servicios o construir la imagen. `--yes` omite el diálogo, así que úsalo solo para cambios previamente aprobados.
+Desde la raíz del repo, ejecuta `./init.sh` (o `bash init.sh`). Los puntos de entrada `init.sh`, `scripts/build.sh`, `scripts/check.sh`, `scripts/test-build-host.sh`, `scripts/iso.sh` y `scripts/test.sh` están marcados como ejecutables en Git. Debian/Ubuntu usan dependencias nativas; los demás Linux amd64 usan el builder Docker. Si falta Docker/Compose v2, la instalación automática se ofrece solo en Arch y derivados, Fedora, RHEL/CentOS/Rocky/AlmaLinux, openSUSE y Alpine. En otros Linux configura el engine y Compose v2 manualmente. Se acepta el plugin `docker compose` o el ejecutable standalone `docker-compose` de versión 2; Compose v1 no sirve. El script muestra el plan y solicita confirmación antes de instalar paquetes, configurar repositorios, iniciar servicios o construir la imagen. `--yes` omite el diálogo, así que úsalo solo para cambios previamente aprobados.
 
 ```bash
 bash init.sh
@@ -100,10 +100,12 @@ En Debian/Ubuntu, corre las comprobaciones con el entorno Python creado por el i
 make check PYTHON=.venv/bin/python
 ```
 
-En otras distribuciones Linux, ejecuta la QA dentro del builder:
+En otras distribuciones Linux, ejecuta la QA dentro del builder con el Compose que tengas instalado:
 
 ```bash
 docker compose run --rm builder make check
+# O si usas Compose v2 standalone:
+docker-compose run --rm builder make check
 ```
 
 Este comando valida la base del proyecto con sintaxis, comprobaciones de shell y validaciones de staging/QML según el estado actual del repo. La detección de distribución se puede probar sin privilegios con `bash scripts/test-build-host.sh`; ese test no instala Docker ni prueba los repositorios de paquetes.
@@ -123,7 +125,7 @@ chroot. Si `work/chroot` ya existe, continúa de forma explícita con
 
 ## Límites de compatibilidad y verificación
 
-La matriz describe los caminos implementados, no certifica una compilación de extremo a extremo en cada distro. La instalación de paquetes depende de la versión del sistema, repositorios configurados, disponibilidad de los paquetes y de que `docker compose version` funcione. El script comprueba que Compose v2 quede disponible tras la instalación, pero no valida todas las versiones de Docker ni todas las combinaciones de kernel/runtime. `init.sh` no se ejecuta en Windows o macOS; Docker Desktop puede ser una alternativa manual, no un soporte nativo verificado. No hay soporte para hosts no amd64. Los tests del repositorio verifican la sintaxis y la clasificación de hosts en mocks/casos puros, no descargan repositorios ni arrancan el builder en cada sistema listado.
+La matriz describe los caminos implementados, no certifica una compilación de extremo a extremo en cada distro. La instalación de paquetes depende de la versión del sistema, repositorios configurados, disponibilidad de los paquetes y de que Docker Engine y un Compose v2 (plugin o standalone) funcionen. El script comprueba que Compose v2 quede disponible tras la instalación, pero no valida todas las versiones de Docker ni todas las combinaciones de kernel/runtime. `init.sh` no se ejecuta en Windows o macOS; Docker Desktop puede ser una alternativa manual, no un soporte nativo verificado. No hay soporte para hosts no amd64. Los tests del repositorio verifican la sintaxis y la clasificación de hosts en mocks/casos puros, no descargan repositorios ni arrancan el builder en cada sistema listado.
 
 La lista de archivos y el comportamiento de cada cambio de compatibilidad se documentan en [build-hosts.md](build-hosts.md).
 

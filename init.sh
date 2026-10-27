@@ -3,6 +3,8 @@
 # shellcheck disable=SC1091
 # shellcheck source=scripts/build-host.sh
 . "$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd)/scripts/build-host.sh"
+# shellcheck disable=SC1091
+. "$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd)/scripts/docker-compose.sh"
 set -Eeuo pipefail
 
 ROOT="$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd)"
@@ -157,10 +159,6 @@ install_native_dependencies() {
     printf '\nDependencias listas. Para las comprobaciones usa:\n  make check PYTHON=%s/bin/python\n' "$venv"
 }
 
-docker_compose_available() {
-    command -v docker >/dev/null 2>&1 && docker compose version >/dev/null 2>&1
-}
-
 docker_install_supported() {
     host_family_supports_docker_install "$HOST_FAMILY"
 }
@@ -234,9 +232,27 @@ run_docker() {
     fi
 }
 
+run_compose() {
+    local kind
+    kind="$(dylanos_docker_compose_kind)" || {
+        echo 'No encontré Docker Compose v2: instala el plugin `docker compose` o el binario `docker-compose` v2.' >&2
+        exit 1
+    }
+    if [[ "$kind" == plugin ]]; then
+        run_docker compose "$@"
+    elif docker info >/dev/null 2>&1; then
+        docker-compose "$@"
+    elif (( EUID != 0 )) && command -v sudo >/dev/null 2>&1 && sudo docker info >/dev/null 2>&1; then
+        sudo docker-compose "$@"
+    else
+        echo 'No pude conectar con Docker ni como usuario ni con sudo.' >&2
+        exit 1
+    fi
+}
+
 prepare_docker_builder() {
     local missing=false
-    if ! docker_compose_available; then missing=true; fi
+    if ! command -v docker >/dev/null 2>&1 || ! dylanos_docker_compose_available; then missing=true; fi
     if [[ "$missing" == true ]] && ! docker_install_supported; then
         echo "No hay Docker Compose v2 y no puedo instalarlo automáticamente en ${PRETTY_NAME:-esta distro}." >&2
         echo 'Instala Docker Engine y Compose v2 con el método oficial de tu distribución y vuelve a ejecutar init.sh.' >&2
@@ -260,12 +276,12 @@ prepare_docker_builder() {
 
     if [[ "$missing" == true ]]; then install_docker; fi
     start_docker_service
-    if ! docker_compose_available; then
-        echo "Docker Compose v2 no quedó disponible con 'docker compose'." >&2
+    if ! dylanos_docker_compose_available; then
+        echo "Docker Compose v2 no quedó disponible (plugin 'docker compose' ni ejecutable 'docker-compose')." >&2
         exit 1
     fi
-    run_docker compose build builder
-    echo "Builder listo. Usa 'docker compose run --rm builder make check' para la QA."
+    (cd "$ROOT" && run_compose build builder)
+    echo "Builder listo. Desde la raíz del repo ejecuta 'docker compose run --rm builder make check' o 'docker-compose run --rm builder make check' según el modo disponible."
 }
 
 if [[ "$NATIVE" == true ]]; then
