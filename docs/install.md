@@ -132,3 +132,14 @@ La lista de archivos y el comportamiento de cada cambio de compatibilidad se doc
 - [architecture.md](architecture.md)
 - [roadmap.md](roadmap.md)
 - [contributing.md](contributing.md)
+
+### Si aparece «Permiso denegado» en `work/build.lock`
+
+El build y la generación de ISO comparten un lock en `${TMPDIR:-/tmp}`, fuera
+del checkout. El archivo se crea legible para el usuario que compila y se abre
+en modo lectura para que siga funcionando si lo creó la fase root; el directorio `work/`
+ya no necesita `work/build.lock`. Antes de elevar privilegios, `build.sh`
+verifica que `work/` pertenezca al usuario y, si es necesario, corrige solo el
+propietario de ese directorio; no cambia recursivamente el chroot ni sus
+artefactos. Actualiza el checkout antes de volver a ejecutar
+`./scripts/build.sh`.

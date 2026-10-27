@@ -2,6 +2,9 @@
 # Build in an isolated mount namespace; the host desktop is never modified.
 set -euo pipefail
 ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
+WORK="$ROOT/work"
+# shellcheck source=scripts/lib/lock.sh
+. "$ROOT/scripts/lib/lock.sh"
 VERSION="${DYLANOS_VERSION:-1.0-beta}"
 for arg in "$@"; do
     case "$arg" in
@@ -22,6 +25,18 @@ DEFAULT_BUILD_JOBS="$CPU_COUNT"
 if (( DEFAULT_BUILD_JOBS > 4 )); then DEFAULT_BUILD_JOBS=4; fi
 BUILD_JOBS="${DYLANOS_BUILD_JOBS:-$DEFAULT_BUILD_JOBS}"
 if [[ ${1:-} != --inside ]]; then
+    # Asegurar exclusión antes de tocar permisos o el directorio de artefactos.
+    dylanos_acquire_build_lock "$ROOT" "Ya hay una construcción en marcha."
+    # La fase elevada puede haber dejado work/ propiedad de root en builds previos.
+    mkdir -p "$WORK"
+    WORK_OWNER="$(stat -c '%u' "$WORK")"
+    if [[ "$WORK_OWNER" != "$(id -u)" || ! -w "$WORK" ]]; then
+        sudo chown "$(id -u):$(id -g)" "$WORK"
+    fi
+    if [[ "$(stat -c '%u' "$WORK")" != "$(id -u)" || ! -w "$WORK" ]]; then
+        echo "No se puede escribir en $WORK incluso tras corregir su propietario." >&2
+        exit 1
+    fi
     INSTALLER_TMP="$(mktemp -d "${TMPDIR:-/tmp}/dylanos-installer-dist.XXXXXX")"
     INSTALLER_TMP="$(cd -- "$INSTALLER_TMP" && pwd -P)"
     # shellcheck disable=SC2317 # Invoked by EXIT trap.
@@ -53,11 +68,8 @@ if (( BUILD_JOBS > CPU_COUNT )); then
     BUILD_JOBS="$CPU_COUNT"
 fi
 echo "Compilación paralela: $BUILD_JOBS trabajo(s). Ajusta con DYLANOS_BUILD_JOBS=N."
-WORK="$ROOT/work"
 CHROOT="$WORK/chroot"
 mkdir -p "$WORK"
-exec 9>"$WORK/build.lock"
-flock -n 9 || { echo "Ya hay una construcción en marcha." >&2; exit 1; }
 for tool in debootstrap chroot mount python3; do
     command -v "$tool" >/dev/null || { echo "Falta herramienta: $tool" >&2; exit 1; }
 done

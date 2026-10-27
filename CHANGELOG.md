@@ -1,3 +1,4 @@
+- Build: mover el lock compartido fuera de work y recuperar la escritura en el directorio antes de elevar privilegios.
 - Build: restaurar permisos ejecutables de los puntos de entrada de preparación, QA y detección del host.
 - Centro de Control: corregir el ID del KCM de ahorro de energía para que abra el módulo existente.
 - Dock: evitar recorte/solapamiento si iconSize configurado supera hoverSize; el panel reserva siempre la extensión mayor.

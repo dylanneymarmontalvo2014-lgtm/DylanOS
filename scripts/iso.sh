@@ -7,6 +7,8 @@ if [[ ! "$VERSION" =~ ^([0-9]+\.[0-9]+\.[0-9]+([+-][A-Za-z0-9.-]+)?|1\.0-beta)$ 
 fi
 if [[ $EUID -ne 0 ]]; then exec sudo env DYLANOS_VERSION="$VERSION" bash "$0" "$VERSION"; fi
 ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
+# shellcheck source=scripts/lib/lock.sh
+. "$ROOT/scripts/lib/lock.sh"
 CPU_COUNT="$(nproc 2>/dev/null || printf '2')"
 DEFAULT_SQUASHFS_PROCESSORS="$CPU_COUNT"
 if (( DEFAULT_SQUASHFS_PROCESSORS > 4 )); then DEFAULT_SQUASHFS_PROCESSORS=4; fi
@@ -26,8 +28,7 @@ IMAGE="$WORK/iso"
 VERSION="${DYLANOS_VERSION:-1.0-beta}"
 OUTPUT="$ROOT/DylanOS-${VERSION}-amd64.iso"
 [[ -f "$WORK/build-complete" ]] || { echo 'Primero completa scripts/build.sh' >&2; exit 1; }
-exec 9>"$WORK/build.lock"
-flock -n 9 || { echo 'La construcción del sistema todavía está en marcha.' >&2; exit 1; }
+dylanos_acquire_build_lock "$ROOT" 'La construcción del sistema todavía está en marcha.'
 for tool in mksquashfs grub-mkrescue xorriso; do
     command -v "$tool" >/dev/null || { echo "Falta herramienta: $tool" >&2; exit 1; }
 done
