@@ -412,3 +412,19 @@ principales ya estaban en 100755.
 Corrección: guardar los tres puntos de entrada como 100755, añadir una prueba
 que protege los modos de los entrypoints, y actualizar las instrucciones de
 uso. `scripts/build-host.sh` sigue como biblioteca sourced, no como ejecutable.
+
+
+CORRECCIÓN DEL LOCK DE BUILD — 2026-10-26
+-----------------------------------------
+La captura muestra `scripts/build.sh` fallando en la apertura de
+`work/build.lock`. La fase elevada dejaba ese archivo propiedad de root y el
+usuario no podía abrirlo con redirección en la siguiente ejecución.
+
+Cambio: build e ISO comparten un lock en `${TMPDIR:-/tmp}`, fuera del checkout;
+se crea con permisos legibles, se verifica que no sea enlace simbólico y se
+abre en modo lectura antes de `flock`. Así la fase root puede reutilizar el lock
+sin volver a crear un archivo dentro de `work/`. Antes de elevarse, `build.sh`
+crea `work/` y si no pertenece al usuario o no es escribible corrige solo el
+propietario del directorio, no el chroot ni sus contenidos. Se añadió prueba
+con dos procesos concurrentes y contrato sobre la recuperación del directorio.
+Las pruebas no ejecutan un build completo ni ISO.
