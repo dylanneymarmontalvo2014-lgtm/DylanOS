@@ -1,0 +1,38 @@
+#!/bin/bash
+#
+# PreToolUse Hook
+# 
+# Executes before any tool is used (read_file, write_to_file, execute_command, etc.)
+# 
+# Input: { taskId, preToolUse: { toolName: string, parameters: object }, ... }
+# Output: { cancel: boolean, contextModification?: string, errorMessage?: string }
+# 
+# Use cases:
+# - Block dangerous operations
+# - Add safety checks before file modifications
+# - Log tool usage
+# - Validate parameters before execution
+
+# Read JSON input from stdin
+INPUT=$(cat)
+
+# Parse input using jq (or fallback to basic parsing)
+if command -v jq &> /dev/null; then
+  TOOL=$(echo "$INPUT" | jq -r '.preToolUse.toolName')
+  COMMAND=$(echo "$INPUT" | jq -r '.preToolUse.parameters.command // empty')
+else
+  TOOL="<tool>"
+  COMMAND=""
+fi
+
+# Example: Block dangerous operations
+if [[ "$TOOL" == "execute_command" ]] && [[ "$COMMAND" == *"rm -rf /"* ]]; then
+  echo '{"cancel":true,"errorMessage":"Dangerous command blocked by PreToolUse hook"}'
+  exit 0
+fi
+
+# Example: Log tool usage
+echo "[PreToolUse] Tool about to execute: $TOOL" >&2
+
+# Allow execution
+echo '{"cancel":false,"contextModification":"","errorMessage":""}'

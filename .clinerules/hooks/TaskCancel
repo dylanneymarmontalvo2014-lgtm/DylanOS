@@ -1,0 +1,36 @@
+#!/bin/bash
+#
+# TaskCancel Hook
+# 
+# Executes when a task is cancelled by the user.
+# 
+# Input: { 
+#   taskId, 
+#   taskCancel: { 
+#     taskMetadata: { taskId: string, ulid: string, completionStatus: string } 
+#   }, 
+#   clineVersion, timestamp, ... 
+# }
+# Output: { cancel: boolean, contextModification?: string, errorMessage?: string }
+# 
+# Use cases:
+# - Clean up temporary files or resources
+# - Notify external systems about cancellation
+# - Log cancellation for analytics
+
+# Read JSON input from stdin
+INPUT=$(cat)
+
+# Parse input using jq (or fallback to basic parsing)
+if command -v jq &> /dev/null; then
+  TASK_ID=$(echo "$INPUT" | jq -r '.taskCancel.taskMetadata.taskId')
+  STATUS=$(echo "$INPUT" | jq -r '.taskCancel.taskMetadata.completionStatus')
+else
+  TASK_ID="<taskId>"
+  STATUS="cancelled"
+fi
+
+echo "[TaskCancel] Task cancelled: $TASK_ID (status: $STATUS)" >&2
+
+# Return result
+echo '{"cancel":false,"contextModification":"","errorMessage":""}'

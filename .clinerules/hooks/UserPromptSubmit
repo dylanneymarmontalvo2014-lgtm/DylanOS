@@ -1,0 +1,30 @@
+#!/bin/bash
+#
+# UserPromptSubmit Hook
+# 
+# Executes when the user submits a prompt to Cline.
+# 
+# Input: { taskId, userPromptSubmit: { prompt: string, attachments: string[] }, clineVersion, timestamp, ... }
+# Output: { cancel: boolean, contextModification?: string, errorMessage?: string }
+# 
+# Use cases:
+# - Log user prompts for analytics
+# - Add context based on prompt content
+# - Validate or sanitize prompts
+# - Trigger external integrations
+
+# Read JSON input from stdin
+INPUT=$(cat)
+
+# Parse input using jq (or fallback to basic parsing)
+if command -v jq &> /dev/null; then
+  PROMPT=$(echo "$INPUT" | jq -r '.userPromptSubmit.prompt')
+  PROMPT_LENGTH=${#PROMPT}
+else
+  PROMPT_LENGTH=0
+fi
+
+echo "[UserPromptSubmit] User submitted prompt (length: $PROMPT_LENGTH)" >&2
+
+# Return result
+echo '{"cancel":false,"contextModification":"","errorMessage":""}'
