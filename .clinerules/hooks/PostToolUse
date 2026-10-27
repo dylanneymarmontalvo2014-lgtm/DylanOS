@@ -1,0 +1,46 @@
+#!/bin/bash
+#
+# PostToolUse Hook
+# 
+# Executes after any tool is used successfully or fails.
+# 
+# Input: { 
+#   taskId, 
+#   postToolUse: { 
+#     toolName: string, 
+#     parameters: object,
+#     result: string,
+#     success: boolean,
+#     executionTimeMs: number
+#   }, 
+#   ... 
+# }
+# Output: { cancel: boolean, contextModification?: string, errorMessage?: string }
+# 
+# Use cases:
+# - Audit tool usage
+# - Validate results
+# - Trigger follow-up actions
+# - Monitor performance
+
+# Read JSON input from stdin
+INPUT=$(cat)
+
+# Parse input using jq (or fallback to basic parsing)
+if command -v jq &> /dev/null; then
+  TOOL=$(echo "$INPUT" | jq -r '.postToolUse.toolName')
+  SUCCESS=$(echo "$INPUT" | jq -r '.postToolUse.success')
+  DURATION=$(echo "$INPUT" | jq -r '.postToolUse.executionTimeMs')
+else
+  TOOL="<tool>"
+  SUCCESS="true"
+  DURATION="0"
+fi
+
+# Log tool completion
+STATUS="success"
+[[ "$SUCCESS" == "false" ]] && STATUS="failed"
+echo "[PostToolUse] Tool completed: $TOOL ($STATUS) in ${DURATION}ms" >&2
+
+# Return result
+echo '{"cancel":false,"contextModification":"","errorMessage":""}'
