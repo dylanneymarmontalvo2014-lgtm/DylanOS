@@ -5,7 +5,7 @@ if [[ ! "$VERSION" =~ ^([0-9]+\.[0-9]+\.[0-9]+([+-][A-Za-z0-9.-]+)?|1\.0-beta)$ 
     echo "Versión DylanOS inválida: $VERSION" >&2
     exit 2
 fi
-if [[ $EUID -ne 0 ]]; then exec sudo env DYLANOS_VERSION="$VERSION" bash "$0" "$VERSION"; fi
+if [[ $EUID -ne 0 ]]; then exec sudo env DYLANOS_VERSION="$VERSION" TMPDIR="${TMPDIR:-/tmp}" bash "$0" "$VERSION"; fi
 ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 # shellcheck source=scripts/lib/lock.sh
 . "$ROOT/scripts/lib/lock.sh"

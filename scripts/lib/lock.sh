@@ -8,7 +8,7 @@ dylanos_acquire_build_lock() {
 
     lock_key="$(printf '%s' "$repository_root" | sha256sum)"
     lock_key="${lock_key%% *}"
-    lock_file="${TMPDIR:-/tmp}/dylanos-build-${lock_key:0:24}.lock"
+    lock_file="/tmp/dylanos-build-${lock_key:0:24}.lock"
 
     if [[ -L "$lock_file" ]]; then
         echo "Ruta de lock insegura (enlace simbólico): $lock_file" >&2

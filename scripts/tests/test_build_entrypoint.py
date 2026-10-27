@@ -70,6 +70,30 @@ class BuildEntrypointTest(unittest.TestCase):
                 if holder.stderr:
                     holder.stderr.close()
 
+    def test_iso_preserves_tmpdir_when_escalating(self):
+        iso = (ROOT / "scripts/iso.sh").read_text(encoding="utf-8")
+        self.assertIn('TMPDIR="${TMPDIR:-/tmp}"', iso.splitlines()[7])
+
+    def test_build_lock_can_open_existing_read_only_root_style_file(self):
+        helper = ROOT / "scripts/lib/lock.sh"
+        with tempfile.TemporaryDirectory() as tmp:
+            repo = Path(tmp) / "repo"
+            repo.mkdir()
+            env = {**os.environ, "TMPDIR": tmp}
+            key = subprocess.check_output(["sha256sum"], input=str(repo).encode()).decode().split()[0][:24]
+            lock_file = Path(tmp) / f"dylanos-build-{key}.lock"
+            lock_file.write_text("created by privileged phase\n", encoding="utf-8")
+            lock_file.chmod(0o444)
+            result = subprocess.run(
+                ["bash", "-c", f'source "{helper}"; dylanos_acquire_build_lock "{repo}"'],
+                cwd=ROOT,
+                env=env,
+                capture_output=True,
+                text=True,
+                check=False,
+            )
+            self.assertEqual(0, result.returncode, result.stderr)
+
     def test_build_repairs_root_owned_work_directory_before_privilege_escalation(self):
         build = (ROOT / "scripts/build.sh").read_text(encoding="utf-8")
         self.assertIn('mkdir -p "$WORK"', build)
