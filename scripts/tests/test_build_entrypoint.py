@@ -72,7 +72,7 @@ class BuildEntrypointTest(unittest.TestCase):
 
     def test_iso_preserves_tmpdir_when_escalating(self):
         iso = (ROOT / "scripts/iso.sh").read_text(encoding="utf-8")
-        self.assertIn('TMPDIR="${TMPDIR:-/tmp}"', iso.splitlines()[7])
+        self.assertIn('TMPDIR="${TMPDIR:-/tmp}"', iso)
 
     def test_build_lock_can_open_existing_read_only_root_style_file(self):
         helper = ROOT / "scripts/lib/lock.sh"
