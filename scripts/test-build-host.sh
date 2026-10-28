@@ -35,4 +35,9 @@ assert_family alpine '' alpine
 assert_family unknown '' other
 for family in arch fedora rhel opensuse alpine; do assert_auto_install "$family" true; done
 for family in debian other; do assert_auto_install "$family" false; done
+if docker_socket_permission_denied; then denied=si; else denied=no; fi
+expected=no
+if (( EUID != 0 )) && [[ -S /var/run/docker.sock ]] && ! id -nG | tr ' ' '\n' | grep -qx docker; then expected=si; fi
+[[ "$denied" == "$expected" ]] || { printf 'FALLO: socket Docker sin permiso esperado=%s real=%s\n' "$expected" "$denied" >&2; exit 1; }
+printf 'OK: socket Docker sin permiso -> %s\n' "$denied"
 printf 'OK: detección de host y tabla de instalación Docker.\n'

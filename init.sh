@@ -209,6 +209,9 @@ install_docker() {
 
 start_docker_service() {
     if docker info >/dev/null 2>&1; then return 0; fi
+    # El daemon puede estar activo y fallar solo el ACL del socket; reiniciar
+    # el servicio no lo arreglaría y pediría sudo sin necesidad.
+    if docker_socket_permission_denied; then return 0; fi
     require_root_access
     if command -v systemctl >/dev/null 2>&1; then
         run_as_root systemctl enable --now docker
@@ -267,7 +270,12 @@ prepare_docker_builder() {
     if [[ "$missing" == true ]]; then
         echo 'Docker/Compose v2 no está listo; init.sh lo instalará automáticamente para esta distribución.'
     elif ! docker info >/dev/null 2>&1; then
-        echo 'El daemon Docker no responde; init.sh intentará habilitarlo e iniciarlo.'
+        if docker_socket_permission_denied; then
+            echo 'El daemon Docker está activo, pero tu usuario no puede usar el socket /var/run/docker.sock.'
+            echo 'init.sh ejecutará los comandos Docker con sudo; para acceso directo, agrega tu usuario al grupo docker y reinicia la sesión.'
+        else
+            echo 'El daemon Docker no responde; init.sh intentará habilitarlo e iniciarlo.'
+        fi
     else
         echo 'Docker y Compose v2 ya están disponibles.'
     fi
