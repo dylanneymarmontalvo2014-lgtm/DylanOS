@@ -31,3 +31,13 @@ host_family_supports_docker_install() {
         *) return 1 ;;
     esac
 }
+
+# 0 = el socket existe pero el usuario actual no puede usarlo. El daemon puede
+# estar activo: /var/run/docker.sock es root:docker y el usuario no pertenece al
+# grupo docker. Se usa solo cuando `docker info` ya falló.
+docker_socket_permission_denied() {
+    (( EUID == 0 )) && return 1
+    [[ -S /var/run/docker.sock ]] || return 1
+    id -nG 2>/dev/null | tr ' ' '\n' | grep -qx docker && return 1
+    return 0
+}
