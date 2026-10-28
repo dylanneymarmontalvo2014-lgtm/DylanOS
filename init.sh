@@ -235,7 +235,7 @@ run_docker() {
 run_compose() {
     local kind
     kind="$(dylanos_docker_compose_kind)" || {
-        echo 'No encontré Docker Compose v2: instala el plugin `docker compose` o el binario `docker-compose` v2.' >&2
+        echo 'No encontré Docker Compose v2: instala el plugin Docker Compose o el binario docker-compose v2.' >&2
         exit 1
     }
     if [[ "$kind" == plugin ]]; then

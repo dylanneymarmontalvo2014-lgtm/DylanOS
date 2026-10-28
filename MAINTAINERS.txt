@@ -474,3 +474,16 @@ rechazo de v1 usando ejecutables fake; se integran en `scripts/check.sh`. El CI
 esperaba opacidad 0.40 aunque Kitty configura 0.50; se actualizó esa expectativa
 sin tocar la configuración. El build real del contenedor y QA siguen sujetos
 al CI del nuevo SHA.
+
+
+CORRECCIÓN CI SHELLCHECK — 2026-10-27
+--------------------------------------
+El workflow 40605773351 falló en `scripts/check.sh` por SC2016 en `init.sh`:
+el mensaje de error incluía nombres de comandos entre comillas invertidas dentro
+de una cadena simple, que ShellCheck marca como posible expresión sin expansión.
+Se reemplazaron esas marcas por texto plano; solo cambia el texto del error.
+Validación local: `bash -n` pasó; tests de detección Compose y distro pasaron;
+26 tests de contrato/build/staging pasaron (1 omitido por dependencia opcional);
+59 comprobaciones de paquetes pasaron. ShellCheck no está instalado en este
+entorno, por lo que la ejecución de ese analizador y el CI del nuevo SHA quedan
+pendientes.
