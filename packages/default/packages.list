@@ -29,6 +29,12 @@ live-config
 live-config-systemd
 live-tools
 initramfs-tools
+# zstd: initramfs-tools-core solo lo recomienda; sin el binario update-initramfs
+# genera el initrd en gzip en vez de zstd.
+zstd
+# console-setup: provee setupcon, que live-boot usa al aplicar
+# keyboard-layouts=latam; sin él el TTY live queda sin layout.
+console-setup
 grub-pc-bin
 grub-efi-amd64-bin
 grub2-common
