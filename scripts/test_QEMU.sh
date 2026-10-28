@@ -34,7 +34,7 @@ Script para inicializar y ejecutar la máquina virtual de DylanOS en QEMU.
 Comportamiento:
   - Si es la primera ejecución: crea automáticamente un disco virtual de 40 GB.
   - En ejecuciones posteriores: reutiliza el disco existente sin destruirlo.
-  - Detecta automáticamente la imagen ISO generada (ej. DylanOS-1.0-beta-amd64.iso).
+  - Detecta la imagen .iso más reciente de la raíz (o usa -i RUTA para elegir otra).
   - Asigna memoria RAM y núcleos de CPU proporcionales a tu hardware físico.
 
 Opciones:
@@ -194,23 +194,26 @@ if [[ -n "$CUSTOM_ISO" ]]; then
         exit 1
     fi
 else
-    # Buscar ISO oficial por nombre en la raíz del proyecto
-    if [[ -f "$ROOT/DylanOS-1.0-beta-amd64.iso" ]]; then
-        ISO_PATH="$ROOT/DylanOS-1.0-beta-amd64.iso"
-    else
-        # Búsqueda de cualquier .iso generada en la raíz
-        for candidate in "$ROOT"/*.iso; do
-            if [[ -f "$candidate" ]]; then
-                ISO_PATH="$candidate"
-                break
-            fi
-        done
+    # Elegir la ISO más reciente: con varias versiones compiladas, el orden
+    # alfabético arrancaría la más antigua sin avisar al usuario.
+    ISO_PATH=""
+    iso_count=0
+    for candidate in "$ROOT"/*.iso; do
+        [[ -f "$candidate" ]] || continue
+        iso_count=$((iso_count + 1))
+        if [[ -z "$ISO_PATH" || "$candidate" -nt "$ISO_PATH" ]]; then
+            ISO_PATH="$candidate"
+        fi
+    done
+    if [[ $iso_count -gt 1 ]]; then
+        echo "[i] Hay $iso_count ISO en la raíz; se usará la más reciente." >&2
+        echo "    Usa -i RUTA para elegir otra explícitamente." >&2
     fi
 fi
 
 MEDIA_FLAGS=()
 if [[ -n "$ISO_PATH" && -f "$ISO_PATH" ]]; then
-    echo "[+] ISO detectada automáticamente:"
+    echo "[+] ISO seleccionada:"
     echo "    $ISO_PATH"
     MEDIA_FLAGS+=(
         "-drive" "file=$VM_DISK,if=virtio,format=qcow2"
