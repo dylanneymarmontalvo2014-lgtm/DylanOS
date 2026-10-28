@@ -28,6 +28,8 @@ Todos los cambios relevantes de DylanOS se registran en este archivo. La intenci
 
 ### Corregido
 
+- CI: quitar las comillas invertidas del mensaje de error de Compose en `init.sh`; ShellCheck las interpretaba como sustitución de comando y hacía fallar `scripts/check.sh`.
+
 - Builder Docker: aceptar Docker Compose v2 como plugin o ejecutable standalone, validar la versión y rechazar v1. La construcción del builder usa el modo detectado; agregadas pruebas automatizadas sin daemon real.
 
 - Scripts/pruebas: sincronizar el contrato de Kitty con su configuración vigente (opacidad 0.50 y padding 20 24); evita que `scripts/check.sh` falle por valores obsoletos sin cambiar la configuración de Kitty.
