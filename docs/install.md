@@ -112,10 +112,48 @@ Este comando valida la base del proyecto con sintaxis, comprobaciones de shell y
 
 ## Construcción del ISO
 
+### Hosts Debian/Ubuntu (dependencias nativas)
+
 ```bash
-./scripts/build.sh
-bash scripts/iso.sh
+./scripts/build.sh          # nunca con sudo
+bash scripts/iso.sh         # pide sudo internamente
+make test-iso
+make qemu-test
 ```
+
+### Otros Linux amd64 (builder Docker)
+
+```bash
+docker compose build builder
+docker compose run --rm builder make check
+docker compose run --rm builder make build
+docker compose run --rm builder make iso test-iso
+make qemu-test
+```
+
+Si tu usuario no está en el grupo `docker`, antepón `sudo` a los comandos `docker compose`. La prueba de QEMU se ejecuta siempre en el host, no dentro del builder.
+
+### Variantes
+
+```bash
+# Perfil base (development es el predeterminado)
+make build PROFILE=minimal
+
+# Reanudar un work/chroot existente
+make build RESUME=1
+
+# Limitar los trabajos CMake (por defecto hasta 4)
+make build BUILD_JOBS=2
+
+# Build + ISO + validación en secuencia
+make iso-validated
+
+# Versión distinta de 1.0-beta
+DYLANOS_VERSION=2.4.1 ./scripts/build.sh --version=2.4.1
+sudo DYLANOS_VERSION=2.4.1 bash scripts/iso.sh 2.4.1
+```
+
+En el builder Docker, esas variantes se pasan como argumentos de `make`, por ejemplo `docker compose run --rm builder make build RESUME=1`. La ISO queda en la raíz del repositorio y los archivos generados dentro del contenedor pueden quedar con dueño `root`.
 
 El proceso de build usa `scripts/build.sh` y `scripts/stage.py` para preparar el contenido del sistema, con salida en `work/chroot` y `work/iso`.
 El frontend del instalador se construye en una copia temporal aislada: `npm ci` no opera sobre `installer/dylanos-installer/node_modules` del checkout, que puede contener enlaces heredados con propietario root de compilaciones antiguas. El `dist` resultante también se guarda temporalmente y se copia al chroot solo tras validar que `index.html` existe y no está vacío. No es necesario borrar ni cambiar propietario a `node_modules` del repositorio.
