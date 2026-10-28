@@ -9,6 +9,12 @@ Rama de trabajo activa para los cambios actuales: development
 
 MANTENEDOR
 ----------
+Dylan
+Cuenta de GitHub: dylanneymarmontalvo2014-lgtm
+Perfil: https://github.com/dylanneymarmontalvo2014-lgtm
+
+MANTENEDOR
+----------
 Cristopher Borjas
 Cuenta de GitHub: CRISTOP-bot
 Perfil: https://github.com/CRISTOP-bot
