@@ -216,9 +216,9 @@ class SpotlightBackend(QObject):
                     if argv:
                         subprocess.Popen(argv)
                     else:
-                        print("Error lanzando app: el campo Exec está vacío")
+                        print("Error lanzando app: el campo Exec está vacío", file=sys.stderr)
                 except (OSError, ValueError) as e:
-                    print(f"Error lanzando app: {e}")
+                    print(f"Error lanzando app: {e}", file=sys.stderr)
             elif act_type == "folder":
                 # DylanOS Explorer es el único explorador de archivos del
                 # sistema; sin él, el portal de escritorio abre la carpeta.

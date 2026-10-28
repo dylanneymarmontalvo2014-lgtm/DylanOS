@@ -1,4 +1,6 @@
 """Desktop-entry Exec fields remain argv, never shell programs."""
+import contextlib
+import io
 from pathlib import Path
 import sys
 import unittest
@@ -7,6 +9,7 @@ ROOT = Path(__file__).resolve().parents[2]
 sys.path.insert(0, str(ROOT / "apps/dylanos-spotlight"))
 from exec_utils import desktop_exec_argv
 from calculator import safe_calculate
+from backend import SpotlightBackend
 
 
 class SpotlightCalculatorTest(unittest.TestCase):
@@ -51,6 +54,18 @@ class DesktopExecTest(unittest.TestCase):
     def test_invalid_quoting_is_rejected(self):
         with self.assertRaises(ValueError):
             desktop_exec_argv('viewer "unterminated')
+
+
+class SpotlightLaunchErrorTest(unittest.TestCase):
+    def test_launch_error_is_reported_on_stderr(self):
+        backend = SpotlightBackend()
+        backend._results = [{"actionType": "app", "actionPayload": ""}]
+        stdout = io.StringIO()
+        stderr = io.StringIO()
+        with contextlib.redirect_stdout(stdout), contextlib.redirect_stderr(stderr):
+            backend.activateItem(0)
+        self.assertEqual(stdout.getvalue(), "")
+        self.assertIn("Exec está vacío", stderr.getvalue())
 
 
 if __name__ == "__main__":
