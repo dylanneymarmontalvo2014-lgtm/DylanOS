@@ -26,13 +26,13 @@ class StagingTest(unittest.TestCase):
                 ["python3", str(about)], text=True, capture_output=True, check=False, env=env,
             )
             self.assertEqual(result.returncode, 0, result.stderr)
-            self.assertEqual(result.stdout, "Gracias a: Cristopher Borjas, podemos mantener este bonito sistema.\n")
-            credits.write_text(credits.read_text(encoding="utf-8") + "\nMANTENEDOR\n----------\nDylan Montalvo\n", encoding="utf-8")
+            self.assertEqual(result.stdout, "Gracias a Dylan y Cristopher Borjas, podemos mantener este bonito sistema.\n")
+            credits.write_text(credits.read_text(encoding="utf-8") + "\nMANTENEDOR\n----------\nAda Lovelace\n", encoding="utf-8")
             result = __import__("subprocess").run(
                 ["python3", str(about)], text=True, capture_output=True, check=False, env=env,
             )
             self.assertEqual(result.returncode, 0, result.stderr)
-            self.assertEqual(result.stdout, "Gracias a: Cristopher Borjas, Dylan Montalvo, podemos mantener este bonito sistema.\n")
+            self.assertEqual(result.stdout, "Gracias a Dylan, Cristopher Borjas y Ada Lovelace, podemos mantener este bonito sistema.\n")
 
     def test_refuses_host_and_repository(self):
         for path in ("/", ROOT, ROOT.parent):
