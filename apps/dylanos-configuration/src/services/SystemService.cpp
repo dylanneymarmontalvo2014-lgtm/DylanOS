@@ -94,10 +94,13 @@ void SystemService::openKcm(const QVariantList &candidates)
         QProcess probe;
         probe.start(shell, QStringList{candidate.toString()});
         if (probe.waitForStarted(2000)) {
-            probe.terminate();
-            probe.waitForFinished(1000);
-            QProcess::startDetached(shell, QStringList{candidate.toString()});
-            return;
+            // Un módulo inválido arranca y termina; uno válido permanece vivo.
+            const bool finished = probe.waitForFinished(2000);
+            const bool moduleOk = !finished || (probe.exitStatus() == QProcess::NormalExit && probe.exitCode() == 0);
+            if (moduleOk) {
+                QProcess::startDetached(shell, QStringList{candidate.toString()});
+                return;
+            }
         }
     }
     emit actionFailed(QStringLiteral("No se encontró el módulo de configuración solicitado"));
