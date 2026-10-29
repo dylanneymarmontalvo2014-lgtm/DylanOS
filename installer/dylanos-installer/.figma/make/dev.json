@@ -15,7 +15,7 @@
   // pipeline, so including them here would cause a redundant full restart.
   "installOn": [
     "package.json",
-    "pnpm-lock.yaml"
+    "package-lock.json"
   ],
   // Files whose changes trigger only a dev server restart (no install).
   "restartOn": []
