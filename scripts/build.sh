@@ -46,7 +46,10 @@ if [[ ${1:-} != --inside ]]; then
     sudo unshare --mount --propagation private bash "$0" --inside \
         "--jobs=$BUILD_JOBS" "--installer-dist=$INSTALLER_TMP/dist" "--version=$VERSION" "$@"
 fi
-shift
+if [[ ${1:-} == --inside ]]; then
+    # En el proceso elevado los argumentos inyectados van precedidos de --inside.
+    shift
+fi
 PROFILE=development
 RESUME=false
 for arg in "$@"; do
