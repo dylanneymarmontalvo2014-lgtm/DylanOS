@@ -398,6 +398,7 @@ Rectangle {
                         anchors.fill: parent
                         hoverEnabled: true
                         cursorShape: Qt.PointingHandCursor
+                        enabled: MockData.kcmshellAvailable
                         onClicked: MockData.run(modelData.command)
                     }
 
