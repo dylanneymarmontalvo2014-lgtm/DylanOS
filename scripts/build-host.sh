@@ -1,5 +1,4 @@
 #!/usr/bin/env bash
-#!/usr/bin/env bash
 # Funciones puras para identificar hosts compatibles con la preparación del builder.
 
 detect_host_family() {
