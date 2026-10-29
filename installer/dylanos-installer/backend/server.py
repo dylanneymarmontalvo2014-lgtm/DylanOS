@@ -286,9 +286,12 @@ def apply_live_keyboard(layout_name, variant_name, model_name):
     if not (os.environ.get("DISPLAY") or os.environ.get("WAYLAND_DISPLAY")):
         return {"ok": True, "layout": layout, "variant": variant, "applied": False}
     cmd = f"setxkbmap {shlex.quote(layout)}"
+    if model_name:
+        cmd = f"setxkbmap -model {shlex.quote(model_name)} {shlex.quote(layout)}"
     if variant:
         cmd += f" -variant {shlex.quote(variant)}"
-    run_quiet(cmd)
+    if run_quiet(cmd) != 0:
+        return {"ok": False, "layout": layout, "variant": variant, "applied": False, "error": "No se pudo aplicar el teclado seleccionado."}
     return {"ok": True, "layout": layout, "variant": variant, "applied": True}
 
 
@@ -988,6 +991,11 @@ def perform_installation(config):
     variant_name = keyboard.get("variant") or ""
     model_name = keyboard.get("model") or ""
     language = config.get("language") or "es_419"
+    user_errors = validate_user(username, hostname)
+    if not user_errors.get("ok"):
+        raise RuntimeError(
+            f"Usuario o hostname inválidos: {user_errors.get('usernameError') or user_errors.get('hostnameError')}"
+        )
 
     try:
         # La API desplegada nunca reporta una instalación simulada como exitosa.
