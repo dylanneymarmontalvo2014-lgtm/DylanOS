@@ -64,6 +64,9 @@ power-profiles-daemon
 bluedevil
 bluez
 pipewire-audio
+# pactl (PulseAudio/PipeWire) es el backend de sonido real que consumen
+# SystemService, el Centro de Control y la página de sonido.
+pulseaudio-utils
 playerctl
 # La tienda es la app propia dylanos-store (compilada en build.sh).
 # Runtime del fork (libdiscover + backend PackageKit/Flatpak):
