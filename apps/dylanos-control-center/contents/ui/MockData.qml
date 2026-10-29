@@ -9,6 +9,10 @@ import org.kde.plasma.plasma5support as P5Support
  * el servicio que abre; no se presenta como AirDrop.
  */
 QtObject {
+    // kcmshell6 puede no estar disponible en el sistema; sin el flag el
+    // ejecutor emite comandos que nadie consumirá.
+    property bool kcmshellAvailable: true
+
     readonly property var secondaryActions: [
         { id: "kdeconnect", icon: "kdeconnect", label: "KDE Connect", command: "kcmshell6 kcm_kdeconnect" },
         { id: "project", icon: "video-display", label: "Proyectar", command: "kcmshell6 kcm_kscreen" },
@@ -16,6 +20,7 @@ QtObject {
     ]
 
     function run(command) {
+        if (!kcmshellAvailable) return
         exec.connectSource(command)
     }
 

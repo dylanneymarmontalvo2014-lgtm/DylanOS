@@ -76,6 +76,7 @@ Rectangle {
             Item { Layout.fillWidth: true }
             QQC2.ToolButton {
                 icon.name: "overflow-menu"; icon.color: cLightGray; flat: true
+                enabled: MockData.kcmshellAvailable
                 Accessible.name: "Más opciones de notificaciones"
                 onClicked: MockData.run("kcmshell6 kcm_notifications")
             }
