@@ -83,8 +83,8 @@ class SpotlightBackend(QObject):
                             "actionType": "app",
                             "actionPayload": clean_exec
                         })
-                except Exception:
-                    pass
+                except Exception as exc:
+                    print(f"No se pudo cargar la aplicación {exec_cmd}: {exc}", file=sys.stderr)
 
         self._app_cache = sorted(apps, key=lambda a: a["title"].lower())
 
