@@ -67,6 +67,7 @@ QtObject {
     readonly property real brightnessValue: brightnessMax > 0 ? brightnessRaw / brightnessMax : 0
 
     function setBrightness(normalizedValue) {
+        if (!brightnessAvailable) return
         const target = Math.round(normalizedValue * brightnessMax)
         brightnessRaw = target // respuesta inmediata en UI
         exec.connectSource(
@@ -82,6 +83,7 @@ QtObject {
     property bool volumeMuted: false
 
     function setVolume(normalizedValue) {
+        if (!volumeAvailable) return
         const pct = Math.round(normalizedValue * 100)
         volumeValue = normalizedValue
         exec.connectSource("pactl set-sink-volume @DEFAULT_SINK@ " + pct + "%")
@@ -97,6 +99,7 @@ QtObject {
     property bool microphoneMuted: false
 
     function setMicrophoneVolume(normalizedValue) {
+        if (!microphoneAvailable) return
         const pct = Math.round(normalizedValue * 100)
         microphoneVolumeValue = normalizedValue
         exec.connectSource("pactl set-source-volume @DEFAULT_SOURCE@ " + pct + "%")
