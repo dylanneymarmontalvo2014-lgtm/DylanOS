@@ -572,6 +572,19 @@ class InstallDiskSafetyTest(unittest.TestCase):
         self.assertEqual(server.install_state["status"], "error")
         run_cmd.assert_not_called()
 
+    def test_install_reports_invalid_user_without_escaping_the_error_boundary(self):
+        import stat
+        with patch("os.geteuid", return_value=0), self._valid_environment(), \
+             patch("os.stat", return_value=type("Stat", (), {"st_mode": stat.S_IFBLK | 0o600})()), \
+             patch.object(server, "run_cmd") as run_cmd:
+            server.perform_installation({
+                "disk": "/dev/sdb",
+                "user": {"username": "root", "password": "test"},
+            })
+        self.assertEqual(server.install_state["status"], "error")
+        self.assertIn("reservado", server.install_state["error"])
+        run_cmd.assert_not_called()
+
 
 if __name__ == "__main__":
     unittest.main()
