@@ -991,11 +991,6 @@ def perform_installation(config):
     variant_name = keyboard.get("variant") or ""
     model_name = keyboard.get("model") or ""
     language = config.get("language") or "es_419"
-    user_errors = validate_user(username, hostname)
-    if not user_errors.get("ok"):
-        raise RuntimeError(
-            f"Usuario o hostname inválidos: {user_errors.get('usernameError') or user_errors.get('hostnameError')}"
-        )
 
     try:
         # La API desplegada nunca reporta una instalación simulada como exitosa.
@@ -1004,6 +999,11 @@ def perform_installation(config):
         disk = validate_install_disk(disk)
         demo = False
         install_state["demo"] = False
+        user_errors = validate_user(username, hostname)
+        if not user_errors.get("ok"):
+            raise RuntimeError(
+                f"Usuario o hostname inválidos: {user_errors.get('usernameError') or user_errors.get('hostnameError')}"
+            )
         log(f"Instalación real: disco={disk} modo={mode} usuario={username} idioma={language}.")
 
         if not password:
