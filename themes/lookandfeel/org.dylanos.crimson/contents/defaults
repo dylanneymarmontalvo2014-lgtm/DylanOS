@@ -6,7 +6,7 @@ font=Inter,10,-1,5,50,0,0,0,0,0
 widgetStyle=Breeze
 
 [kdeglobals][Icons]
-Theme=breeze-dark
+Theme=DylanIcons-Crimson
 
 [plasmarc][Theme]
 name=DylanOS-Crimson

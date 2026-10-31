@@ -108,13 +108,17 @@ dev_pkgs="$(parse_package_list "$DEV_LIST" 2>/dev/null || true)"
 # Paquetes del sistema base migrados del build.sh original
 for p in linux-image-amd64 systemd-sysv kde-plasma-desktop sddm parted \
     squashfs-tools neowofetch sudo network-manager kitty imagemagick playerctl \
-    power-profiles-daemon; do
+    power-profiles-daemon papirus-icon-theme; do
     assert_contains_line "default contiene $p" "$default_pkgs" "$p"
 done
 # DylanOS Explorer no es un paquete apt: se compila desde apps/dylanos-explorer.
 assert_eq "explorer se compila en build" "si" "$(grep -q 'dylanos-src/dylanos-explorer' "$ROOT/scripts/build.sh" && echo si || echo no)"
 assert_contains_line "Explorer tiene el módulo QML QtQuick.Shapes en runtime" \
     "$default_pkgs" "qml6-module-qtquick-shapes"
+assert_contains_line "El shell tiene Plasma5Support en runtime" \
+    "$default_pkgs" "qml6-module-org-kde-plasma-plasma5support"
+assert_contains_line "Neofetch conserva ImageMagick para el logo de Kitty" \
+    "$default_pkgs" "imagemagick"
 assert_eq "default ya no contiene dolphin" "no" \
     "$(printf '%s' "$default_pkgs" | grep -qx dolphin && echo si || echo no)"
 assert_eq "default ya no contiene konsole" "no" \

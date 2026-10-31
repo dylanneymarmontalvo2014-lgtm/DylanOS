@@ -1,6 +1,6 @@
 # DylanOS App Center
 
-Centro de aplicaciones Qt 6/QML que enumera servicios de escritorio registrados con KDE Service (`KService::allServices`). Filtra por nombre/comentario, presenta la lista paginada según el tamaño de ventana y abre una aplicación seleccionada usando `KIO::ApplicationLauncherJob`. Los lanzadores marcados como `NoDisplay` o que no son aplicaciones ejecutables se excluyen.
+Centro de aplicaciones Qt 6/QML que enumera servicios de escritorio registrados con KDE Service (`KService::allServices`). Filtra por nombre/comentario, presenta la lista paginada en una superposición a pantalla completa sin controles de ventana y abre una aplicación seleccionada usando `KIO::ApplicationLauncherJob`. Los lanzadores marcados como `NoDisplay` o que no son aplicaciones ejecutables se excluyen.
 
 Se abre desde el menú de aplicaciones como **DylanOS App Center** o ejecutando:
 
