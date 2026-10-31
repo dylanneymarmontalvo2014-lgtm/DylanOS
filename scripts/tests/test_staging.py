@@ -70,6 +70,7 @@ class StagingTest(unittest.TestCase):
                      "usr/share/wallpapers/DylanOS/dylanos-default.png",
                      "usr/share/plasma/look-and-feel/org.dylanos.crimson/contents/splash/Splash.qml",
                      "usr/share/plasma/plasmoids/com.dylanos.activeapp/contents/ui/main.qml",
+                     "usr/share/plasma/plasmoids/com.dylanos.activeapp/contents/ui/ActiveAppLogic.js",
                      "usr/share/dylanos/workspace/assets/logo.png",
                      "etc/skel/.config/ksplashrc",
                      "etc/skel/.config/kitty/kitty.conf",
@@ -156,46 +157,7 @@ class StagingTest(unittest.TestCase):
             self.assertTrue((root / "usr/share/plasma/plasmoids/com.dylanos.search/metadata.json").is_file())
             self.assertTrue((root / "usr/share/plasma/plasmoids/com.dylanos.search/contents/ui/main.qml").is_file())
             dashboard = root / "usr/share/plasma/plasmoids/com.dylanos.dashboard"
-            self.assertTrue((dashboard / "metadata.json").is_file())
-            dashboard_qml = (dashboard / "contents/ui/main.qml").read_text()
-            self.assertIn("/proc/meminfo", dashboard_qml)
-            self.assertIn("/proc/uptime", dashboard_qml)
-            self.assertIn("Mes anterior", dashboard_qml)
-            self.assertIn("function selectDate(date)", dashboard_qml)
-            self.assertIn("delegate: QQC2.Button", dashboard_qml)
-            self.assertIn("Día seleccionado · ", dashboard_qml)
-            dash_meta = json.loads((dashboard / "metadata.json").read_text())
-            self.assertEqual(dash_meta["KPlugin"]["Version"], "0.8.0")
-            self.assertIn("function usagePercent(used, total)", dashboard_qml)
-            self.assertIn("Accessible.name: \"Uso de memoria: \"", dashboard_qml)
-            self.assertEqual(dashboard_qml.count("Behavior on width { NumberAnimation { duration: 320; easing.type: Easing.OutCubic } }"), 3)
-            self.assertIn('isToday ? ", hoy" : \"', dashboard_qml)
-            self.assertIn('isSelected ? ", seleccionado" : \"', dashboard_qml)
-            self.assertIn('ColorAnimation { duration: 130; easing.type: Easing.OutCubic }', dashboard_qml)
-            self.assertIn('commandRunner.connectSource("plasma-systemmonitor")', dashboard_qml)
-            self.assertIn('text: "Abrir Monitor del sistema"', dashboard_qml)
-            self.assertIn('text: "Actualizar"', dashboard_qml)
-            self.assertIn('root.lastRefreshRequested = new Date()', dashboard_qml)
-            self.assertIn('"Consulta · " + Qt.formatTime(root.lastRefreshRequested, "hh:mm:ss")', dashboard_qml)
-            self.assertIn('property var cpuHistory: []', dashboard_qml)
-            self.assertIn('root.cpuHistory = root.cpuHistory.concat([root.cpuUsagePercent]).slice(-24)', dashboard_qml)
-            self.assertIn('id: cpuTrend', dashboard_qml)
-            self.assertIn('ctx.strokeStyle = "#DC143C"', dashboard_qml)
-            self.assertIn('function cpuHistoryDescription()', dashboard_qml)
-            self.assertTrue((dashboard / "contents/ui/PomodoroClock.js").is_file())
-            self.assertIn('function startPomodoro()', dashboard_qml)
-            self.assertIn('function pausePomodoro()', dashboard_qml)
-            self.assertIn('function resetPomodoro()', dashboard_qml)
-            self.assertIn('id: pomodoroCard', dashboard_qml)
-            self.assertIn('"Ciclos · " + root.completedFocusSessions', dashboard_qml)
-            # El muro 0.8.0 guarda datos reales del usuario: recordatorios en
-            # el KConfigXT del applet y medios reales vía playerctl (MPRIS).
-            self.assertTrue((dashboard / "contents/config/main.xml").is_file())
-            self.assertIn('<entry name="recordatorios" type="String">',
-                          (dashboard / "contents/config/main.xml").read_text())
-            self.assertIn("Plasmoid.configuration.recordatorios", dashboard_qml)
-            self.assertIn('"playerctl status"', dashboard_qml)
-            self.assertIn("property alias headerExtra: headerExtra.data", dashboard_qml)
+            self.assertFalse(dashboard.exists(), "DylanOS no debe enviar widgets sobre el escritorio")
             self.assertTrue((root / "usr/share/plasma/plasmoids/com.dylanos.controlcenter/metadata.json").is_file())
             cc_root = root / "usr/share/plasma/plasmoids/com.dylanos.controlcenter"
             cc_main = (cc_root / "contents/ui/main.qml").read_text()
@@ -223,7 +185,7 @@ class StagingTest(unittest.TestCase):
             self.assertEqual(cc_meta["KPlugin"]["Version"], "0.4.0")
             shell_layout = (root / "usr/share/plasma/look-and-feel/org.dylanos.crimson/contents/layouts/org.kde.plasma.desktop-layout.js").read_text()
             self.assertIn("com.dylanos.search", shell_layout)
-            self.assertIn('allDesktops[i].addWidget("com.dylanos.dashboard"', shell_layout)
+            self.assertNotIn("com.dylanos.dashboard", shell_layout)
             self.assertIn("com.dylanos.controlcenter", shell_layout)
             self.assertIn("org.kde.plasma.trash", shell_layout)
             self.assertIn('"ddd dd \'de\' MMM"', shell_layout)
@@ -305,6 +267,8 @@ class StagingTest(unittest.TestCase):
             kdeglobals = (root / "etc/skel/.config/kdeglobals").read_text()
             self.assertIn("TerminalApplication=dylanos-console", kdeglobals)
             self.assertIn("TerminalService=org.dylanos.console.desktop", kdeglobals)
+            self.assertIn("Theme=DylanIcons-Crimson", kdeglobals)
+            self.assertTrue((root / "usr/share/icons/DylanIcons-Crimson/index.theme").is_file())
             # El layout del panel nunca debe incluir el cambiador de escritorios.
             layout = (root / "usr/share/plasma/look-and-feel/org.dylanos.crimson/contents/layouts/org.kde.plasma.desktop-layout.js").read_text()
             self.assertNotIn('addWidget("org.kde.plasma.pager")', layout)
@@ -366,9 +330,18 @@ class StagingTest(unittest.TestCase):
             stale_konsolerc.write_text("[Desktop Entry]\nDefaultProfile=DylanOS.profile\n")
             stale_kitty = root / "usr/share/applications/kitty.desktop"
             stale_kitty.write_text("[Desktop Entry]\nType=Application\nName=kitty\n")
+            stale_im = root / "usr/share/applications/display-im7.q16.desktop"
+            stale_im.write_text("[Desktop Entry]\nType=Application\nName=ImageMagick\n")
+            stale_kwallet = root / "usr/share/applications/org.kde.kwalletmanager.desktop"
+            stale_kwallet.write_text("[Desktop Entry]\nType=Application\nName=KWalletManager\n")
+            stale_kwalletrc = root / "etc/skel/.config/kwalletrc"
+            stale_kwalletrc.write_text("[Wallet]\nEnabled=false\n")
             stale_notifier = root / "etc/xdg/autostart/org.kde.discover.notifier.desktop"
             stale_notifier.parent.mkdir(parents=True, exist_ok=True)
             stale_notifier.write_text("[Desktop Entry]\nType=Application\n")
+            stale_dashboard = root / "usr/share/plasma/plasmoids/com.dylanos.dashboard"
+            stale_dashboard.mkdir(parents=True, exist_ok=True)
+            (stale_dashboard / "metadata.json").write_text("{}\n")
             original = (root / "etc/skel/.config/kdeglobals").read_text()
             module.stage(root)
             self.assertFalse(stale_autostart.exists(),
@@ -377,6 +350,8 @@ class StagingTest(unittest.TestCase):
                              "stage() debe borrar los restos de plasma-discover")
             self.assertFalse(stale_notifier.exists(),
                              "stage() debe borrar el autostart obsoleto del notifier de Discover")
+            self.assertFalse(stale_dashboard.exists(),
+                             "stage() debe borrar el dashboard de chroots reutilizados")
             self.assertFalse(stale_files.exists(),
                              "stage() debe borrar la entrada obsoleta org.dylanos.files.desktop (Archivos del workspace)")
             self.assertFalse(stale_konsole.exists(),
@@ -385,6 +360,12 @@ class StagingTest(unittest.TestCase):
                              "stage() debe borrar el perfil skel de Konsole")
             self.assertIn("NoDisplay=true", stale_kitty.read_text(),
                           "stage() debe ocultar el lanzador genérico de Kitty")
+            self.assertIn("NoDisplay=true", stale_im.read_text(),
+                          "stage() debe ocultar el lanzador de ImageMagick")
+            self.assertIn("NoDisplay=true", stale_kwallet.read_text(),
+                          "stage() debe ocultar el lanzador de KWalletManager")
+            self.assertFalse(stale_kwalletrc.exists(),
+                             "KWallet debe seguir disponible como backend para plasma-nm y KIO")
             self.assertEqual((root / "etc/skel/.config/kdeglobals").read_text(), original)
             self.assertEqual(len(list((root / "usr/share/applications").glob("org.dylanos.*.desktop"))), 9)
             self.assertFalse(list(root.rglob("*.otf")))

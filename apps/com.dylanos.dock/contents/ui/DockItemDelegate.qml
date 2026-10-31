@@ -42,7 +42,8 @@ Item {
         anchors.bottom: indicator.top
         anchors.bottomMargin: 5
         transformOrigin: Item.Bottom
-        scale: delegateRoot.baseSize > 0 ? delegateRoot.magnifiedSize / delegateRoot.baseSize : 1
+        scale: (delegateRoot.baseSize > 0 ? delegateRoot.magnifiedSize / delegateRoot.baseSize : 1)
+            * (mouseArea.pressed ? 0.92 : 1)
 
         Behavior on scale {
             NumberAnimation { duration: 170; easing.type: Easing.OutCubic }

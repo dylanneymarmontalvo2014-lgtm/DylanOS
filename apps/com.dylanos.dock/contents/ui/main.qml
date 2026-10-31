@@ -1,12 +1,13 @@
 import QtQuick
 import QtQuick.Layouts
 import org.kde.plasma.plasmoid
+import org.kde.plasma.core as PlasmaCore
 import org.kde.taskmanager as TaskManager
 
 PlasmoidItem {
     id: root
 
-    Plasmoid.backgroundHints: PlasmoidItem.NoBackground
+    Plasmoid.backgroundHints: PlasmaCore.Types.NoBackground
     compactRepresentation: dockContent
     fullRepresentation: dockContent
 
@@ -68,7 +69,18 @@ PlasmoidItem {
                 anchors.fill: parent
                 radius: Plasmoid.configuration.cornerRadius
                 color: "#0a0a0a"
-                opacity: Plasmoid.configuration.backgroundOpacity
+                gradient: Gradient {
+                    GradientStop {
+                        position: 0
+                        color: Qt.rgba(28 / 255, 23 / 255, 31 / 255,
+                            Math.min(0.98, Plasmoid.configuration.backgroundOpacity + 0.18))
+                    }
+                    GradientStop {
+                        position: 1
+                        color: Qt.rgba(6 / 255, 6 / 255, 8 / 255,
+                            Math.min(0.96, Plasmoid.configuration.backgroundOpacity + 0.08))
+                    }
+                }
 
                 Behavior on radius { NumberAnimation { duration: 150 } }
 
@@ -76,9 +88,21 @@ PlasmoidItem {
                     anchors.fill: parent
                     radius: parent.radius
                     color: "transparent"
-                    border.color: "#ffffff"
+                    border.color: "#2e2736"
                     border.width: 1
-                    opacity: 0.08
+                }
+
+                // Línea especular carmesí: da profundidad sin animar blur ni
+                // sombras costosas durante la ampliación de los iconos.
+                Rectangle {
+                    anchors.top: parent.top
+                    anchors.topMargin: 1
+                    anchors.horizontalCenter: parent.horizontalCenter
+                    width: Math.max(0, parent.width - parent.radius * 1.5)
+                    height: 1
+                    radius: 1
+                    color: "#ff5274"
+                    opacity: 0.34
                 }
             }
 

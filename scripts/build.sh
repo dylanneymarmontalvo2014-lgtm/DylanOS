@@ -133,6 +133,10 @@ for list in /tmp/dylanos-packages/*.list; do
 done
 # Evita paquetes recomendados no solicitados; dependencias obligatorias siguen instalándose.
 xargs -r -a "$all_packages" apt-get -o Acquire::Retries=3 install -y --no-install-recommends
+# La Store usa el backend Flatpak real de libdiscover. Flathub queda como
+# remoto del sistema para todos los usuarios; --if-not-exists mantiene los
+# builds --resume idempotentes y conserva cualquier configuración existente.
+flatpak remote-add --system --if-not-exists flathub https://dl.flathub.org/repo/flathub.flatpakrepo
 sed -i 's/^# es_ES.UTF-8 UTF-8/es_ES.UTF-8 UTF-8/; s/^# en_US.UTF-8 UTF-8/en_US.UTF-8 UTF-8/' /etc/locale.gen
 locale-gen
 update-locale LANG=es_ES.UTF-8

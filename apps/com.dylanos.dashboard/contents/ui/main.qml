@@ -398,7 +398,7 @@ PlasmoidItem {
         property bool sampled: true
         implicitWidth: 92
         implicitHeight: 92
-        Accessible.role: Accessible.Gauge
+        Accessible.role: Accessible.ProgressBar
         Accessible.name: sampled
             ? "Uso de " + caption + ": " + Math.round(portion * 100) + "%"
             : "Uso de " + caption + " sin datos"
@@ -1030,7 +1030,7 @@ PlasmoidItem {
                             horizontalAlignment: Text.AlignHCenter
                             Accessible.name: "Lista de recordatorios vacía"
                         }
-                        ScrollIndicator.vertical: ScrollIndicator { }
+                        QQC2.ScrollIndicator.vertical: QQC2.ScrollIndicator { }
                     }
                     RowLayout {
                         Layout.fillWidth: true
@@ -1058,7 +1058,7 @@ PlasmoidItem {
                             Layout.preferredWidth: 32
                             Layout.preferredHeight: 32
                             radius: 16
-                            color: addTap.pressed ? "#9C0B28" : addTap.hovered ? "#FF2A54" : "#DC143C"
+                            color: addTap.pressed ? "#9C0B28" : addTap.containsMouse ? "#FF2A54" : "#DC143C"
                             QQC2.Label {
                                 anchors.centerIn: parent
                                 text: "+"
