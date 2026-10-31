@@ -51,6 +51,7 @@ fonts-jetbrains-mono
 imagemagick
 neowofetch
 breeze-icon-theme
+papirus-icon-theme
 kde-style-breeze
 breeze-gtk-theme
 kde-config-gtk-style
@@ -100,6 +101,7 @@ qml6-module-qtquick-window
 qml6-module-qtquick-templates
 qml6-module-qtqml-workerscript
 qml6-module-qtcore
+qml6-module-org-kde-plasma-plasma5support
 qdbus-qt6
 
 # Aplicaciones predeterminadas (espejo de configs/default-apps.conf)

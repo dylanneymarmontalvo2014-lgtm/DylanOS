@@ -5,8 +5,8 @@ import unittest
 os.environ.setdefault('QT_QPA_PLATFORM', 'offscreen')
 os.environ.setdefault('QT_QUICK_BACKEND', 'software')
 try:
-    from PySide6.QtCore import QObject, Signal, Slot, QUrl
-    from PySide6.QtGui import QGuiApplication, QImage, QColor, QWindow
+    from PySide6.QtCore import QObject, Qt, Signal, Slot, QUrl
+    from PySide6.QtGui import QAccessible, QGuiApplication, QImage, QColor, QWindow
     from PySide6.QtQuick import QQuickImageProvider
     from PySide6.QtQml import QQmlApplicationEngine
     HAS_QT = True
@@ -45,6 +45,39 @@ if HAS_QT:
 
 @unittest.skipUnless(HAS_QT, 'PySide6 required')
 class AppCenterUiTest(unittest.TestCase):
+    def load_window(self):
+        app = QGuiApplication.instance() or QGuiApplication([])
+        model = Catalog()
+        engine = QQmlApplicationEngine()
+        engine.addImageProvider('icon', Icons())
+        engine.rootContext().setContextProperty('appModel', model)
+        engine.load(QUrl.fromLocalFile(str(ROOT / 'apps/dylanos-app-center/qml/Main.qml')))
+        self.assertTrue(engine.rootObjects())
+        app.processEvents()
+        return app, model, engine, engine.rootObjects()[0]
+
+    def test_app_center_opens_as_fullscreen_overlay(self):
+        _app, _model, _engine, window = self.load_window()
+        self.assertEqual(window.visibility(), QWindow.FullScreen)
+        self.assertTrue(window.flags() & Qt.FramelessWindowHint)
+        window.close()
+
+    def test_app_center_has_no_window_chrome_actions(self):
+        _app, _model, _engine, window = self.load_window()
+        names = set()
+        for item in [window, *window.findChildren(QObject)]:
+            interface = QAccessible.queryAccessibleInterface(item)
+            if interface:
+                name = interface.text(QAccessible.Text.Name)
+                if name:
+                    names.add(name)
+        self.assertTrue(names.isdisjoint({
+            'Cerrar App Center',
+            'Minimizar App Center',
+            'Maximizar o restaurar App Center',
+        }))
+        window.close()
+
     def test_search_paging_and_resize(self):
         app = QGuiApplication.instance() or QGuiApplication([])
         model = Catalog()

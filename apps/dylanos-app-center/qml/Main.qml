@@ -92,7 +92,7 @@ ApplicationWindow {
     // los bordes); un Shortcut de ventana se comería esas teclas antes de que
     // la cuadrícula pudiera navegar.
 
-    // Dark crimson smoke background matching Image 1
+    // Superficie principal Crimson: overlay de aplicaciones a pantalla completa.
     Rectangle {
         anchors.fill: parent
         gradient: Gradient {
@@ -103,7 +103,8 @@ ApplicationWindow {
             GradientStop { position: 1.0; color: "#080608" }
         }
 
-        // Click outside closes
+        // El fondo se comporta como una superposición: un clic fuera del
+        // contenido cierra el selector de aplicaciones.
         MouseArea {
             anchors.fill: parent
             onClicked: window.close()
@@ -119,7 +120,7 @@ ApplicationWindow {
         id: scroller
         anchors.fill: parent
         anchors.topMargin: 24
-        anchors.bottomMargin: 110 // Leave space for bottom floating dock
+        anchors.bottomMargin: 110
         anchors.leftMargin: Math.max(32, (window.width - 1280) / 2)
         anchors.rightMargin: Math.max(32, (window.width - 1280) / 2)
         contentWidth: width

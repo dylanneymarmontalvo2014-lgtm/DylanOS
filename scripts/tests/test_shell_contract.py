@@ -12,6 +12,23 @@ class ShellContractTest(unittest.TestCase):
     def test_active_application_title_has_readable_minimum_width(self):
         qml = (ROOT / "apps/com.dylanos.activeapp/contents/ui/main.qml").read_text(encoding="utf-8")
         self.assertIn("Layout.minimumWidth: 192", qml)
+        self.assertIn("anchors.right: parent.right", qml)
+        title = qml.split("id: titleLabel", 1)[1].split("// Botones de acciones", 1)[0]
+        self.assertIn("Layout.fillWidth: true", title)
+        self.assertIn("Layout.minimumWidth: 0", title)
+
+    def test_active_application_actions_target_individual_windows(self):
+        qml = (ROOT / "apps/com.dylanos.activeapp/contents/ui/main.qml").read_text(encoding="utf-8")
+        self.assertIn("groupMode: TaskManager.TasksModel.GroupDisabled", qml)
+        for role in ("IsMinimizable", "IsMaximizable", "IsClosable"):
+            self.assertIn(f"TaskManager.AbstractTasksModel.{role}", qml)
+        for action in ("requestNewInstance", "requestToggleMinimized", "requestToggleMaximized", "requestToggleKeepAbove", "requestClose"):
+            self.assertIn(f"tasksModel.{action}", qml)
+        self.assertIn('return "Aplicación"', qml)
+        for accessible_name in ("Abrir una ventana nueva", "Minimizar ventana", "Maximizar o restaurar ventana",
+                                "Mantener ventana encima", "Abrir acciones de ventana", "Cerrar ventana"):
+            self.assertIn(f'Accessible.name: "{accessible_name}"', qml)
+        self.assertGreaterEqual(qml.count("QQC2.ToolButton {"), 6)
 
     def test_official_code_launcher_is_used_consistently(self):
         layout = (ROOT / "themes/lookandfeel/org.dylanos.crimson/contents/layouts/org.kde.plasma.desktop-layout.js").read_text(encoding="utf-8")
@@ -47,6 +64,10 @@ class ShellContractTest(unittest.TestCase):
         self.assertIn("hoverDistance === 1 ? baseSize + (hoverSize - baseSize) * 0.48", delegate)
         self.assertIn("hoverDistance === 2 ? baseSize + (hoverSize - baseSize) * 0.18", delegate)
         self.assertIn("NumberAnimation { duration: 170; easing.type: Easing.OutCubic }", delegate)
+        self.assertIn("mouseArea.pressed ? 0.92 : 1", delegate)
+        self.assertNotIn("Behavior on width", delegate.split("id: indicator", 1)[0])
+        self.assertIn('color: "#ff5274"', dock)
+        self.assertIn("Plasmoid.configuration.backgroundOpacity + 0.18", dock)
         self.assertIn("onEntered: {", delegate)
         self.assertIn("dockRoot.hoverIndex = delegateRoot.delegateIndex", delegate)
         self.assertIn("dockRoot.hoverIndex = -1", delegate)

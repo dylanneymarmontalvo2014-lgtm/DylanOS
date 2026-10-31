@@ -1,0 +1,6 @@
+[Icon Theme]
+Name=DylanIcons Crimson
+Comment=Iconos de DylanOS Crimson basados en ePapirus
+Inherits=ePapirus-Dark,ePapirus,Papirus-Dark,breeze-dark,hicolor
+Directories=
+Hidden=false

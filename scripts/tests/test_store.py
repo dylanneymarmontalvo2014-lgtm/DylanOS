@@ -163,6 +163,10 @@ class StoreStructureTest(unittest.TestCase):
                     "libflatpak-dev", "qt6-svg-dev", "kirigami-addons-dev"):
             self.assertIn(dev, build.split())
         buildsh = (ROOT / "scripts/build.sh").read_text(encoding="utf-8")
+        self.assertIn(
+            "flatpak remote-add --system --if-not-exists flathub https://dl.flathub.org/repo/flathub.flatpakrepo",
+            buildsh,
+        )
         self.assertIn("dylanos-store/build", buildsh)
         self.assertIn("dylanos-store/catalog/store.db", buildsh)
         self.assertIn("ctest --test-dir /tmp/dylanos-src/dylanos-store/build", buildsh)

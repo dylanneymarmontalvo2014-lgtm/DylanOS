@@ -70,6 +70,7 @@ def stage(destination, installer_dist=None, version=None):
         ("themes/colors", "/usr/share/color-schemes"),
         ("themes/gtk/DylanOS-Crimson-Light", "/usr/share/themes/DylanOS-Crimson-Light"),
         ("themes/gtk/DylanOS-Crimson", "/usr/share/themes/DylanOS-Crimson"),
+        ("themes/icons/DylanIcons-Crimson", "/usr/share/icons/DylanIcons-Crimson"),
         ("themes/plasma/DylanOS-Crimson", "/usr/share/plasma/desktoptheme/DylanOS-Crimson"),
         ("themes/aurorae/DylanOS-Crimson", "/usr/share/aurorae/themes/DylanOS-Crimson"),
         ("themes/aurorae/DylanOS-Crimson-Light", "/usr/share/aurorae/themes/DylanOS-Crimson-Light"),
@@ -84,7 +85,6 @@ def stage(destination, installer_dist=None, version=None):
         ("apps/com.dylanos.activeapp", "/usr/share/plasma/plasmoids/com.dylanos.activeapp"),
         ("apps/com.dylanos.dock", "/usr/share/plasma/plasmoids/com.dylanos.dock"),
         ("apps/com.dylanos.search", "/usr/share/plasma/plasmoids/com.dylanos.search"),
-        ("apps/com.dylanos.dashboard", "/usr/share/plasma/plasmoids/com.dylanos.dashboard"),
         ("apps/dylanos-control-center", "/usr/share/plasma/plasmoids/com.dylanos.controlcenter"),
         ("installer/dylanos-installer/dist", "/usr/share/dylanos/installer/dist"),
         ("installer/dylanos-installer/backend", "/usr/share/dylanos/installer/backend"),
@@ -170,6 +170,9 @@ exec /usr/bin/python3 /usr/share/dylanos/installer/native/main.py "$@"
     remove("/usr/share/applications/org.kde.discover.notifier.desktop")
     remove("/usr/share/applications/plasma-discover.desktop")
     remove("/etc/xdg/autostart/org.kde.discover.notifier.desktop")
+    # El escritorio beta no envía el antiguo muro de widgets. Borrarlo de
+    # chroots reutilizados evita que Plasma pueda restaurarlo por id.
+    remove("/usr/share/plasma/plasmoids/com.dylanos.dashboard")
     # Un solo explorador y una sola calculadora: los .desktop de dolphin y
     # kcalc no deben existir (build.sh purga los paquetes; esto cubre chroots
     # reutilizados de builds anteriores).
@@ -184,6 +187,9 @@ exec /usr/bin/python3 /usr/share/dylanos/installer/native/main.py "$@"
     remove("/etc/skel/.local/share/konsole/DylanOS-Crimson.colorscheme")
     remove("/etc/skel/.config/fastfetch/config.jsonc")
     remove("/usr/share/dylanos/fastfetch/logo.txt")
+    # Builds intermedios deshabilitaron KWallet en el skel. El backend debe
+    # seguir disponible para plasma-nm y KIO, aunque su gestor esté oculto.
+    remove("/etc/skel/.config/kwalletrc")
     # DylanOS Configuration sustituye al lanzador del workspace "Ajustes DylanOS"
     # (dylanos --page settings): la entrada obsoleta no debe volver a aparecer.
     remove("/usr/share/applications/org.dylanos.settings.desktop")
@@ -259,6 +265,10 @@ exec /usr/bin/python3 /usr/share/dylanos/installer/native/main.py "$@"
         "/usr/share/applications/lightdm-settings.desktop",
         "/usr/share/applications/kitty.desktop",
         "/usr/share/applications/kitty-open.desktop",
+        "/usr/share/applications/display-im7.q16.desktop",
+        "/usr/share/applications/display-im6.q16.desktop",
+        "/usr/share/applications/org.kde.kwalletmanager.desktop",
+        "/usr/share/applications/org.kde.kwalletmanager5.desktop",
     ]:
         hide_duplicate(duplicate)
     write("/usr/bin/dylanos-welcome", '''#!/bin/sh

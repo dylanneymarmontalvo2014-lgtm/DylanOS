@@ -14,10 +14,10 @@ la arquitectura **real** del repositorio tras la iteración de ingeniería de 20
    `dylanos-calculator`, `dylanos-spotlight`, `dylanos-installer`.
 3. **Shell del escritorio**: paneles Plasma generados por el layout del look-and-feel
    (`org.dylanos.crimson`) con plasmoids propios (`com.dylanos.activeapp`,
-   `com.dylanos.search`, `com.dylanos.controlcenter`, `com.dylanos.dashboard`) y
-   `com.dylanos.dock` como dock inferior con zoom suave al pasar el cursor. El
-   Dashboard muestra calendario interactivo,
-   RAM, CPU, disco raíz y uptime; el Centro de Control integra notificaciones,
+   `com.dylanos.search`, `com.dylanos.controlcenter`) y `com.dylanos.dock` como
+   dock inferior con zoom suave al pasar el cursor. El layout inicial no añade widgets
+   sobre el escritorio; el antiguo `com.dylanos.dashboard` permanece como fuente histórica,
+   pero staging lo elimina de la imagen. El Centro de Control integra notificaciones,
    interruptores y audio con datos locales/de Plasma. Ver [DylanOS Shell](dylanos-shell.md)
    y la [guía de uso](guia-de-uso.md) para disponibilidad y límites.
 4. **Identidad visual**: `branding/` + `themes/` (aurorae, SDDM, Plymouth, GRUB, GTK,
@@ -27,7 +27,9 @@ la arquitectura **real** del repositorio tras la iteración de ingeniería de 20
 
 - **Apps DylanOS**: ventanas `Qt.FramelessWindowHint` con controles integrados en el
   frontend (semáforos cerrar/minimizar/maximizar a la izquierda + `startSystemMove()` para
-  arrastrar). Ninguna app DylanOS muestra la decoración tradicional. La identidad de cada
+  arrastrar). App Center es la excepción deliberada: funciona como superposición a pantalla
+  completa, sin semáforos ni redimensionado, y se cierra con Escape o al pulsar el fondo.
+  Ninguna app DylanOS muestra la decoración tradicional. La identidad de cada
   ventana se fija con `QGuiApplication::setDesktopFileName("<id>")` (Wayland app_id) y
   `StartupWMClass` (X11); el `.desktop` de cada app usa el MISMO id (`org.dylanos.*`).
 - **Apps de terceros** (Firefox, Kitty, Kate…): decoración SSD de KWin con el tema
