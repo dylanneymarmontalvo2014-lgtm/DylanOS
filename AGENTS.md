@@ -180,5 +180,6 @@ DYLANOS_PYTHON=/tmp/opencode/venv/bin/python bash scripts/check.sh
   registros: no reescribirlos. `unittest discover` (la flag de CLI) en docs históricos NO
   es una referencia a KDE Discover; no tocar.
 - `.claude/worktrees/` es un worktree viejo (copia histórica): no editar.
+- **Todo registro de issues debe realizarse en el GitHub Project "DylanOS issues":** el archivo `issues_record.md` es obsoleto y debe eliminarse después de migrar el control al proyecto. Los nuevos issues y el seguimiento deben hacerse exclusivamente en el GitHub Project.
 - Git: mensajes estilo `feat(scope): …`/`fix(scope): …` en español, push por SSH a
   `origin development`. Nunca `git reset --hard` ni `git clean -fd` para "limpiar".
