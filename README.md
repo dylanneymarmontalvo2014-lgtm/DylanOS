@@ -1,4 +1,5 @@
-# DylanOS Crimson 1.0
+<h1 align="center">DylanOS Crimson 1.0</h1>
+
 
 <p align="center">
 	<img src="https://raw.githubusercontent.com/dylanneymarmontalvo2014-lgtm/DylanOS/development/branding/logo.png" alt="Logotipo de DylanOS" width="112">
