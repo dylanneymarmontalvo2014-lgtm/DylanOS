@@ -1,17 +1,17 @@
 [General]
 Shadow=false
-Animation=120
+Animation=160
 TitleAlignment=Center
-ActiveTextColor=152,154,162
-InactiveTextColor=104,106,114
+ActiveTextColor=244,241,241
+InactiveTextColor=137,132,136
 
 [Layout]
-BorderLeft=4
-BorderRight=4
-BorderBottom=4
-BorderTop=0
-TitleEdgeTop=6
-TitleEdgeBottom=6
+BorderLeft=5
+BorderRight=5
+BorderBottom=5
+BorderTop=1
+TitleEdgeTop=7
+TitleEdgeBottom=7
 TitleEdgeLeft=10
 TitleEdgeRight=10
 TitleBorderLeft=0

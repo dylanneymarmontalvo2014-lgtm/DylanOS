@@ -78,6 +78,7 @@ def stage(destination, installer_dist=None, version=None):
         ("themes/aurorae/DylanOS-Crimson", "/usr/share/aurorae/themes/DylanOS-Crimson"),
         ("themes/aurorae/DylanOS-Crimson-Glass", "/usr/share/aurorae/themes/DylanOS-Crimson-Glass"),
         ("themes/aurorae/DylanOS-Crimson-Light", "/usr/share/aurorae/themes/DylanOS-Crimson-Light"),
+        ("themes/aurorae/DylanOS-Crimson-Glass", "/usr/share/aurorae/themes/DylanOS-Crimson-Glass"),
         ("themes/lookandfeel/org.dylanos.crimson", "/usr/share/plasma/look-and-feel/org.dylanos.crimson"),
         ("themes/sddm/DylanOS-Crimson", "/usr/share/sddm/themes/DylanOS-Crimson"),
         ("themes/grub/DylanOS-Grub", "/usr/share/grub/themes/dylanos"),
