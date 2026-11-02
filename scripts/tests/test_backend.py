@@ -1,4 +1,5 @@
 """Exercise the Qt bridge with real temporary files and its asynchronous signals."""
+import contextlib
 import os
 from pathlib import Path
 import sys
@@ -122,6 +123,22 @@ class BackendTest(unittest.TestCase):
         self.wait()
         self.assertEqual(projects, [str(dest / "demo")])
         self.assertTrue((dest / "demo/main.py").exists())
+
+    def test_kwin_decoration_reads_the_configured_glass_frame(self):
+        from unittest.mock import patch
+
+        @contextlib.contextmanager
+        def kwinrc(contents):
+            with tempfile.TemporaryDirectory() as config:
+                if contents:
+                    (Path(config) / "kwinrc").write_text(contents, encoding="utf-8")
+                with patch.dict(os.environ, {"XDG_CONFIG_HOME": config}):
+                    yield
+
+        with kwinrc("[org.kde.kdecoration2]\ntheme=__aurorae__svg__DylanOS-Crimson-Glass\n"):
+            self.assertTrue(self.backend.kwinDecoration().endswith("-Glass"))
+        with kwinrc(None):
+            self.assertEqual(self.backend.kwinDecoration(), "")
 
 
 if __name__ == "__main__":

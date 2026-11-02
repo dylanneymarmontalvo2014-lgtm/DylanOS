@@ -445,6 +445,71 @@ void SystemService::applyCursor(const QString &theme)
         exec(QStringLiteral("plasma-apply-cursortheme"), {theme}, 20000);
 }
 
+bool SystemService::glassEnabled()
+{
+    return configString(QStringLiteral("kwinrc"), QStringLiteral("org.kde.kdecoration2"),
+                        QStringLiteral("theme")).endsWith(QStringLiteral("-Glass"));
+}
+
+// Crimson-glass: el marco translúcido es lo que da a KWin una región donde
+// desenfocar, así que apagar el acabado es volver al marco opaco y dejar la
+// translucencia en su sitio. Los grupos Effect-blur y Effect-translucency son
+// los nombres con los que blur.kcfg y ScriptedEffect leen kwinrc.
+bool SystemService::setGlassEnabled(bool enabled)
+{
+    // Al apagar recuperamos el Crimson opaco que corresponda con el esquema de
+    // color activo: el vidrio solo tiene variante oscura, la clara sigue con su
+    // propio marco.
+    const QString opaque = configString(QStringLiteral("kdeglobals"), QStringLiteral("General"),
+                                        QStringLiteral("ColorScheme")) == QStringLiteral("DylanOSLight")
+        ? QStringLiteral("__aurorae__svg__DylanOS-Crimson-Light")
+        : QStringLiteral("__aurorae__svg__DylanOS-Crimson");
+    struct GlassSetting { const char *group; const char *key; const char *glass; const char *plain; };
+    static const GlassSetting settings[] = {
+        {"org.kde.kdecoration2", "theme", "__aurorae__svg__DylanOS-Crimson-Glass", nullptr},
+        {"Plugins", "translucencyEnabled", "true", "false"},
+        {"Effect-blur", "BlurStrength", "30", "15"},
+        {"Effect-blur", "NoiseStrength", "4", "5"},
+        {"Effect-translucency", "Inactive", "80", "100"},
+        {"Effect-translucency", "Dialogs", "85", "100"},
+        {"Effect-translucency", "Menus", "80", "100"},
+        {"Effect-translucency", "ComboboxPopups", "85", "100"},
+        {"Effect-translucency", "IndividualMenuConfig", "true", "false"},
+        {"Effect-translucency", "DropdownMenus", "80", "100"},
+        {"Effect-translucency", "PopupMenus", "80", "100"},
+        {"Effect-translucency", "TornOffMenus", "80", "100"},
+        {"Effect-translucency", "MoveResize", "70", "80"},
+    };
+    const QString file = QStringLiteral("kwinrc");
+    for (const GlassSetting &setting : settings) {
+        const QString value = enabled ? QLatin1String(setting.glass)
+                                      : (setting.plain ? QLatin1String(setting.plain) : opaque);
+        writeConfig(file, QLatin1String(setting.group), QLatin1String(setting.key), value);
+    }
+    if (enabled)
+        writeConfig(file, QStringLiteral("Plugins"), QStringLiteral("blurEnabled"), QStringLiteral("true"));
+    if (!m_lastError.isEmpty()) {
+        emit actionFailed(m_lastError);
+        return false;
+    }
+    // Al reconfigurar KWin solo carga efectos, nunca descarga los que quedaron
+    // desactivados en [Plugins]: hay que descargar la translucencia a mano.
+    if (!enabled) {
+        QDBusInterface effects(QStringLiteral("org.kde.kwin"), QStringLiteral("/Effects"),
+                               QStringLiteral("org.kde.kwin.Effects"), QDBusConnection::sessionBus());
+        if (effects.isValid())
+            effects.call(QStringLiteral("unloadEffect"), QStringLiteral("translucency"));
+    }
+    QDBusInterface kwin(QStringLiteral("org.kde.KWin"), QStringLiteral("/KWin"),
+                        QStringLiteral("org.kde.KWin"), QDBusConnection::sessionBus());
+    if (!kwin.isValid()) {
+        emit actionFailed(QStringLiteral("KWin no está disponible: el acabado se aplicará al reiniciar la sesión"));
+        return false;
+    }
+    kwin.call(QStringLiteral("reconfigure"));
+    return true;
+}
+
 QString SystemService::accent() const
 {
     return readKey(configPath(QStringLiteral("kdeglobals")), QStringLiteral("General"), QStringLiteral("AccentColor"));
