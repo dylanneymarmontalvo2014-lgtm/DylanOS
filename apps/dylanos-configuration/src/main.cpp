@@ -7,6 +7,7 @@
 #include <QTimer>
 
 #include "services/LucideProvider.h"
+#include "services/CrimsonGlassService.h"
 #include "services/SystemService.h"
 
 int main(int argc, char *argv[])
@@ -24,13 +25,25 @@ int main(int argc, char *argv[])
     QCommandLineOption smokeOption("smoke", "Cargar la interfaz sin interacción y salir (QA).");
     QCommandLineOption screenshotOption("screenshot", "Guardar una captura de una sección y salir (QA).", "screenshot");
     QCommandLineOption sizeOption("size", "Tamaño de la ventana para capturas (WxH).", "size");
-    parser.addOptions({pageOption, smokeOption, screenshotOption, sizeOption});
+    QCommandLineOption applyGlassOption(QStringLiteral("apply-crimson-glass"),
+                                        QStringLiteral("Aplicar Crimson Glass y salir."));
+    QCommandLineOption headlessOption(QStringLiteral("headless"),
+                                      QStringLiteral("No abrir la interfaz gráfica."));
+    parser.addOptions({pageOption, smokeOption, screenshotOption, sizeOption,
+                       applyGlassOption, headlessOption});
     parser.process(app);
 
     auto *service = new SystemService(&app);
+    auto *glassService = new CrimsonGlassService(&app);
+
+    if (parser.isSet(applyGlassOption))
+        return glassService->apply() ? 0 : 2;
+    if (parser.isSet(headlessOption))
+        return 0;
 
     QQmlApplicationEngine engine;
     engine.rootContext()->setContextProperty(QStringLiteral("System"), service);
+    engine.rootContext()->setContextProperty(QStringLiteral("CrimsonGlass"), glassService);
     engine.addImageProvider(QStringLiteral("lucide"), new LucideProvider());
 
     engine.rootContext()->setContextProperty(QStringLiteral("startPage"),

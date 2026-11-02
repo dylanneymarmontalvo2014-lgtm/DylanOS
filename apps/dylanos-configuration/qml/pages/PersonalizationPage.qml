@@ -58,6 +58,38 @@ ScrollView {
             width: parent.width
             spacing: 16
 
+            GroupBox {
+                width: parent.width
+                RowItem {
+                    width: parent.width
+                    icon: "sliders-horizontal"
+                    iconColor: Theme.accent
+                    title: "Crimson Glass"
+                    desc: "Cristal, desenfoque, ventanas y rendimiento"
+                    last: true
+                    Item {
+                        width: glassActions.width
+                        height: 40
+                        Row {
+                            id: glassActions
+                            anchors.verticalCenter: parent.verticalCenter
+                            spacing: 10
+                            BadgePill {
+                                anchors.verticalCenter: parent.verticalCenter
+                                text: CrimsonGlass.settings.enabled ? "Activo" : "Inactivo"
+                                tone: CrimsonGlass.settings.enabled ? "#58d68d" : Theme.c.textDim
+                            }
+                            ActionButton {
+                                anchors.verticalCenter: parent.verticalCenter
+                                text: "Configurar"
+                                variant: "primary"
+                                onClicked: Window.window.go("crimson-glass")
+                            }
+                        }
+                    }
+                }
+            }
+
             Text { text: "Tema"; font.pixelSize: 18; color: Theme.c.text }
 
             Row {
@@ -310,6 +342,5 @@ ScrollView {
         y: parent.height - 70
     }
 }
-
 
 
