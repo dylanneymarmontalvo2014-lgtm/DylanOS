@@ -38,6 +38,52 @@ class TestDylanOSConfiguration(unittest.TestCase):
                          "DisplayPage", "SoundPage", "NotificationsPage", "StoragePage"]:
             self.assertIn(esperada, pages)
 
+    def test_crimson_glass_is_a_real_configuration_route(self):
+        page = APP / "qml/pages/CrimsonGlassPage.qml"
+        preview = APP / "qml/components/GlassPreview.qml"
+        self.assertTrue(page.is_file())
+        self.assertTrue(preview.is_file())
+        content = page.read_text(encoding="utf-8")
+        for key in ["enabled", "globalEffects", "glassIntensity", "transparency",
+                    "blur", "reflections", "shadows", "cornerRadius", "accent",
+                    "mode", "panelTransparency", "dockTransparency", "menuTransparency",
+                    "windowEffects", "backgroundBlur", "animations", "animationDuration",
+                    "additionalEffects", "lowPower", "autoDetect"]:
+            self.assertIn(f'"{key}"', content)
+        self.assertIn("CrimsonGlass.apply()", content)
+        self.assertIn("CrimsonGlass.restorePrevious()", content)
+        self.assertIn("CrimsonGlass.resetDefaults()", content)
+        self.assertIn("CrimsonGlass.detectCapabilities()", content)
+        self.assertNotIn("demo", content.lower())
+
+        main = (APP / "qml/Main.qml").read_text(encoding="utf-8")
+        self.assertIn('{ id: "crimson-glass"', main)
+        self.assertIn('case "crimson-glass"', main)
+        personalization = (APP / "qml/pages/PersonalizationPage.qml").read_text(encoding="utf-8")
+        self.assertIn('Window.window.go("crimson-glass")', personalization)
+
+        source = (APP / "src/main.cpp").read_text(encoding="utf-8")
+        self.assertIn('setContextProperty(QStringLiteral("CrimsonGlass")', source)
+        self.assertIn('QStringLiteral("apply-crimson-glass")', source)
+        self.assertIn("glassService->apply()", source)
+
+    def test_crimson_glass_controls_respect_motion_and_contrast(self):
+        components = APP / "qml/components"
+        for name in ["DToggle.qml", "DSlider.qml", "DSelect.qml"]:
+            content = (components / name).read_text(encoding="utf-8")
+            self.assertIn("motionDuration", content, name)
+            self.assertIn("CrimsonGlass.effectiveEffects.animations", content, name)
+            self.assertIn("Theme.glassBorder", content, name)
+            self.assertIn("Theme.glassSpecular", content, name)
+
+        for variant in ["DylanOS-Crimson", "DylanOS-Crimson-Light"]:
+            for version in ["gtk-3.0", "gtk-4.0"]:
+                css = (ROOT / "themes/gtk" / variant / version / "gtk.css").read_text(encoding="utf-8")
+                self.assertIn("@define-color glass_surface", css)
+                self.assertIn("@define-color glass_border", css)
+                self.assertIn("@define-color glass_specular", css)
+                self.assertIn("background-color: @glass_surface", css)
+
     def test_navigation_history_restores_route_and_selected_tab(self):
         main = (APP / "qml/Main.qml").read_text(encoding="utf-8")
         self.assertIn('property var history: [{ route: startPage, tab: "" }]', main)
@@ -80,6 +126,11 @@ class TestDylanOSConfiguration(unittest.TestCase):
         self.assertIn('Name: (.+)$', cpp)
         self.assertIn('current.insert(QStringLiteral("name"), nameMatch.captured(1).trimmed())', cpp)
         self.assertNotIn('fields.value(fields.size() - 1, fields.value(1))', cpp)
+
+    def test_power_page_handles_missing_battery_percentage(self):
+        power = (APP / "qml/pages/PowerPage.qml").read_text(encoding="utf-8")
+        self.assertIn("root.state.battery.percent !== undefined", power)
+        self.assertIn("Number(root.state.battery.percent)", power)
 
     def test_staging_registra_dylanos_configuration(self):
         with tempfile.TemporaryDirectory() as folder:

@@ -48,10 +48,6 @@ public:
     Q_INVOKABLE bool applyWallpaper(const QString &path);
     Q_INVOKABLE void applyCursor(const QString &theme);
 
-    // Acabado Crimson-glass: marco translúcido + desenfoque del compositor.
-    Q_INVOKABLE bool glassEnabled();
-    Q_INVOKABLE bool setGlassEnabled(bool enabled);
-
     // Sonido real vía pactl.
     Q_INVOKABLE QVariantMap audio();
     Q_INVOKABLE bool setSinkVolume(int percent);

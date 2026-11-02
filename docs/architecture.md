@@ -21,7 +21,8 @@ la arquitectura **real** del repositorio tras la iteración de ingeniería de 20
    interruptores y audio con datos locales/de Plasma. Ver [DylanOS Shell](dylanos-shell.md)
    y la [guía de uso](guia-de-uso.md) para disponibilidad y límites.
 4. **Identidad visual**: `branding/` + `themes/` (aurorae, SDDM, Plymouth, GRUB, GTK,
-   color-schemes, look-and-feel).
+   color-schemes, look-and-feel) y **Crimson Glass**, coordinado sin daemon por
+   DylanOS Configuration. Ver [Crimson Glass](crimson-glass.md).
 
 ## 2. Ventanas y KWin (ciclo de vida)
 
@@ -36,21 +37,22 @@ la arquitectura **real** del repositorio tras la iteración de ingeniería de 20
   **Aurorae DylanOS-Crimson** (regenerable: `python3 scripts/lib/generate-theme.py aurorae`):
   marco negro `#0f0f11` con esquinas redondeadas, título tenue centrado y botones semáforo
   a la izquierda (`kwinrc`: `ButtonsOnLeft=XIA`). No existe banda gris de decoración.
-- **Acabado Crimson-glass** (predeterminado del ISO): el mismo mecanismo aurorae, pero con
+- **Acabado Crimson-glass** (activado por defecto mediante autostart reversible): el mismo mecanismo aurorae, pero con
   los parches `decoration-*` del SVG a `fill-opacity` 0,42 (activo) / 0,55 (inactivo) sobre
   degradados crimson y una línea especular en la banda `top`. KWin 6.3 solo desenfoca donde
   existe una *blur region*, y esa región es el `decorationMask` que la decoración construye
   desde los ids `mask-*`; por eso la máscara se mantiene opaca y ningún paquete nuevo entra
-  (sin Kvantum). El perfil vive en `configs/plasma/skel/kwinrc`: `[Plugins]
-  blurEnabled/translucencyEnabled`, `[Effect-blur] BlurStrength=30 NoiseStrength=4` y
-  `[Effect-translucency]` (Inactive 80, Dialogs 85, Menus 80…). Grupos en minúscula: son los
+  (sin Kvantum). El perfil lo escribe `CrimsonGlassService` tras respaldar el skel opaco:
+  `[Plugins] blurEnabled/translucencyEnabled`, `[Effect-blur]` y `[Effect-translucency]`.
+  Los grupos van en minúscula: son los
   nombres con los que `blur.kcfg` y `ScriptedEffect` leen kwinrc, y los grupos de efectos del
-  `contents/defaults` del look-and-feel los ignora `LookAndFeelManager`, así que ahí solo se
-  fija la decoración. Generar con `python3 scripts/lib/generate-theme.py aurorae-glass`.
+  `contents/defaults` del look-and-feel los ignora `LookAndFeelManager`; ese archivo conserva
+  la decoración opaca para que desactivar restaure un estado seguro. Generar con
+  `python3 scripts/lib/generate-theme.py aurorae-glass`.
   Límites: las apps con decoración de cliente (Firefox, GTK CSD) no reciben marco de servidor
   que translucir, y KWin 6.3 no transluce el cuerpo de la ventana activa de terceros; el
-  selector (`dylanos-configuration` → Personalización → Apariencia) aplica y descarga el
-  efecto sin cerrar sesión.
+  panel (`dylanos-configuration` → Personalización → Crimson Glass) aplica y descarga los
+  efectos sin cerrar sesión.
 - **Barra superior (menú)**: panel Plasma con `hiding=letwindowscover` — KWin cubre la
   barra solo con ventanas a **pantalla completa real** (integración con el gestor de
   ventanas, sin temporizadores ni heurísticas de tamaño). Ventanas maximizadas NO la cubren.
@@ -96,6 +98,13 @@ se muestra «Procesador de N núcleos» (núcleos online). La RAM se muestra red
 así que se ajusta a la potencia de dos más próxima si queda a ≤10 % (7,6→8, 15,4→16,
 11,6→12; por debajo de 1 GB se muestra con un decimal).
 
+La ruta adicional **Personalización → Crimson Glass** expone
+`CrimsonGlassService`: persiste un perfil validado, detecta KWin/renderizado por
+software, genera un tema Plasma por usuario y aplica efectos, esquema Qt y tema
+GTK. Antes de tocar configuración externa crea un respaldo por clave. El
+autostart usa `--apply-crimson-glass --headless` y termina; no añade un servicio
+residente.
+
 ## 5. Temas GTK y Qt
 
 - **GTK**: `themes/gtk/DylanOS-Crimson` y `-Light` (GTK3 + GTK4, CSS completo: menús,
@@ -103,6 +112,9 @@ así que se ajusta a la potencia de dos más próxima si queda a ≤10 % (7,6→
   `windowcontrols` semáforo). Se aplican vía `etc/skel/.config/gtk-{3,4}.settings.ini`
   (`gtk-theme-name`) y se sincronizan con `kde-config-gtk-style`. Validación de errores
   de CSS: `GTK_THEME=DylanOS-Crimson zenity` / `nautilus` y comprobar stderr.
+- **Crimson Glass**: `DylanOS-Crimson-Glass` aporta fondos Plasma con relleno
+  oscuro translúcido, borde Crimson, reflejo superior y fallback al tema base.
+  El perfil dinámico se escribe en `~/.local/share`, nunca en `/usr/share`.
 - **Qt/KDE**: color-schemes DylanOS{Dark,Light}, aurorae, look-and-feel `org.dylanos.crimson`
   (layout, splash, defaults). Las apps Qt NO usan el tema GTK: usan el esquema de colores KDE.
 - La DylanOS Store mantiene su identidad aprobada y no se re-tematiza desde fuera.
@@ -136,8 +148,8 @@ así que se ajusta a la potencia de dos más próxima si queda a ≤10 % (7,6→
 
 `check.sh` valida sintaxis bash + shellcheck, `test_packages.sh`, unittest completo por
 módulo, `compileall`, staging con `desktop-file-validate` y la carga QML offscreen de las
-6 páginas del workspace. QA adicionales: capturas offscreen de las 16 páginas de
-Configuration (`--screenshot`), Test Greeter de SDDM con captura opt-in
+6 páginas del workspace. QA adicionales: capturas offscreen de las 16 rutas base de
+Configuration y Crimson Glass (`--screenshot`), Test Greeter de SDDM con captura opt-in
 (`theme.conf: screenshot=<ruta>`) y métricas de fidelidad en `artifacts/sddm-qa/`.
 `iso.sh` re-ejecuta `scripts/stage.py` sobre el chroot antes de crear el squashfs, de
 modo que la ISO refleje siempre el estado vigente del repositorio (los rebuilds manuales

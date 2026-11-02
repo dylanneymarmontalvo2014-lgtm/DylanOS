@@ -12,13 +12,11 @@ ScrollView {
     property var schemes: []
     property var walls: []
     property string currentScheme: System.configString("kdeglobals", "General", "ColorScheme")
-    property bool glassOn: false
 
     function refresh() {
         schemes = System.colorSchemes()
         walls = System.wallpapers()
         currentScheme = System.configString("kdeglobals", "General", "ColorScheme")
-        glassOn = System.glassEnabled()
     }
     Component.onCompleted: Qt.callLater(refresh)
 
@@ -59,6 +57,38 @@ ScrollView {
             visible: root.tab === "Apariencia"
             width: parent.width
             spacing: 16
+
+            GroupBox {
+                width: parent.width
+                RowItem {
+                    width: parent.width
+                    icon: "sliders-horizontal"
+                    iconColor: Theme.accent
+                    title: "Crimson Glass"
+                    desc: "Cristal, desenfoque, ventanas y rendimiento"
+                    last: true
+                    Item {
+                        width: glassActions.width
+                        height: 40
+                        Row {
+                            id: glassActions
+                            anchors.verticalCenter: parent.verticalCenter
+                            spacing: 10
+                            BadgePill {
+                                anchors.verticalCenter: parent.verticalCenter
+                                text: CrimsonGlass.settings.enabled ? "Activo" : "Inactivo"
+                                tone: CrimsonGlass.settings.enabled ? "#58d68d" : Theme.c.textDim
+                            }
+                            ActionButton {
+                                anchors.verticalCenter: parent.verticalCenter
+                                text: "Configurar"
+                                variant: "primary"
+                                onClicked: Window.window.go("crimson-glass")
+                            }
+                        }
+                    }
+                }
+            }
 
             Text { text: "Tema"; font.pixelSize: 18; color: Theme.c.text }
 
@@ -163,31 +193,6 @@ ScrollView {
                             }
                         }
                     }
-                    }
-                }
-            }
-
-            Text { text: "Acabado"; font.pixelSize: 18; color: Theme.c.text }
-
-            GroupBox {
-                width: parent.width
-                RowItem {
-                    width: parent.width
-                    icon: "contrast"
-                    title: "Crimson Glass (vidrio líquido)"
-                    desc: "Marco translúcido con el fondo desenfocado en todas las ventanas"
-                    last: true
-                    DToggle {
-                        anchors.verticalCenter: parent.verticalCenter
-                        on: root.glassOn
-                        onToggled: function (v) {
-                            if (System.setGlassEnabled(v)) {
-                                root.glassOn = v
-                                toast.show(v ? "Crimson-glass activado" : "Crimson-glass desactivado")
-                            } else {
-                                root.glassOn = System.glassEnabled()
-                            }
-                        }
                     }
                 }
             }
@@ -337,6 +342,3 @@ ScrollView {
         y: parent.height - 70
     }
 }
-
-
-

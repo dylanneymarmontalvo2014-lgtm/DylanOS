@@ -58,7 +58,8 @@ ScrollView {
                     }
                     Meter {
                         width: parent.width
-                        pct: root.state.battery ? root.state.battery.percent : 0
+                        pct: root.state.battery && root.state.battery.percent !== undefined
+                             ? Number(root.state.battery.percent) : 0
                         barColor: "#4caf50"
                     }
                 }

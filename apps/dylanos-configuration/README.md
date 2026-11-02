@@ -6,8 +6,11 @@ Qt6/QML que replica el prototipo previews/DylanOS configuration.
 
 ## Arquitectura
 
-- src/main.cpp: CLI (--page, --smoke, --screenshot) y registro del singleton System.
+- src/main.cpp: CLI (--page, --smoke, --screenshot, --apply-crimson-glass,
+  --headless) y registro de los servicios System y CrimsonGlass.
 - src/services/SystemService: puente con el sistema real (ver tabla siguiente).
+- src/services/CrimsonGlassService: preferencias validadas, deteccion de
+  capacidades, respaldo por clave y adaptadores KWin/Plasma/Qt/GTK.
 - src/services/LucideProvider: proveedor image://lucide que recolorea los SVG
   Lucide de assets/icons/ en tiempo de ejecucion.
 - qml/Theme.qml: tokens visuales alineados con el Crimson oficial #DC143C / #FF4565 / #A50F2E, radios, superficies
@@ -15,15 +18,18 @@ Qt6/QML que replica el prototipo previews/DylanOS configuration.
 - qml/components/: IconTile, Toggle, Slider, Select, Segmented, Tabs,
   Group/Panel/Row, Badge, Dialog, EmptyState, ErrorBanner, Meter, Toast...
   equivalentes 1:1 a src/components/ui.tsx del prototipo.
-- qml/pages/: las 16 rutas del prototipo (System, About, Personalization,
+- qml/pages/: las 16 rutas base del prototipo (System, About, Personalization,
   Network, Bluetooth, Apps, Accounts, DateTime, Privacy, Power, Accessibility,
-  Updates, Display, Sound, Notifications, Storage).
+  Updates, Display, Sound, Notifications, Storage) y la ruta integrada
+  `Crimson Glass` desde Personalizacion.
 
 ## Funciones reales vs. delegadas
 
 - Sistema / Acerca de: datos reales (/proc, /sys, os-release, QStorageInfo).
 - Personalizacion: tema oscuro/claro, acento y fondo reales; iconos, fuentes,
   look-and-feel y escritorio abren sus KCM nativos.
+- Crimson Glass: tema Plasma/Aurorae, efectos KWin, GTK 3/4, perfil dinamico
+  por usuario, bajo consumo y recuperacion de la configuracion anterior.
 - Red: Wi-Fi on/off, listado y conexion reales (nmcli); VPN/proxy/DNS abren
   kcm_networkmanagement.
 - Bluetooth: encendido, conectar/desconectar y olvidar reales (bluetoothctl).
@@ -64,4 +70,8 @@ lightdm-settings.desktop. El dock y el workspace abren dylanos-configuration.
     cmake -S apps/dylanos-configuration -B /tmp/build-config -GNinja
     cmake --build /tmp/build-config
     QT_QPA_PLATFORM=offscreen ./build-config/dylanos-configuration --smoke
+    QT_QPA_PLATFORM=offscreen ./build-config/dylanos-configuration --page crimson-glass --smoke
+    ctest --test-dir /tmp/build-config --output-on-failure
     DYLANOS_PYTHON=/tmp/opencode/venv/bin/python bash scripts/check.sh
+
+Arquitectura, compatibilidad y recuperacion: `docs/crimson-glass.md`.

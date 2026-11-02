@@ -6,11 +6,17 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_AUTOMOC ON)
 
 include(GNUInstallDirs)
+include(CTest)
 
 find_package(Qt6 6.4 REQUIRED COMPONENTS Core Gui Qml Quick QuickControls2 Svg DBus)
 
+if(BUILD_TESTING)
+    find_package(Qt6 6.4 REQUIRED COMPONENTS Test)
+endif()
+
 qt_add_executable(dylanos-configuration
     src/main.cpp
+    src/services/CrimsonGlassService.cpp
     src/services/SystemService.cpp
     src/services/LucideProvider.cpp
 )
@@ -49,6 +55,7 @@ qt_add_qml_module(dylanos-configuration
         qml/components/Toast.qml
         qml/components/NavRow.qml
         qml/components/ActionButton.qml
+        qml/components/GlassPreview.qml
         qml/pages/SystemPage.qml
         qml/pages/AboutPage.qml
         qml/pages/PersonalizationPage.qml
@@ -65,6 +72,7 @@ qt_add_qml_module(dylanos-configuration
         qml/pages/SoundPage.qml
         qml/pages/NotificationsPage.qml
         qml/pages/StoragePage.qml
+        qml/pages/CrimsonGlassPage.qml
         qml/Main.qml
 )
 
@@ -159,3 +167,13 @@ endif()
 
 # --- Prueba de humo de QML (opcional) -----------------------------------------
 find_package(Qt6 6.4 QUIET COMPONENTS QuickTest)
+
+if(BUILD_TESTING)
+    qt_add_executable(tst_crimsonglass
+        tests/tst_crimsonglass.cpp
+        src/services/CrimsonGlassService.cpp
+    )
+    target_include_directories(tst_crimsonglass PRIVATE src/services)
+    target_link_libraries(tst_crimsonglass PRIVATE Qt6::Core Qt6::DBus Qt6::Test)
+    add_test(NAME crimsonglass COMMAND tst_crimsonglass)
+endif()

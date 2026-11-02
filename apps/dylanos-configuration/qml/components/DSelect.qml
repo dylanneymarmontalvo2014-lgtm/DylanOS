@@ -9,6 +9,9 @@ Button {
     property var options: []
     property int menuWidth: 220
     signal picked(string value)
+    readonly property int motionDuration: CrimsonGlass.effectiveEffects.animations
+                                          ? Math.min(180, CrimsonGlass.settings.animationDuration)
+                                          : 0
 
     width: menuWidth
     height: 40
@@ -19,7 +22,14 @@ Button {
         radius: Theme.radiusControl
         color: Theme.c.field
         border.width: 1
-        border.color: root.down || root.hovered ? Theme.accent : Theme.c.border
+        border.color: root.down || root.hovered ? Theme.glassBorder : Theme.c.border
+
+        Rectangle {
+            anchors { left: parent.left; right: parent.right; top: parent.top; margins: 2 }
+            height: 1
+            color: Theme.glassSpecular
+            opacity: 0.14
+        }
     }
     contentItem: Item {
         Text {
@@ -40,7 +50,7 @@ Button {
             color: Theme.c.textDim
             size: 16
             rotation: popup.visible ? 180 : 0
-            Behavior on rotation { NumberAnimation { duration: 150 } }
+            Behavior on rotation { NumberAnimation { duration: root.motionDuration; easing.type: Easing.OutCubic } }
         }
     }
     onClicked: popup.open()
@@ -55,7 +65,14 @@ Button {
             radius: 12
             color: Theme.c.menuBg
             border.width: 1
-            border.color: Theme.c.border
+            border.color: Theme.glassBorder
+
+            Rectangle {
+                anchors { left: parent.left; right: parent.right; top: parent.top; margins: 3 }
+                height: 1
+                color: Theme.glassSpecular
+                opacity: 0.24
+            }
         }
         contentItem: ListView {
             id: list
