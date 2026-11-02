@@ -127,6 +127,11 @@ class TestDylanOSConfiguration(unittest.TestCase):
         self.assertIn('current.insert(QStringLiteral("name"), nameMatch.captured(1).trimmed())', cpp)
         self.assertNotIn('fields.value(fields.size() - 1, fields.value(1))', cpp)
 
+    def test_power_page_handles_missing_battery_percentage(self):
+        power = (APP / "qml/pages/PowerPage.qml").read_text(encoding="utf-8")
+        self.assertIn("root.state.battery.percent !== undefined", power)
+        self.assertIn("Number(root.state.battery.percent)", power)
+
     def test_staging_registra_dylanos_configuration(self):
         with tempfile.TemporaryDirectory() as folder:
             root = Path(folder)

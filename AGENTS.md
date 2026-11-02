@@ -15,7 +15,8 @@ técnica viva: `docs/architecture.md`. Este archivo es el índice operativo de r
   explorer` NO existe (el workspace solo acepta welcome/files/notes/dev/monitor/settings).
   El `mimeapps.list` del skel asocia `inode/directory` al Explorer.
 - **DylanOS Configuration es el ÚNICO centro de configuración** (`dylanos-configuration`,
-  16 páginas + `SystemService` con kcmshell6/nmcli/pactl/bluetoothctl/plasma-apply-*).
+  16 páginas base + Crimson Glass; `SystemService` con
+  kcmshell6/nmcli/pactl/bluetoothctl/plasma-apply-*).
   Los demás centros (systemsettings, kinfocenter, otros DE) se ocultan con NoDisplay desde
   `scripts/stage.py`. El paquete `systemsettings` SE CONSERVA: aporta `kcmshell6`.
 - **Una sola app por función**: sin kcalc (la oficial es `dylanos-calculator`), sin
@@ -23,6 +24,11 @@ técnica viva: `docs/architecture.md`. Este archivo es el índice operativo de r
   y sin Konsole (la terminal oficial es `dylanos-console`, basada en Kitty).
 - **NUNCA mostrar "Discover/plasma-discover" al usuario**: la tienda es `dylanos-store`.
 - **KWallet se mantiene** (plasma-nm guarda credenciales Wi-Fi con él).
+- **Crimson Glass** se configura solo desde Personalización en DylanOS
+  Configuration. Usa KWin/Plasma/Aurorae/GTK, genera el tema de usuario bajo
+  `~/.local/share` y respalda por clave en
+  `~/.local/state/dylanos/crimson-glass/backup.json`; no crear otro configurador,
+  daemon ni inyectar código en apps de terceros.
 - stage.py SIEMPRE hace staging a un root explícito y es idempotente (borra artefactos
   obsoletos: discover, dolphin, kcalc, org.dylanos.settings.desktop,
   org.dylanos.files.desktop…).
@@ -73,7 +79,8 @@ técnica viva: `docs/architecture.md`. Este archivo es el índice operativo de r
   FileUndoManager, OpenUrlJob) + operaciones reales en FileOperations (crear archivo y
   carpeta, renombrar, copiar/mover con progreso, papelera/restore/vaciar). Tests reales
   ctest (`tests/tst_fileoperations.cpp`). Icono de app_id: `org.dylanos.explorer`.
-- `apps/dylanos-configuration/` — **DylanOS Configuration**: 16 páginas + SystemService.
+- `apps/dylanos-configuration/` — **DylanOS Configuration**: 16 páginas base,
+  ruta Crimson Glass, SystemService y CrimsonGlassService.
   QA: `dylanos-configuration --page <p> --screenshot out.png --size 1280x800` (offscreen;
   stderr debe quedar limpio). `sysInfo()`: CPU con cadena de fuentes (/proc/cpuinfo
   "model name" o "Hardware" → `lscpu` "Model name:" → "Procesador de N núcleos") porque
@@ -147,7 +154,7 @@ DYLANOS_PYTHON=/tmp/opencode/venv/bin/python bash scripts/check.sh
   `test_configuration.py` (app + staging), `test_sddm_theme.py` (Test Greeter real),
   `test_desktop.py` (layout de paneles con node), `test_store.py`, `test_ui.py`,
   `test_workspace.py`, `test_backend.py`, `test_packages.sh`.
-- QA nativas específicas: capturas offscreen de las 16 páginas de Configuration (stderr
+- QA nativas específicas: capturas offscreen de las 16 páginas base y Crimson Glass (stderr
   limpio), `ctest` del Explorer en el chroot (incluye createFile), Test Greeter del SDDM con
   captura opt-in (artefactos en `artifacts/sddm-qa/`), `bash scripts/test_QEMU.sh` para el ISO.
 - El host de desarrollo puede tener Qt más viejo que el chroot (6.4 vs 6.8): los builds y QA
