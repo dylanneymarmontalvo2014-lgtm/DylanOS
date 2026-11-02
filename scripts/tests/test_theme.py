@@ -143,23 +143,21 @@ class CrimsonGlassTest(unittest.TestCase):
                          "bottomleft", "bottom", "bottomright"):
                 self.assertIn('id="%s%s"' % (prefix, part), self.glass_svg, prefix + part)
 
-    def test_skel_pins_the_glass_profile(self):
+    def test_skel_keeps_a_recoverable_opaque_fallback(self):
         kwinrc = configparser.ConfigParser(interpolation=None)
         kwinrc.optionxform = str
         kwinrc.read(ROOT / "configs/plasma/skel/kwinrc")
-        self.assertEqual(kwinrc.get("org.kde.kdecoration2", "theme"), "__aurorae__svg__DylanOS-Crimson-Glass")
+        self.assertEqual(kwinrc.get("org.kde.kdecoration2", "theme"), "__aurorae__svg__DylanOS-Crimson")
         self.assertEqual(kwinrc.get("Plugins", "blurEnabled"), "true")
-        self.assertEqual(kwinrc.get("Plugins", "translucencyEnabled"), "true")
-        self.assertEqual(kwinrc.get("Effect-blur", "BlurStrength"), "30")
-        self.assertEqual(kwinrc.get("Effect-blur", "NoiseStrength"), "4")
-        self.assertEqual(kwinrc.get("Effect-translucency", "Inactive"), "80")
-        self.assertEqual(kwinrc.get("Effect-translucency", "Dialogs"), "85")
+        self.assertFalse(kwinrc.has_option("Plugins", "translucencyEnabled"))
+        self.assertFalse(kwinrc.has_section("Effect-translucency"))
 
     def test_look_and_feel_defaults_avoid_ignored_kwinrc_groups(self):
         defaults = (ROOT / "themes/lookandfeel/org.dylanos.crimson/contents/defaults").read_text(encoding="utf-8")
-        self.assertIn("__aurorae__svg__DylanOS-Crimson-Glass", defaults)
+        self.assertIn("__aurorae__svg__DylanOS-Crimson", defaults)
+        self.assertNotIn("__aurorae__svg__DylanOS-Crimson-Glass", defaults)
         # LookAndFeelManager solo lee una lista fija de claves: los grupos de
-        # efectos del `defaults` se descartan en silencio y confieren.
+        # efectos del `defaults` se descartan y no configuran el compositor.
         self.assertNotIn("[kwinrc][Effect-", defaults)
         self.assertNotIn("[kwinrc][Plugins]", defaults)
 

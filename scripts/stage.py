@@ -72,6 +72,7 @@ def stage(destination, installer_dist=None, version=None):
         ("themes/gtk/DylanOS-Crimson", "/usr/share/themes/DylanOS-Crimson"),
         ("themes/icons/DylanIcons-Crimson", "/usr/share/icons/DylanIcons-Crimson"),
         ("themes/plasma/DylanOS-Crimson", "/usr/share/plasma/desktoptheme/DylanOS-Crimson"),
+        ("themes/plasma/DylanOS-Crimson-Glass", "/usr/share/plasma/desktoptheme/DylanOS-Crimson-Glass"),
         ("themes/aurorae/DylanOS-Crimson", "/usr/share/aurorae/themes/DylanOS-Crimson"),
         ("themes/aurorae/DylanOS-Crimson-Glass", "/usr/share/aurorae/themes/DylanOS-Crimson-Glass"),
         ("themes/aurorae/DylanOS-Crimson-Light", "/usr/share/aurorae/themes/DylanOS-Crimson-Light"),
@@ -241,6 +242,11 @@ exec /usr/bin/python3 /usr/share/dylanos/installer/native/main.py "$@"
           "Comment=Configura DylanOS Crimson y KDE Plasma\nExec=dylanos-configuration\n"
           "StartupWMClass=org.dylanos.configuration\nIcon=dylanos-configuration\n"
           "Terminal=false\nCategories=Settings;\nStartupNotify=true\n")
+    write("/etc/xdg/autostart/org.dylanos.crimson-glass.desktop",
+          "[Desktop Entry]\nType=Application\nName=Crimson Glass\n"
+          "Comment=Aplica la apariencia visual de DylanOS al iniciar sesión\n"
+          "Exec=dylanos-configuration --apply-crimson-glass --headless\n"
+          "OnlyShowIn=KDE;\nNoDisplay=true\nX-KDE-autostart-after=panel\n")
     # Iconos propios de la app (existen tras compilarla: los genera CMake y el
     # script de preparación de recursos; se instalan solo si están presentes).
     if (ROOT / "apps/dylanos-configuration/assets/dylanos-configuration.png").exists():

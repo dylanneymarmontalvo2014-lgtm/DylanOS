@@ -9,6 +9,9 @@ Item {
     property real maximum: 100
     property string suffix: "%"
     signal moved(real value)
+    readonly property int motionDuration: CrimsonGlass.effectiveEffects.animations
+                                          ? Math.min(180, CrimsonGlass.settings.animationDuration)
+                                          : 0
 
     width: 200
     height: 24
@@ -28,14 +31,25 @@ Item {
         height: 6
         radius: 3
         color: Theme.accent
+        Behavior on width { NumberAnimation { duration: mouse.pressed ? 0 : root.motionDuration; easing.type: Easing.OutCubic } }
     }
     Rectangle {
         anchors.verticalCenter: parent.verticalCenter
-        x: parent.width * root.pct - width / 2
+        x: (parent.width - width) * root.pct
         width: 16
         height: 16
         radius: 8
         color: "#ffffff"
+        border.width: 1
+        border.color: Theme.glassBorder
+        Behavior on x { NumberAnimation { duration: mouse.pressed ? 0 : root.motionDuration; easing.type: Easing.OutCubic } }
+
+        Rectangle {
+            anchors { left: parent.left; right: parent.right; top: parent.top; margins: 3 }
+            height: 1
+            color: Theme.glassSpecular
+            opacity: 0.75
+        }
     }
     MouseArea {
         anchors.fill: parent

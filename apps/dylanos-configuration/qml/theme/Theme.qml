@@ -12,6 +12,10 @@ QtObject {
     readonly property color accent: "#DC143C"
     readonly property color accentStrong: "#FF4565"
     readonly property color accentPressed: "#A50F2E"
+    readonly property color glassTint: "#160F13"
+    readonly property color glassBorder: "#FF5274"
+    readonly property color glassSpecular: "#FFFFFF"
+    readonly property color glassShadow: "#B0000000"
 
     // Radios
     readonly property int radiusWindow: 26

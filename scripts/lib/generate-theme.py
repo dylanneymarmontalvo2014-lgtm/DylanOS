@@ -101,6 +101,67 @@ def aurorae():
         (light / filename).write_text(content)
 
 
+def glass_frame(prefix="", x=0, y=0, edge=18, size=60, opacity=0.72):
+    parts = []
+    coords = {"topleft": (x, y, edge, edge), "top": (x + edge, y, size, edge),
+              "topright": (x + edge + size, y, edge, edge),
+              "left": (x, y + edge, edge, size), "center": (x + edge, y + edge, size, size),
+              "right": (x + edge + size, y + edge, edge, size),
+              "bottomleft": (x, y + edge + size, edge, edge),
+              "bottom": (x + edge, y + edge + size, size, edge),
+              "bottomright": (x + edge + size, y + edge + size, edge, edge)}
+    corners = {
+        "topleft": f"M0,{edge} Q0,0 {edge},0 L{edge},{edge}Z",
+        "topright": f"M0,0 Q{edge},0 {edge},{edge} L0,{edge}Z",
+        "bottomleft": f"M0,0 Q0,{edge} {edge},{edge} L{edge},0Z",
+        "bottomright": f"M0,{edge} Q{edge},{edge} {edge},0 L0,0Z",
+    }
+    for name, (xx, yy, width, height) in coords.items():
+        parts.append(f'<g id="{prefix}{name}">')
+        if name in corners:
+            parts.append(f'<path transform="translate({xx},{yy})" d="{corners[name]}" fill="#120d11" fill-opacity="{opacity}"/>')
+        else:
+            parts.append(f'<rect x="{xx}" y="{yy}" width="{width}" height="{height}" fill="#120d11" fill-opacity="{opacity}"/>')
+        if name == "top":
+            parts.append(f'<rect x="{xx}" y="{yy}" width="{width}" height="1" fill="#ffffff" fill-opacity="0.30"/>')
+            parts.append(f'<rect x="{xx}" y="{yy + 1}" width="{width}" height="1" fill="#ff5274" fill-opacity="0.34"/>')
+        elif name == "left":
+            parts.append(f'<rect x="{xx}" y="{yy}" width="1" height="{height}" fill="#ff5274" fill-opacity="0.26"/>')
+        elif name == "right":
+            parts.append(f'<rect x="{xx + width - 1}" y="{yy}" width="1" height="{height}" fill="#ff5274" fill-opacity="0.18"/>')
+        elif name == "bottom":
+            parts.append(f'<rect x="{xx}" y="{yy + height - 1}" width="{width}" height="1" fill="#000000" fill-opacity="0.54"/>')
+        parts.append('</g>')
+    return "".join(parts)
+
+
+def plasma_glass():
+    theme = "themes/plasma/DylanOS-Crimson-Glass"
+    write(f"{theme}/metadata.json", json.dumps({
+        "KPlugin": {"Id": "DylanOS-Crimson-Glass", "Name": "DylanOS Crimson Glass",
+                    "Version": "1.0.0", "License": "GPL-3.0-or-later",
+                    "Authors": [{"Name": "DylanOS"}]},
+        "X-Plasma-API": "5.0",
+        "X-Plasma-FallbackPackage": "DylanOS-Crimson"
+    }, indent=2) + "\n")
+    write(f"{theme}/metadata.desktop",
+          "[Desktop Entry]\nName=DylanOS Crimson Glass\n"
+          "X-KDE-PluginInfo-Name=DylanOS-Crimson-Glass\n"
+          "X-KDE-PluginInfo-License=GPL-3.0-or-later\n"
+          "X-Plasma-API=5.0\nX-Plasma-FallbackPackage=DylanOS-Crimson\n\n"
+          "[ContrastEffect]\nenabled=true\ncontrast=0.16\nintensity=0.72\nsaturation=1.08\n\n"
+          "[BlurBehindEffect]\nenabled=true\n")
+    for element, opacity in (("widgets/panel-background", 0.68), ("dialogs/background", 0.76)):
+        hints = ('<rect id="hint-stretch-borders" width="1" height="1" fill="none"/>'
+                 '<rect id="hint-apply-color-scheme" width="1" height="1" fill="none"/>')
+        write(f"{theme}/{element}.svg",
+              '<svg xmlns="http://www.w3.org/2000/svg" width="96" height="96">'
+              + glass_frame(opacity=0.96) + hints + '</svg>')
+        write(f"{theme}/translucent/{element}.svg",
+              '<svg xmlns="http://www.w3.org/2000/svg" width="96" height="96">'
+              + glass_frame(opacity=opacity) + hints + '</svg>')
+
+
 # Vidrio Crimson-glass: cada parche del marco se pinta con un degradado y el
 # alfa del conjunto, de modo que el desenfoque del compositor se vea a través.
 GLASS_DEFS = ('<defs>'
@@ -118,15 +179,7 @@ GLASS_COLORS = {"top": "url(#glassSheen)", "topleft": "url(#glassSheen)", "topri
 
 
 def aurorae_glass():
-    """Decoración Crimson-glass: vidrio líquido para todas las ventanas.
-
-    KWin solo desenfoca el fondo donde la decoración expone su máscara (los ids
-    `mask-*`), así que el vidrio no se consigue con un efecto nuevo sino
-    transluciendo los parches del marco: la barra de título y los bordes dejan
-    pasar el fondo ya desenfocado. `decoration-maximized-*` sube la opacidad
-    porque al maximizarse solo se pinta el centro y la legibilidad manda.
-    Regenerable de forma aislada: `python3 scripts/lib/generate-theme.py aurorae-glass`.
-    """
+    """Decoración Crimson Glass con una máscara opaca para el blur de KWin."""
     glass = "themes/aurorae/DylanOS-Crimson-Glass"
     target = ROOT / glass
     target.mkdir(parents=True, exist_ok=True)
@@ -136,6 +189,8 @@ def aurorae_glass():
         filename = source.name.replace("DylanOS-Crimsonrc", "DylanOS-Crimson-Glassrc")
         content = source.read_text(encoding="utf-8").replace("DylanOS-Crimson", "DylanOS-Crimson-Glass")
         content = content.replace("Name=DylanOS Crimson", "Name=DylanOS Crimson Glass")
+        content = content.replace("Comment=Original DylanOS window decoration",
+                                  "Comment=Decoración de vidrio Crimson para DylanOS")
         (target / filename).write_text(content, encoding="utf-8")
     patches = (frame("#171116", "decoration-", edge=12, size=56, fill_opacity=0.42, colors=GLASS_COLORS)
                + frame("#171116", "decoration-inactive-", x=100, edge=12, size=56, fill_opacity=0.55, colors=GLASS_COLORS)
@@ -157,13 +212,16 @@ def main():
         write(f"themes/plasma/DylanOS-Crimson/{element}.svg", '<svg xmlns="http://www.w3.org/2000/svg" width="80" height="80">' + frame("#242429", edge=16, size=48) + '<rect id="hint-stretch-borders" width="1" height="1" fill="none"/><rect id="hint-apply-color-scheme" width="1" height="1" fill="none"/></svg>')
         write(f"themes/plasma/DylanOS-Crimson/translucent/{element}.svg", '<svg xmlns="http://www.w3.org/2000/svg" width="80" height="80"><g opacity="0.84">' + frame("#242429", edge=16, size=48) + '</g><rect id="hint-stretch-borders" width="1" height="1" fill="none"/><rect id="hint-apply-color-scheme" width="1" height="1" fill="none"/></svg>')
     aurorae()
+    plasma_glass()
     aurorae_glass()
 
 
 if __name__ == "__main__":
     import sys
-    steps = {"aurorae": aurorae, "aurorae-glass": aurorae_glass}
-    if len(sys.argv) > 1 and sys.argv[1] in steps:
-        steps[sys.argv[1]]()
+    if len(sys.argv) > 1 and sys.argv[1] == "aurorae":
+        aurorae()
+    elif len(sys.argv) > 1 and sys.argv[1] in ("crimson-glass", "aurorae-glass"):
+        plasma_glass()
+        aurorae_glass()
     else:
         main()
