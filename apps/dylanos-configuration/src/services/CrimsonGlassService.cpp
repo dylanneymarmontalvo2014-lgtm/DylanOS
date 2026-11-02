@@ -3,6 +3,7 @@
 #include <QDir>
 #include <QDBusConnection>
 #include <QDBusInterface>
+#include <QDBusReply>
 #include <QFile>
 #include <QFileInfo>
 #include <QJsonDocument>
@@ -227,22 +228,47 @@ bool CrimsonGlassService::setOption(const QString &key, const QVariant &value)
 void CrimsonGlassService::detectCapabilities()
 {
     QString renderer = QString::fromUtf8(qgetenv("DYLANOS_CRIMSON_RENDERER"));
+    const bool rendererOverride = !renderer.isEmpty();
     if (renderer.isEmpty())
         renderer = QString::fromUtf8(qgetenv("QSG_RHI_BACKEND"));
+    bool kwinRunning = false;
+    if (qgetenv("DYLANOS_CRIMSON_TEST_ROOT").isEmpty()) {
+        QDBusInterface kwin(QStringLiteral("org.kde.KWin"), QStringLiteral("/KWin"),
+                            QStringLiteral("org.kde.KWin"), QDBusConnection::sessionBus());
+        kwinRunning = kwin.isValid();
+        if (kwinRunning) {
+            const QDBusReply<QString> reply = kwin.call(QStringLiteral("supportInformation"));
+            if (reply.isValid()) {
+                const QRegularExpression expression(
+                    QStringLiteral("OpenGL renderer string:\\s*([^\\n]+)"),
+                    QRegularExpression::CaseInsensitiveOption);
+                const QRegularExpressionMatch match = expression.match(reply.value());
+                if (match.hasMatch() && !rendererOverride)
+                    renderer = match.captured(1).trimmed();
+            }
+        }
+    }
     const QString rendererLower = renderer.toLower();
     const bool software = rendererLower.contains(QStringLiteral("llvmpipe"))
                           || rendererLower.contains(QStringLiteral("softpipe"))
-                          || rendererLower == QLatin1String("software");
+                          || rendererLower == QLatin1String("software")
+                          || qgetenv("LIBGL_ALWAYS_SOFTWARE") == QByteArrayLiteral("1");
     QString session = QString::fromUtf8(qgetenv("XDG_SESSION_TYPE")).toLower();
     if (session.isEmpty())
         session = qEnvironmentVariableIsSet("WAYLAND_DISPLAY") ? QStringLiteral("wayland")
                                                                  : QStringLiteral("x11");
-    const bool kwin = !QStandardPaths::findExecutable(QStringLiteral("kwin_wayland")).isEmpty()
-                      || !QStandardPaths::findExecutable(QStringLiteral("kwin_x11")).isEmpty();
-    const bool blur = QFile::exists(QStringLiteral("/usr/share/kwin/builtin-effects/blur.json"))
-                      || QFile::exists(QStringLiteral("/usr/share/kwin/builtin-effects/kwin4_effect_blur/metadata.json"));
-    const bool animations = QFile::exists(QStringLiteral("/usr/share/kwin/effects/scale/metadata.json"))
-                            || QFile::exists(QStringLiteral("/usr/share/kwin/effects/kwin4_effect_scale/metadata.json"));
+    const QByteArray testCapabilities = qgetenv("DYLANOS_CRIMSON_TEST_CAPABILITIES");
+    const bool forceFull = testCapabilities == QByteArrayLiteral("full");
+    const bool forceNone = testCapabilities == QByteArrayLiteral("none");
+    const bool kwin = !forceNone && (forceFull || kwinRunning
+                      || !QStandardPaths::findExecutable(QStringLiteral("kwin_wayland")).isEmpty()
+                      || !QStandardPaths::findExecutable(QStringLiteral("kwin_x11")).isEmpty());
+    const bool blur = kwin && (forceFull
+                      || QFile::exists(QStringLiteral("/usr/share/kwin/builtin-effects/blur.json"))
+                      || QFile::exists(QStringLiteral("/usr/share/kwin/builtin-effects/kwin4_effect_blur/metadata.json")));
+    const bool animations = kwin && (forceFull
+                            || (QFile::exists(QStringLiteral("/usr/share/kwin/builtin-effects/glide.json"))
+                                && QFile::exists(QStringLiteral("/usr/share/kwin/builtin-effects/slidingpopups.json"))));
     QString durationFactor = QString::fromUtf8(qgetenv("KDE_ANIMATION_DURATION_FACTOR"));
     if (durationFactor.isEmpty()) {
         const StoredValue stored = readIniValue(configPath(QStringLiteral("kdeglobals")),
@@ -257,7 +283,9 @@ void CrimsonGlassService::detectCapabilities()
 
     m_capabilities = {
         {QStringLiteral("sessionType"), session},
-        {QStringLiteral("compositor"), kwin ? QStringLiteral("KWin") : QStringLiteral("No detectado")},
+        {QStringLiteral("compositor"), kwinRunning ? QStringLiteral("KWin activo")
+                                                    : kwin ? QStringLiteral("KWin instalado")
+                                                           : QStringLiteral("No detectado")},
         {QStringLiteral("backend"), renderer.isEmpty() ? QStringLiteral("Se detectará en la sesión") : renderer},
         {QStringLiteral("kwinAvailable"), kwin},
         {QStringLiteral("blurAvailable"), blur && !software},
@@ -279,7 +307,10 @@ void CrimsonGlassService::updateEffectiveEffects()
     const bool blur = active && !constrained
                       && m_settings.value(QStringLiteral("backgroundBlur")).toBool()
                       && m_capabilities.value(QStringLiteral("blurAvailable")).toBool();
-    const bool animations = active && !m_capabilities.value(QStringLiteral("reducedMotion")).toBool()
+    const bool kwin = m_capabilities.value(QStringLiteral("kwinAvailable")).toBool();
+    const bool animations = active && kwin && !constrained
+                            && m_capabilities.value(QStringLiteral("animationsAvailable")).toBool()
+                            && !m_capabilities.value(QStringLiteral("reducedMotion")).toBool()
                             && m_settings.value(QStringLiteral("animations")).toBool();
     const int requestedTransparency = m_settings.value(QStringLiteral("transparency")).toInt();
     const int glassIntensity = m_settings.value(QStringLiteral("glassIntensity")).toInt();
@@ -290,10 +321,10 @@ void CrimsonGlassService::updateEffectiveEffects()
     m_effectiveEffects = {
         {QStringLiteral("enabled"), active},
         {QStringLiteral("blur"), blur},
-        {QStringLiteral("contrast"), active && !constrained
+        {QStringLiteral("contrast"), active && kwin && !constrained
              && m_settings.value(QStringLiteral("additionalEffects")).toBool()},
         {QStringLiteral("animations"), animations},
-        {QStringLiteral("windowEffects"), active
+        {QStringLiteral("windowEffects"), active && kwin
              && m_settings.value(QStringLiteral("windowEffects")).toBool()},
         {QStringLiteral("lowPowerApplied"), constrained},
         {QStringLiteral("surfaceOpacity"), surfaceOpacity}
@@ -490,6 +521,8 @@ bool CrimsonGlassService::apply()
         }
         return restorePrevious();
     }
+    if (m_settings.value(QStringLiteral("autoDetect")).toBool())
+        detectCapabilities();
     if (!ensureBackup()) {
         setLastMessage(QStringLiteral("No se pudo crear el respaldo de Crimson Glass"));
         emit applied(false, m_lastMessage);
@@ -556,12 +589,19 @@ bool CrimsonGlassService::apply()
         ok = writeIniValue(configPath(entry.first.file), entry.first.group,
                            entry.first.key, entry.second) && ok;
     }
-    if (ok)
-        reloadDesktop();
-    setLastMessage(ok ? QStringLiteral("Crimson Glass aplicado")
-                      : QStringLiteral("No se pudo actualizar KWin"));
-    emit applied(ok, m_lastMessage);
-    return ok;
+    if (!ok) {
+        const bool restored = restorePrevious();
+        setLastMessage(restored
+            ? QStringLiteral("No se pudo aplicar; se recuperó la configuración anterior")
+            : QStringLiteral("No se pudo aplicar y la recuperación quedó incompleta"));
+        emit applied(false, m_lastMessage);
+        return false;
+    }
+    const bool reloaded = reloadDesktop();
+    setLastMessage(reloaded ? QStringLiteral("Crimson Glass aplicado")
+                            : QStringLiteral("Perfil guardado; se aplicará al iniciar Plasma"));
+    emit applied(true, m_lastMessage);
+    return true;
 }
 
 bool CrimsonGlassService::restorePrevious()
@@ -583,18 +623,18 @@ bool CrimsonGlassService::restorePrevious()
     }
     if (ok)
         QFile::remove(backup.fileName());
-    if (ok)
-        reloadDesktop();
-    setLastMessage(ok ? QStringLiteral("Configuración anterior recuperada")
-                      : QStringLiteral("No se pudo recuperar la configuración anterior"));
+    const bool reloaded = ok && reloadDesktop();
+    setLastMessage(!ok ? QStringLiteral("No se pudo recuperar la configuración anterior")
+                       : reloaded ? QStringLiteral("Configuración anterior recuperada")
+                                  : QStringLiteral("Configuración recuperada; se completará al iniciar Plasma"));
     emit applied(ok, m_lastMessage);
     return ok;
 }
 
-void CrimsonGlassService::reloadDesktop() const
+bool CrimsonGlassService::reloadDesktop() const
 {
     if (!qgetenv("DYLANOS_CRIMSON_TEST_ROOT").isEmpty())
-        return;
+        return true;
 
     QDBusInterface kwin(QStringLiteral("org.kde.KWin"), QStringLiteral("/KWin"),
                         QStringLiteral("org.kde.KWin"), QDBusConnection::sessionBus());
@@ -626,6 +666,7 @@ void CrimsonGlassService::reloadDesktop() const
         plasma.asyncCall(QStringLiteral("evaluateScript"), script);
         plasma.asyncCall(QStringLiteral("refreshCurrentShell"));
     }
+    return kwin.isValid() || plasma.isValid();
 }
 
 bool CrimsonGlassService::resetDefaults()

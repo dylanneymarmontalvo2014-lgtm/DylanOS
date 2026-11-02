@@ -37,6 +37,17 @@ ScrollView {
         if (!available) return "No disponible"
         return enabled ? "Activo" : "Desactivado"
     }
+    function blurReason() {
+        if (caps.softwareRendering) return "Renderizado por software: se usa material opaco"
+        if (!caps.kwinAvailable) return "KWin no está disponible en esta sesión"
+        if (!caps.blurAvailable) return "El efecto blur de KWin no está instalado"
+        return active.blur ? "Efecto nativo de KWin activo" : "Desactivado por el perfil"
+    }
+    function animationReason() {
+        if (caps.reducedMotion) return "Reducción de movimiento activa"
+        if (!caps.animationsAvailable) return "El efecto de animación de KWin no está disponible"
+        return active.animations ? "Transiciones del compositor activas" : "Desactivadas por el perfil"
+    }
 
     Timer {
         id: applyTimer
@@ -321,8 +332,8 @@ ScrollView {
                 width: parent.width
                 RowItem { width: parent.width; title: "Sesión gráfica"; desc: root.caps.sessionType; BadgePill { anchors.verticalCenter: parent.verticalCenter; text: root.caps.sessionType || "—" } }
                 RowItem { width: parent.width; title: "Compositor"; desc: root.caps.backend; BadgePill { anchors.verticalCenter: parent.verticalCenter; text: root.caps.compositor || "—" } }
-                RowItem { width: parent.width; title: "Desenfoque"; desc: root.caps.softwareRendering ? "Renderizado por software: se usa material opaco" : "Efecto nativo de KWin"; BadgePill { anchors.verticalCenter: parent.verticalCenter; text: root.effectState(root.active.blur, root.caps.blurAvailable); tone: root.active.blur ? "#58D68D" : "#FEBC2E" } }
-                RowItem { width: parent.width; title: "Animaciones"; desc: root.caps.reducedMotion ? "Reducción de movimiento activa" : "Transiciones del compositor"; last: true; BadgePill { anchors.verticalCenter: parent.verticalCenter; text: root.effectState(root.active.animations, root.caps.animationsAvailable); tone: root.active.animations ? "#58D68D" : "#FEBC2E" } }
+                RowItem { width: parent.width; title: "Desenfoque"; desc: root.blurReason(); BadgePill { anchors.verticalCenter: parent.verticalCenter; text: root.effectState(root.active.blur, root.caps.blurAvailable); tone: root.active.blur ? "#58D68D" : "#FEBC2E" } }
+                RowItem { width: parent.width; title: "Animaciones"; desc: root.animationReason(); last: true; BadgePill { anchors.verticalCenter: parent.verticalCenter; text: root.effectState(root.active.animations, root.caps.animationsAvailable); tone: root.active.animations ? "#58D68D" : "#FEBC2E" } }
             }
 
             GroupBox {
