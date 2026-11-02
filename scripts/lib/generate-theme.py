@@ -99,6 +99,99 @@ def aurorae():
         (light / filename).write_text(content)
 
 
+def glass_frame(prefix="", x=0, y=0, edge=18, size=60, opacity=0.72):
+    parts = []
+    coords = {"topleft": (x, y, edge, edge), "top": (x + edge, y, size, edge),
+              "topright": (x + edge + size, y, edge, edge),
+              "left": (x, y + edge, edge, size), "center": (x + edge, y + edge, size, size),
+              "right": (x + edge + size, y + edge, edge, size),
+              "bottomleft": (x, y + edge + size, edge, edge),
+              "bottom": (x + edge, y + edge + size, size, edge),
+              "bottomright": (x + edge + size, y + edge + size, edge, edge)}
+    corners = {
+        "topleft": f"M0,{edge} Q0,0 {edge},0 L{edge},{edge}Z",
+        "topright": f"M0,0 Q{edge},0 {edge},{edge} L0,{edge}Z",
+        "bottomleft": f"M0,0 Q0,{edge} {edge},{edge} L{edge},0Z",
+        "bottomright": f"M0,{edge} Q{edge},{edge} {edge},0 L0,0Z",
+    }
+    for name, (xx, yy, width, height) in coords.items():
+        parts.append(f'<g id="{prefix}{name}">')
+        if name in corners:
+            parts.append(f'<path transform="translate({xx},{yy})" d="{corners[name]}" fill="#120d11" fill-opacity="{opacity}"/>')
+        else:
+            parts.append(f'<rect x="{xx}" y="{yy}" width="{width}" height="{height}" fill="#120d11" fill-opacity="{opacity}"/>')
+        if name == "top":
+            parts.append(f'<rect x="{xx}" y="{yy}" width="{width}" height="1" fill="#ffffff" fill-opacity="0.30"/>')
+            parts.append(f'<rect x="{xx}" y="{yy + 1}" width="{width}" height="1" fill="#ff5274" fill-opacity="0.34"/>')
+        elif name == "left":
+            parts.append(f'<rect x="{xx}" y="{yy}" width="1" height="{height}" fill="#ff5274" fill-opacity="0.26"/>')
+        elif name == "right":
+            parts.append(f'<rect x="{xx + width - 1}" y="{yy}" width="1" height="{height}" fill="#ff5274" fill-opacity="0.18"/>')
+        elif name == "bottom":
+            parts.append(f'<rect x="{xx}" y="{yy + height - 1}" width="{width}" height="1" fill="#000000" fill-opacity="0.54"/>')
+        parts.append('</g>')
+    return "".join(parts)
+
+
+def plasma_glass():
+    theme = "themes/plasma/DylanOS-Crimson-Glass"
+    write(f"{theme}/metadata.json", json.dumps({
+        "KPlugin": {"Id": "DylanOS-Crimson-Glass", "Name": "DylanOS Crimson Glass",
+                    "Version": "1.0.0", "License": "GPL-3.0-or-later",
+                    "Authors": [{"Name": "DylanOS"}]}
+    }, indent=2) + "\n")
+    write(f"{theme}/metadata.desktop",
+          "[Desktop Entry]\nName=DylanOS Crimson Glass\n"
+          "X-KDE-PluginInfo-Name=DylanOS-Crimson-Glass\n"
+          "X-KDE-PluginInfo-License=GPL-3.0-or-later\n\n"
+          "[ContrastEffect]\nenabled=true\ncontrast=0.16\nintensity=0.72\nsaturation=1.08\n\n"
+          "[BlurBehindEffect]\nenabled=true\n")
+    for element, opacity in (("widgets/panel-background", 0.68), ("dialogs/background", 0.76)):
+        hints = ('<rect id="hint-stretch-borders" width="1" height="1" fill="none"/>'
+                 '<rect id="hint-apply-color-scheme" width="1" height="1" fill="none"/>')
+        write(f"{theme}/{element}.svg",
+              '<svg xmlns="http://www.w3.org/2000/svg" width="96" height="96">'
+              + glass_frame(opacity=0.96) + hints + '</svg>')
+        write(f"{theme}/translucent/{element}.svg",
+              '<svg xmlns="http://www.w3.org/2000/svg" width="96" height="96">'
+              + glass_frame(opacity=opacity) + hints + '</svg>')
+
+
+def aurorae_glass():
+    aurora = "themes/aurorae/DylanOS-Crimson-Glass"
+    write(f"{aurora}/metadata.desktop",
+          "[Desktop Entry]\nName=DylanOS Crimson Glass\n"
+          "Comment=Decoración de vidrio Crimson para DylanOS\n"
+          "X-KDE-PluginInfo-Name=DylanOS-Crimson-Glass\n"
+          "X-KDE-PluginInfo-Version=1.0\nX-KDE-PluginInfo-Author=DylanOS\n"
+          "X-KDE-PluginInfo-License=GPL-3.0-or-later\n")
+    write(f"{aurora}/DylanOS-Crimson-Glassrc",
+          "[General]\nShadow=false\nAnimation=160\nTitleAlignment=Center\n"
+          "ActiveTextColor=244,241,241\nInactiveTextColor=137,132,136\n\n"
+          "[Layout]\nBorderLeft=5\nBorderRight=5\nBorderBottom=5\nBorderTop=1\n"
+          "TitleEdgeTop=7\nTitleEdgeBottom=7\nTitleEdgeLeft=10\nTitleEdgeRight=10\n"
+          "TitleBorderLeft=0\nTitleBorderRight=0\nButtonWidth=18\nButtonHeight=18\n"
+          "ButtonSpacing=8\nExplicitButtonSpacer=4\n")
+    write(f"{aurora}/decoration.svg",
+          '<svg xmlns="http://www.w3.org/2000/svg" width="500" height="100">'
+          '<g opacity="0.82">' + frame("#26101a", "decoration-", edge=12, size=56)
+          + frame("#121013", "decoration-inactive-", x=100, edge=12, size=56) + '</g>'
+          + frame("#180d12", "decoration-opaque-", x=200, edge=12, size=56)
+          + frame("#0f0f11", "decoration-opaque-inactive-", x=300, edge=12, size=56)
+          + frame("white", "mask-", x=400, edge=12, size=56) + '</svg>')
+    for name, color, glyph in [("close", "#ff5f57", "M6 6L12 12M12 6L6 12"),
+                               ("minimize", "#febc2e", "M5 9H13"),
+                               ("maximize", "#28c840", "M6 11V6H11M7 12H12V7"),
+                               ("restore", "#28c840", "M5 8H10V13H5Z")]:
+        content = '<svg xmlns="http://www.w3.org/2000/svg" width="100" height="22">'
+        for i, state in enumerate(["active", "hover", "pressed", "inactive"]):
+            content += f'<g id="{state}-center" transform="translate({i * 24},0)"><rect width="18" height="18" fill="none"/><circle cx="9" cy="9" r="7" fill="{color if state != "inactive" else "#6e7079"}"/>'
+            if state in ("hover", "pressed"):
+                content += f'<path d="{glyph}" fill="none" stroke="#3a2930" stroke-width="1.4"/>'
+            content += '</g>'
+        write(f"{aurora}/{name}.svg", content + '</svg>')
+
+
 def main():
     for light in (False, True):
         wallpaper(light)
@@ -109,11 +202,16 @@ def main():
         write(f"themes/plasma/DylanOS-Crimson/{element}.svg", '<svg xmlns="http://www.w3.org/2000/svg" width="80" height="80">' + frame("#242429", edge=16, size=48) + '<rect id="hint-stretch-borders" width="1" height="1" fill="none"/><rect id="hint-apply-color-scheme" width="1" height="1" fill="none"/></svg>')
         write(f"themes/plasma/DylanOS-Crimson/translucent/{element}.svg", '<svg xmlns="http://www.w3.org/2000/svg" width="80" height="80"><g opacity="0.84">' + frame("#242429", edge=16, size=48) + '</g><rect id="hint-stretch-borders" width="1" height="1" fill="none"/><rect id="hint-apply-color-scheme" width="1" height="1" fill="none"/></svg>')
     aurorae()
+    plasma_glass()
+    aurorae_glass()
 
 
 if __name__ == "__main__":
     import sys
     if len(sys.argv) > 1 and sys.argv[1] == "aurorae":
         aurorae()
+    elif len(sys.argv) > 1 and sys.argv[1] == "crimson-glass":
+        plasma_glass()
+        aurorae_glass()
     else:
         main()

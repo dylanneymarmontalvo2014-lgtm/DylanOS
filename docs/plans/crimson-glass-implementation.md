@@ -103,21 +103,21 @@ Expected: PASS with the command from Step 2.
 **Interfaces:**
 - Produces: installed theme ids `DylanOS-Crimson-Glass` and `__aurorae__svg__DylanOS-Crimson-Glass`; autostart `org.dylanos.crimsonglass.desktop`.
 
-- [ ] **Step 1: Add failing staging assertions**
+- [x] **Step 1: Add failing staging assertions**
 
 Assert the two themes, SVG element ids, default KWin plugins and headless autostart command exist after staging and remain unchanged on a second stage.
 
-- [ ] **Step 2: Run staging test and confirm failure**
+- [x] **Step 2: Run staging test and confirm failure**
 
 Run: `.venv/bin/python -m unittest scripts.tests.test_staging.StagingTests.test_stage_into_root`
 
 Expected: FAIL on missing Glass resources.
 
-- [ ] **Step 3: Add Glass themes and staging copies**
+- [x] **Step 3: Add Glass themes and staging copies**
 
 Use original resources with dark translucent fill, Crimson active border, white top specular line and safe opaque fallback; do not replace the base theme.
 
-- [ ] **Step 4: Run staging and SVG tests**
+- [x] **Step 4: Run staging and SVG tests**
 
 Run: `.venv/bin/python -m unittest scripts.tests.test_staging`
 

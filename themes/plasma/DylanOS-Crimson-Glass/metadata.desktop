@@ -1,0 +1,13 @@
+[Desktop Entry]
+Name=DylanOS Crimson Glass
+X-KDE-PluginInfo-Name=DylanOS-Crimson-Glass
+X-KDE-PluginInfo-License=GPL-3.0-or-later
+
+[ContrastEffect]
+enabled=true
+contrast=0.16
+intensity=0.72
+saturation=1.08
+
+[BlurBehindEffect]
+enabled=true
