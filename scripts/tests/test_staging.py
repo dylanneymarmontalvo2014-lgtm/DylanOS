@@ -412,8 +412,52 @@ class StagingTest(unittest.TestCase):
             with self.assertRaises(FileNotFoundError):
                 module.stage(Path(folder) / "chroot", dist)
 
+    def test_crimson_glass_payload_and_autostart_are_idempotent(self):
+        with tempfile.TemporaryDirectory() as folder:
+            root = Path(folder)
+            module.stage(root)
+            plasma = root / "usr/share/plasma/desktoptheme/DylanOS-Crimson-Glass"
+            aurorae = root / "usr/share/aurorae/themes/DylanOS-Crimson-Glass"
+            required = [
+                plasma / "metadata.json",
+                plasma / "widgets/panel-background.svg",
+                plasma / "translucent/widgets/panel-background.svg",
+                plasma / "dialogs/background.svg",
+                plasma / "translucent/dialogs/background.svg",
+                aurorae / "DylanOS-Crimson-Glassrc",
+                aurorae / "decoration.svg",
+                aurorae / "close.svg",
+                aurorae / "minimize.svg",
+                aurorae / "maximize.svg",
+                aurorae / "restore.svg",
+            ]
+            for path in required:
+                self.assertTrue(path.is_file(), path)
+
+            panel_tree = ET.parse(plasma / "translucent/widgets/panel-background.svg")
+            panel_ids = {node.get("id") for node in panel_tree.iter()}
+            for part in ("center", "top", "bottom", "left", "right", "topleft",
+                         "topright", "bottomleft", "bottomright"):
+                self.assertIn(part, panel_ids)
+            self.assertIn("hint-stretch-borders", panel_ids)
+
+            autostart = root / "etc/xdg/autostart/org.dylanos.crimson-glass.desktop"
+            self.assertTrue(autostart.is_file())
+            entry = autostart.read_text(encoding="utf-8")
+            self.assertIn("Exec=dylanos-configuration --apply-crimson-glass --headless", entry)
+            self.assertIn("OnlyShowIn=KDE;", entry)
+
+            kwinrc = (root / "etc/skel/.config/kwinrc").read_text(encoding="utf-8")
+            self.assertIn("blurEnabled=true", kwinrc)
+            self.assertIn("slideEnabled=true", kwinrc)
+
+            before = {path.relative_to(root): path.read_bytes() for path in required + [autostart]}
+            module.stage(root)
+            after = {path.relative_to(root): path.read_bytes() for path in required + [autostart]}
+            self.assertEqual(after, before)
+
     def test_aurorae_required_svg_elements(self):
-        for variant in ("DylanOS-Crimson", "DylanOS-Crimson-Light"):
+        for variant in ("DylanOS-Crimson", "DylanOS-Crimson-Light", "DylanOS-Crimson-Glass"):
             root = ROOT / "themes/aurorae" / variant
             for button in ("close", "minimize", "maximize", "restore"):
                 tree = ET.parse(root / (button + ".svg"))
