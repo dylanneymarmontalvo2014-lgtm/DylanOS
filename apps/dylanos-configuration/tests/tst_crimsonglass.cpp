@@ -16,8 +16,10 @@ private slots:
     void invalidValuesAreRejected();
     void settingsPersist();
     void softwareRenderingDegradesSafely();
+    void reducedMotionDisablesAnimations();
     void restoreRemovesOriginallyMissingKey();
     void applyWritesKWinAndToolkitMappings();
+    void applyGeneratesUserSurfaceProfile();
     void lowPowerDisablesExpensiveEffects();
     void applyIsIdempotent();
 
@@ -31,12 +33,14 @@ void CrimsonGlassServiceTest::init()
     QVERIFY(m_root->isValid());
     qputenv("DYLANOS_CRIMSON_TEST_ROOT", m_root->path().toUtf8());
     qunsetenv("DYLANOS_CRIMSON_RENDERER");
+    qunsetenv("KDE_ANIMATION_DURATION_FACTOR");
 }
 
 void CrimsonGlassServiceTest::cleanup()
 {
     qunsetenv("DYLANOS_CRIMSON_TEST_ROOT");
     qunsetenv("DYLANOS_CRIMSON_RENDERER");
+    qunsetenv("KDE_ANIMATION_DURATION_FACTOR");
     m_root.reset();
 }
 
@@ -103,6 +107,16 @@ void CrimsonGlassServiceTest::softwareRenderingDegradesSafely()
     QCOMPARE(service.effectiveEffects().value("blur").toBool(), false);
     QCOMPARE(service.effectiveEffects().value("contrast").toBool(), false);
     QVERIFY(service.effectiveEffects().value("surfaceOpacity").toInt() >= 88);
+}
+
+void CrimsonGlassServiceTest::reducedMotionDisablesAnimations()
+{
+    qputenv("KDE_ANIMATION_DURATION_FACTOR", "0");
+    CrimsonGlassService service;
+    service.detectCapabilities();
+
+    QCOMPARE(service.capabilities().value("reducedMotion").toBool(), true);
+    QCOMPARE(service.effectiveEffects().value("animations").toBool(), false);
 }
 
 void CrimsonGlassServiceTest::restoreRemovesOriginallyMissingKey()
@@ -178,6 +192,34 @@ void CrimsonGlassServiceTest::lowPowerDisablesExpensiveEffects()
     QVERIFY(kwin.contains(QStringLiteral("contrastEnabled=false")));
     QVERIFY(kwin.contains(QStringLiteral("glideEnabled=false")));
     QVERIFY(kwin.contains(QStringLiteral("slidingpopupsEnabled=false")));
+}
+
+void CrimsonGlassServiceTest::applyGeneratesUserSurfaceProfile()
+{
+    CrimsonGlassService service;
+    QVERIFY(service.setOption(QStringLiteral("glassIntensity"), 100));
+    QVERIFY(service.setOption(QStringLiteral("panelTransparency"), 80));
+    QVERIFY(service.setOption(QStringLiteral("menuTransparency"), 60));
+    QVERIFY(service.setOption(QStringLiteral("reflections"), 50));
+    QVERIFY(service.setOption(QStringLiteral("shadows"), 40));
+    QVERIFY(service.setOption(QStringLiteral("cornerRadius"), 24));
+    QVERIFY(service.setOption(QStringLiteral("accent"), QStringLiteral("#E81740")));
+    QVERIFY(service.apply());
+
+    const QString theme = m_root->path()
+        + QStringLiteral("/.local/share/plasma/desktoptheme/DylanOS-Crimson-Glass");
+    QFile panel(theme + QStringLiteral("/translucent/widgets/panel-background.svg"));
+    QVERIFY(panel.open(QIODevice::ReadOnly | QIODevice::Text));
+    const QString panelSvg = QString::fromUtf8(panel.readAll());
+    QVERIFY(panelSvg.contains(QStringLiteral("Q0,0 24,0")));
+    QVERIFY(panelSvg.contains(QStringLiteral("fill-opacity=\"0.64\"")));
+    QVERIFY(panelSvg.contains(QStringLiteral("fill=\"#E81740\"")));
+    QVERIFY(panelSvg.contains(QStringLiteral("fill-opacity=\"0.24\"")));
+    QVERIFY(panelSvg.contains(QStringLiteral("fill-opacity=\"0.33\"")));
+
+    QFile dialogs(theme + QStringLiteral("/translucent/dialogs/background.svg"));
+    QVERIFY(dialogs.open(QIODevice::ReadOnly | QIODevice::Text));
+    QVERIFY(QString::fromUtf8(dialogs.readAll()).contains(QStringLiteral("fill-opacity=\"0.73\"")));
 }
 
 void CrimsonGlassServiceTest::applyIsIdempotent()
