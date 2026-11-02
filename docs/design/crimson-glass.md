@@ -73,7 +73,7 @@ Se usan claves presentes en KWin 6.3.6:
 
 Después de escribir se llama a `org.kde.KWin` por D-Bus para reconfigurar KWin
 y los efectos disponibles. Si KWin o D-Bus no están activos, los valores quedan
-persistidos para el siguiente inicio de una sesión Plasma.
+persistidos y el informe marca que se aplicarán al iniciar una sesión Plasma.
 
 No se activa translucidez agresiva sobre ventanas activas: reduce legibilidad y
 puede exponer contenido subyacente. Se limita a menús, diálogos, movimiento y
@@ -99,10 +99,9 @@ y el valor continuo modifica el material del tema.
 
 Aurorae aporta el marco de aplicaciones con decoración del servidor. El perfil
 Glass usa superficies negras translúcidas, borde activo Crimson e inactivo
-neutro. Aurorae conserva una máscara segura de 12 px; el radio configurable se
-aplica a paneles y diálogos Plasma, no a aplicaciones con decoración propia.
-Estas conservan su interfaz y KWin aporta solo las capacidades externas
-disponibles.
+neutro. El radio configurable se aplica a los recursos generados cuando la
+decoración es Aurorae. Las aplicaciones con decoración propia conservan su
+interfaz; KWin sigue aportando las capacidades externas disponibles.
 
 ### 5. Adaptadores de aplicaciones
 
