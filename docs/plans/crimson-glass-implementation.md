@@ -203,28 +203,32 @@ Expected: 1280×800 non-empty image and empty stderr.
 - Consumes: all implemented behavior and test results.
 - Produces: installation/configuration/recovery/compatibility documentation without untested claims.
 
-- [ ] **Step 1: Document architecture, settings, recovery and compatibility matrix**
+- [x] **Step 1: Document architecture, settings, recovery and compatibility matrix**
 
 Mark X11/Wayland compositor rendering as requiring QEMU/manual verification and distinguish tested static/offscreen behavior.
 
-- [ ] **Step 2: Run focused tests**
+- [x] **Step 2: Run focused tests**
 
 Run: `.venv/bin/python -m unittest scripts.tests.test_configuration scripts.tests.test_staging scripts.tests.test_desktop`
 
 Expected: PASS.
 
-- [ ] **Step 3: Run repository QA**
+- [x] **Step 3: Run repository QA**
 
 Run: `DYLANOS_PYTHON="$PWD/.venv/bin/python" bash scripts/check.sh`
 
 Expected: exit 0.
 
-- [ ] **Step 4: Rebuild/test in the Debian 13 chroot**
+Resultado: ejecutado; se detuvo en el fallo basal de
+`test_calculator_keyboard` (`Main.qml:28`, Qt 6.4 del host), reproducible en
+`development` antes de Crimson Glass.
+
+- [x] **Step 4: Rebuild/test in the Debian 13 chroot**
 
 Run the Configuration CMake build and `ctest` in `work/chroot`; then execute the 16 existing page captures plus `crimson-glass`.
 
 Expected: all tests pass; every screenshot is non-empty; stderr contains no QML ReferenceError/TypeError.
 
-- [ ] **Step 5: Record only executed results**
+- [x] **Step 5: Record only executed results**
 
 Update `docs/crimson-glass.md` with commands and outcomes. Leave compositor/QEMU items explicitly pending if no graphical session was run.

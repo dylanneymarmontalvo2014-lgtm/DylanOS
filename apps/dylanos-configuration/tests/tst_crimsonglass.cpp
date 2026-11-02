@@ -16,11 +16,14 @@ private slots:
     void invalidValuesAreRejected();
     void settingsPersist();
     void softwareRenderingDegradesSafely();
+    void missingKWinDoesNotReportExternalEffects();
     void reducedMotionDisablesAnimations();
+    void automaticDetectionRefreshesBeforeApply();
     void restoreRemovesOriginallyMissingKey();
     void applyWritesKWinAndToolkitMappings();
     void applyGeneratesUserSurfaceProfile();
     void lowPowerDisablesExpensiveEffects();
+    void failedApplyRestoresEarlierTargets();
     void applyIsIdempotent();
 
 private:
@@ -32,6 +35,7 @@ void CrimsonGlassServiceTest::init()
     m_root = std::make_unique<QTemporaryDir>();
     QVERIFY(m_root->isValid());
     qputenv("DYLANOS_CRIMSON_TEST_ROOT", m_root->path().toUtf8());
+    qputenv("DYLANOS_CRIMSON_TEST_CAPABILITIES", "full");
     qunsetenv("DYLANOS_CRIMSON_RENDERER");
     qunsetenv("KDE_ANIMATION_DURATION_FACTOR");
 }
@@ -40,6 +44,7 @@ void CrimsonGlassServiceTest::cleanup()
 {
     qunsetenv("DYLANOS_CRIMSON_TEST_ROOT");
     qunsetenv("DYLANOS_CRIMSON_RENDERER");
+    qunsetenv("DYLANOS_CRIMSON_TEST_CAPABILITIES");
     qunsetenv("KDE_ANIMATION_DURATION_FACTOR");
     m_root.reset();
 }
@@ -109,6 +114,19 @@ void CrimsonGlassServiceTest::softwareRenderingDegradesSafely()
     QVERIFY(service.effectiveEffects().value("surfaceOpacity").toInt() >= 88);
 }
 
+void CrimsonGlassServiceTest::missingKWinDoesNotReportExternalEffects()
+{
+    qputenv("DYLANOS_CRIMSON_TEST_CAPABILITIES", "none");
+    CrimsonGlassService service;
+    service.detectCapabilities();
+
+    QCOMPARE(service.capabilities().value("kwinAvailable").toBool(), false);
+    QCOMPARE(service.effectiveEffects().value("blur").toBool(), false);
+    QCOMPARE(service.effectiveEffects().value("contrast").toBool(), false);
+    QCOMPARE(service.effectiveEffects().value("animations").toBool(), false);
+    QCOMPARE(service.effectiveEffects().value("windowEffects").toBool(), false);
+}
+
 void CrimsonGlassServiceTest::reducedMotionDisablesAnimations()
 {
     qputenv("KDE_ANIMATION_DURATION_FACTOR", "0");
@@ -117,6 +135,22 @@ void CrimsonGlassServiceTest::reducedMotionDisablesAnimations()
 
     QCOMPARE(service.capabilities().value("reducedMotion").toBool(), true);
     QCOMPARE(service.effectiveEffects().value("animations").toBool(), false);
+}
+
+void CrimsonGlassServiceTest::automaticDetectionRefreshesBeforeApply()
+{
+    qputenv("DYLANOS_CRIMSON_RENDERER", "OpenGL 3.1");
+    CrimsonGlassService service;
+    QCOMPARE(service.capabilities().value("softwareRendering").toBool(), false);
+
+    qputenv("DYLANOS_CRIMSON_RENDERER", "llvmpipe");
+    QVERIFY(service.apply());
+    QCOMPARE(service.capabilities().value("softwareRendering").toBool(), true);
+
+    QVERIFY(service.setOption(QStringLiteral("autoDetect"), false));
+    qputenv("DYLANOS_CRIMSON_RENDERER", "OpenGL 3.1");
+    QVERIFY(service.apply());
+    QCOMPARE(service.capabilities().value("softwareRendering").toBool(), true);
 }
 
 void CrimsonGlassServiceTest::restoreRemovesOriginallyMissingKey()
@@ -192,6 +226,27 @@ void CrimsonGlassServiceTest::lowPowerDisablesExpensiveEffects()
     QVERIFY(kwin.contains(QStringLiteral("contrastEnabled=false")));
     QVERIFY(kwin.contains(QStringLiteral("glideEnabled=false")));
     QVERIFY(kwin.contains(QStringLiteral("slidingpopupsEnabled=false")));
+    QCOMPARE(service.effectiveEffects().value("animations").toBool(), false);
+}
+
+void CrimsonGlassServiceTest::failedApplyRestoresEarlierTargets()
+{
+    const QString configDir = m_root->path() + QStringLiteral("/.config");
+    QVERIFY(QDir().mkpath(configDir));
+    QFile kwinrc(configDir + QStringLiteral("/kwinrc"));
+    QVERIFY(kwinrc.open(QIODevice::WriteOnly | QIODevice::Text));
+    kwinrc.write("[Unrelated]\nKeep=true\n");
+    kwinrc.close();
+    QVERIFY(QDir().mkpath(configDir + QStringLiteral("/kdeglobals")));
+
+    CrimsonGlassService service;
+    QVERIFY(!service.apply());
+
+    QVERIFY(kwinrc.open(QIODevice::ReadOnly | QIODevice::Text));
+    const QString restored = QString::fromUtf8(kwinrc.readAll());
+    QVERIFY(restored.contains(QStringLiteral("Keep=true")));
+    QVERIFY(!restored.contains(QStringLiteral("blurEnabled")));
+    QVERIFY(service.lastMessage().contains(QStringLiteral("recuperación")));
 }
 
 void CrimsonGlassServiceTest::applyGeneratesUserSurfaceProfile()

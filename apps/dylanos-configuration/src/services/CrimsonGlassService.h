@@ -54,7 +54,7 @@ private:
                        const QString &value, bool remove = false) const;
     bool writeUserPlasmaTheme() const;
     bool ensureBackup();
-    void reloadDesktop() const;
+    bool reloadDesktop() const;
 
     QVariantMap m_settings;
     QVariantMap m_capabilities;
