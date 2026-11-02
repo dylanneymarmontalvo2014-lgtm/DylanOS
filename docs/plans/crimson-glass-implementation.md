@@ -173,19 +173,19 @@ Expected: exit 0 and empty stderr.
 - Consumes: Theme glass tokens and duration from Task 4.
 - Produces: specular borders, safe translucency and short control motion.
 
-- [ ] **Step 1: Add visual-contract assertions**
+- [x] **Step 1: Add visual-contract assertions**
 
 Extend configuration/theme tests to require explicit glass border, safe minimum opacity and reduced-motion duration path.
 
-- [ ] **Step 2: Run tests and confirm failure**
+- [x] **Step 2: Run tests and confirm failure**
 
 Run: `.venv/bin/python -m unittest scripts.tests.test_configuration scripts.tests.test_staging`
 
-- [ ] **Step 3: Implement component and GTK polish**
+- [x] **Step 3: Implement component and GTK polish**
 
 Keep text surfaces opaque enough for WCAG contrast; animate only transform/position/color for 120–180 ms.
 
-- [ ] **Step 4: Render the page**
+- [x] **Step 4: Render the page**
 
 Run: `QT_QPA_PLATFORM=offscreen /tmp/dylanos-config-test/dylanos-configuration --page crimson-glass --screenshot /tmp/crimson-glass.png --size 1280x800`
 

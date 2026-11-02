@@ -67,6 +67,23 @@ class TestDylanOSConfiguration(unittest.TestCase):
         self.assertIn('QStringLiteral("apply-crimson-glass")', source)
         self.assertIn("glassService->apply()", source)
 
+    def test_crimson_glass_controls_respect_motion_and_contrast(self):
+        components = APP / "qml/components"
+        for name in ["DToggle.qml", "DSlider.qml", "DSelect.qml"]:
+            content = (components / name).read_text(encoding="utf-8")
+            self.assertIn("motionDuration", content, name)
+            self.assertIn("CrimsonGlass.effectiveEffects.animations", content, name)
+            self.assertIn("Theme.glassBorder", content, name)
+            self.assertIn("Theme.glassSpecular", content, name)
+
+        for variant in ["DylanOS-Crimson", "DylanOS-Crimson-Light"]:
+            for version in ["gtk-3.0", "gtk-4.0"]:
+                css = (ROOT / "themes/gtk" / variant / version / "gtk.css").read_text(encoding="utf-8")
+                self.assertIn("@define-color glass_surface", css)
+                self.assertIn("@define-color glass_border", css)
+                self.assertIn("@define-color glass_specular", css)
+                self.assertIn("background-color: @glass_surface", css)
+
     def test_navigation_history_restores_route_and_selected_tab(self):
         main = (APP / "qml/Main.qml").read_text(encoding="utf-8")
         self.assertIn('property var history: [{ route: startPage, tab: "" }]', main)
