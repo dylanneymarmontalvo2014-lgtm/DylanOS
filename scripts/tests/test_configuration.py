@@ -38,6 +38,35 @@ class TestDylanOSConfiguration(unittest.TestCase):
                          "DisplayPage", "SoundPage", "NotificationsPage", "StoragePage"]:
             self.assertIn(esperada, pages)
 
+    def test_crimson_glass_is_a_real_configuration_route(self):
+        page = APP / "qml/pages/CrimsonGlassPage.qml"
+        preview = APP / "qml/components/GlassPreview.qml"
+        self.assertTrue(page.is_file())
+        self.assertTrue(preview.is_file())
+        content = page.read_text(encoding="utf-8")
+        for key in ["enabled", "globalEffects", "glassIntensity", "transparency",
+                    "blur", "reflections", "shadows", "cornerRadius", "accent",
+                    "mode", "panelTransparency", "dockTransparency", "menuTransparency",
+                    "windowEffects", "backgroundBlur", "animations", "animationDuration",
+                    "additionalEffects", "lowPower", "autoDetect"]:
+            self.assertIn(f'"{key}"', content)
+        self.assertIn("CrimsonGlass.apply()", content)
+        self.assertIn("CrimsonGlass.restorePrevious()", content)
+        self.assertIn("CrimsonGlass.resetDefaults()", content)
+        self.assertIn("CrimsonGlass.detectCapabilities()", content)
+        self.assertNotIn("demo", content.lower())
+
+        main = (APP / "qml/Main.qml").read_text(encoding="utf-8")
+        self.assertIn('{ id: "crimson-glass"', main)
+        self.assertIn('case "crimson-glass"', main)
+        personalization = (APP / "qml/pages/PersonalizationPage.qml").read_text(encoding="utf-8")
+        self.assertIn('Window.window.go("crimson-glass")', personalization)
+
+        source = (APP / "src/main.cpp").read_text(encoding="utf-8")
+        self.assertIn('setContextProperty(QStringLiteral("CrimsonGlass")', source)
+        self.assertIn('QStringLiteral("apply-crimson-glass")', source)
+        self.assertIn("glassService->apply()", source)
+
     def test_navigation_history_restores_route_and_selected_tab(self):
         main = (APP / "qml/Main.qml").read_text(encoding="utf-8")
         self.assertIn('property var history: [{ route: startPage, tab: "" }]', main)

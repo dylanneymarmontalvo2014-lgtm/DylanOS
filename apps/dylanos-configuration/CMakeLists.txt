@@ -16,6 +16,7 @@ endif()
 
 qt_add_executable(dylanos-configuration
     src/main.cpp
+    src/services/CrimsonGlassService.cpp
     src/services/SystemService.cpp
     src/services/LucideProvider.cpp
 )
@@ -54,6 +55,7 @@ qt_add_qml_module(dylanos-configuration
         qml/components/Toast.qml
         qml/components/NavRow.qml
         qml/components/ActionButton.qml
+        qml/components/GlassPreview.qml
         qml/pages/SystemPage.qml
         qml/pages/AboutPage.qml
         qml/pages/PersonalizationPage.qml
@@ -70,6 +72,7 @@ qt_add_qml_module(dylanos-configuration
         qml/pages/SoundPage.qml
         qml/pages/NotificationsPage.qml
         qml/pages/StoragePage.qml
+        qml/pages/CrimsonGlassPage.qml
         qml/Main.qml
 )
 
