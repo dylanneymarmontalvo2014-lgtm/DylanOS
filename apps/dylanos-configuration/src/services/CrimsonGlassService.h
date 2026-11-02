@@ -52,6 +52,7 @@ private:
     StoredValue readIniValue(const QString &file, const QString &group, const QString &key) const;
     bool writeIniValue(const QString &file, const QString &group, const QString &key,
                        const QString &value, bool remove = false) const;
+    bool writeUserPlasmaTheme() const;
     bool ensureBackup();
     void reloadDesktop() const;
 
