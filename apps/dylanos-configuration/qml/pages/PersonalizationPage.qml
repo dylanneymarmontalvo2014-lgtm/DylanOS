@@ -12,13 +12,11 @@ ScrollView {
     property var schemes: []
     property var walls: []
     property string currentScheme: System.configString("kdeglobals", "General", "ColorScheme")
-    property bool glassOn: false
 
     function refresh() {
         schemes = System.colorSchemes()
         walls = System.wallpapers()
         currentScheme = System.configString("kdeglobals", "General", "ColorScheme")
-        glassOn = System.glassEnabled()
     }
     Component.onCompleted: Qt.callLater(refresh)
 
@@ -199,31 +197,6 @@ ScrollView {
                 }
             }
 
-            Text { text: "Acabado"; font.pixelSize: 18; color: Theme.c.text }
-
-            GroupBox {
-                width: parent.width
-                RowItem {
-                    width: parent.width
-                    icon: "contrast"
-                    title: "Crimson Glass (vidrio líquido)"
-                    desc: "Marco translúcido con el fondo desenfocado en todas las ventanas"
-                    last: true
-                    DToggle {
-                        anchors.verticalCenter: parent.verticalCenter
-                        on: root.glassOn
-                        onToggled: function (v) {
-                            if (System.setGlassEnabled(v)) {
-                                root.glassOn = v
-                                toast.show(v ? "Crimson-glass activado" : "Crimson-glass desactivado")
-                            } else {
-                                root.glassOn = System.glassEnabled()
-                            }
-                        }
-                    }
-                }
-            }
-
             GroupBox {
                 width: parent.width
                 RowItem {
@@ -369,3 +342,5 @@ ScrollView {
         y: parent.height - 70
     }
 }
+
+
