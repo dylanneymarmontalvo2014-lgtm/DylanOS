@@ -53,6 +53,7 @@ private:
     bool writeIniValue(const QString &file, const QString &group, const QString &key,
                        const QString &value, bool remove = false) const;
     bool ensureBackup();
+    void reloadDesktop() const;
 
     QVariantMap m_settings;
     QVariantMap m_capabilities;

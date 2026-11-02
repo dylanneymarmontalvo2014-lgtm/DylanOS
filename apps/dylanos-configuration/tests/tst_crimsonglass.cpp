@@ -17,6 +17,9 @@ private slots:
     void settingsPersist();
     void softwareRenderingDegradesSafely();
     void restoreRemovesOriginallyMissingKey();
+    void applyWritesKWinAndToolkitMappings();
+    void lowPowerDisablesExpensiveEffects();
+    void applyIsIdempotent();
 
 private:
     std::unique_ptr<QTemporaryDir> m_root;
@@ -120,6 +123,76 @@ void CrimsonGlassServiceTest::restoreRemovesOriginallyMissingKey()
     QVERIFY(restored.contains(QStringLiteral("[Unrelated]")));
     QVERIFY(restored.contains(QStringLiteral("Keep=true")));
     QVERIFY(!restored.contains(QStringLiteral("blurEnabled")));
+}
+
+void CrimsonGlassServiceTest::applyWritesKWinAndToolkitMappings()
+{
+    qputenv("DYLANOS_CRIMSON_RENDERER", "OpenGL 3.1");
+    CrimsonGlassService service;
+    QVERIFY(service.setOption(QStringLiteral("blur"), 100));
+    QVERIFY(service.setOption(QStringLiteral("animationDuration"), 240));
+    QVERIFY(service.setOption(QStringLiteral("mode"), QStringLiteral("dark")));
+    QVERIFY(service.setOption(QStringLiteral("accent"), QStringLiteral("#E81740")));
+    QVERIFY(service.apply());
+
+    QFile kwinrc(m_root->path() + QStringLiteral("/.config/kwinrc"));
+    QVERIFY(kwinrc.open(QIODevice::ReadOnly | QIODevice::Text));
+    const QString kwin = QString::fromUtf8(kwinrc.readAll());
+    QVERIFY(kwin.contains(QStringLiteral("BlurStrength=15")));
+    QVERIFY(kwin.contains(QStringLiteral("Duration=240")));
+    QVERIFY(kwin.contains(QStringLiteral("SlideInTime=240")));
+    QVERIFY(kwin.contains(QStringLiteral("glideEnabled=true")));
+    QVERIFY(kwin.contains(QStringLiteral("translucencyEnabled=true")));
+    QVERIFY(kwin.contains(QStringLiteral("theme=__aurorae__svg__DylanOS-Crimson-Glass")));
+
+    QFile plasma(m_root->path() + QStringLiteral("/.config/plasmarc"));
+    QVERIFY(plasma.open(QIODevice::ReadOnly | QIODevice::Text));
+    QVERIFY(QString::fromUtf8(plasma.readAll()).contains(QStringLiteral("name=DylanOS-Crimson-Glass")));
+
+    QFile globals(m_root->path() + QStringLiteral("/.config/kdeglobals"));
+    QVERIFY(globals.open(QIODevice::ReadOnly | QIODevice::Text));
+    const QString kde = QString::fromUtf8(globals.readAll());
+    QVERIFY(kde.contains(QStringLiteral("AccentColor=#E81740")));
+    QVERIFY(kde.contains(QStringLiteral("ColorScheme=DylanOSDark")));
+
+    for (const QString &version : {QStringLiteral("gtk-3.0"), QStringLiteral("gtk-4.0")}) {
+        QFile gtk(m_root->path() + QStringLiteral("/.config/") + version + QStringLiteral("/settings.ini"));
+        QVERIFY(gtk.open(QIODevice::ReadOnly | QIODevice::Text));
+        const QString settings = QString::fromUtf8(gtk.readAll());
+        QVERIFY(settings.contains(QStringLiteral("gtk-theme-name=DylanOS-Crimson")));
+        QVERIFY(settings.contains(QStringLiteral("gtk-application-prefer-dark-theme=1")));
+    }
+}
+
+void CrimsonGlassServiceTest::lowPowerDisablesExpensiveEffects()
+{
+    qputenv("DYLANOS_CRIMSON_RENDERER", "OpenGL 3.1");
+    CrimsonGlassService service;
+    QVERIFY(service.setOption(QStringLiteral("lowPower"), true));
+    QVERIFY(service.apply());
+
+    QFile kwinrc(m_root->path() + QStringLiteral("/.config/kwinrc"));
+    QVERIFY(kwinrc.open(QIODevice::ReadOnly | QIODevice::Text));
+    const QString kwin = QString::fromUtf8(kwinrc.readAll());
+    QVERIFY(kwin.contains(QStringLiteral("blurEnabled=false")));
+    QVERIFY(kwin.contains(QStringLiteral("contrastEnabled=false")));
+    QVERIFY(kwin.contains(QStringLiteral("glideEnabled=false")));
+    QVERIFY(kwin.contains(QStringLiteral("slidingpopupsEnabled=false")));
+}
+
+void CrimsonGlassServiceTest::applyIsIdempotent()
+{
+    CrimsonGlassService service;
+    QVERIFY(service.apply());
+
+    QFile firstFile(m_root->path() + QStringLiteral("/.config/kwinrc"));
+    QVERIFY(firstFile.open(QIODevice::ReadOnly | QIODevice::Text));
+    const QByteArray first = firstFile.readAll();
+    firstFile.close();
+
+    QVERIFY(service.apply());
+    QVERIFY(firstFile.open(QIODevice::ReadOnly | QIODevice::Text));
+    QCOMPARE(firstFile.readAll(), first);
 }
 
 QTEST_MAIN(CrimsonGlassServiceTest)
