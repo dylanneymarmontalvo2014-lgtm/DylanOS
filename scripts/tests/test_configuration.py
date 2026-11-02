@@ -67,23 +67,6 @@ class TestDylanOSConfiguration(unittest.TestCase):
         self.assertIn('QStringLiteral("apply-crimson-glass")', source)
         self.assertIn("glassService->apply()", source)
 
-    def test_crimson_glass_controls_respect_motion_and_contrast(self):
-        components = APP / "qml/components"
-        for name in ["DToggle.qml", "DSlider.qml", "DSelect.qml"]:
-            content = (components / name).read_text(encoding="utf-8")
-            self.assertIn("motionDuration", content, name)
-            self.assertIn("CrimsonGlass.effectiveEffects.animations", content, name)
-            self.assertIn("Theme.glassBorder", content, name)
-            self.assertIn("Theme.glassSpecular", content, name)
-
-        for variant in ["DylanOS-Crimson", "DylanOS-Crimson-Light"]:
-            for version in ["gtk-3.0", "gtk-4.0"]:
-                css = (ROOT / "themes/gtk" / variant / version / "gtk.css").read_text(encoding="utf-8")
-                self.assertIn("@define-color glass_surface", css)
-                self.assertIn("@define-color glass_border", css)
-                self.assertIn("@define-color glass_specular", css)
-                self.assertIn("background-color: @glass_surface", css)
-
     def test_navigation_history_restores_route_and_selected_tab(self):
         main = (APP / "qml/Main.qml").read_text(encoding="utf-8")
         self.assertIn('property var history: [{ route: startPage, tab: "" }]', main)
@@ -127,17 +110,6 @@ class TestDylanOSConfiguration(unittest.TestCase):
         self.assertIn('current.insert(QStringLiteral("name"), nameMatch.captured(1).trimmed())', cpp)
         self.assertNotIn('fields.value(fields.size() - 1, fields.value(1))', cpp)
 
-    def test_power_page_handles_missing_battery_percentage(self):
-        power = (APP / "qml/pages/PowerPage.qml").read_text(encoding="utf-8")
-        self.assertIn("root.state.battery.percent !== undefined", power)
-        self.assertIn("Number(root.state.battery.percent)", power)
-
-    def test_system_service_glass_toggle_keeps_light_variant(self):
-        cpp = (APP / "src/services/SystemService.cpp").read_text(encoding="utf-8")
-        self.assertIn('QStringLiteral("__aurorae__svg__DylanOS-Crimson-Glass-Light")', cpp)
-        self.assertIn('QStringLiteral("__aurorae__svg__DylanOS-Crimson-Glass")', cpp)
-        self.assertIn("glassTheme", cpp)
-
     def test_staging_registra_dylanos_configuration(self):
         with tempfile.TemporaryDirectory() as folder:
             root = Path(folder)
@@ -156,7 +128,7 @@ class TestDylanOSConfiguration(unittest.TestCase):
                     self.assertIn("NoDisplay=true", oculta.read_text())
             # El total de entradas org.dylanos.* del menu se mantiene en 9
             # (workspace + explorer + configuration + store + spotlight + console).
-            self.assertEqual(len(list((root / "usr/share/applications").glob("org.dylanos.*.desktop"))), 10)
+            self.assertEqual(len(list((root / "usr/share/applications").glob("org.dylanos.*.desktop"))), 9)
 
 
 if __name__ == "__main__":

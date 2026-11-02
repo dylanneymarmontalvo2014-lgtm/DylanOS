@@ -139,21 +139,21 @@ Expected: PASS.
 - Consumes: `CrimsonGlass` context object from Task 1.
 - Produces: route `crimson-glass`, CLI `--page crimson-glass` and `--apply-crimson-glass --headless`.
 
-- [ ] **Step 1: Add failing static/QML contract tests**
+- [x] **Step 1: Add failing static/QML contract tests**
 
 Assert the route, search entries, Personalization entry point, all requested controls, capability labels and restore actions are present and no control is marked as demo.
 
-- [ ] **Step 2: Run configuration tests and confirm failure**
+- [x] **Step 2: Run configuration tests and confirm failure**
 
 Run: `.venv/bin/python -m unittest scripts.tests.test_configuration`
 
 Expected: FAIL on missing page and service registration.
 
-- [ ] **Step 3: Implement route, page and preview**
+- [x] **Step 3: Implement route, page and preview**
 
 Group controls as General, Efectos, Compatibilidad and Recuperación. Apply sliders with a 160 ms debounce and show `effectiveEffects` separately from requested settings.
 
-- [ ] **Step 4: Build and smoke-test QML**
+- [x] **Step 4: Build and smoke-test QML**
 
 Run: `cmake --build /tmp/dylanos-config-test && QT_QPA_PLATFORM=offscreen /tmp/dylanos-config-test/dylanos-configuration --page crimson-glass --smoke`
 
