@@ -293,6 +293,13 @@ class Backend(QObject):
     @Slot(str)
     def findSoftware(self, query): self.launch(["dylanos-store", "--search", query])
 
+    def kwinDecoration(self):
+        path = Path(os.environ.get("XDG_CONFIG_HOME", str(Path.home() / ".config"))) / "kwinrc"
+        settings = configparser.ConfigParser(interpolation=None, strict=False)
+        settings.optionxform = str
+        settings.read(path)
+        return settings.get("org.kde.kdecoration2", "theme", fallback="")
+
     @Slot(str)
     def theme(self, variant):
         if variant not in ("Dark", "Light"):
@@ -302,7 +309,8 @@ class Backend(QObject):
             self.message.emit("El cambio del escritorio requiere una sesión KDE Plasma.")
             return
         def apply():
-            decoration = "DylanOS-Crimson" + ("-Light" if variant == "Light" else "")
+            glass = variant == "Dark" and self.kwinDecoration().endswith("-Glass")
+            decoration = "DylanOS-Crimson-Glass" if glass else "DylanOS-Crimson" + ("-Light" if variant == "Light" else "")
             commands = [[program, "DylanOS" + variant],
                         ["kwriteconfig6", "--file", "kwinrc", "--group", "org.kde.kdecoration2", "--key", "theme", "__aurorae__svg__" + decoration]]
             qdbus = shutil.which("qdbus6") or shutil.which("qdbus") or "/usr/lib/qt6/bin/qdbus"

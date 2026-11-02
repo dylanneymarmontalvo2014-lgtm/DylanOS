@@ -50,6 +50,14 @@ técnica viva: `docs/architecture.md`. Este archivo es el índice operativo de r
   `startSystemMove()`). `setDesktopFileName` = nombre del `.desktop` sin extensión
   (app_id Wayland); `StartupWMClass` para X11. Apps de terceros: decoración Aurorae
   DylanOS (negra, sin banda gris; regenerar con `python3 scripts/lib/generate-theme.py aurorae`).
+- **Crimson-glass = marco translúcido + blur del compositor.** KWin 6.3 solo desenfoca
+  donde la decoración expone una región: los ids `mask-*` del SVG son esa región, así que
+  NUNCA se les pone `fill-opacity` (los `decoration-*` translúcidos van fuera del grupo de
+  la máscara). Theme `DylanOS-Crimson-Glass`, perfil en `configs/plasma/skel/kwinrc`
+  (`Effect-blur`, `Effect-translucency` — minúsculas, son los nombres que leen blur.kcfg y
+  ScriptedEffect) y selector en Configuration → Personalización → Apariencia. Al apagar hay
+  que descargar el efecto (`org.kde.kwin.Effects /Effects unloadEffect("translucency")`):
+  `reconfigure` solo carga efectos. No sustituir el theme por uno opaco.
 - Barra superior tipo menú: `com.dylanos.activeapp` (nombre completo de la app activa,
   sin cortes) + appmenu; se oculta sola en **pantalla completa real** vía
   `hiding=letwindowscover` (KWin; maximizada NO la cubre). Dock inferior: icontasks flotante.
