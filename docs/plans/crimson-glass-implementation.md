@@ -71,21 +71,21 @@ Expected: PASS.
 - Consumes: service API from Task 1.
 - Produces: actual `apply()` and `restorePrevious()` mappings plus D-Bus reload helpers.
 
-- [x] **Step 1: Add failing tests for exact KWin and toolkit mappings**
+- [ ] **Step 1: Add failing tests for exact KWin and toolkit mappings**
 
 Assert `[Effect-blur] BlurStrength` maps 0–100 to 1–15, low power writes `blurEnabled=false`, durations map to `Effect-glide/Duration` and GTK mode writes both GTK 3/4 settings. Assert a second apply is idempotent.
 
-- [x] **Step 2: Run QtTest and confirm mapping failures**
+- [ ] **Step 2: Run QtTest and confirm mapping failures**
 
 Run: `ctest --test-dir /tmp/dylanos-config-test --output-on-failure -R crimsonglass`
 
 Expected: FAIL on missing applied keys.
 
-- [x] **Step 3: Implement adapters and live reload**
+- [ ] **Step 3: Implement adapters and live reload**
 
 Write only documented KWin 6.3.6 keys, switch Plasma theme, set accent/mode/GTK preferences, update panel opacity through `org.kde.PlasmaShell.evaluateScript`, and reconfigure KWin effects through session D-Bus. In test-root mode skip D-Bus.
 
-- [x] **Step 4: Run QtTest**
+- [ ] **Step 4: Run QtTest**
 
 Expected: PASS with the command from Step 2.
 
@@ -103,21 +103,21 @@ Expected: PASS with the command from Step 2.
 **Interfaces:**
 - Produces: installed theme ids `DylanOS-Crimson-Glass` and `__aurorae__svg__DylanOS-Crimson-Glass`; autostart `org.dylanos.crimsonglass.desktop`.
 
-- [x] **Step 1: Add failing staging assertions**
+- [ ] **Step 1: Add failing staging assertions**
 
 Assert the two themes, SVG element ids, default KWin plugins and headless autostart command exist after staging and remain unchanged on a second stage.
 
-- [x] **Step 2: Run staging test and confirm failure**
+- [ ] **Step 2: Run staging test and confirm failure**
 
 Run: `.venv/bin/python -m unittest scripts.tests.test_staging.StagingTests.test_stage_into_root`
 
 Expected: FAIL on missing Glass resources.
 
-- [x] **Step 3: Add Glass themes and staging copies**
+- [ ] **Step 3: Add Glass themes and staging copies**
 
 Use original resources with dark translucent fill, Crimson active border, white top specular line and safe opaque fallback; do not replace the base theme.
 
-- [x] **Step 4: Run staging and SVG tests**
+- [ ] **Step 4: Run staging and SVG tests**
 
 Run: `.venv/bin/python -m unittest scripts.tests.test_staging`
 
@@ -139,21 +139,21 @@ Expected: PASS.
 - Consumes: `CrimsonGlass` context object from Task 1.
 - Produces: route `crimson-glass`, CLI `--page crimson-glass` and `--apply-crimson-glass --headless`.
 
-- [x] **Step 1: Add failing static/QML contract tests**
+- [ ] **Step 1: Add failing static/QML contract tests**
 
 Assert the route, search entries, Personalization entry point, all requested controls, capability labels and restore actions are present and no control is marked as demo.
 
-- [x] **Step 2: Run configuration tests and confirm failure**
+- [ ] **Step 2: Run configuration tests and confirm failure**
 
 Run: `.venv/bin/python -m unittest scripts.tests.test_configuration`
 
 Expected: FAIL on missing page and service registration.
 
-- [x] **Step 3: Implement route, page and preview**
+- [ ] **Step 3: Implement route, page and preview**
 
 Group controls as General, Efectos, Compatibilidad and Recuperación. Apply sliders with a 160 ms debounce and show `effectiveEffects` separately from requested settings.
 
-- [x] **Step 4: Build and smoke-test QML**
+- [ ] **Step 4: Build and smoke-test QML**
 
 Run: `cmake --build /tmp/dylanos-config-test && QT_QPA_PLATFORM=offscreen /tmp/dylanos-config-test/dylanos-configuration --page crimson-glass --smoke`
 
@@ -173,19 +173,19 @@ Expected: exit 0 and empty stderr.
 - Consumes: Theme glass tokens and duration from Task 4.
 - Produces: specular borders, safe translucency and short control motion.
 
-- [x] **Step 1: Add visual-contract assertions**
+- [ ] **Step 1: Add visual-contract assertions**
 
 Extend configuration/theme tests to require explicit glass border, safe minimum opacity and reduced-motion duration path.
 
-- [x] **Step 2: Run tests and confirm failure**
+- [ ] **Step 2: Run tests and confirm failure**
 
 Run: `.venv/bin/python -m unittest scripts.tests.test_configuration scripts.tests.test_staging`
 
-- [x] **Step 3: Implement component and GTK polish**
+- [ ] **Step 3: Implement component and GTK polish**
 
 Keep text surfaces opaque enough for WCAG contrast; animate only transform/position/color for 120–180 ms.
 
-- [x] **Step 4: Render the page**
+- [ ] **Step 4: Render the page**
 
 Run: `QT_QPA_PLATFORM=offscreen /tmp/dylanos-config-test/dylanos-configuration --page crimson-glass --screenshot /tmp/crimson-glass.png --size 1280x800`
 
@@ -203,32 +203,28 @@ Expected: 1280×800 non-empty image and empty stderr.
 - Consumes: all implemented behavior and test results.
 - Produces: installation/configuration/recovery/compatibility documentation without untested claims.
 
-- [x] **Step 1: Document architecture, settings, recovery and compatibility matrix**
+- [ ] **Step 1: Document architecture, settings, recovery and compatibility matrix**
 
 Mark X11/Wayland compositor rendering as requiring QEMU/manual verification and distinguish tested static/offscreen behavior.
 
-- [x] **Step 2: Run focused tests**
+- [ ] **Step 2: Run focused tests**
 
 Run: `.venv/bin/python -m unittest scripts.tests.test_configuration scripts.tests.test_staging scripts.tests.test_desktop`
 
 Expected: PASS.
 
-- [x] **Step 3: Run repository QA**
+- [ ] **Step 3: Run repository QA**
 
 Run: `DYLANOS_PYTHON="$PWD/.venv/bin/python" bash scripts/check.sh`
 
 Expected: exit 0.
 
-Resultado: ejecutado; se detuvo en el fallo basal de
-`test_calculator_keyboard` (`Main.qml:28`, Qt 6.4 del host), reproducible en
-`development` antes de Crimson Glass.
-
-- [x] **Step 4: Rebuild/test in the Debian 13 chroot**
+- [ ] **Step 4: Rebuild/test in the Debian 13 chroot**
 
 Run the Configuration CMake build and `ctest` in `work/chroot`; then execute the 16 existing page captures plus `crimson-glass`.
 
 Expected: all tests pass; every screenshot is non-empty; stderr contains no QML ReferenceError/TypeError.
 
-- [x] **Step 5: Record only executed results**
+- [ ] **Step 5: Record only executed results**
 
 Update `docs/crimson-glass.md` with commands and outcomes. Leave compositor/QEMU items explicitly pending if no graphical session was run.
