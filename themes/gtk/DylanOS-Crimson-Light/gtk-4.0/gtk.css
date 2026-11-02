@@ -33,6 +33,9 @@
 /* Tokens propios de DylanOS */
 @define-color surface #F3F3F7;
 @define-color elevated #E5E5ED;
+@define-color glass_surface alpha(#F3F3F7, 0.94);
+@define-color glass_border alpha(#DC143C, 0.24);
+@define-color glass_specular alpha(#FFFFFF, 0.58);
 @define-color traffic_close #FF5F57;
 @define-color traffic_min #FEBC2E;
 @define-color traffic_max #28C840;
@@ -71,8 +74,8 @@ separator.vertical { min-width: 1px; min-height: 0; }
  ***********/
 
 headerbar, .top-bar {
-  background-color: alpha(#1A1A1E, 0.98);
-  border-bottom: 1px solid alpha(#FFFFFF, 0.06);
+  background-color: @glass_surface;
+  border-bottom: 1px solid @glass_border;
   padding: 4px 8px;
   min-height: 48px;
 }
@@ -229,16 +232,16 @@ treeview.view > header > button { background-color: @surface; border-bottom: 1px
  ***********/
 
 popover > contents, .popover > contents {
-  background-color: @surface;
-  border: 1px solid @borders;
+  background-color: @glass_surface;
+  border: 1px solid @glass_border;
   border-radius: 12px;
   padding: 6px;
-  box-shadow: 0 12px 28px alpha(#000000, 0.5);
+  box-shadow: inset 0 1px @glass_specular, 0 12px 28px alpha(#000000, 0.32);
 }
 
 popover.menu > contents {
-  background-color: @surface;
-  border: 1px solid @borders;
+  background-color: @glass_surface;
+  border: 1px solid @glass_border;
   border-radius: 12px;
   padding: 6px;
 }

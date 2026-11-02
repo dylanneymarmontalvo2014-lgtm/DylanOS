@@ -2,6 +2,8 @@
 Name=DylanOS Crimson Glass
 X-KDE-PluginInfo-Name=DylanOS-Crimson-Glass
 X-KDE-PluginInfo-License=GPL-3.0-or-later
+X-Plasma-API=5.0
+X-Plasma-FallbackPackage=DylanOS-Crimson
 
 [ContrastEffect]
 enabled=true

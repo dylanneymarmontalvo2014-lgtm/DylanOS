@@ -243,6 +243,17 @@ void CrimsonGlassService::detectCapabilities()
                       || QFile::exists(QStringLiteral("/usr/share/kwin/builtin-effects/kwin4_effect_blur/metadata.json"));
     const bool animations = QFile::exists(QStringLiteral("/usr/share/kwin/effects/scale/metadata.json"))
                             || QFile::exists(QStringLiteral("/usr/share/kwin/effects/kwin4_effect_scale/metadata.json"));
+    QString durationFactor = QString::fromUtf8(qgetenv("KDE_ANIMATION_DURATION_FACTOR"));
+    if (durationFactor.isEmpty()) {
+        const StoredValue stored = readIniValue(configPath(QStringLiteral("kdeglobals")),
+                                                 QStringLiteral("KDE"),
+                                                 QStringLiteral("AnimationDurationFactor"));
+        if (stored.present)
+            durationFactor = stored.value;
+    }
+    bool factorOk = false;
+    const double factor = durationFactor.toDouble(&factorOk);
+    const bool reducedMotion = factorOk && factor <= 0.0;
 
     m_capabilities = {
         {QStringLiteral("sessionType"), session},
@@ -253,7 +264,7 @@ void CrimsonGlassService::detectCapabilities()
         {QStringLiteral("animationsAvailable"), animations},
         {QStringLiteral("softwareRendering"), software},
         {QStringLiteral("plasmaThemeAvailable"), QFile::exists(QStringLiteral("/usr/share/plasma/desktoptheme/DylanOS-Crimson-Glass/metadata.json"))},
-        {QStringLiteral("reducedMotion"), false}
+        {QStringLiteral("reducedMotion"), reducedMotion}
     };
     updateEffectiveEffects();
     emit capabilitiesChanged();
@@ -271,8 +282,11 @@ void CrimsonGlassService::updateEffectiveEffects()
     const bool animations = active && !m_capabilities.value(QStringLiteral("reducedMotion")).toBool()
                             && m_settings.value(QStringLiteral("animations")).toBool();
     const int requestedTransparency = m_settings.value(QStringLiteral("transparency")).toInt();
-    const int surfaceOpacity = constrained ? std::max(88, 100 - requestedTransparency / 5)
-                                           : std::max(32, 100 - requestedTransparency);
+    const int glassIntensity = m_settings.value(QStringLiteral("glassIntensity")).toInt();
+    const int requestedOpacity = 100 - qRound(requestedTransparency * 0.45
+                                               * glassIntensity / 100.0);
+    const int surfaceOpacity = constrained ? std::max(88, requestedOpacity)
+                                           : std::max(55, requestedOpacity);
     m_effectiveEffects = {
         {QStringLiteral("enabled"), active},
         {QStringLiteral("blur"), blur},
@@ -358,6 +372,86 @@ bool CrimsonGlassService::writeIniValue(const QString &file, const QString &grou
         return false;
     output.write((lines.join(QLatin1Char('\n')) + QLatin1Char('\n')).toUtf8());
     return output.commit();
+}
+
+bool CrimsonGlassService::writeUserPlasmaTheme() const
+{
+    const QString root = homePath()
+        + QStringLiteral("/.local/share/plasma/desktoptheme/DylanOS-Crimson-Glass");
+    const auto writeText = [](const QString &path, const QString &content) {
+        if (!QDir().mkpath(QFileInfo(path).absolutePath()))
+            return false;
+        QSaveFile output(path);
+        if (!output.open(QIODevice::WriteOnly | QIODevice::Text))
+            return false;
+        output.write(content.toUtf8());
+        return output.commit();
+    };
+
+    const int radius = std::clamp(m_settings.value(QStringLiteral("cornerRadius")).toInt(), 1, 36);
+    const int right = 96 - radius;
+    const int center = 96 - radius * 2;
+    const double intensity = m_settings.value(QStringLiteral("glassIntensity")).toInt() / 100.0;
+    const bool constrained = m_effectiveEffects.value(QStringLiteral("lowPowerApplied")).toBool();
+    const auto materialOpacity = [intensity, constrained](int transparency) {
+        const double requested = 1.0 - transparency / 100.0 * 0.45 * intensity;
+        return constrained ? std::max(0.88, requested) : std::max(0.55, requested);
+    };
+    const double panelOpacity = materialOpacity(
+        m_settings.value(QStringLiteral("panelTransparency")).toInt());
+    const double menuOpacity = materialOpacity(
+        m_settings.value(QStringLiteral("menuTransparency")).toInt());
+    const double reflectionOpacity = m_settings.value(QStringLiteral("reflections")).toInt()
+                                     / 100.0 * 0.48;
+    const double shadowOpacity = m_settings.value(QStringLiteral("shadows")).toInt()
+                                 / 100.0 * 0.825;
+    const QString accent = m_settings.value(QStringLiteral("accent")).toString();
+    const auto decimal = [](double value) { return QString::number(value, 'f', 2); };
+
+    const auto frame = [&](double opacity) {
+        QString svg = QStringLiteral(R"SVG(<svg xmlns="http://www.w3.org/2000/svg" width="96" height="96">
+<g id="topleft"><path d="M0,{{R}} Q0,0 {{R}},0 L{{R}},{{R}}Z" fill="#120d11" fill-opacity="{{O}}"/></g>
+<g id="top"><rect x="{{R}}" y="0" width="{{C}}" height="{{R}}" fill="#120d11" fill-opacity="{{O}}"/><rect x="{{R}}" y="0" width="{{C}}" height="1" fill="#ffffff" fill-opacity="{{REF}}"/><rect x="{{R}}" y="1" width="{{C}}" height="1" fill="{{A}}" fill-opacity="{{REF}}"/></g>
+<g id="topright"><path transform="translate({{RIGHT}},0)" d="M0,0 Q{{R}},0 {{R}},{{R}} L0,{{R}}Z" fill="#120d11" fill-opacity="{{O}}"/></g>
+<g id="left"><rect x="0" y="{{R}}" width="{{R}}" height="{{C}}" fill="#120d11" fill-opacity="{{O}}"/><rect x="0" y="{{R}}" width="1" height="{{C}}" fill="{{A}}" fill-opacity="{{REF}}"/></g>
+<g id="center"><rect x="{{R}}" y="{{R}}" width="{{C}}" height="{{C}}" fill="#120d11" fill-opacity="{{O}}"/></g>
+<g id="right"><rect x="{{RIGHT}}" y="{{R}}" width="{{R}}" height="{{C}}" fill="#120d11" fill-opacity="{{O}}"/><rect x="95" y="{{R}}" width="1" height="{{C}}" fill="{{A}}" fill-opacity="{{REF}}"/></g>
+<g id="bottomleft"><path transform="translate(0,{{RIGHT}})" d="M0,0 Q0,{{R}} {{R}},{{R}} L{{R}},0Z" fill="#120d11" fill-opacity="{{O}}"/></g>
+<g id="bottom"><rect x="{{R}}" y="{{RIGHT}}" width="{{C}}" height="{{R}}" fill="#120d11" fill-opacity="{{O}}"/><rect x="{{R}}" y="95" width="{{C}}" height="1" fill="#000000" fill-opacity="{{SHADOW}}"/></g>
+<g id="bottomright"><path transform="translate({{RIGHT}},{{RIGHT}})" d="M0,{{R}} Q{{R}},{{R}} {{R}},0 L0,0Z" fill="#120d11" fill-opacity="{{O}}"/></g>
+<rect id="hint-stretch-borders" width="1" height="1" fill="none"/><rect id="hint-apply-color-scheme" width="1" height="1" fill="none"/></svg>
+)SVG");
+        svg.replace(QStringLiteral("{{RIGHT}}"), QString::number(right));
+        svg.replace(QStringLiteral("{{SHADOW}}"), decimal(shadowOpacity));
+        svg.replace(QStringLiteral("{{REF}}"), decimal(reflectionOpacity));
+        svg.replace(QStringLiteral("{{R}}"), QString::number(radius));
+        svg.replace(QStringLiteral("{{C}}"), QString::number(center));
+        svg.replace(QStringLiteral("{{O}}"), decimal(opacity));
+        svg.replace(QStringLiteral("{{A}}"), accent);
+        return svg;
+    };
+
+    const QString metadata = QStringLiteral(R"JSON({
+  "KPlugin": {
+    "Id": "DylanOS-Crimson-Glass",
+    "Name": "DylanOS Crimson Glass",
+    "Version": "1.0.0",
+    "License": "GPL-3.0-or-later"
+  },
+  "X-Plasma-API": "5.0",
+  "X-Plasma-FallbackPackage": "DylanOS-Crimson"
+}
+)JSON");
+    bool ok = writeText(root + QStringLiteral("/metadata.json"), metadata);
+    ok = writeText(root + QStringLiteral("/widgets/panel-background.svg"),
+                   frame(std::max(0.96, panelOpacity))) && ok;
+    ok = writeText(root + QStringLiteral("/translucent/widgets/panel-background.svg"),
+                   frame(panelOpacity)) && ok;
+    ok = writeText(root + QStringLiteral("/dialogs/background.svg"),
+                   frame(std::max(0.96, menuOpacity))) && ok;
+    ok = writeText(root + QStringLiteral("/translucent/dialogs/background.svg"),
+                   frame(menuOpacity)) && ok;
+    return ok;
 }
 
 bool CrimsonGlassService::ensureBackup()
@@ -457,7 +551,7 @@ bool CrimsonGlassService::apply()
         {managedTargets[24], darkMode ? QStringLiteral("DylanOS-Crimson") : QStringLiteral("DylanOS-Crimson-Light")},
         {managedTargets[25], darkMode ? QStringLiteral("1") : QStringLiteral("0")}
     };
-    bool ok = true;
+    bool ok = writeUserPlasmaTheme();
     for (const auto &entry : values) {
         ok = writeIniValue(configPath(entry.first.file), entry.first.group,
                            entry.first.key, entry.second) && ok;

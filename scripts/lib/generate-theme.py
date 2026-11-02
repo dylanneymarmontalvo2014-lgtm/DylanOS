@@ -138,12 +138,15 @@ def plasma_glass():
     write(f"{theme}/metadata.json", json.dumps({
         "KPlugin": {"Id": "DylanOS-Crimson-Glass", "Name": "DylanOS Crimson Glass",
                     "Version": "1.0.0", "License": "GPL-3.0-or-later",
-                    "Authors": [{"Name": "DylanOS"}]}
+                    "Authors": [{"Name": "DylanOS"}]},
+        "X-Plasma-API": "5.0",
+        "X-Plasma-FallbackPackage": "DylanOS-Crimson"
     }, indent=2) + "\n")
     write(f"{theme}/metadata.desktop",
           "[Desktop Entry]\nName=DylanOS Crimson Glass\n"
           "X-KDE-PluginInfo-Name=DylanOS-Crimson-Glass\n"
-          "X-KDE-PluginInfo-License=GPL-3.0-or-later\n\n"
+          "X-KDE-PluginInfo-License=GPL-3.0-or-later\n"
+          "X-Plasma-API=5.0\nX-Plasma-FallbackPackage=DylanOS-Crimson\n\n"
           "[ContrastEffect]\nenabled=true\ncontrast=0.16\nintensity=0.72\nsaturation=1.08\n\n"
           "[BlurBehindEffect]\nenabled=true\n")
     for element, opacity in (("widgets/panel-background", 0.68), ("dialogs/background", 0.76)):

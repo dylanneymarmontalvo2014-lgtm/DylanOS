@@ -9,5 +9,7 @@
         "Name": "DylanOS"
       }
     ]
-  }
+  },
+  "X-Plasma-API": "5.0",
+  "X-Plasma-FallbackPackage": "DylanOS-Crimson"
 }
