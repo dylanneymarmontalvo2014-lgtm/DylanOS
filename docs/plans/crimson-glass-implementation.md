@@ -71,21 +71,21 @@ Expected: PASS.
 - Consumes: service API from Task 1.
 - Produces: actual `apply()` and `restorePrevious()` mappings plus D-Bus reload helpers.
 
-- [ ] **Step 1: Add failing tests for exact KWin and toolkit mappings**
+- [x] **Step 1: Add failing tests for exact KWin and toolkit mappings**
 
 Assert `[Effect-blur] BlurStrength` maps 0–100 to 1–15, low power writes `blurEnabled=false`, durations map to `Effect-glide/Duration` and GTK mode writes both GTK 3/4 settings. Assert a second apply is idempotent.
 
-- [ ] **Step 2: Run QtTest and confirm mapping failures**
+- [x] **Step 2: Run QtTest and confirm mapping failures**
 
 Run: `ctest --test-dir /tmp/dylanos-config-test --output-on-failure -R crimsonglass`
 
 Expected: FAIL on missing applied keys.
 
-- [ ] **Step 3: Implement adapters and live reload**
+- [x] **Step 3: Implement adapters and live reload**
 
 Write only documented KWin 6.3.6 keys, switch Plasma theme, set accent/mode/GTK preferences, update panel opacity through `org.kde.PlasmaShell.evaluateScript`, and reconfigure KWin effects through session D-Bus. In test-root mode skip D-Bus.
 
-- [ ] **Step 4: Run QtTest**
+- [x] **Step 4: Run QtTest**
 
 Expected: PASS with the command from Step 2.
 
