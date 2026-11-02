@@ -1,6 +1,8 @@
 #include "CrimsonGlassService.h"
 
 #include <QDir>
+#include <QDBusConnection>
+#include <QDBusInterface>
 #include <QFile>
 #include <QFileInfo>
 #include <QJsonDocument>
@@ -26,6 +28,41 @@ const QStringList booleanKeys = {
     QStringLiteral("windowEffects"), QStringLiteral("backgroundBlur"),
     QStringLiteral("animations"), QStringLiteral("additionalEffects"),
     QStringLiteral("lowPower"), QStringLiteral("autoDetect")
+};
+
+struct ConfigTarget {
+    QString file;
+    QString group;
+    QString key;
+};
+
+const QList<ConfigTarget> managedTargets = {
+    {QStringLiteral("kwinrc"), QStringLiteral("Plugins"), QStringLiteral("blurEnabled")},
+    {QStringLiteral("kwinrc"), QStringLiteral("Plugins"), QStringLiteral("contrastEnabled")},
+    {QStringLiteral("kwinrc"), QStringLiteral("Plugins"), QStringLiteral("glideEnabled")},
+    {QStringLiteral("kwinrc"), QStringLiteral("Plugins"), QStringLiteral("slidingpopupsEnabled")},
+    {QStringLiteral("kwinrc"), QStringLiteral("Plugins"), QStringLiteral("translucencyEnabled")},
+    {QStringLiteral("kwinrc"), QStringLiteral("Effect-blur"), QStringLiteral("BlurStrength")},
+    {QStringLiteral("kwinrc"), QStringLiteral("Effect-blur"), QStringLiteral("NoiseStrength")},
+    {QStringLiteral("kwinrc"), QStringLiteral("Effect-translucency"), QStringLiteral("MoveResize")},
+    {QStringLiteral("kwinrc"), QStringLiteral("Effect-translucency"), QStringLiteral("Dialogs")},
+    {QStringLiteral("kwinrc"), QStringLiteral("Effect-translucency"), QStringLiteral("Inactive")},
+    {QStringLiteral("kwinrc"), QStringLiteral("Effect-translucency"), QStringLiteral("Menus")},
+    {QStringLiteral("kwinrc"), QStringLiteral("Effect-translucency"), QStringLiteral("IndividualMenuConfig")},
+    {QStringLiteral("kwinrc"), QStringLiteral("Effect-translucency"), QStringLiteral("DropdownMenus")},
+    {QStringLiteral("kwinrc"), QStringLiteral("Effect-translucency"), QStringLiteral("PopupMenus")},
+    {QStringLiteral("kwinrc"), QStringLiteral("Effect-translucency"), QStringLiteral("TornOffMenus")},
+    {QStringLiteral("kwinrc"), QStringLiteral("Effect-glide"), QStringLiteral("Duration")},
+    {QStringLiteral("kwinrc"), QStringLiteral("Effect-slidingpopups"), QStringLiteral("SlideInTime")},
+    {QStringLiteral("kwinrc"), QStringLiteral("Effect-slidingpopups"), QStringLiteral("SlideOutTime")},
+    {QStringLiteral("kwinrc"), QStringLiteral("org.kde.kdecoration2"), QStringLiteral("theme")},
+    {QStringLiteral("plasmarc"), QStringLiteral("Theme"), QStringLiteral("name")},
+    {QStringLiteral("kdeglobals"), QStringLiteral("General"), QStringLiteral("AccentColor")},
+    {QStringLiteral("kdeglobals"), QStringLiteral("General"), QStringLiteral("ColorScheme")},
+    {QStringLiteral("gtk-3.0/settings.ini"), QStringLiteral("Settings"), QStringLiteral("gtk-theme-name")},
+    {QStringLiteral("gtk-3.0/settings.ini"), QStringLiteral("Settings"), QStringLiteral("gtk-application-prefer-dark-theme")},
+    {QStringLiteral("gtk-4.0/settings.ini"), QStringLiteral("Settings"), QStringLiteral("gtk-theme-name")},
+    {QStringLiteral("gtk-4.0/settings.ini"), QStringLiteral("Settings"), QStringLiteral("gtk-application-prefer-dark-theme")}
 };
 
 }
@@ -328,17 +365,17 @@ bool CrimsonGlassService::ensureBackup()
     const QString backupFile = statePath(QStringLiteral("backup.json"));
     if (QFile::exists(backupFile))
         return true;
-    const StoredValue blur = readIniValue(configPath(QStringLiteral("kwinrc")),
-                                          QStringLiteral("Plugins"),
-                                          QStringLiteral("blurEnabled"));
-    QJsonObject entry;
-    entry.insert(QStringLiteral("file"), QStringLiteral("kwinrc"));
-    entry.insert(QStringLiteral("group"), QStringLiteral("Plugins"));
-    entry.insert(QStringLiteral("key"), QStringLiteral("blurEnabled"));
-    entry.insert(QStringLiteral("present"), blur.present);
-    entry.insert(QStringLiteral("value"), blur.value);
     QJsonObject root;
-    root.insert(QStringLiteral("kwinrc|Plugins|blurEnabled"), entry);
+    for (const ConfigTarget &target : managedTargets) {
+        const StoredValue stored = readIniValue(configPath(target.file), target.group, target.key);
+        QJsonObject entry;
+        entry.insert(QStringLiteral("file"), target.file);
+        entry.insert(QStringLiteral("group"), target.group);
+        entry.insert(QStringLiteral("key"), target.key);
+        entry.insert(QStringLiteral("present"), stored.present);
+        entry.insert(QStringLiteral("value"), stored.value);
+        root.insert(target.file + QLatin1Char('|') + target.group + QLatin1Char('|') + target.key, entry);
+    }
 
     if (!QDir().mkpath(QFileInfo(backupFile).absolutePath()))
         return false;
@@ -351,16 +388,82 @@ bool CrimsonGlassService::ensureBackup()
 
 bool CrimsonGlassService::apply()
 {
+    if (!m_settings.value(QStringLiteral("enabled")).toBool()) {
+        if (!QFile::exists(statePath(QStringLiteral("backup.json")))) {
+            setLastMessage(QStringLiteral("Crimson Glass está desactivado"));
+            emit applied(true, m_lastMessage);
+            return true;
+        }
+        return restorePrevious();
+    }
     if (!ensureBackup()) {
         setLastMessage(QStringLiteral("No se pudo crear el respaldo de Crimson Glass"));
         emit applied(false, m_lastMessage);
         return false;
     }
     const bool blur = m_effectiveEffects.value(QStringLiteral("blur")).toBool();
-    const bool ok = writeIniValue(configPath(QStringLiteral("kwinrc")),
-                                  QStringLiteral("Plugins"),
-                                  QStringLiteral("blurEnabled"),
-                                  blur ? QStringLiteral("true") : QStringLiteral("false"));
+    const bool contrast = m_effectiveEffects.value(QStringLiteral("contrast")).toBool();
+    const bool animations = m_effectiveEffects.value(QStringLiteral("animations")).toBool()
+                            && !m_effectiveEffects.value(QStringLiteral("lowPowerApplied")).toBool();
+    const bool translucency = m_effectiveEffects.value(QStringLiteral("windowEffects")).toBool();
+    const int blurStrength = 1 + qRound(m_settings.value(QStringLiteral("blur")).toInt() * 14.0 / 100.0);
+    const int noiseStrength = qRound(m_settings.value(QStringLiteral("reflections")).toInt() * 10.0 / 100.0);
+    const int transparency = m_settings.value(QStringLiteral("transparency")).toInt();
+    const int menuTransparency = m_settings.value(QStringLiteral("menuTransparency")).toInt();
+    const int moveResize = std::clamp(100 - qRound(transparency * 0.10), 90, 100);
+    const int dialogs = std::clamp(100 - qRound(transparency * 0.08), 90, 100);
+    const int inactive = std::clamp(100 - qRound(transparency * 0.06), 92, 100);
+    const int menus = std::clamp(100 - qRound(menuTransparency * 0.10), 90, 100);
+    const int duration = animations ? m_settings.value(QStringLiteral("animationDuration")).toInt() : 0;
+    const QString mode = m_settings.value(QStringLiteral("mode")).toString();
+    QString colorScheme;
+    if (mode == QLatin1String("light"))
+        colorScheme = QStringLiteral("DylanOSLight");
+    else if (mode == QLatin1String("dark"))
+        colorScheme = QStringLiteral("DylanOSDark");
+    else {
+        const StoredValue current = readIniValue(configPath(QStringLiteral("kdeglobals")),
+                                                  QStringLiteral("General"),
+                                                  QStringLiteral("ColorScheme"));
+        colorScheme = current.present ? current.value : QStringLiteral("DylanOSDark");
+    }
+    const bool darkMode = colorScheme != QLatin1String("DylanOSLight");
+
+    const QList<QPair<ConfigTarget, QString>> values = {
+        {managedTargets[0], blur ? QStringLiteral("true") : QStringLiteral("false")},
+        {managedTargets[1], contrast ? QStringLiteral("true") : QStringLiteral("false")},
+        {managedTargets[2], animations ? QStringLiteral("true") : QStringLiteral("false")},
+        {managedTargets[3], animations ? QStringLiteral("true") : QStringLiteral("false")},
+        {managedTargets[4], translucency ? QStringLiteral("true") : QStringLiteral("false")},
+        {managedTargets[5], QString::number(blurStrength)},
+        {managedTargets[6], QString::number(noiseStrength)},
+        {managedTargets[7], QString::number(moveResize)},
+        {managedTargets[8], QString::number(dialogs)},
+        {managedTargets[9], QString::number(inactive)},
+        {managedTargets[10], QString::number(menus)},
+        {managedTargets[11], QStringLiteral("true")},
+        {managedTargets[12], QString::number(menus)},
+        {managedTargets[13], QString::number(menus)},
+        {managedTargets[14], QString::number(menus)},
+        {managedTargets[15], QString::number(duration)},
+        {managedTargets[16], QString::number(duration)},
+        {managedTargets[17], QString::number(duration)},
+        {managedTargets[18], QStringLiteral("__aurorae__svg__DylanOS-Crimson-Glass")},
+        {managedTargets[19], QStringLiteral("DylanOS-Crimson-Glass")},
+        {managedTargets[20], m_settings.value(QStringLiteral("accent")).toString()},
+        {managedTargets[21], colorScheme},
+        {managedTargets[22], darkMode ? QStringLiteral("DylanOS-Crimson") : QStringLiteral("DylanOS-Crimson-Light")},
+        {managedTargets[23], darkMode ? QStringLiteral("1") : QStringLiteral("0")},
+        {managedTargets[24], darkMode ? QStringLiteral("DylanOS-Crimson") : QStringLiteral("DylanOS-Crimson-Light")},
+        {managedTargets[25], darkMode ? QStringLiteral("1") : QStringLiteral("0")}
+    };
+    bool ok = true;
+    for (const auto &entry : values) {
+        ok = writeIniValue(configPath(entry.first.file), entry.first.group,
+                           entry.first.key, entry.second) && ok;
+    }
+    if (ok)
+        reloadDesktop();
     setLastMessage(ok ? QStringLiteral("Crimson Glass aplicado")
                       : QStringLiteral("No se pudo actualizar KWin"));
     emit applied(ok, m_lastMessage);
@@ -375,20 +478,60 @@ bool CrimsonGlassService::restorePrevious()
         return false;
     }
     const QJsonObject root = QJsonDocument::fromJson(backup.readAll()).object();
-    const QJsonObject entry = root.value(QStringLiteral("kwinrc|Plugins|blurEnabled")).toObject();
-    if (entry.isEmpty())
-        return false;
-    const bool present = entry.value(QStringLiteral("present")).toBool();
-    const bool ok = writeIniValue(configPath(entry.value(QStringLiteral("file")).toString()),
-                                  entry.value(QStringLiteral("group")).toString(),
-                                  entry.value(QStringLiteral("key")).toString(),
-                                  entry.value(QStringLiteral("value")).toString(), !present);
+    bool ok = !root.isEmpty();
+    for (auto it = root.constBegin(); it != root.constEnd(); ++it) {
+        const QJsonObject entry = it.value().toObject();
+        const bool present = entry.value(QStringLiteral("present")).toBool();
+        ok = writeIniValue(configPath(entry.value(QStringLiteral("file")).toString()),
+                           entry.value(QStringLiteral("group")).toString(),
+                           entry.value(QStringLiteral("key")).toString(),
+                           entry.value(QStringLiteral("value")).toString(), !present) && ok;
+    }
     if (ok)
         QFile::remove(backup.fileName());
+    if (ok)
+        reloadDesktop();
     setLastMessage(ok ? QStringLiteral("Configuración anterior recuperada")
                       : QStringLiteral("No se pudo recuperar la configuración anterior"));
     emit applied(ok, m_lastMessage);
     return ok;
+}
+
+void CrimsonGlassService::reloadDesktop() const
+{
+    if (!qgetenv("DYLANOS_CRIMSON_TEST_ROOT").isEmpty())
+        return;
+
+    QDBusInterface kwin(QStringLiteral("org.kde.KWin"), QStringLiteral("/KWin"),
+                        QStringLiteral("org.kde.KWin"), QDBusConnection::sessionBus());
+    if (kwin.isValid())
+        kwin.asyncCall(QStringLiteral("reconfigure"));
+
+    QDBusInterface effects(QStringLiteral("org.kde.KWin"), QStringLiteral("/Effects"),
+                           QStringLiteral("org.kde.kwin.Effects"), QDBusConnection::sessionBus());
+    if (effects.isValid()) {
+        for (const QString &effect : {QStringLiteral("blur"), QStringLiteral("contrast"),
+                                      QStringLiteral("glide"), QStringLiteral("slidingpopups"),
+                                      QStringLiteral("translucency")})
+            effects.asyncCall(QStringLiteral("reconfigureEffect"), effect);
+    }
+
+    const auto opacityMode = [](int value) {
+        return value >= 55 ? QStringLiteral("translucent")
+                           : value >= 25 ? QStringLiteral("adaptive") : QStringLiteral("opaque");
+    };
+    const QString panelMode = opacityMode(m_settings.value(QStringLiteral("panelTransparency")).toInt());
+    const QString dockMode = opacityMode(m_settings.value(QStringLiteral("dockTransparency")).toInt());
+    const QString script = QStringLiteral(
+        "var ps=panels(); for (var i=0;i<ps.length;i++){"
+        "var p=ps[i]; if(p.location==='top') p.opacity='%1';"
+        "else if(p.location==='bottom') p.opacity='%2';}").arg(panelMode, dockMode);
+    QDBusInterface plasma(QStringLiteral("org.kde.plasmashell"), QStringLiteral("/PlasmaShell"),
+                          QStringLiteral("org.kde.PlasmaShell"), QDBusConnection::sessionBus());
+    if (plasma.isValid()) {
+        plasma.asyncCall(QStringLiteral("evaluateScript"), script);
+        plasma.asyncCall(QStringLiteral("refreshCurrentShell"));
+    }
 }
 
 bool CrimsonGlassService::resetDefaults()
