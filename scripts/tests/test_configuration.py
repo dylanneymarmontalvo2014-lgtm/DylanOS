@@ -81,6 +81,12 @@ class TestDylanOSConfiguration(unittest.TestCase):
         self.assertIn('current.insert(QStringLiteral("name"), nameMatch.captured(1).trimmed())', cpp)
         self.assertNotIn('fields.value(fields.size() - 1, fields.value(1))', cpp)
 
+    def test_system_service_glass_toggle_keeps_light_variant(self):
+        cpp = (APP / "src/services/SystemService.cpp").read_text(encoding="utf-8")
+        self.assertIn('QStringLiteral("__aurorae__svg__DylanOS-Crimson-Glass-Light")', cpp)
+        self.assertIn('QStringLiteral("__aurorae__svg__DylanOS-Crimson-Glass")', cpp)
+        self.assertIn("glassTheme", cpp)
+
     def test_staging_registra_dylanos_configuration(self):
         with tempfile.TemporaryDirectory() as folder:
             root = Path(folder)

@@ -13,7 +13,7 @@ name=DylanOS-Crimson
 
 [kwinrc][org.kde.kdecoration2]
 library=org.kde.kwin.aurorae
-theme=__aurorae__svg__DylanOS-Crimson
+theme=__aurorae__svg__DylanOS-Crimson-Glass
 ButtonsOnLeft=XIA
 ButtonsOnRight=
 

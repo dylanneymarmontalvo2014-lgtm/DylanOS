@@ -36,6 +36,21 @@ la arquitectura **real** del repositorio tras la iteración de ingeniería de 20
   **Aurorae DylanOS-Crimson** (regenerable: `python3 scripts/lib/generate-theme.py aurorae`):
   marco negro `#0f0f11` con esquinas redondeadas, título tenue centrado y botones semáforo
   a la izquierda (`kwinrc`: `ButtonsOnLeft=XIA`). No existe banda gris de decoración.
+- **Acabado Crimson-glass** (predeterminado del ISO): el mismo mecanismo aurorae, pero con
+  los parches `decoration-*` del SVG a `fill-opacity` 0,42 (activo) / 0,55 (inactivo) sobre
+  degradados crimson y una línea especular en la banda `top`. KWin 6.3 solo desenfoca donde
+  existe una *blur region*, y esa región es el `decorationMask` que la decoración construye
+  desde los ids `mask-*`; por eso la máscara se mantiene opaca y ningún paquete nuevo entra
+  (sin Kvantum). El perfil vive en `configs/plasma/skel/kwinrc`: `[Plugins]
+  blurEnabled/translucencyEnabled`, `[Effect-blur] BlurStrength=30 NoiseStrength=4` y
+  `[Effect-translucency]` (Inactive 80, Dialogs 85, Menus 80…). Grupos en minúscula: son los
+  nombres con los que `blur.kcfg` y `ScriptedEffect` leen kwinrc, y los grupos de efectos del
+  `contents/defaults` del look-and-feel los ignora `LookAndFeelManager`, así que ahí solo se
+  fija la decoración. Generar con `python3 scripts/lib/generate-theme.py aurorae-glass`.
+  Límites: las apps con decoración de cliente (Firefox, GTK CSD) no reciben marco de servidor
+  que translucir, y KWin 6.3 no transluce el cuerpo de la ventana activa de terceros; el
+  selector (`dylanos-configuration` → Personalización → Apariencia) aplica y descarga el
+  efecto sin cerrar sesión.
 - **Barra superior (menú)**: panel Plasma con `hiding=letwindowscover` — KWin cubre la
   barra solo con ventanas a **pantalla completa real** (integración con el gestor de
   ventanas, sin temporizadores ni heurísticas de tamaño). Ventanas maximizadas NO la cubren.
