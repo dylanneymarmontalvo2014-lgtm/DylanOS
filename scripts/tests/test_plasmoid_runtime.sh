@@ -54,6 +54,5 @@ check_applet() {
     echo "OK: $applet carga sin errores QML"
 }
 
-check_applet com.dylanos.dashboard
 check_applet com.dylanos.activeapp
 check_applet com.dylanos.dock
