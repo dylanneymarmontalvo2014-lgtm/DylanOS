@@ -1,0 +1,16 @@
+{
+  "schema_version": 1,
+  "repository": "https://github.com/dylanneymarmontalvo2014-lgtm/DylanOS-Browser.git",
+  "upstream": {
+    "repository": "https://github.com/zen-browser/desktop.git",
+    "tag": "1.24b",
+    "commit": "f75390aa2b797ddc3524ff9ed52ceb32a839f9fa"
+  },
+  "product_version": "1.0.0-alpha.1",
+  "firefox_version": "159.0",
+  "binary": "dylanos-browser",
+  "desktop_id": "org.dylanos.browser.desktop",
+  "source_archive": "unpublished",
+  "sha256": "unpublished",
+  "update_authority": "apt"
+}
