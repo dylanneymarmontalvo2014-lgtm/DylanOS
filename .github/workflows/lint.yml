@@ -18,6 +18,12 @@ jobs:
       - run: sudo apt-get update && sudo apt-get install -y shellcheck bash-completion desktop-file-utils libegl1 libopengl0 libxkbcommon0
       - run: pip install -r apps/workspace/requirements-dev.txt
       - run: bash scripts/check.sh
+      - name: Validar regeneración reproducible de temas Crimson
+        run: |
+          python3 scripts/lib/generate-theme.py aurorae
+          python3 scripts/lib/generate-theme.py aurorae-glass
+          python3 scripts/lib/generate-theme.py aurorae-glass-light
+          git diff --exit-code -- themes/aurorae/
       - name: Validar configuración de Compose
         run: docker compose config --quiet
       - name: Construir imagen Docker

@@ -37,3 +37,14 @@ class CalculatorKeyboardTest(unittest.TestCase):
         QTest.keyClick(window, Qt.Key_Return)
         self.assertEqual(window.findChild(QObject, 'display').property('text'), '75')
         window.close()
+
+    def test_max_result_magnitude_property_is_valid_qml(self):
+        app = QGuiApplication.instance() or QGuiApplication([])
+        engine = QQmlApplicationEngine()
+        engine.load(QUrl.fromLocalFile(str(ROOT / 'apps/calculator/qml/Main.qml')))
+        self.assertTrue(engine.rootObjects())
+        window = engine.rootObjects()[0]
+        window.requestActivate()
+        app.processEvents()
+        self.assertTrue(window.property('maxResultMagnitude') > 0)
+        window.close()
