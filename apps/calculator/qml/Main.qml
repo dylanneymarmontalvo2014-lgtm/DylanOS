@@ -25,11 +25,11 @@ ApplicationWindow {
     readonly property color accentRed: "#DC143C"
     readonly property color keyDark: "#1c1c1c"
 
-    const MAX_RESULT_MAGNITUDE = 1e100
+    readonly property double maxResultMagnitude: 1e100
 
     function formatNumber(n) {
         if (!isFinite(n)) return "Error"
-        if (Math.abs(n) > MAX_RESULT_MAGNITUDE) return "Error"
+        if (Math.abs(n) > maxResultMagnitude) return "Error"
         if (n === Math.floor(n) && Math.abs(n) < 1e15)
             return Math.floor(n).toString()
         return parseFloat(n.toFixed(8)).toString()

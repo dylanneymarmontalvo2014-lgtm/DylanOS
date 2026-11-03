@@ -66,6 +66,8 @@ class StagingTest(unittest.TestCase):
                      "usr/share/icons/hicolor/512x512/apps/distributor-logo-dylanos.png",
                      "usr/share/aurorae/themes/DylanOS-Crimson/DylanOS-Crimsonrc",
                      "usr/share/aurorae/themes/DylanOS-Crimson-Light/DylanOS-Crimson-Lightrc",
+                     "usr/share/aurorae/themes/DylanOS-Crimson-Glass/decoration.svg",
+                     "etc/skel/.config/kwinrc",
                      "usr/share/wallpapers/DylanOS/DylanOS-Dark.png",
                      "usr/share/wallpapers/DylanOS/dylanos-default.png",
                      "usr/share/plasma/look-and-feel/org.dylanos.crimson/contents/splash/Splash.qml",
@@ -99,6 +101,12 @@ class StagingTest(unittest.TestCase):
                      "etc/skel/.config/gtk-3.0/settings.ini",
                      "etc/skel/.config/gtk-4.0/settings.ini"]
             for path in paths: self.assertTrue((root / path).is_file(), path)
+            # Crimson-glass es el acabado predeterminado del ISO: un usuario
+            # nuevo arranca con el marco translúcido y los efectos cargados.
+            kwinrc = (root / "etc/skel/.config/kwinrc").read_text()
+            self.assertIn("__aurorae__svg__DylanOS-Crimson-Glass", kwinrc)
+            self.assertIn("translucencyEnabled=true", kwinrc)
+            self.assertIn("[Effect-blur]", kwinrc)
             source_dist = ROOT / "installer/dylanos-installer/dist"
             staged_dist = root / "usr/share/dylanos/installer/dist/index.html"
             if source_dist.is_dir():
@@ -413,7 +421,7 @@ class StagingTest(unittest.TestCase):
                 module.stage(Path(folder) / "chroot", dist)
 
     def test_aurorae_required_svg_elements(self):
-        for variant in ("DylanOS-Crimson", "DylanOS-Crimson-Light"):
+        for variant in ("DylanOS-Crimson", "DylanOS-Crimson-Light", "DylanOS-Crimson-Glass"):
             root = ROOT / "themes/aurorae" / variant
             for button in ("close", "minimize", "maximize", "restore"):
                 tree = ET.parse(root / (button + ".svg"))

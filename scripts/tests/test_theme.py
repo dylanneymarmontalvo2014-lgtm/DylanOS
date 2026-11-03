@@ -1,5 +1,7 @@
 """Check the DylanOS Crimson GTK theme and the KDE color schemes."""
+import configparser
 from pathlib import Path
+import re
 import unittest
 
 ROOT = Path(__file__).resolve().parents[2]
@@ -101,6 +103,88 @@ class StagedAppsUseCrimsonTest(unittest.TestCase):
             content = (ROOT / relative).read_text(encoding="utf-8")
             for color in legacy:
                 self.assertNotIn(color, content, (relative, color))
+
+
+class CrimsonGlassTest(unittest.TestCase):
+    """El acabado Crimson-glass: marco translúcido + perfil de efectos de KWin."""
+
+    glass_svg = None
+
+    @classmethod
+    def setUpClass(cls):
+        cls.glass_svg = (ROOT / "themes/aurorae/DylanOS-Crimson-Glass/decoration.svg").read_text(encoding="utf-8")
+
+    def test_glass_theme_is_a_complete_aurorae(self):
+        theme = ROOT / "themes/aurorae/DylanOS-Crimson-Glass"
+        entry = (theme / "metadata.desktop").read_text(encoding="utf-8")
+        self.assertIn("X-KDE-PluginInfo-Name=DylanOS-Crimson-Glass", entry)
+        self.assertIn("Name=DylanOS Crimson Glass", entry)
+        for relative in ("DylanOS-Crimson-Glassrc", "close.svg", "minimize.svg", "maximize.svg", "restore.svg"):
+            self.assertTrue((theme / relative).is_file(), relative)
+
+    def test_glass_light_theme_is_a_complete_aurorae(self):
+        theme = ROOT / "themes/aurorae/DylanOS-Crimson-Glass-Light"
+        entry = (theme / "metadata.desktop").read_text(encoding="utf-8")
+        self.assertIn("X-KDE-PluginInfo-Name=DylanOS-Crimson-Glass-Light", entry)
+        self.assertIn("Name=DylanOS Crimson Glass Light", entry)
+        for relative in ("DylanOS-Crimson-Glass-Lightrc", "close.svg", "minimize.svg", "maximize.svg", "restore.svg"):
+            self.assertTrue((theme / relative).is_file(), relative)
+
+    def test_glass_light_uses_light_colors_and_gradients(self):
+        light_svg = (ROOT / "themes/aurorae/DylanOS-Crimson-Glass-Light/decoration.svg").read_text(encoding="utf-8")
+        self.assertIn('id="glassSheenLight"', light_svg)
+        self.assertIn('id="glassCrimsonLight"', light_svg)
+        self.assertIn('stop-color="#9c8498"', light_svg)
+        self.assertIn('stop-color="#f1e7ee"', light_svg)
+        self.assertIn('stop-color="#8e2a44"', light_svg)
+        self.assertIn('stop-color="#d8788c"', light_svg)
+        self.assertIn('fill="#eef0f6"', light_svg)
+
+    def test_visible_patches_are_translucent_and_masks_stay_opaque(self):
+        # La máscara es lo que KWin convierte en región de desenfoque: si fuera
+        # translúcida, el vidrio de cualquier app dejaría de verse.
+        for element in re.finditer(r'<(rect|path) id="((?:decoration|mask)-[a-z-]+)"[^>]*>', self.glass_svg):
+            opaque_frame = element.group(2).startswith(("decoration-opaque-", "mask-"))
+            alpha = re.search(r'fill-opacity="([\d.]+)"', element.group(0))
+            if opaque_frame:
+                self.assertIsNone(alpha, element.group(2))
+            else:
+                self.assertIsNotNone(alpha, element.group(2))
+                self.assertLess(float(alpha.group(1)), 1.0, element.group(2))
+
+    def test_glass_keeps_the_full_nine_patch_contract(self):
+        self.assertEqual(self.glass_svg.count("<g "), self.glass_svg.count("</g>"))
+        for prefix in ("decoration-", "decoration-inactive-", "decoration-maximized-",
+                       "decoration-maximized-inactive-", "decoration-opaque-",
+                       "decoration-opaque-inactive-", "mask-"):
+            for part in ("topleft", "top", "topright", "left", "center", "right",
+                         "bottomleft", "bottom", "bottomright"):
+                self.assertIn('id="%s%s"' % (prefix, part), self.glass_svg, prefix + part)
+
+    def test_skel_pins_the_glass_profile(self):
+        kwinrc = configparser.ConfigParser(interpolation=None)
+        kwinrc.optionxform = str
+        kwinrc.read(ROOT / "configs/plasma/skel/kwinrc")
+        self.assertEqual(kwinrc.get("org.kde.kdecoration2", "theme"), "__aurorae__svg__DylanOS-Crimson-Glass")
+        self.assertEqual(kwinrc.get("Plugins", "blurEnabled"), "true")
+        self.assertEqual(kwinrc.get("Plugins", "translucencyEnabled"), "true")
+        self.assertEqual(kwinrc.get("Effect-blur", "BlurStrength"), "30")
+        self.assertEqual(kwinrc.get("Effect-blur", "NoiseStrength"), "4")
+        self.assertEqual(kwinrc.get("Effect-translucency", "Inactive"), "80")
+        self.assertEqual(kwinrc.get("Effect-translucency", "Dialogs"), "85")
+
+    def test_look_and_feel_defaults_avoid_ignored_kwinrc_groups(self):
+        defaults = (ROOT / "themes/lookandfeel/org.dylanos.crimson/contents/defaults").read_text(encoding="utf-8")
+        self.assertIn("__aurorae__svg__DylanOS-Crimson-Glass", defaults)
+        # LookAndFeelManager solo lee una lista fija de claves: los grupos de
+        # efectos del `defaults` se descartan en silencio y confieren.
+        self.assertNotIn("[kwinrc][Effect-", defaults)
+        self.assertNotIn("[kwinrc][Plugins]", defaults)
+
+    def test_theme_switch_keeps_the_glass_frame(self):
+        backend = (ROOT / "apps/workspace/backend.py").read_text(encoding="utf-8")
+        self.assertIn("DylanOS-Crimson-Glass", backend)
+        self.assertIn("kwinDecoration", backend)
 
 
 if __name__ == "__main__":
