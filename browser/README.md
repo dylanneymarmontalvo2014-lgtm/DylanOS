@@ -41,3 +41,14 @@ base y este contrato de distribución. No valida todavía:
 
 Ninguno de esos puntos debe anunciarse como terminado hasta superar la Fase 2 o
 la fase específica posterior que lo implemente y mida.
+
+La revisión de cierre aplicó los 273 parches del fork sobre Firefox 159.0 y
+verificó el árbol Gecko efectivo. Se conserva la política oficial de firma de
+extensiones, se restauró la validación de certificados del actualizador, el perfil
+usa un directorio propio y las rutas de publicación heredadas de Zen quedan
+inactivas hasta disponer de infraestructura y claves de DylanOS. Esta importación
+no equivale todavía a una compilación ni a una validación del binario.
+
+El remoto declarado para `DylanOS-Browser` todavía no existe o no es accesible.
+El fork verificable permanece local; no debe publicarse un lock estable ni activar
+CI de publicación hasta crear el repositorio remoto con autorización explícita.

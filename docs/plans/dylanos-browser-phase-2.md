@@ -13,6 +13,13 @@ compila Gecko durante el staging ni cambia defaults XDG en esta fase.
 
 **Spec:** `docs/design/dylanos-browser.md`
 
+**Estado de entrada verificado (2026-11-03):** `npm run download` e
+`npm run import` ya se ejecutaron localmente sobre Firefox 159.0; los 273 parches
+aplicaron correctamente y el contrato efectivo de seguridad pasó. Task 2 sigue
+abierta porque faltan el manifiesto reproducible del entorno, `bootstrap`,
+configuración/lint y los artefactos de evidencia. El remoto del fork aún no existe
+o no es accesible, por lo que no hay CI remota ni artefactos autorizados.
+
 ## Restricciones globales
 
 - Partir de los commits de Fase 1 y Firefox 159.0 fijado; una actualización de
