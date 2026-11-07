@@ -113,6 +113,9 @@ class BuildEntrypointTest(unittest.TestCase):
         build = (ROOT / "scripts/build.sh").read_text(encoding="utf-8")
         self.assertIn("validate_dylanos_resume_profile", build)
         self.assertIn("$PROFILE\" > \"$WORK/profile\"", build)
+        self.assertIn("$PROFILE\" > \"$CHROOT/etc/dylanos-profile\"", build)
+        self.assertLess(build.index('debootstrap --force-check-gpg'), build.index('"$CHROOT/etc/dylanos-profile"'))
+        self.assertLess(build.index('"$CHROOT/etc/dylanos-profile"'), build.index('apt-get -o Acquire::Retries=3 update'))
 
     def test_docker_builder_supports_plugin_and_standalone_compose_v2(self):
         init = (ROOT / "init.sh").read_text(encoding="utf-8")
