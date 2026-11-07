@@ -81,6 +81,35 @@ class BuildEntrypointTest(unittest.TestCase):
         self.assertIn("PROFILE=\"$PROFILE\"", build)
         self.assertIn("--minimal|--iot", build)
 
+    def test_resume_rejects_unknown_or_mismatched_package_profile(self):
+        helper = ROOT / "scripts/lib/profile.sh"
+        self.assertTrue(helper.is_file())
+        with tempfile.TemporaryDirectory() as folder:
+            root = Path(folder)
+            chroot = root / "chroot"
+            marker = chroot / "etc/dylanos-profile"
+            marker.parent.mkdir(parents=True)
+            marker.write_text("iot\n", encoding="utf-8")
+            work_profile = root / "profile"
+            work_profile.write_text("iot\n", encoding="utf-8")
+            env = {**os.environ, "CHROOT": str(chroot), "PROFILE_FILE": str(work_profile), "HELPER": str(helper)}
+            command = 'source "$HELPER"; validate_dylanos_resume_profile "$CHROOT" iot "$PROFILE_FILE"'
+            accepted = subprocess.run(["bash", "-c", command], env=env, capture_output=True, text=True)
+            self.assertEqual(0, accepted.returncode, accepted.stderr)
+            rejected = subprocess.run(
+                ["bash", "-c", 'source "$HELPER"; validate_dylanos_resume_profile "$CHROOT" development "$PROFILE_FILE"'],
+                env=env, capture_output=True, text=True,
+            )
+            self.assertNotEqual(0, rejected.returncode)
+            self.assertIn("Conservé el chroot", rejected.stderr)
+            self.assertTrue(marker.is_file())
+            work_profile.unlink()
+            missing = subprocess.run(["bash", "-c", command], env=env, capture_output=True, text=True)
+            self.assertNotEqual(0, missing.returncode)
+            self.assertTrue(marker.is_file())
+        build = (ROOT / "scripts/build.sh").read_text(encoding="utf-8")
+        self.assertIn("validate_dylanos_resume_profile", build)
+
     def test_docker_builder_supports_plugin_and_standalone_compose_v2(self):
         init = (ROOT / "init.sh").read_text(encoding="utf-8")
         dockerfile = (ROOT / "Dockerfile").read_text(encoding="utf-8")
