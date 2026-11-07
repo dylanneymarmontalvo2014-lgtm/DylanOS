@@ -1,4 +1,4 @@
-#!/usr/bin/env bash
+ #!/usr/bin/env bash
 # Tests del mecanismo de paquetes de DylanOS.
 # Cubre: scripts/lib/packages.sh (parser de listas) y las listas reales en packages/.
 set -u
@@ -129,6 +129,21 @@ assert_eq "default no pide el paquete obsoleto neofetch" "no" \
     "$(printf '%s' "$default_pkgs" | grep -qx neofetch && echo si || echo no)"
 assert_eq "el build purga konsole" "si" \
     "$(grep -q 'purge dolphin dolphin-plugins kcalc konsole' "$ROOT/scripts/build.sh" && echo si || echo no)"
+assert_contains_line "default instala Plasma System Monitor como backend" "$default_pkgs" "plasma-systemmonitor"
+assert_eq "DylanOS Process compila el fork en el build" "si" \
+    "$(grep -q 'dylanos-src/dylanos-process' "$ROOT/scripts/build.sh" && echo si || echo no)"
+assert_eq "DylanOS Process tiene desktop ID independiente" "si" \
+    "$(grep -q 'org.dylanos.process.desktop' "$ROOT/scripts/stage.py" && echo si || echo no)"
+assert_eq "DylanOS Process no sobrescribe el binario de KDE" "si" \
+    "$(grep -q 'OUTPUT_NAME dylanos-process' "$ROOT/apps/dylanos-process/src/CMakeLists.txt" && echo si || echo no)"
+assert_eq "DylanOS Process usa IDs KPackage propios" "si" \
+    "$(grep -q 'org.dylanos.process.processtable' "$ROOT/apps/dylanos-process/src/faces/CMakeLists.txt" && grep -q 'org.dylanos.process.applicationstable' "$ROOT/apps/dylanos-process/src/faces/CMakeLists.txt" && grep -q 'sensorfaces ksysguard' "$ROOT/apps/dylanos-process/src/faces/CMakeLists.txt" && echo si || echo no)"
+assert_eq "DylanOS Process instala páginas y KNewStuff en rutas propias" "si" \
+    "$(grep -q 'KDE_INSTALL_DATADIR}/dylanos-process' "$ROOT/apps/dylanos-process/src/CMakeLists.txt" && grep -q 'dylanos-process.knsrc' "$ROOT/apps/dylanos-process/src/CMakeLists.txt" && grep -q 'XdgTargetDir=dylanos-process' "$ROOT/apps/dylanos-process/src/dylanos-process.knsrc" && echo si || echo no)"
+assert_eq "el build purga las dependencias -dev exclusivas de Process" "si" \
+    "$(grep -q 'libksysguard-dev' "$ROOT/scripts/build.sh" && grep -q 'libkf6globalaccel-dev' "$ROOT/scripts/build.sh" && grep -q 'libkf6itemmodels-dev' "$ROOT/scripts/build.sh" && grep -q 'libkf6newstuff-dev' "$ROOT/scripts/build.sh" && grep -q 'libkf6package-dev' "$ROOT/scripts/build.sh" && echo si || echo no)"
+assert_eq "ambas tablas de Process exigen confirmar antes de terminar" "si" \
+    "$(grep -q 'if (killSignals.includes(sig))' "$ROOT/apps/dylanos-process/src/faces/dylanosapplicationstable/contents/ui/FullRepresentation.qml" && grep -q 'allowDoNotAskAgain: false' "$ROOT/apps/dylanos-process/src/faces/dylanosapplicationstable/contents/ui/FullRepresentation.qml" && grep -q 'if (killSignals.includes(sig))' "$ROOT/apps/dylanos-process/src/faces/dylanosprocesstable/contents/ui/FullRepresentation.qml" && grep -q 'allowDoNotAskAgain: false' "$ROOT/apps/dylanos-process/src/faces/dylanosprocesstable/contents/ui/FullRepresentation.qml" && ! grep -Rq 'askWhenKilling' "$ROOT/apps/dylanos-process/src/faces" && echo si || echo no)"
 
 # Calamares quedó eliminado: el instalador propio debe ocupar su lugar.
 assert_eq "default ya no contiene calamares" "no" \

@@ -56,7 +56,19 @@ class StagingTest(unittest.TestCase):
     def test_payload_and_repeat_staging(self):
         with tempfile.TemporaryDirectory() as folder:
             root = Path(folder)
+            applications = root / "usr/share/applications"
+            applications.mkdir(parents=True)
+            for filename in ("org.kde.plasma-systemmonitor.desktop", "plasma-systemmonitor.desktop"):
+                (applications / filename).write_text("[Desktop Entry]\nName=Plasma System Monitor\n")
             module.stage(root)
+            self.assertTrue((root / "usr/share/applications/org.dylanos.process.desktop").is_file())
+            self.assertTrue((root / "usr/share/icons/hicolor/scalable/apps/dylanos-process.svg").is_file())
+            for filename in ("org.kde.plasma-systemmonitor.desktop", "plasma-systemmonitor.desktop"):
+                self.assertFalse((applications / filename).exists(), f"No debe quedar el lanzador upstream {filename}")
+            process_desktop = (root / "usr/share/applications/org.dylanos.process.desktop").read_text(encoding="utf-8")
+            self.assertIn("Exec=dylanos-process", process_desktop)
+            self.assertIn("Icon=dylanos-process", process_desktop)
+            self.assertTrue((root / "usr/share/metainfo/org.dylanos.process.metainfo.xml").is_file())
             paths = ["usr/bin/dylanos", "usr/bin/dylanos-spotlight", "usr/bin/dylanos-installer",
                      "usr/share/dylanos/workspace/qml/Main.qml",
                      "usr/share/dylanos/installer/backend/server.py",
@@ -350,6 +362,14 @@ class StagingTest(unittest.TestCase):
             stale_dashboard = root / "usr/share/plasma/plasmoids/com.dylanos.dashboard"
             stale_dashboard.mkdir(parents=True, exist_ok=True)
             (stale_dashboard / "metadata.json").write_text("{}\n")
+            upstream_monitor = root / "usr/share/applications/org.kde.plasma-systemmonitor.desktop"
+            upstream_monitor.parent.mkdir(parents=True, exist_ok=True)
+            upstream_monitor.write_text("[Desktop Entry]\nType=Application\nExec=plasma-systemmonitor\n")
+            alternate_monitor = root / "usr/share/applications/plasma-systemmonitor.desktop"
+            alternate_monitor.write_text("[Desktop Entry]\nType=Application\nExec=plasma-systemmonitor\n")
+            upstream_metainfo = root / "usr/share/metainfo/org.kde.plasma-systemmonitor.metainfo.xml"
+            upstream_metainfo.parent.mkdir(parents=True, exist_ok=True)
+            upstream_metainfo.write_text("<component/>\n")
             original = (root / "etc/skel/.config/kdeglobals").read_text()
             module.stage(root)
             self.assertFalse(stale_autostart.exists(),
@@ -360,6 +380,14 @@ class StagingTest(unittest.TestCase):
                              "stage() debe borrar el autostart obsoleto del notifier de Discover")
             self.assertFalse(stale_dashboard.exists(),
                              "stage() debe borrar el dashboard de chroots reutilizados")
+            self.assertFalse(upstream_monitor.exists(),
+                             "stage() debe ocultar el lanzador upstream sin borrarlo")
+            alternate_monitor = root / "usr/share/applications/plasma-systemmonitor.desktop"
+            self.assertFalse(alternate_monitor.exists(),
+                             "stage() debe ocultar también el ID alternativo upstream")
+            self.assertTrue(upstream_metainfo.exists(),
+                            "stage() debe conservar los metadatos administrados por APT")
+            self.assertTrue((root / "usr/share/metainfo/org.dylanos.process.metainfo.xml").is_file())
             self.assertFalse(stale_files.exists(),
                              "stage() debe borrar la entrada obsoleta org.dylanos.files.desktop (Archivos del workspace)")
             self.assertFalse(stale_konsole.exists(),
@@ -375,7 +403,7 @@ class StagingTest(unittest.TestCase):
             self.assertFalse(stale_kwalletrc.exists(),
                              "KWallet debe seguir disponible como backend para plasma-nm y KIO")
             self.assertEqual((root / "etc/skel/.config/kdeglobals").read_text(), original)
-            self.assertEqual(len(list((root / "usr/share/applications").glob("org.dylanos.*.desktop"))), 9)
+            self.assertEqual(len(list((root / "usr/share/applications").glob("org.dylanos.*.desktop"))), 10)
             self.assertFalse(list(root.rglob("*.otf")))
 
     def test_installer_frontend_can_be_staged_from_temporary_dist(self):

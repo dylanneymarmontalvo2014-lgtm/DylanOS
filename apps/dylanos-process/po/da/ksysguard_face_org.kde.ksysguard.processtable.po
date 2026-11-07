@@ -1,0 +1,280 @@
+# Danish translation for plasma-systemmonitor
+# Copyright (C) 2024 This file is copyright:
+# This file is distributed under the same license as the plasma-systemmonitor package.
+# scootergrisen, 2020.
+# SPDX-FileCopyrightText: 2024 rasmus rosendahl-kaa <rasmus@rosendahl-kaa.name>
+msgid ""
+msgstr ""
+"Project-Id-Version: plasma-systemmonitor\n"
+"Report-Msgid-Bugs-To: https://bugs.kde.org\n"
+"POT-Creation-Date: 2024-09-09 00:40+0000\n"
+"PO-Revision-Date: 2024-10-26 18:04+0200\n"
+"Last-Translator: rasmus rosendahl-kaa <rasmus@rosendahl-kaa.name>\n"
+"Language-Team: Danish <kde-i18n-doc@kde.org>\n"
+"Language: da\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=n != 1;\n"
+"X-Generator: Lokalize 24.08.2\n"
+
+#: src/faces/processtable/contents/ui/Config.qml:24
+#, kde-format
+msgctxt "@option:check"
+msgid "Confirm ending processes"
+msgstr "Bekræft afslutning af processer"
+
+#: src/faces/processtable/contents/ui/Config.qml:29
+#, kde-format
+msgctxt "@label:listbox"
+msgid "By default show:"
+msgstr "Vis som standard:"
+
+#: src/faces/processtable/contents/ui/Config.qml:38
+#, kde-format
+msgctxt "@item:inlistbox"
+msgid "Own processes"
+msgstr "Egne processer"
+
+#: src/faces/processtable/contents/ui/Config.qml:39
+#, kde-format
+msgctxt "@item:inlistbox"
+msgid "User processes"
+msgstr "Brugerprocesser"
+
+#: src/faces/processtable/contents/ui/Config.qml:40
+#, kde-format
+msgctxt "@item:inlistbox"
+msgid "System processes"
+msgstr "Systemprocesser"
+
+#: src/faces/processtable/contents/ui/Config.qml:41
+#, kde-format
+msgctxt "@item:inlistbox"
+msgid "All processes"
+msgstr "Alle processer"
+
+#: src/faces/processtable/contents/ui/FullRepresentation.qml:32
+#, kde-format
+msgctxt "@action"
+msgid "Search"
+msgstr "Søg"
+
+#: src/faces/processtable/contents/ui/FullRepresentation.qml:44
+#, kde-format
+msgctxt "@action"
+msgid "End Process"
+msgstr "Afslut proces"
+
+#: src/faces/processtable/contents/ui/FullRepresentation.qml:56
+#, kde-format
+msgctxt "@action"
+msgid "Display as List"
+msgstr "Vis som liste"
+
+#: src/faces/processtable/contents/ui/FullRepresentation.qml:73
+#, kde-format
+msgctxt "@action"
+msgid "Display as Tree"
+msgstr "Vis som træ"
+
+#: src/faces/processtable/contents/ui/FullRepresentation.qml:85
+#, kde-format
+msgctxt "@action %1 is view type"
+msgid "Show: %1"
+msgstr "Vis: %1"
+
+#: src/faces/processtable/contents/ui/FullRepresentation.qml:88
+#, kde-format
+msgctxt "@item:inmenu"
+msgid "Own Processes"
+msgstr "Egne processer"
+
+#: src/faces/processtable/contents/ui/FullRepresentation.qml:97
+#, kde-format
+msgctxt "@item:inmenu"
+msgid "User Processes"
+msgstr "Bruger"
+
+#: src/faces/processtable/contents/ui/FullRepresentation.qml:106
+#, kde-format
+msgctxt "@item:inmenu"
+msgid "System Processes"
+msgstr "System"
+
+#: src/faces/processtable/contents/ui/FullRepresentation.qml:115
+#, kde-format
+msgctxt "@item:inmenu"
+msgid "All Processes"
+msgstr "Alle processer"
+
+#: src/faces/processtable/contents/ui/FullRepresentation.qml:127
+#, kde-format
+msgctxt "@action"
+msgid "Configure Columns…"
+msgstr "Konfigurer kolonner…"
+
+#: src/faces/processtable/contents/ui/FullRepresentation.qml:179
+#, kde-format
+msgctxt "@action:inmenu"
+msgid "Send Signal"
+msgstr "Send signal"
+
+#: src/faces/processtable/contents/ui/FullRepresentation.qml:183
+#, kde-format
+msgctxt "@action:inmenu Send Signal"
+msgid "Suspend (STOP)"
+msgstr "Suspender (STOP)"
+
+#: src/faces/processtable/contents/ui/FullRepresentation.qml:187
+#, kde-format
+msgctxt "@action:inmenu Send Signal"
+msgid "Continue (CONT)"
+msgstr "Fortsæt (CONT)"
+
+#: src/faces/processtable/contents/ui/FullRepresentation.qml:191
+#, kde-format
+msgctxt "@action:inmenu Send Signal"
+msgid "Hangup (HUP)"
+msgstr "Læg på (HUP)"
+
+#: src/faces/processtable/contents/ui/FullRepresentation.qml:195
+#, kde-format
+msgctxt "@action:inmenu Send Signal"
+msgid "Interrupt (INT)"
+msgstr "Afbryd (INT)"
+
+#: src/faces/processtable/contents/ui/FullRepresentation.qml:199
+#, kde-format
+msgctxt "@action:inmenu  Send Signal"
+msgid "Terminate (TERM)"
+msgstr "Terminer (TERM)"
+
+#: src/faces/processtable/contents/ui/FullRepresentation.qml:203
+#, kde-format
+msgctxt "@action:inmenu Send Signal"
+msgid "Kill (KILL)"
+msgstr "Dræb (KILL)"
+
+#: src/faces/processtable/contents/ui/FullRepresentation.qml:207
+#, kde-format
+msgctxt "@action:inmenu Send Signal"
+msgid "User 1 (USR1)"
+msgstr "Bruger 1 (USR1)"
+
+#: src/faces/processtable/contents/ui/FullRepresentation.qml:211
+#, kde-format
+msgctxt "@action:inmenu  Send Signal"
+msgid "User 2 (USR2)"
+msgstr "Bruger 2 (USR2)"
+
+#: src/faces/processtable/contents/ui/FullRepresentation.qml:217
+#, kde-format
+msgctxt "@action:inmenu"
+msgid "Copy Current Column"
+msgstr "Kopiér nuværende kolonne…"
+
+#: src/faces/processtable/contents/ui/FullRepresentation.qml:226
+#, kde-format
+msgctxt "@action:inmenu"
+msgid "End Process"
+msgid_plural "End %1 Processes"
+msgstr[0] "Afslut proces"
+msgstr[1] "Afslut %1 processer"
+
+#: src/faces/processtable/contents/ui/FullRepresentation.qml:239
+#, kde-format
+msgctxt "@action:inmenu hide column"
+msgid "Hide"
+msgstr "Skjul"
+
+#: src/faces/processtable/contents/ui/FullRepresentation.qml:244
+#, kde-format
+msgctxt "@action:inmenu"
+msgid "Configure Columns…"
+msgstr "Konfigurer kolonner"
+
+#: src/faces/processtable/contents/ui/FullRepresentation.qml:256
+#, kde-format
+msgctxt "@title:window"
+msgid "Forcibly End Process"
+msgid_plural "Forcibly End %1 Processes"
+msgstr[0] "Tving proces til at afslutte"
+msgstr[1] "Tving %1 processer til af afslutte"
+
+#: src/faces/processtable/contents/ui/FullRepresentation.qml:257
+#, kde-format
+msgctxt "@title:window"
+msgid "End Process"
+msgid_plural "End %1 Processes"
+msgstr[0] "Afslut proces"
+msgstr[1] "Afslut %1 processer"
+
+#: src/faces/processtable/contents/ui/FullRepresentation.qml:259
+#, kde-format
+msgctxt "@action:button"
+msgid "Forcibly End Process"
+msgid_plural "Forcibly End Processes"
+msgstr[0] "Tving proces til at afslutte"
+msgstr[1] "Tving processer til at afslutte"
+
+#: src/faces/processtable/contents/ui/FullRepresentation.qml:260
+#, kde-format
+msgctxt "@action:button"
+msgid "End Process"
+msgid_plural "End Processes"
+msgstr[0] "Afslut proces"
+msgstr[1] "Afslut processer"
+
+#: src/faces/processtable/contents/ui/FullRepresentation.qml:263
+#, fuzzy, kde-format
+#| msgid ""
+#| "Are you sure you want to end this process?\n"
+#| "Any unsaved work may be lost."
+#| msgid_plural ""
+#| "Are you sure you want to end these %1 processes?\n"
+#| "Any unsaved work may be lost."
+msgid "Forcibly end (SIGKILL) this process? Unsaved work may be lost."
+msgid_plural ""
+"Forcibly end (SIGKILL) these %1 processes? Unsaved work may be lost."
+msgstr[0] ""
+"Er du sikker på, at du vil afslutte processen?\n"
+"Arbejde som ikke er blevet gemt kan gå tabt."
+msgstr[1] ""
+"Er du sikker på, at du vil afslutte disse %1 processer?\n"
+"Arbejde som ikke er blevet gemt kan gå tabt."
+
+#: src/faces/processtable/contents/ui/FullRepresentation.qml:266
+#, fuzzy, kde-format
+#| msgid ""
+#| "Are you sure you want to end this process?\n"
+#| "Any unsaved work may be lost."
+#| msgid_plural ""
+#| "Are you sure you want to end these %1 processes?\n"
+#| "Any unsaved work may be lost."
+msgid "End this process? Unsaved work may be lost."
+msgid_plural "End these %1 processes? Unsaved work may be lost."
+msgstr[0] ""
+"Er du sikker på, at du vil afslutte processen?\n"
+"Arbejde som ikke er blevet gemt kan gå tabt."
+msgstr[1] ""
+"Er du sikker på, at du vil afslutte disse %1 processer?\n"
+"Arbejde som ikke er blevet gemt kan gå tabt."
+
+#: src/faces/processtable/contents/ui/FullRepresentation.qml:278
+#, fuzzy, kde-format
+msgctxt "@item:intable %1 is process id, %2 is user name"
+msgid "Process ID %1, owned by %2"
+msgstr "Proces-id %1, ejet af %2"
+
+#, fuzzy
+#~| msgctxt "@action"
+#~| msgid "Configure columns..."
+#~ msgctxt "@action"
+#~ msgid "Configure columns…"
+#~ msgstr "Konfigurer kolonner ..."
+
+#, fuzzy
+#~ msgctxt "@action:button"
+#~ msgid "End"
+#~ msgstr "Afslut"
