@@ -103,12 +103,16 @@ class BuildEntrypointTest(unittest.TestCase):
             self.assertNotEqual(0, rejected.returncode)
             self.assertIn("Conservé el chroot", rejected.stderr)
             self.assertTrue(marker.is_file())
+            # A failed package-install/build can still resume when the intended
+            # profile was recorded up front; resume validates, never deletes it.
+            self.assertEqual("iot\n", work_profile.read_text(encoding="utf-8"))
             work_profile.unlink()
             missing = subprocess.run(["bash", "-c", command], env=env, capture_output=True, text=True)
             self.assertNotEqual(0, missing.returncode)
             self.assertTrue(marker.is_file())
         build = (ROOT / "scripts/build.sh").read_text(encoding="utf-8")
         self.assertIn("validate_dylanos_resume_profile", build)
+        self.assertIn("$PROFILE\" > \"$WORK/profile\"", build)
 
     def test_docker_builder_supports_plugin_and_standalone_compose_v2(self):
         init = (ROOT / "init.sh").read_text(encoding="utf-8")
