@@ -1,0 +1,2 @@
+kpackage_install_package(dylanosapplicationstable org.dylanos.process.applicationstable sensorfaces ksysguard)
+kpackage_install_package(dylanosprocesstable org.dylanos.process.processtable sensorfaces ksysguard)

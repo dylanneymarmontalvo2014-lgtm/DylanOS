@@ -183,6 +183,15 @@ chroot "$CHROOT" cmake -S /tmp/dylanos-src/dylanos-store -B /tmp/dylanos-src/dyl
 chroot "$CHROOT" cmake --build /tmp/dylanos-src/dylanos-store/build --parallel "$BUILD_JOBS"
 chroot "$CHROOT" ctest --test-dir /tmp/dylanos-src/dylanos-store/build --output-on-failure
 chroot "$CHROOT" cmake --install /tmp/dylanos-src/dylanos-store/build
+# DylanOS Process mantiene los motores de Plasma System Monitor y los instala
+# en paralelo con identidad propia para no sobrescribir archivos de dpkg.
+mkdir -p "$CHROOT/tmp/dylanos-src/dylanos-process"
+cp -a "$ROOT/apps/dylanos-process/." "$CHROOT/tmp/dylanos-src/dylanos-process/"
+mkdir -p "$CHROOT/tmp/dylanos-src/dylanos-process/branding/icons"
+cp -a "$ROOT/branding/icons/dylanos-process.svg" "$CHROOT/tmp/dylanos-src/dylanos-process/branding/icons/"
+chroot "$CHROOT" cmake -S /tmp/dylanos-src/dylanos-process -B /tmp/dylanos-src/dylanos-process/build -GNinja -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX=/usr
+chroot "$CHROOT" cmake --build /tmp/dylanos-src/dylanos-process/build --parallel "$BUILD_JOBS"
+chroot "$CHROOT" cmake --install /tmp/dylanos-src/dylanos-process/build
 chroot "$CHROOT" /bin/bash <<'CHROOT_SCRIPT'
 set -euo pipefail
 plymouth-set-default-theme dylanos
@@ -196,7 +205,8 @@ apt-get -y purge libflatpak-dev libostree-dev libappstreamqt-dev libpackagekitqt
     qcoro-qt6-dev kirigami-addons-dev libkirigami-dev libkf6xmlgui-dev \
     libkf6idletime-dev libkf6statusnotifieritem-dev libkf6notifications-dev \
     libkf6crash-dev libkf6dbusaddons-dev libkf6archive-dev qt6-svg-dev \
-    libkf6iconthemes-dev libkf6auth-dev
+    libkf6iconthemes-dev libkf6auth-dev libksysguard-dev \
+    libkf6globalaccel-dev libkf6itemmodels-dev libkf6newstuff-dev libkf6package-dev
 # Un solo explorador de archivos (DylanOS Explorer) y una sola calculadora
 # (dylanos-calculator): dolphin y kcalc entran como dependencias del
 # metapaquete kde-plasma-desktop y se retiran del sistema final. El motor KIO

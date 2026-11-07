@@ -30,3 +30,10 @@ libkf6notifications-dev
 libkf6service-dev
 libkf6statusnotifieritem-dev
 libkf6xmlgui-dev
+
+# DylanOS Process (fork funcional de Plasma System Monitor 6.3.6)
+libksysguard-dev
+libkf6globalaccel-dev
+libkf6itemmodels-dev
+libkf6newstuff-dev
+libkf6package-dev

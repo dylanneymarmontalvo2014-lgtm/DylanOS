@@ -63,6 +63,8 @@ def stage(destination, installer_dist=None, version=None):
         ("branding/logo.png", "/usr/share/dylanos/workspace/assets/logo.png"),
         ("branding/logo.png", "/usr/share/icons/hicolor/512x512/apps/distributor-logo-dylanos.png"),
         ("branding/icons/dylanos-store.png", "/usr/share/icons/hicolor/512x512/apps/dylanos-store.png"),
+        ("branding/icons/dylanos-process.svg", "/usr/share/icons/hicolor/scalable/apps/dylanos-process.svg"),
+        ("apps/dylanos-process/org.dylanos.process.metainfo.xml", "/usr/share/metainfo/org.dylanos.process.metainfo.xml"),
         ("branding/logo.png", "/usr/share/dylanos/configuration/assets/logo.png"),
         ("branding/wallpapers/dylanos-default.png", "/usr/share/wallpapers/DylanOS/dylanos-default.png"),
         ("branding/wallpapers/DylanOS-Dark.png", "/usr/share/wallpapers/DylanOS/DylanOS-Dark.png"),
@@ -172,6 +174,10 @@ exec /usr/bin/python3 /usr/share/dylanos/installer/native/main.py "$@"
     remove("/usr/share/applications/org.kde.discover.notifier.desktop")
     remove("/usr/share/applications/plasma-discover.desktop")
     remove("/etc/xdg/autostart/org.kde.discover.notifier.desktop")
+    # DylanOS Process tiene desktop ID propio. Se ocultan los lanzadores de
+    # menú upstream sin borrar archivos administrados por paquetes APT.
+    remove("/usr/share/applications/org.kde.plasma-systemmonitor.desktop")
+    remove("/usr/share/applications/plasma-systemmonitor.desktop")
     # El escritorio beta no envía el antiguo muro de widgets. Borrarlo de
     # chroots reutilizados evita que Plasma pueda restaurarlo por id.
     remove("/usr/share/plasma/plasmoids/com.dylanos.dashboard")
@@ -218,6 +224,8 @@ exec /usr/bin/python3 /usr/share/dylanos/installer/native/main.py "$@"
     # archivo después del staging (fallback idempotente).
     copy("apps/dylanos-explorer/assets/org.dylanos.explorer.desktop",
          "/usr/share/applications/org.dylanos.explorer.desktop")
+    copy("apps/dylanos-process/org.dylanos.process.desktop",
+         "/usr/share/applications/org.dylanos.process.desktop")
     write("/usr/bin/dylanos-console",
           "#!/bin/sh\n"
           "exec kitty --class org.dylanos.console --title \"DylanOS Console\" \"$@\"\n",
@@ -263,6 +271,9 @@ exec /usr/bin/python3 /usr/share/dylanos/installer/native/main.py "$@"
         if entry.exists():
             entry.write_text("[Desktop Entry]\nType=Application\nNoDisplay=true\n", encoding="utf-8")
     for duplicate in [
+        "/usr/share/applications/org.kde.plasma-systemmonitor.desktop",
+        "/usr/share/applications/plasma-systemmonitor.desktop",
+        "/usr/share/plasma/kinfocenter/externalmodules/kcm_external_plasma-systemmonitor.desktop",
         "/usr/share/applications/systemsettings.desktop",
         "/usr/share/applications/kdesystemsettings.desktop",
         "/usr/share/applications/org.kde.plasma.settings.open.desktop",

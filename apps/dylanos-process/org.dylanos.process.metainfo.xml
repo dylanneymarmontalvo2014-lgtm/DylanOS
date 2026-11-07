@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+SPDX-FileCopyrightText: 2020 Arjen Hiemstra
+SPDX-License-Identifier: CC0-1.0
+-->
+<component type="desktop-application">
+  <id>org.dylanos.process</id>
+  <metadata_license>CC0-1.0</metadata_license>
+  <project_license>GPL-2.0-only OR GPL-3.0-only OR LicenseRef-KDE-Accepted-GPL</project_license>
+  <name>DylanOS Process</name>
+  <name xml:lang="es">DylanOS Process</name>
+  <summary>Monitor de procesos y recursos del sistema</summary>
+  <summary xml:lang="es">Monitor de procesos y recursos del sistema</summary>
+  <description>
+    <p>Supervisa los procesos, sensores y recursos del sistema con los motores de KDE.</p>
+  </description>
+  <categories>
+    <category>System</category>
+    <category>Monitor</category>
+  </categories>
+  <url type="homepage">https://github.com/dylanneymarmontalvo2014-lgtm/DylanOS</url>
+  <launchable type="desktop-id">org.dylanos.process.desktop</launchable>
+  <provides>
+    <binary>dylanos-process</binary>
+  </provides>
+</component>
