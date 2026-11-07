@@ -493,3 +493,14 @@ Validación local: `bash -n` pasó; tests de detección Compose y distro pasaron
 59 comprobaciones de paquetes pasaron. ShellCheck no está instalado en este
 entorno, por lo que la ejecución de ese analizador y el CI del nuevo SHA quedan
 pendientes.
+
+
+PERFIL IOT — 2026-11-07
+-----------------------
+Perfil separado `--iot` basado en default+build, con Arduino IDE y herramientas
+Debian para AVR, JTAG/SWD, ESP/STM32, MQTT, CAN, serial, I2C/GPIO y análisis
+lógico. Mosquitto no se inicia automáticamente. Registrar el perfil en `/etc/dylanos-profile`; en instalación, agregar los
+grupos dialout/i2c/gpio solo para IoT y solo si existen. Pruebas: test_packages.sh,
+test_build_entrypoint.py, test_installer_backend.py y shellcheck/build CI.
+La disponibilidad de paquetes se cotejó con Debian trixie; no se ejecutó build
+de ISO ni se probó hardware físico en esta revisión.

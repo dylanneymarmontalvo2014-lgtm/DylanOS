@@ -98,12 +98,15 @@ assert_command_fails "falla si la lista no existe" \
 
 DEFAULT_LIST="$ROOT/packages/default/packages.list"
 DEV_LIST="$ROOT/packages/development/packages.list"
+IOT_LIST="$ROOT/packages/iot/packages.list"
 
 assert_eq "la lista default existe" "si" "$([ -f "$DEFAULT_LIST" ] && echo si || echo no)"
 assert_eq "la lista development existe" "si" "$([ -f "$DEV_LIST" ] && echo si || echo no)"
+assert_eq "la lista IoT existe" "si" "$([ -f "$IOT_LIST" ] && echo si || echo no)"
 
 default_pkgs="$(parse_package_list "$DEFAULT_LIST" 2>/dev/null || true)"
 dev_pkgs="$(parse_package_list "$DEV_LIST" 2>/dev/null || true)"
+iot_pkgs="$(parse_package_list "$IOT_LIST" 2>/dev/null || true)"
 
 # Paquetes del sistema base migrados del build.sh original
 for p in linux-image-amd64 systemd-sysv kde-plasma-desktop sddm parted \
@@ -196,6 +199,20 @@ while IFS= read -r app; do
     assert_contains_line "default-apps.conf: $app está en la lista default" \
         "$default_pkgs" "$app"
 done <<< "$conf_apps"
+
+# Perfil IoT: mínimo 15 herramientas reales y selección separada del perfil general.
+iot_count="$(printf '%s\n' "$iot_pkgs" | grep -c .)"
+if [ "$iot_count" -ge 15 ]; then pass; else fail "iot debe incluir al menos 15 paquetes (actual: $iot_count)"; fi
+for p in arduino gcc-avr avr-libc avrdude openocd esptool stm32flash mosquitto-clients \
+    mosquitto python3-paho-mqtt python3-serial python3-can can-utils i2c-tools \
+    gpiod python3-smbus sigrok-cli pulseview; do
+    assert_contains_line "iot contiene $p" "$iot_pkgs" "$p"
+done
+assert_eq "build acepta --iot" "si" "$(grep -q -- '--iot' "$ROOT/scripts/build.sh" && echo si || echo no)"
+assert_eq "iot se instala como perfil independiente" "si" "$(grep -q 'iot) groups+=(iot)' "$ROOT/scripts/build.sh" && echo si || echo no)"
+assert_eq "development no se mezcla en perfil iot" "si" "$(grep -q 'development) groups+=(development)' "$ROOT/scripts/build.sh" && grep -q 'iot) groups+=(iot)' "$ROOT/scripts/build.sh" && echo si || echo no)"
+assert_eq "mosquitto no queda habilitado automáticamente" "si" "$(grep -q 'systemctl --root=/ disable mosquitto.service' "$ROOT/scripts/build.sh" && echo si || echo no)"
+assert_eq "el perfil de build queda registrado en la imagen" "si" "$(grep -q 'etc/dylanos-profile' "$ROOT/scripts/build.sh" && echo si || echo no)"
 
 # Herramientas de desarrollo comprometidas en el diseño
 for p in git build-essential curl wget openssh-client python3 python3-pip \

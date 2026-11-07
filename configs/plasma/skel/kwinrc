@@ -1,14 +1,32 @@
 [org.kde.kdecoration2]
 library=org.kde.kwin.aurorae
-theme=__aurorae__svg__DylanOS-Crimson
+theme=__aurorae__svg__DylanOS-Crimson-Glass
 ButtonsOnLeft=XIA
 ButtonsOnRight=
 BorderSize=Tiny
 
 [Plugins]
 blurEnabled=true
+translucencyEnabled=true
 contrastEnabled=false
 slideEnabled=true
+
+# Crimson-glass: KWin solo desenfoca donde la decoración expone su máscara,
+# por eso el vidrio vive en el marco translúcido (Effect-blur, no Effect-Blur).
+[Effect-blur]
+BlurStrength=30
+NoiseStrength=4
+
+[Effect-translucency]
+Inactive=80
+Dialogs=85
+Menus=80
+ComboboxPopups=85
+IndividualMenuConfig=true
+DropdownMenus=80
+PopupMenus=80
+TornOffMenus=80
+MoveResize=70
 
 [Desktops]
 Number=2
