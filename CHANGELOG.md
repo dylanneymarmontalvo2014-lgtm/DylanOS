@@ -50,6 +50,8 @@ Todos los cambios relevantes de DylanOS se registran en este archivo. La intenci
 
 ### Añadido
 
+- Perfil IoT seleccionable con `--iot`: Arduino IDE/AVR, OpenOCD, herramientas ESP/STM32, MQTT, CAN, serial, I2C/GPIO y análisis lógico; broker Mosquitto instalado pero deshabilitado por defecto. La cuenta instalada recibe grupos de acceso al hardware cuando están disponibles.
+
 - Comando `about`, generado por staging y conectado a `MAINTAINERS.txt`.
 - Calendario interactivo del Dashboard, silencio de audio en el Centro de Control y guía de uso/capacidades de las aplicaciones.
 - Documentación de componentes Workspace, Spotlight, App Center y Calculator; se precisan las limitaciones reales del instalador y las categorías incompletas de Spotlight.

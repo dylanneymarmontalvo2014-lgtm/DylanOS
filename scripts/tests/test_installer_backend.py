@@ -471,6 +471,56 @@ class InstalledLiveAccessTest(unittest.TestCase):
             self.assertNotIn("[Autologin]", (cfg / "10-dylanos.conf").read_text())
 
 
+class IoTHardwareAccessTest(unittest.TestCase):
+    def test_iot_marker_is_read_and_missing_marker_is_not_iot(self):
+        import tempfile
+        with tempfile.TemporaryDirectory() as folder:
+            target = Path(folder)
+            self.assertFalse(server.target_iot_profile_enabled(target))
+            profile = target / "etc/dylanos-profile"
+            profile.parent.mkdir(parents=True)
+            profile.write_text("development\n", encoding="utf-8")
+            self.assertFalse(server.target_iot_profile_enabled(target))
+            profile.write_text("iot\n", encoding="utf-8")
+            self.assertTrue(server.target_iot_profile_enabled(target))
+
+    def test_installed_user_gets_serial_and_hardware_groups_only_for_iot(self):
+        commands = []
+        def fake_group_probe(cmd, check=True):
+            if " id -u " in f" {cmd} ":
+                return "1000"
+            if "getent group" in cmd:
+                group = cmd.rsplit(" ", 1)[-1]
+                return "{}:x:20:root".format(group) if group in {"dialout", "i2c"} else ""
+            return ""
+        def fake_quiet(cmd):
+            commands.append(cmd)
+            return 0
+        with patch.object(server, "sanitize_installed_live_access"), \
+             patch.object(server, "target_iot_profile_enabled", return_value=True), \
+             patch.object(server, "run_cmd", side_effect=fake_group_probe), \
+             patch.object(server, "run_quiet", side_effect=fake_quiet):
+            server.create_target_user("tester", "Test User", "", "")
+        group_cmd = next(cmd for cmd in commands if " usermod -aG " in cmd)
+        self.assertIn("dialout", group_cmd)
+        self.assertIn("i2c", group_cmd)
+        self.assertNotIn(",gpio,", group_cmd)
+
+    def test_regular_profile_does_not_grant_serial_or_i2c_access(self):
+        commands = []
+        def fake_quiet(cmd):
+            commands.append(cmd)
+            return 0
+        with patch.object(server, "sanitize_installed_live_access"), \
+             patch.object(server, "target_iot_profile_enabled", return_value=False), \
+             patch.object(server, "run_cmd", return_value="1000"), \
+             patch.object(server, "run_quiet", side_effect=fake_quiet):
+            server.create_target_user("tester", "Test User", "", "")
+        group_cmd = next(cmd for cmd in commands if " usermod -aG " in cmd)
+        self.assertNotIn("dialout", group_cmd)
+        self.assertNotIn(",i2c,", group_cmd)
+
+
 class InstallRootCleanupTest(unittest.TestCase):
     def test_manual_install_root_is_cleared_without_following_symlinks(self):
         """Old files from a reused ext4 root must not survive squashfs extraction."""

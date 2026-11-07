@@ -17,7 +17,7 @@ if [[ ! "$VERSION" =~ ^([0-9]+\.[0-9]+\.[0-9]+([+-][A-Za-z0-9.-]+)?|1\.0-beta)$ 
 fi
 if [[ ${1:-} != --inside && $EUID -eq 0 ]]; then
     echo "No ejecutes scripts/build.sh con sudo; el script eleva privilegios internamente." >&2
-    echo "Usa: ./scripts/build.sh [--resume] [--minimal]" >&2
+    echo "Usa: ./scripts/build.sh [--resume] [--minimal|--iot]" >&2
     exit 2
 fi
 CPU_COUNT="$(nproc 2>/dev/null || printf '2')"
@@ -52,14 +52,20 @@ if [[ ${1:-} == --inside ]]; then
 fi
 PROFILE=development
 RESUME=false
+PROFILE_SELECTED=false
 for arg in "$@"; do
     case "$arg" in
         --resume) RESUME=true ;;
-        --minimal) PROFILE=default ;;
+        --minimal)
+            if [[ "$PROFILE_SELECTED" == true ]]; then echo "Elige un solo perfil: --minimal, --iot o el perfil development predeterminado." >&2; exit 2; fi
+            PROFILE=default; PROFILE_SELECTED=true ;;
+        --iot)
+            if [[ "$PROFILE_SELECTED" == true ]]; then echo "Elige un solo perfil: --minimal, --iot o el perfil development predeterminado." >&2; exit 2; fi
+            PROFILE=iot; PROFILE_SELECTED=true ;;
         --jobs=*) BUILD_JOBS="${arg#*=}" ;;
         --version=*) VERSION="${arg#*=}" ;;
         --installer-dist=*) INSTALLER_DIST="${arg#*=}" ;;
-        *) echo "Uso: $0 [--resume] [--minimal] [--jobs=N]" >&2; exit 2 ;;
+        *) echo "Uso: $0 [--resume] [--minimal|--iot] [--jobs=N]" >&2; exit 2 ;;
     esac
 done
 if [[ ! "$BUILD_JOBS" =~ ^[1-9][0-9]*$ ]]; then
@@ -108,7 +114,10 @@ chmod +x "$CHROOT/usr/sbin/policy-rc.d"
 # shellcheck source=scripts/lib/packages.sh
 . "$ROOT/scripts/lib/packages.sh"
 groups=(default build)
-if [[ "$PROFILE" == development ]]; then groups+=(development); fi
+case "$PROFILE" in
+    development) groups+=(development) ;;
+    iot) groups+=(iot) ;;
+esac
 rm -f "$CHROOT/tmp/dylanos-packages/"*.list "$CHROOT/tmp/dylanos-packages/"*.setup-repos.sh
 for group in "${groups[@]}"; do
     parse_package_list "$ROOT/packages/$group/packages.list" > "$CHROOT/tmp/dylanos-packages/$group.list"
@@ -116,7 +125,7 @@ for group in "${groups[@]}"; do
         cp "$ROOT/packages/$group/setup-repos.sh" "$CHROOT/tmp/dylanos-packages/$group.setup-repos.sh"
     fi
 done
-chroot "$CHROOT" /usr/bin/env BUILD_JOBS="$BUILD_JOBS" /bin/bash <<'CHROOT_SCRIPT'
+chroot "$CHROOT" /usr/bin/env BUILD_JOBS="$BUILD_JOBS" PROFILE="$PROFILE" /bin/bash <<'CHROOT_SCRIPT'
 set -euo pipefail
 export DEBIAN_FRONTEND=noninteractive
 apt-get -o Acquire::Retries=3 update
@@ -133,6 +142,11 @@ for list in /tmp/dylanos-packages/*.list; do
 done
 # Evita paquetes recomendados no solicitados; dependencias obligatorias siguen instalándose.
 xargs -r -a "$all_packages" apt-get -o Acquire::Retries=3 install -y --no-install-recommends
+# El broker MQTT queda instalado para uso IoT local/remoto, pero no se inicia
+# automáticamente: el usuario decide cuándo exponer el servicio en la red.
+if [[ "${PROFILE:-}" == iot ]]; then
+    systemctl --root=/ disable mosquitto.service 2>/dev/null || true
+fi
 # La Store usa el backend Flatpak real de libdiscover. Flathub queda como
 # remoto del sistema para todos los usuarios; --if-not-exists mantiene los
 # builds --resume idempotentes y conserva cualquier configuración existente.
@@ -141,6 +155,7 @@ sed -i 's/^# es_ES.UTF-8 UTF-8/es_ES.UTF-8 UTF-8/; s/^# en_US.UTF-8 UTF-8/en_US.
 locale-gen
 update-locale LANG=es_ES.UTF-8
 systemctl enable sddm NetworkManager
+printf '%s\n' "$PROFILE" > /etc/dylanos-profile
 passwd -l root
 CHROOT_SCRIPT
 if [[ -n "${INSTALLER_DIST:-}" ]]; then
