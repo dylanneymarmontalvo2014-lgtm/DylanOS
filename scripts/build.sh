@@ -107,6 +107,9 @@ if [[ ! -f "$CHROOT/etc/debian_version" ]]; then
     gpg --batch --yes --dearmor -o "$WORK/debian-trixie.gpg" "$ROOT/configs/keys/debian-trixie.asc"
     debootstrap --force-check-gpg --keyring="$WORK/debian-trixie.gpg" --variant=minbase --arch=amd64 trixie "$CHROOT" https://deb.debian.org/debian
 fi
+# Registrar el perfil antes de APT: una interrupción de instalación todavía
+# debe poder reanudarse con el mismo perfil, nunca con otro.
+printf '%s\n' "$PROFILE" > "$CHROOT/etc/dylanos-profile"
 mount --rbind /dev "$CHROOT/dev"
 mount --make-rslave "$CHROOT/dev"
 mount -t proc proc "$CHROOT/proc"
