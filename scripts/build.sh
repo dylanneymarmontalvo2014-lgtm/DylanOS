@@ -86,6 +86,12 @@ if [[ -e "$CHROOT" && $RESUME != true ]]; then
     echo "Existe $CHROOT. Usa --resume para continuar; no se borrará automáticamente." >&2
     exit 1
 fi
+if [[ -e "$CHROOT" && $RESUME == true ]]; then
+    # Never combine package sets from different profiles in a resumed chroot.
+    # shellcheck source=scripts/lib/profile.sh
+    . "$ROOT/scripts/lib/profile.sh"
+    validate_dylanos_resume_profile "$CHROOT" "$PROFILE" "$WORK/profile" || exit 1
+fi
 rm -f "$WORK/build-complete"
 cleanup() {
     umount -R "$CHROOT/dev" 2>/dev/null || true
