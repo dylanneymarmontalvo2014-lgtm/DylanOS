@@ -59,11 +59,11 @@ técnica viva: `docs/architecture.md`. Este archivo es el índice operativo de r
 - **Crimson-glass = marco translúcido + blur del compositor.** KWin 6.3 solo desenfoca
   donde la decoración expone una región: los ids `mask-*` del SVG son esa región, así que
   NUNCA se les pone `fill-opacity` (los `decoration-*` translúcidos van fuera del grupo de
-  la máscara). Theme `DylanOS-Crimson-Glass`; el motor escribe `Effect-blur` y
-  `Effect-translucency` (minúsculas, son los nombres que leen blur.kcfg y ScriptedEffect),
-  mientras el skel conserva el tema opaco como respaldo recuperable. La sección es
-  Configuration → Apariencia → Crimson Glass. Al apagar hay
-  que descargar los efectos (`org.kde.kwin.Effects /Effects unloadEffect(...)`):
+  la máscara). Theme `DylanOS-Crimson-Glass`, perfil en `configs/plasma/skel/kwinrc`
+  (`Effect-blur`, `Effect-translucency` — minúsculas, son los nombres que leen blur.kcfg y
+  ScriptedEffect) y selector en Configuration → Personalización → Apariencia. El motor
+  conserva un respaldo recuperable y, al apagar, descarga los efectos mediante
+  `org.kde.kwin.Effects /Effects unloadEffect(...)`:
   `reconfigure` solo carga efectos. No sustituir el theme por uno opaco.
 - Barra superior tipo menú: `com.dylanos.activeapp` (nombre completo de la app activa,
   sin cortes) + appmenu; se oculta sola en **pantalla completa real** vía

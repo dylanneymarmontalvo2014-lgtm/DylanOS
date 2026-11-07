@@ -132,6 +132,12 @@ class TestDylanOSConfiguration(unittest.TestCase):
         self.assertIn("root.state.battery.percent !== undefined", power)
         self.assertIn("Number(root.state.battery.percent)", power)
 
+    def test_system_service_glass_toggle_keeps_light_variant(self):
+        cpp = (APP / "src/services/SystemService.cpp").read_text(encoding="utf-8")
+        self.assertIn('QStringLiteral("__aurorae__svg__DylanOS-Crimson-Glass-Light")', cpp)
+        self.assertIn('QStringLiteral("__aurorae__svg__DylanOS-Crimson-Glass")', cpp)
+        self.assertIn("glassTheme", cpp)
+
     def test_staging_registra_dylanos_configuration(self):
         with tempfile.TemporaryDirectory() as folder:
             root = Path(folder)
@@ -150,7 +156,7 @@ class TestDylanOSConfiguration(unittest.TestCase):
                     self.assertIn("NoDisplay=true", oculta.read_text())
             # El total de entradas org.dylanos.* del menu se mantiene en 9
             # (workspace + explorer + configuration + store + spotlight + console).
-            self.assertEqual(len(list((root / "usr/share/applications").glob("org.dylanos.*.desktop"))), 9)
+            self.assertEqual(len(list((root / "usr/share/applications").glob("org.dylanos.*.desktop"))), 10)
 
 
 if __name__ == "__main__":

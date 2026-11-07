@@ -1,0 +1,46 @@
+# DylanOS IoT — Arduino, embedded systems, buses and edge messaging
+# Debian 13 (trixie); one package per line.
+
+# Arduino UNO/Nano (AVR): IDE, core, compiler, libraries and uploader
+arduino
+arduino-core-avr
+gcc-avr
+avr-libc
+avrdude
+
+# Embedded debug and firmware flashing (including ESP8266/ESP32 + STM32 UART)
+openocd
+esptool
+stm32flash
+
+# MQTT edge messaging: tools and optional local broker (not enabled automatically)
+mosquitto-clients
+mosquitto
+python3-paho-mqtt
+
+# Python serial protocol work and CAN bus integration
+python3
+python3-pip
+python3-venv
+python3-serial
+python3-can
+can-utils
+
+# I2C/SMBus and GPIO hardware inspection/control
+i2c-tools
+gpiod
+python3-smbus
+
+# USB/serial consoles and logic-analyzer capture/visualization
+usbutils
+minicom
+tio
+picocom
+sigrok-cli
+pulseview
+
+# Build and version-control helpers for firmware projects
+git
+build-essential
+cmake
+ninja-build

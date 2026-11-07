@@ -179,7 +179,15 @@ GLASS_COLORS = {"top": "url(#glassSheen)", "topleft": "url(#glassSheen)", "topri
 
 
 def aurorae_glass():
-    """Decoración Crimson Glass con una máscara opaca para el blur de KWin."""
+    """Decoración Crimson-glass: vidrio líquido para todas las ventanas.
+
+    KWin solo desenfoca el fondo donde la decoración expone su máscara (los ids
+    `mask-*`), así que el vidrio no se consigue con un efecto nuevo sino
+    transluciendo los parches del marco: la barra de título y los bordes dejan
+    pasar el fondo ya desenfocado. `decoration-maximized-*` sube la opacidad
+    porque al maximizarse solo se pinta el centro y la legibilidad manda.
+    Regenerable de forma aislada: `python3 scripts/lib/generate-theme.py aurorae-glass`.
+    """
     glass = "themes/aurorae/DylanOS-Crimson-Glass"
     target = ROOT / glass
     target.mkdir(parents=True, exist_ok=True)
@@ -202,6 +210,50 @@ def aurorae_glass():
     write(f"{glass}/decoration.svg", '<svg xmlns="http://www.w3.org/2000/svg" width="700" height="100">' + GLASS_DEFS + patches + '</svg>')
 
 
+# Vidrio Crimson-glass Light: mismos parches translúcidos sobre fondo claro.
+GLASS_LIGHT_DEFS = ('<defs>'
+                    '<linearGradient id="glassSheenLight" x1="0" y1="0" x2="0" y2="1">'
+                    '<stop offset="0" stop-color="#9c8498"/><stop offset="0.16" stop-color="#d9c8d8"/>'
+                    '<stop offset="1" stop-color="#f1e7ee"/></linearGradient>'
+                    '<linearGradient id="glassCrimsonLight" x1="0" y1="0" x2="0" y2="1">'
+                    '<stop offset="0" stop-color="#8e2a44"/><stop offset="0.5" stop-color="#c05068"/>'
+                    '<stop offset="1" stop-color="#d8788c"/></linearGradient>'
+                    '</defs>')
+GLASS_LIGHT_COLORS = {"top": "url(#glassSheenLight)", "topleft": "url(#glassSheenLight)", "topright": "url(#glassSheenLight)",
+                      "left": "url(#glassCrimsonLight)", "right": "url(#glassCrimsonLight)", "bottom": "url(#glassCrimsonLight)",
+                      "bottomleft": "url(#glassCrimsonLight)", "bottomright": "url(#glassCrimsonLight)",
+                      "center": "#eef0f6"}
+
+
+def aurorae_glass_light():
+    """Decoración Crimson-glass Light: vidrio translúcido sobre fondo claro.
+
+    Misma estrategia que el glass oscuro (parches translúcidos + máscara
+    opaca) pero con colores claros para el esquema DylanOSLight.
+    Regenerable de forma aislada: `python3 scripts/lib/generate-theme.py aurorae-glass-light`.
+    """
+    glass = "themes/aurorae/DylanOS-Crimson-Glass-Light"
+    target = ROOT / glass
+    target.mkdir(parents=True, exist_ok=True)
+    for source in (ROOT / "themes/aurorae/DylanOS-Crimson-Glass").iterdir():
+        if source.name == "decoration.svg":
+            continue
+        filename = source.name.replace("DylanOS-Crimson-Glassrc", "DylanOS-Crimson-Glass-Lightrc")
+        content = source.read_text(encoding="utf-8").replace("DylanOS-Crimson-Glass", "DylanOS-Crimson-Glass-Light")
+        content = content.replace("Name=DylanOS Crimson", "Name=DylanOS Crimson Glass Light")
+        content = content.replace("ActiveTextColor=152,154,162", "ActiveTextColor=32,33,43")
+        content = content.replace("InactiveTextColor=104,106,114", "InactiveTextColor=99,104,121")
+        (target / filename).write_text(content, encoding="utf-8")
+    patches = (frame("#eef0f6", "decoration-", edge=12, size=56, fill_opacity=0.42, colors=GLASS_LIGHT_COLORS)
+               + frame("#eef0f6", "decoration-inactive-", x=100, edge=12, size=56, fill_opacity=0.55, colors=GLASS_LIGHT_COLORS)
+               + frame("#eef0f6", "decoration-maximized-", x=200, edge=12, size=56, fill_opacity=0.80, colors=GLASS_LIGHT_COLORS)
+               + frame("#eef0f6", "decoration-maximized-inactive-", x=300, edge=12, size=56, fill_opacity=0.86, colors=GLASS_LIGHT_COLORS)
+               + frame("#e8eaf0", "decoration-opaque-", x=400, edge=12, size=56)
+               + frame("#e8eaf0", "decoration-opaque-inactive-", x=500, edge=12, size=56)
+               + frame("white", "mask-", x=600, edge=12, size=56))
+    write(f"{glass}/decoration.svg", '<svg xmlns="http://www.w3.org/2000/svg" width="700" height="100">' + GLASS_LIGHT_DEFS + patches + '</svg>')
+
+
 def main():
     for light in (False, True):
         wallpaper(light)
@@ -214,6 +266,7 @@ def main():
     aurorae()
     plasma_glass()
     aurorae_glass()
+    aurorae_glass_light()
 
 
 if __name__ == "__main__":
@@ -223,5 +276,7 @@ if __name__ == "__main__":
     elif len(sys.argv) > 1 and sys.argv[1] in ("crimson-glass", "aurorae-glass"):
         plasma_glass()
         aurorae_glass()
+    elif len(sys.argv) > 1 and sys.argv[1] == "aurorae-glass-light":
+        aurorae_glass_light()
     else:
         main()

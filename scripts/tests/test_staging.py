@@ -113,12 +113,12 @@ class StagingTest(unittest.TestCase):
                      "etc/skel/.config/gtk-3.0/settings.ini",
                      "etc/skel/.config/gtk-4.0/settings.ini"]
             for path in paths: self.assertTrue((root / path).is_file(), path)
-            # El skel queda opaco para que el primer autostart pueda respaldarlo
-            # y Crimson Glass siga siendo reversible.
+            # Crimson-glass es el acabado predeterminado del ISO: un usuario
+            # nuevo arranca con el marco translúcido y los efectos cargados.
             kwinrc = (root / "etc/skel/.config/kwinrc").read_text()
-            self.assertIn("__aurorae__svg__DylanOS-Crimson", kwinrc)
-            self.assertNotIn("__aurorae__svg__DylanOS-Crimson-Glass", kwinrc)
-            self.assertNotIn("translucencyEnabled=true", kwinrc)
+            self.assertIn("__aurorae__svg__DylanOS-Crimson-Glass", kwinrc)
+            self.assertIn("translucencyEnabled=true", kwinrc)
+            self.assertIn("[Effect-blur]", kwinrc)
             source_dist = ROOT / "installer/dylanos-installer/dist"
             staged_dist = root / "usr/share/dylanos/installer/dist/index.html"
             if source_dist.is_dir():

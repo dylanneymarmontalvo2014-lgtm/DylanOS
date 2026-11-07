@@ -140,6 +140,12 @@ class BackendTest(unittest.TestCase):
         with kwinrc(None):
             self.assertEqual(self.backend.kwinDecoration(), "")
 
+    def test_backend_theme_keeps_glass_for_light_variant(self):
+        backend = (Path(__file__).resolve().parents[2] / "apps/workspace/backend.py").read_text(encoding="utf-8")
+        self.assertIn('glass = self.kwinDecoration().endswith("-Glass")', backend)
+        self.assertIn('base = "DylanOS-Crimson-Glass" if glass else "DylanOS-Crimson"', backend)
+        self.assertIn('decoration = base + ("-Light" if variant == "Light" else "")', backend)
+
 
 if __name__ == "__main__":
     unittest.main()

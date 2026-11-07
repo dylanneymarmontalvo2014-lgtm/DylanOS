@@ -62,8 +62,11 @@ El frontend aún contiene simulación/valores de respaldo históricos. La instal
 ## Perfiles de paquetes
 
 - `packages/default/packages.list`: base de escritorio y aplicaciones habituales; incluye `playerctl` para controles MPRIS.
-- `packages/development/packages.list`: herramientas adicionales de desarrollo, incluido Visual Studio Code desde el repositorio de Microsoft, además de Git, toolchain, Node.js, Python y utilidades.
-- `packages/build/packages.list`: dependencias de construcción; el build puede purgar dependencias de desarrollo que no necesita la ISO final.
+- `packages/development/packages.list`: perfil por defecto del build; herramientas generales, incluido Visual Studio Code desde el repositorio de Microsoft, Git, toolchain, Node.js, Python y utilidades.
+- `packages/iot/packages.list`: perfil especializado que se elige con `bash scripts/build.sh --iot`; incluye Arduino IDE, compilación AVR, OpenOCD, esptool, utilidades STM32, MQTT, CAN, serial, I2C/GPIO y PulseView/sigrok.
+- `packages/build/packages.list`: dependencias temporales de construcción; el build puede purgar las que no necesita la ISO final.
+
+El perfil IoT instala `mosquitto` pero deja su servicio deshabilitado para evitar exponer un broker en la red sin decisión del usuario. La imagen registra el perfil seleccionado en `/etc/dylanos-profile`; solo para el perfil IoT el instalador agrega la cuenta a `dialout` y a `i2c`/`gpio` cuando esos grupos existen. Vuelve a iniciar sesión para aplicar los grupos. Revisa reglas udev y permisos del dispositivo antes de conectar hardware.
 
 El perfil de paquetes determina qué comandos habrá en la imagen; la presencia de un botón o acceso no instala por sí sola dependencias opcionales. Consulta [Optimización](optimization.md) y los archivos de lista para el detalle vigente.
 

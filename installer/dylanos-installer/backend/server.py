@@ -853,6 +853,14 @@ def sanitize_installed_live_access(target=Path("/target")):
     sddm_config.write_text("\n".join(kept) + ("\n" if kept else ""), encoding="utf-8")
 
 
+def target_iot_profile_enabled(target=Path("/target")):
+    """Return whether the installed target was built with the dedicated IoT profile."""
+    try:
+        return (target / "etc/dylanos-profile").read_text(encoding="utf-8").strip() == "iot"
+    except OSError:
+        return False
+
+
 def create_target_user(username, fullname, password, root_password):
     """Crea la cuenta del usuario en el sistema instalado de forma segura.
 
@@ -865,9 +873,15 @@ def create_target_user(username, fullname, password, root_password):
         run_cmd(
             f"chroot /target useradd -m -s /bin/bash -c {shlex.quote(fullname or 'DylanOS User')} {shlex.quote(username)}"
         )
-    run_quiet(
-        f"chroot /target usermod -aG sudo,audio,video,plugdev,netdev,users,input,render {shlex.quote(username)}"
-    )
+    target_groups = ["sudo", "audio", "video", "plugdev", "netdev", "users", "input", "render"]
+    # Grant hardware device access only for the dedicated IoT image, never for
+    # regular/minimal installs; groups are distro/package-dependent.
+    if target_iot_profile_enabled():
+        for hardware_group in ("dialout", "i2c", "gpio"):
+            if run_cmd(f"chroot /target getent group {hardware_group}", check=False):
+                target_groups.append(hardware_group)
+    groups = ",".join(target_groups)
+    run_quiet(f"chroot /target usermod -aG {groups} {shlex.quote(username)}")
 
     # Eliminar la cuenta live si el usuario eligió otro nombre.
     if username != "dylan":
