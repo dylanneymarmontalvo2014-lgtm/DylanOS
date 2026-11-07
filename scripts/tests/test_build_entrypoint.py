@@ -70,6 +70,17 @@ class BuildEntrypointTest(unittest.TestCase):
                 if holder.stderr:
                     holder.stderr.close()
 
+    def test_iot_profile_is_selectable_without_mixing_development_tools(self):
+        build = (ROOT / "scripts/build.sh").read_text(encoding="utf-8")
+        self.assertIn("--iot)", build)
+        self.assertIn("PROFILE=iot", build)
+        self.assertIn("iot) groups+=(iot)", build)
+        self.assertIn("development) groups+=(development)", build)
+        self.assertIn("systemctl --root=/ disable mosquitto.service", build)
+        self.assertIn("etc/dylanos-profile", build)
+        self.assertIn("PROFILE=\"$PROFILE\"", build)
+        self.assertIn("--minimal|--iot", build)
+
     def test_docker_builder_supports_plugin_and_standalone_compose_v2(self):
         init = (ROOT / "init.sh").read_text(encoding="utf-8")
         dockerfile = (ROOT / "Dockerfile").read_text(encoding="utf-8")
