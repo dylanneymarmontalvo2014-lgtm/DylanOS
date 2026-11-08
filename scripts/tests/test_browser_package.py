@@ -1,7 +1,8 @@
 """Pruebas del scaffold Debian de DylanOS Browser.
 
 Estas pruebas describen el contrato de empaquetado sin fabricar ni ejecutar un
-binario del navegador. El binario candidato debe llegar desde DylanOS-Browser.
+binario del navegador. El binario candidato debe producirse desde
+`apps/dylanos-browser`.
 """
 
 from configparser import ConfigParser
@@ -14,7 +15,7 @@ import unittest
 
 
 ROOT = Path(__file__).resolve().parents[2]
-BROWSER = ROOT / "browser"
+BROWSER = ROOT / "apps" / "dylanos-browser"
 DEBIAN = BROWSER / "debian"
 
 

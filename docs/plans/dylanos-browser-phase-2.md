@@ -7,9 +7,9 @@
 probarlo contra Gecko/Zen, generar un artefacto fuente verificable y preparar un
 paquete Debian transitorio instalable junto a Firefox ESR.
 
-**Arquitectura:** `DylanOS-Browser` sigue siendo la fuente del producto y descarga
-Gecko mediante Surfer. `DylanOS` consume artefactos fijados por URL y SHA-256; no
-compila Gecko durante el staging ni cambia defaults XDG en esta fase.
+**Arquitectura:** `apps/dylanos-browser/` es la fuente del producto y descarga Gecko
+mediante Surfer. DylanOS consume artefactos fijados por URL y SHA-256; no compila Gecko
+durante el staging ni cambia defaults XDG en esta fase.
 
 **Spec:** `docs/design/dylanos-browser.md`
 
@@ -88,8 +88,8 @@ manifiesto con versiones de Node, Python, Rust, clang y Surfer.
 
 ## Task 4: Artefacto fuente y paquete Debian transitorio
 
-**DylanOS files:** `browser/debian/`, scripts de empaquetado, tests de paquete y
-`browser/source.lock.json`.
+**DylanOS files:** `apps/dylanos-browser/debian/`, scripts de empaquetado, tests de
+paquete y `apps/dylanos-browser/source.lock.json`.
 
 1. Escribir pruebas RED del paquete: nombre/versión, binario, desktop ID, icono,
    MIME declarados, política de updater desactivado, fuente correspondiente y

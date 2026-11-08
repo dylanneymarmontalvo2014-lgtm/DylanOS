@@ -1,0 +1,50 @@
+diff --git a/browser/components/preferences/preferences.xhtml b/browser/components/preferences/preferences.xhtml
+index e8da75f2c27e312e0170520959d3daf883f56048..e1be6c694ab7d9d7268a48e3ae76154971ca939a 100644
+--- a/browser/components/preferences/preferences.xhtml
++++ b/browser/components/preferences/preferences.xhtml
+@@ -39,6 +39,8 @@
+   <link rel="stylesheet" href="chrome://browser/content/preferences/widgets/setting-pane.css" />
+   <link rel="stylesheet" href="chrome://browser/content/preferences/widgets/setting-control.css" />
+ 
++#include zen-preferences-links.xhtml
++
+   <link rel="localization" href="branding/brand.ftl"/>
+   <link rel="localization" href="browser/browser.ftl"/>
+     <!-- Used by fontbuilder.js -->
+@@ -121,6 +123,26 @@
+         iconsrc="chrome://browser/skin/preferences/category-general.svg"
+         data-l10n-id="pane-general-title">
+       </html:moz-page-nav-button>
++      <html:moz-page-nav-button id="category-zen-looks"
++        view="paneZenLooks"
++        iconsrc="chrome://browser/skin/customize.svg"
++        data-l10n-id="pane-zen-looks-title">
++      </html:moz-page-nav-button>
++      <html:moz-page-nav-button id="category-zen-tabs-management"
++        view="paneZenTabManagement"
++        iconsrc="chrome://browser/skin/window.svg"
++        data-l10n-id="pane-zen-tabs-title">
++      </html:moz-page-nav-button>
++      <html:moz-page-nav-button id="category-zen-CKS"
++        href="about:keyboard"
++        iconsrc="chrome://browser/skin/preferences/category-accessibility.svg"
++        data-l10n-id="pane-zen-CKS-title">
++      </html:moz-page-nav-button>
++      <html:moz-page-nav-button id="category-zen-marketplace"
++        view="paneZenMarketplace"
++        iconsrc="chrome://mozapps/skin/extensions/category-themes.svg"
++        data-l10n-id="pane-zen-marketplace-title">
++      </html:moz-page-nav-button>
+       <html:moz-page-nav-button id="category-sync"
+         hidden="true"
+         view="paneSync"
+@@ -257,6 +279,9 @@
+ #include privacy.inc.xhtml
+ #include sync.inc.xhtml
+ #include moreFromMozilla.inc.xhtml
++#include zenLooksAndFeel.inc.xhtml
++#include zenTabsManagement.inc.xhtml
++#include zenMarketplace.inc.xhtml
+         </vbox>
+       </vbox>
+     </vbox>

@@ -6,10 +6,10 @@ import unittest
 
 
 ROOT = Path(__file__).resolve().parents[2]
-LOCK_PATH = ROOT / "browser" / "source.lock.json"
+LOCK_PATH = ROOT / "apps" / "dylanos-browser" / "source.lock.json"
 EXPECTED_LOCK = {
     "schema_version": 1,
-    "repository": "https://github.com/dylanneymarmontalvo2014-lgtm/DylanOS-Browser.git",
+    "repository": "https://github.com/dylanneymarmontalvo2014-lgtm/DylanOS.git",
     "upstream": {
         "repository": "https://github.com/zen-browser/desktop.git",
         "tag": "1.24b",
