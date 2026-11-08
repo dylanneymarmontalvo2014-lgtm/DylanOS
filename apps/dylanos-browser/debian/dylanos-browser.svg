@@ -1,7 +1,13 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" role="img" aria-labelledby="title">
-  <title>DylanOS Browser</title>
-  <circle cx="32" cy="32" r="29" fill="#0a0a0a"/>
-  <path d="M32 9a23 23 0 1 0 23 23H32z" fill="#e50914"/>
-  <path d="M32 9v23h23A23 23 0 0 0 32 9z" fill="#fff"/>
-  <circle cx="32" cy="32" r="8" fill="#0a0a0a"/>
+<svg xmlns="http://www.w3.org/2000/svg" width="128" height="128" viewBox="0 0 128 128" role="img" aria-labelledby="title desc">
+  <title id="title">DylanOS Browser</title>
+  <desc id="desc">Ventana Crimson con un globo de navegación</desc>
+  <rect x="7" y="7" width="114" height="114" rx="30" fill="#0A0A0A" stroke="#DC143C" stroke-width="3"/>
+  <path d="M18 42h92" fill="none" stroke="#FFFFFF" stroke-opacity=".82" stroke-width="3"/>
+  <circle cx="29" cy="25" r="4" fill="#DC143C"/>
+  <circle cx="42" cy="25" r="4" fill="#FFFFFF" fill-opacity=".82"/>
+  <circle cx="55" cy="25" r="4" fill="#FFFFFF" fill-opacity=".36"/>
+  <circle cx="64" cy="77" r="25" fill="#1A1A1A" stroke="#FFFFFF" stroke-width="4"/>
+  <path d="M64 52v50M39 77h50M48 61c9 6 23 6 32 0M48 93c9-6 23-6 32 0" fill="none" stroke="#DC143C" stroke-linecap="round" stroke-width="4"/>
+  <path d="M64 52c-7 7-11 16-11 25s4 18 11 25M64 52c7 7 11 16 11 25s-4 18-11 25" fill="none" stroke="#DC143C" stroke-opacity=".72" stroke-width="3"/>
+  <path d="M91 94l13 6-6-13-3 5z" fill="#FFFFFF"/>
 </svg>
