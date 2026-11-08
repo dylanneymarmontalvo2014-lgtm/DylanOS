@@ -1,0 +1,18 @@
+{
+  "id": "emulation",
+  "name": "Gaming Emulation",
+  "summary": "Ajustes conservadores para emuladores y menor interferencia del overlay",
+  "power_profile": "balanced",
+  "governor": "schedutil",
+  "mangohud": false,
+  "mangohud_preset": "emulation",
+  "notifications_inhibit": false,
+  "env": {
+    "MANGOHUD": "0"
+  },
+  "gpu_env": {
+    "amd": {},
+    "nvidia": {},
+    "intel": {}
+  }
+}

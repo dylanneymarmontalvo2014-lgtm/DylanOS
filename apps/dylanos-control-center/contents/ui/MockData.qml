@@ -12,6 +12,22 @@ QtObject {
     // kcmshell6 puede no estar disponible en el sistema; sin el flag el
     // ejecutor emite comandos que nadie consumirá.
     property bool kcmshellAvailable: true
+    property var gamingStatus: ({})
+    readonly property var gamingProfileIds: ["balanced", "performance", "competitive", "streaming", "emulation"]
+
+    function refreshGaming() {
+        exec.connectSource("dylanos-configuration --gaming-status --headless")
+    }
+    function setGamingProfile(id) {
+        if (gamingProfileIds.indexOf(id) < 0) return
+        exec.connectSource("dylanos-configuration --gaming-profile " + id + " --headless")
+    }
+    function restoreGamingProfile() {
+        exec.connectSource("dylanos-configuration --restore-gaming-profile --headless")
+    }
+    function openGamingSettings() {
+        run("dylanos-configuration --page gaming")
+    }
 
     readonly property var secondaryActions: [
         { id: "kdeconnect", icon: "kdeconnect", label: "KDE Connect", command: "kcmshell6 kcm_kdeconnect" },
@@ -27,5 +43,15 @@ QtObject {
     readonly property P5Support.DataSource exec: P5Support.DataSource {
         engine: "executable"
         connectedSources: []
+        onNewData: (sourceName, data) => {
+            disconnectSource(sourceName)
+            if (sourceName === "dylanos-configuration --gaming-status --headless") {
+                try {
+                    MockData.gamingStatus = JSON.parse(data.stdout || "{}")
+                } catch (error) {
+                    MockData.gamingStatus = ({})
+                }
+            }
+        }
     }
 }

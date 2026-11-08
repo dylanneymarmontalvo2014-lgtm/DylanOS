@@ -9,7 +9,10 @@ Este directorio define los conjuntos de paquetes Debian que componen los distint
 - **`development/`**: Perfil predeterminado (`PROFILE=development`). Incluye el entorno de desarrollo con Visual Studio Code (repo oficial configurado mediante `setup-repos.sh`), toolchains y utilidades.
 - **`iot/`**: Perfil especializado de IoT/embebidos, seleccionable con `bash scripts/build.sh --iot`. Añade Arduino IDE y toolchain AVR, depuración/flasheo para OpenOCD/ESP/STM32, utilidades MQTT/CAN, serial, I2C/GPIO y análisis lógico. No se mezcla con `development`; parte de la base común `default` + dependencias de build.
 
-## Perfiles reservados
+## Perfil de usuario
 
-- **`gaming/`**: reservado para una futura versión.
-
+- **`gaming/`**: catálogo, perfiles declarativos, overlays y paquetes Debian
+  opcionales de DylanOS Gaming. No se agrega al ISO base; se administra desde
+  DylanOS Configuration y el Centro de Control. El `packages.list` describe
+  dependencias del conjunto Gaming y no convierte el perfil en un perfil de
+  construcción seleccionable.

@@ -1,0 +1,21 @@
+{
+  "id": "streaming",
+  "name": "Gaming Streaming",
+  "summary": "Gaming y captura simultánea sin forzar el governor al máximo",
+  "power_profile": "balanced",
+  "governor": "schedutil",
+  "mangohud": true,
+  "mangohud_preset": "streaming",
+  "notifications_inhibit": true,
+  "obs_profile": "dylanos-streaming",
+  "env": {
+    "MANGOHUD": "1"
+  },
+  "gpu_env": {
+    "amd": {},
+    "nvidia": {
+      "__GL_THREADED_OPTIMIZATIONS": "1"
+    },
+    "intel": {}
+  }
+}

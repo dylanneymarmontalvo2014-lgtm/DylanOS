@@ -1,0 +1,21 @@
+{
+  "id": "performance",
+  "name": "Gaming Performance",
+  "summary": "Prioridad al rendimiento en procesos nuevos de esta sesión",
+  "power_profile": "performance",
+  "governor": "performance",
+  "mangohud": true,
+  "mangohud_preset": "performance",
+  "notifications_inhibit": false,
+  "env": {
+    "MANGOHUD": "1",
+    "DXVK_HUD": "0"
+  },
+  "gpu_env": {
+    "amd": {},
+    "nvidia": {
+      "__GL_THREADED_OPTIMIZATIONS": "1"
+    },
+    "intel": {}
+  }
+}
