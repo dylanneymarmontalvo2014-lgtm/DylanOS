@@ -47,6 +47,8 @@ El proyecto reúne aplicaciones y herramientas propias alrededor de tareas cotid
 - **App Center**: acceso a las aplicaciones instaladas.
 - **Spotlight**: búsqueda rápida.
 - **Calculator**: calculadora de escritorio Qt.
+- **DylanOS Browser**: navegador propio basado en Gecko, en integración de paquete.
+- **DylanOS Process**: monitor real de procesos y recursos del sistema.
 
 <p align="center">
 	<img src="https://raw.githubusercontent.com/dylanneymarmontalvo2014-lgtm/DylanOS/development/previews/DylanOS%20explorer/explorer-home.png" alt="Pantalla de inicio de DylanOS Explorer" width="49%">

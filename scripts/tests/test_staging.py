@@ -63,6 +63,10 @@ class StagingTest(unittest.TestCase):
             module.stage(root)
             self.assertTrue((root / "usr/share/applications/org.dylanos.process.desktop").is_file())
             self.assertTrue((root / "usr/share/icons/hicolor/scalable/apps/dylanos-process.svg").is_file())
+            process_icon = (root / "usr/share/icons/hicolor/scalable/apps/dylanos-process.svg").read_text(encoding="utf-8")
+            self.assertIn('<title id="title">DylanOS Process</title>', process_icon)
+            self.assertIn("#DC143C", process_icon)
+            self.assertIn("#0A0A0A", process_icon)
             for filename in ("org.kde.plasma-systemmonitor.desktop", "plasma-systemmonitor.desktop"):
                 self.assertFalse((applications / filename).exists(), f"No debe quedar el lanzador upstream {filename}")
             process_desktop = (root / "usr/share/applications/org.dylanos.process.desktop").read_text(encoding="utf-8")

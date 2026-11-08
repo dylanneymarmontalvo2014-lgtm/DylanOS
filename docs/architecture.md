@@ -11,7 +11,8 @@ la arquitectura **real** del repositorio tras la iteración de ingeniería de 20
    `dylanos` (workspace, PySide6, 6 páginas), `dylanos-explorer` (gestor de archivos
    único del sistema), `dylanos-store` (tienda, fork de Discover con libdiscover real),
    `dylanos-configuration` (centro de configuración único), `dylanos-app-center`,
-   `dylanos-calculator`, `dylanos-spotlight`, `dylanos-installer`.
+   `dylanos-calculator`, `dylanos-spotlight`, `dylanos-installer`, `dylanos-browser`
+   (fork Gecko en integración) y `dylanos-process` (monitor real de procesos y recursos).
 3. **Shell del escritorio**: paneles Plasma generados por el layout del look-and-feel
    (`org.dylanos.crimson`) con plasmoids propios (`com.dylanos.activeapp`,
    `com.dylanos.search`, `com.dylanos.controlcenter`) y `com.dylanos.dock` como

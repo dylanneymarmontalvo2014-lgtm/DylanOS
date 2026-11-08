@@ -26,6 +26,8 @@ El orden exacto y los tipos de panel se definen en el [layout del escritorio](..
 | DylanOS Configuration (`dylanos-configuration`) | Preferencias DylanOS y módulos nativos de KDE | Menú o `dylanos-configuration`; secciones mediante `--page` |
 | DylanOS Spotlight (`dylanos-spotlight`) | Lanzador/búsqueda rápida | `Ctrl+Espacio`, lupa o `dylanos-spotlight` |
 | DylanOS Console (`dylanos-console`) | Terminal Kitty con configuración Crimson | Menú o `dylanos-console [--directory ruta]` |
+| DylanOS Browser (`dylanos-browser`) | Navegador web propio basado en Gecko | `dylanos-browser [URL]`; integración de paquete en fase de preparación |
+| DylanOS Process (`dylanos-process`) | Monitor real de procesos y recursos del sistema | Menú o `dylanos-process` |
 | `about` | Agradece a las personas listadas como mantenedoras | Terminal: `about` |
 | `neofetch` / `sistema` | Resumen del equipo con logo gráfico; `sistema` es alias Bash | Terminal interactiva |
 | `dylanos-installer` | Asistente para instalar DylanOS | Acceso «Instalar DylanOS» en la sesión live o menú |
@@ -33,6 +35,11 @@ El orden exacto y los tipos de panel se definen en el [layout del escritorio](..
 `dylanos` acepta `--page` con las seis claves indicadas arriba. También ofrece opciones de QA `--smoke`, `--screenshot archivo` y `--appearance dark|light`; estas opciones no son necesarias para el uso cotidiano. `dylanos-configuration --page <sección>` abre una sección del panel (por ejemplo, `network`, `sound`, `display`, `power`, `accounts` o `personalization`).
 
 El comando `about` lee `/usr/share/dylanos/MAINTAINERS.txt` y usa los bloques `MANTENEDOR`; no mantiene una lista duplicada dentro del script. Si el archivo no está disponible o no contiene nombres válidos, muestra un error en lugar de inventar créditos.
+
+Los lanzadores de DylanOS Browser y DylanOS Process usan iconos propios (`dylanos-browser` y
+`dylanos-process`) instalados en el tema Hicolor. Browser conserva Firefox ESR como navegador
+estable mientras termina su integración de paquete; Process usa datos reales de KSysGuard y
+`ksystemstats` y conserva la confirmación antes de enviar señales a un proceso.
 
 ### Workspace
 

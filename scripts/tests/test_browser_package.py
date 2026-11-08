@@ -115,6 +115,13 @@ class BrowserDebianPackageTest(unittest.TestCase):
         self.assertNotIn("usr/bin/firefox", sources)
         self.assertNotIn("fake", " ".join(sources).lower())
 
+    def test_icon_is_a_dylanos_brand_asset(self):
+        icon = (DEBIAN / "dylanos-browser.svg").read_text(encoding="utf-8")
+        self.assertIn('<title id="title">DylanOS Browser</title>', icon)
+        self.assertIn("#DC143C", icon)
+        self.assertIn("#0A0A0A", icon)
+        self.assertNotIn("#e50914", icon)
+
     def test_desktop_entry_declares_identity_mimes_actions_and_no_updater(self):
         desktop_path = DEBIAN / "org.dylanos.browser.desktop"
         self.assertTrue(desktop_path.is_file(), f"Falta {desktop_path}")
