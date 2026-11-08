@@ -1,0 +1,7 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" role="img" aria-labelledby="title">
+  <title>DylanOS Browser</title>
+  <circle cx="32" cy="32" r="29" fill="#0a0a0a"/>
+  <path d="M32 9a23 23 0 1 0 23 23H32z" fill="#e50914"/>
+  <path d="M32 9v23h23A23 23 0 0 0 32 9z" fill="#fff"/>
+  <circle cx="32" cy="32" r="8" fill="#0a0a0a"/>
+</svg>

@@ -1,0 +1,16 @@
+Source: dylanos-browser
+Section: web
+Priority: optional
+Maintainer: DylanOS Maintainers <maintainers@dylanos.local>
+Build-Depends: debhelper-compat (= 13)
+Standards-Version: 4.7.0
+Rules-Requires-Root: no
+Homepage: https://github.com/dylanneymarmontalvo2014-lgtm/DylanOS-Browser
+X-DylanOS-Source-Contract: browser/source.lock.json
+
+Package: dylanos-browser
+Architecture: amd64
+Depends: ${shlibs:Depends}, ${misc:Depends}
+Description: DylanOS web browser
+ A DylanOS-branded browser built from the separately maintained DylanOS-Browser
+ source tree. It is packaged alongside Firefox ESR during the transition.
