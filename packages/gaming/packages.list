@@ -1,0 +1,44 @@
+# DylanOS Gaming — paquetes Debian 13 (trixie) del perfil ISO.
+# Un paquete por línea. Las aplicaciones que no están en el suite se
+# instalan después desde Flathub (catálogo en catalog.json).
+
+# Cliente Steam oficial empaquetado por Debian (contrib). Requiere i386.
+steam-installer
+steam-devices
+
+# Gestores y capa de compatibilidad Windows
+lutris
+wine
+wine64
+wine32:i386
+fonts-wine
+winetricks
+dxvk
+libvkd3d1
+
+# Superposición de rendimiento y ajuste visual de MangoHud
+mangohud
+goverlay
+gamemode
+libgamemode0
+libgamemodeauto0
+
+# Captura y streaming
+obs-studio
+
+# Emulación presente en el suite amd64 (PCSX2 Debian es solo i386)
+dolphin-emu
+retroarch
+
+# CoreCtrl: perfiles de aplicación/GPU; útil sobre todo en AMD
+corectrl
+
+# Diagnóstico gráfico y 32-bit para Proton/Wine
+vulkan-tools
+mesa-utils
+mesa-vulkan-drivers
+mesa-vulkan-drivers:i386
+libgl1-mesa-dri:i386
+packagekit-tools
+zram-tools
+pipewire-alsa

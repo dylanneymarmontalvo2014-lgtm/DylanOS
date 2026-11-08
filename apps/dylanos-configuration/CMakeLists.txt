@@ -18,6 +18,7 @@ qt_add_executable(dylanos-configuration
     src/main.cpp
     src/services/CrimsonGlassService.cpp
     src/services/SystemService.cpp
+    src/services/GamingService.cpp
     src/services/LucideProvider.cpp
 )
 
@@ -73,6 +74,7 @@ qt_add_qml_module(dylanos-configuration
         qml/pages/NotificationsPage.qml
         qml/pages/StoragePage.qml
         qml/pages/CrimsonGlassPage.qml
+        qml/pages/GamingPage.qml
         qml/Main.qml
 )
 
@@ -142,6 +144,7 @@ qt_add_resources(dylanos-configuration "assets"
         assets/icons/sliders-horizontal.svg
         assets/icons/box.svg
         assets/icons/download.svg
+        assets/icons/gamepad-2.svg
 )
 
 target_link_libraries(dylanos-configuration PRIVATE

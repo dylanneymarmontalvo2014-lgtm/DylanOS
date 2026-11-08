@@ -32,6 +32,27 @@ QtObject {
         if (dndLockedByApplication) return
         if (doNotDisturb) notificationSettings.resetNotificationsInhibitedUntil()
         else notificationSettings.setNotificationsInhibitedUntil(new Date(Date.now() + 8 * 60 * 60 * 1000))
+        gamingInhibitedNotifications = false
+    }
+
+    property bool gamingInhibitedNotifications: false
+    function applyGamingProfile(id) {
+        MockData.setGamingProfile(id)
+        const inhibits = id === "competitive" || id === "streaming"
+        if (inhibits && !doNotDisturb) {
+            toggleDoNotDisturb()
+            gamingInhibitedNotifications = doNotDisturb
+        } else if (!inhibits && gamingInhibitedNotifications) {
+            notificationSettings.resetNotificationsInhibitedUntil()
+            gamingInhibitedNotifications = false
+        }
+    }
+    function restoreGamingProfile() {
+        MockData.restoreGamingProfile()
+        if (gamingInhibitedNotifications) {
+            notificationSettings.resetNotificationsInhibitedUntil()
+            gamingInhibitedNotifications = false
+        }
     }
 
     // =====================================================================

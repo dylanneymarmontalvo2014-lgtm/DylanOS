@@ -1,0 +1,19 @@
+{
+  "id": "balanced",
+  "name": "Gaming Balanced",
+  "summary": "Rendimiento y consumo equilibrados",
+  "power_profile": "balanced",
+  "governor": null,
+  "mangohud": true,
+  "mangohud_preset": "balanced",
+  "notifications_inhibit": false,
+  "env": {
+    "MANGOHUD": "0",
+    "ENABLE_VKBASALT": "0"
+  },
+  "gpu_env": {
+    "amd": {},
+    "nvidia": {},
+    "intel": {}
+  }
+}

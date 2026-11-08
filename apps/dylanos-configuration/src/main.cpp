@@ -1,14 +1,17 @@
 #include <QCommandLineParser>
 #include <QGuiApplication>
 #include <QImage>
+#include <QJsonDocument>
 #include <QQmlApplicationEngine>
 #include <QQmlContext>
 #include <QQuickWindow>
 #include <QTimer>
+#include <cstdio>
 
 #include "services/LucideProvider.h"
 #include "services/CrimsonGlassService.h"
 #include "services/SystemService.h"
+#include "services/GamingService.h"
 
 int main(int argc, char *argv[])
 {
@@ -27,23 +30,57 @@ int main(int argc, char *argv[])
     QCommandLineOption sizeOption("size", "Tamaño de la ventana para capturas (WxH).", "size");
     QCommandLineOption applyGlassOption(QStringLiteral("apply-crimson-glass"),
                                         QStringLiteral("Aplicar Crimson Glass y salir."));
+    QCommandLineOption gamingProfileOption(QStringLiteral("gaming-profile"),
+                                            QStringLiteral("Aplicar un perfil Gaming permitido y salir."),
+                                            QStringLiteral("id"));
+    QCommandLineOption gamingRestoreOption(QStringLiteral("restore-gaming-profile"),
+                                            QStringLiteral("Restaurar los ajustes previos de Gaming y salir."));
+    QCommandLineOption gamingStatusOption(QStringLiteral("gaming-status"),
+                                          QStringLiteral("Imprimir el estado Gaming en JSON y salir."));
     QCommandLineOption headlessOption(QStringLiteral("headless"),
                                       QStringLiteral("No abrir la interfaz gráfica."));
     parser.addOptions({pageOption, smokeOption, screenshotOption, sizeOption,
-                       applyGlassOption, headlessOption});
+                       applyGlassOption, gamingProfileOption, gamingRestoreOption,
+                       gamingStatusOption, headlessOption});
     parser.process(app);
+
+    if (parser.isSet(applyGlassOption)) {
+        auto *glassService = new CrimsonGlassService(&app);
+        return glassService->apply() ? 0 : 2;
+    }
+    if (parser.isSet(gamingStatusOption)) {
+        auto *gamingService = new GamingService(&app, false);
+        const QJsonDocument status = QJsonDocument::fromVariant(gamingService->status());
+        const QByteArray json = status.toJson(QJsonDocument::Compact);
+        fwrite(json.constData(), 1, size_t(json.size()), stdout);
+        fputc('\n', stdout);
+        return 0;
+    }
+    if (parser.isSet(gamingProfileOption)) {
+        auto *gamingService = new GamingService(&app, false);
+        const bool ok = gamingService->applyProfile(parser.value(gamingProfileOption));
+        if (!ok)
+            fprintf(stderr, "%s\n", gamingService->lastError().toUtf8().constData());
+        return ok ? 0 : 2;
+    }
+    if (parser.isSet(gamingRestoreOption)) {
+        auto *gamingService = new GamingService(&app, false);
+        const bool ok = gamingService->restoreProfile();
+        if (!ok)
+            fprintf(stderr, "%s\n", gamingService->lastError().toUtf8().constData());
+        return ok ? 0 : 2;
+    }
+    if (parser.isSet(headlessOption))
+        return 0;
 
     auto *service = new SystemService(&app);
     auto *glassService = new CrimsonGlassService(&app);
-
-    if (parser.isSet(applyGlassOption))
-        return glassService->apply() ? 0 : 2;
-    if (parser.isSet(headlessOption))
-        return 0;
+    auto *gamingService = new GamingService(&app);
 
     QQmlApplicationEngine engine;
     engine.rootContext()->setContextProperty(QStringLiteral("System"), service);
     engine.rootContext()->setContextProperty(QStringLiteral("CrimsonGlass"), glassService);
+    engine.rootContext()->setContextProperty(QStringLiteral("Gaming"), gamingService);
     engine.addImageProvider(QStringLiteral("lucide"), new LucideProvider());
 
     engine.rootContext()->setContextProperty(QStringLiteral("startPage"),

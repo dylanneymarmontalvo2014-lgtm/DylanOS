@@ -11,6 +11,8 @@ Qt6/QML que replica el prototipo previews/DylanOS configuration.
 - src/services/SystemService: puente con el sistema real (ver tabla siguiente).
 - src/services/CrimsonGlassService: preferencias validadas, deteccion de
   capacidades, respaldo por clave y adaptadores KWin/Plasma/Qt/GTK.
+- src/services/GamingService: catálogo de 20 aplicaciones, detección de
+  hardware, instalación PackageKit/Flathub y perfiles Gaming reversibles.
 - src/services/LucideProvider: proveedor image://lucide que recolorea los SVG
   Lucide de assets/icons/ en tiempo de ejecucion.
 - qml/Theme.qml: tokens visuales alineados con el Crimson oficial #DC143C / #FF4565 / #A50F2E, radios, superficies
@@ -21,7 +23,7 @@ Qt6/QML que replica el prototipo previews/DylanOS configuration.
 - qml/pages/: las 16 rutas base del prototipo (System, About, Personalization,
   Network, Bluetooth, Apps, Accounts, DateTime, Privacy, Power, Accessibility,
   Updates, Display, Sound, Notifications, Storage) y la ruta integrada
-  `Crimson Glass` desde Personalizacion.
+  `Crimson Glass` desde Personalizacion y `Gaming` con siete subsecciones.
 
 ## Funciones reales vs. delegadas
 

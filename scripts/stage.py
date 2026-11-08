@@ -58,6 +58,7 @@ def stage(destination, installer_dist=None, version=None):
 
 
 
+    remove("/usr/share/dylanos/gaming")
     for source, target in [
         ("apps/workspace", "/usr/share/dylanos/workspace"),
         ("branding/logo.png", "/usr/share/dylanos/workspace/assets/logo.png"),
@@ -91,6 +92,11 @@ def stage(destination, installer_dist=None, version=None):
         ("apps/com.dylanos.dock", "/usr/share/plasma/plasmoids/com.dylanos.dock"),
         ("apps/com.dylanos.search", "/usr/share/plasma/plasmoids/com.dylanos.search"),
         ("apps/dylanos-control-center", "/usr/share/plasma/plasmoids/com.dylanos.controlcenter"),
+        ("packages/gaming/catalog.json", "/usr/share/dylanos/gaming/catalog.json"),
+        ("packages/gaming/profiles", "/usr/share/dylanos/gaming/profiles"),
+        ("packages/gaming/overlay", "/usr/share/dylanos/gaming/overlay"),
+        ("packages/gaming/polkit/org.dylanos.gaming.policy", "/usr/share/polkit-1/actions/org.dylanos.gaming.policy"),
+        ("apps/dylanos-configuration/helper/dylanos-gaming-helper.py", "/usr/lib/dylanos/dylanos-gaming-helper.py"),
         ("installer/dylanos-installer/dist", "/usr/share/dylanos/installer/dist"),
         ("installer/dylanos-installer/backend", "/usr/share/dylanos/installer/backend"),
         ("installer/dylanos-installer/native", "/usr/share/dylanos/installer/native"),
@@ -133,6 +139,7 @@ def stage(destination, installer_dist=None, version=None):
     write("/usr/bin/dylanos", '#!/bin/sh\nexec /usr/bin/python3 /usr/share/dylanos/workspace/main.py "$@"\n', 0o755)
     write("/usr/bin/about", '#!/usr/bin/python3\n"""Show DylanOS maintainers from the project\'s maintained credits file."""\nfrom pathlib import Path\nimport os\nimport re\nimport sys\n\nMAINTAINERS = Path(os.environ.get("DYLANOS_MAINTAINERS_FILE", "/usr/share/dylanos/MAINTAINERS.txt"))\ntry:\n    text = MAINTAINERS.read_text(encoding="utf-8")\nexcept OSError as error:\n    print(f"about: no se pudo leer la lista de mantenedores: {error}", file=sys.stderr)\n    raise SystemExit(1)\nlines = text.splitlines()\nnames = [lines[i + 2].strip() for i in range(len(lines) - 2) if lines[i].strip() == "MANTENEDOR" and lines[i + 1] and set(lines[i + 1]) == {"-"} and lines[i + 2].strip()]\nif not names:\n    print("about: no hay mantenedores registrados.", file=sys.stderr)\n    raise SystemExit(1)\nif len(names) == 1:\n    creditos = names[0]\nelse:\n    creditos = ", ".join(names[:-1]) + " y " + names[-1]\nprint("Gracias a " + creditos + ", podemos mantener este bonito sistema.")\n', 0o755)
     write("/usr/bin/dylanos-spotlight", '#!/bin/sh\nexec /usr/bin/python3 /usr/share/dylanos/spotlight/main.py "$@"\n', 0o755)
+    write("/usr/lib/dylanos/dylanos-gaming-helper", '#!/bin/sh\nexec /usr/bin/python3 /usr/lib/dylanos/dylanos-gaming-helper.py "$@"\n', 0o755)
     write("/usr/share/applications/org.dylanos.spotlight.desktop", "[Desktop Entry]\nType=Application\nName=DylanOS Spotlight\nGenericName=Búsqueda rápida\nComment=Buscar aplicaciones, proyectos, archivos y cálculos\nExec=dylanos-spotlight\nIcon=system-search\nTerminal=false\nCategories=Utility;\nStartupNotify=false\n")
     write("/usr/bin/dylanos-installer", '''#!/bin/sh
 # Instalador nativo de DylanOS: ventana propia de escritorio (Qt WebEngine).

@@ -1,0 +1,23 @@
+{
+  "id": "competitive",
+  "name": "Gaming Competitive",
+  "summary": "Prioridad a latencia percibida y estabilidad; no promete FPS",
+  "power_profile": "performance",
+  "governor": "performance",
+  "mangohud": true,
+  "mangohud_preset": "competitive",
+  "notifications_inhibit": true,
+  "env": {
+    "MANGOHUD": "1",
+    "DXVK_FRAME_RATE": "0",
+    "vblank_mode": "0"
+  },
+  "gpu_env": {
+    "amd": {},
+    "nvidia": {
+      "__GL_THREADED_OPTIMIZATIONS": "1",
+      "__GL_SYNC_TO_VBLANK": "0"
+    },
+    "intel": {}
+  }
+}

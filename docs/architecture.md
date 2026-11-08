@@ -81,7 +81,7 @@ chroot, con DBus); tests C++ reales en `tests/tst_fileoperations.cpp` vía ctest
 
 ## 4. DylanOS Configuration (apps/dylanos-configuration)
 
-Centro de configuración **único**. 16 páginas QML del prototipo aprobado sobre
+Centro de configuración **único**. 16 páginas QML base del prototipo aprobado sobre
 `SystemService` (C++), que usa las herramientas reales de KDE/Linux: `kcmshell6`
 (módulos KCM nativos), `plasma-apply-*`, `nmcli`, `pactl`, `bluetoothctl`,
 `powerprofilesctl`, `timedatectl`, `/proc`-`/sys`, QSettings/KConfig. No hay simulaciones.
@@ -105,6 +105,16 @@ software, genera un tema Plasma por usuario y aplica efectos, esquema Qt y tema
 GTK. Antes de tocar configuración externa crea un respaldo por clave. El
 autostart usa `--apply-crimson-glass --headless` y termina; no añade un servicio
 residente.
+
+La sección **Gaming** añade el `GamingService` (catálogo declarativo, detección
+de hardware, PackageKit/Flathub y cinco perfiles reversibles). El estado del
+perfil se comparte en `~/.local/state/dylanos/gaming/backup.json`; el Centro de
+Control usa modos de línea de comandos limitados para aplicar, consultar y
+restaurar ese mismo estado. No existe todavía un gestor genérico de perfiles de
+usuario: los perfiles de `packages/` son conjuntos de paquetes del sistema y no
+se presentan como ese gestor. El catálogo y el helper Polkit se copian durante
+staging, mientras que las aplicaciones Gaming no se agregan al ISO base.
+Detalles y limitaciones: [DylanOS Gaming](gaming.md).
 
 ## 5. Temas GTK y Qt
 

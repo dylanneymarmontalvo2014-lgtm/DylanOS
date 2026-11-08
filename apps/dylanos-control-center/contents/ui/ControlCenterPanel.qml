@@ -20,6 +20,7 @@ Rectangle {
     radius: 22
     border.color: cCardBorder
     border.width: 1
+    onVisibleChanged: if (visible) MockData.refreshGaming()
 
     layer.enabled: true
     layer.effect: MultiEffect {
@@ -35,6 +36,14 @@ Rectangle {
         anchors.fill: parent
         anchors.margins: 20
         spacing: 16
+
+        Component.onCompleted: MockData.refreshGaming()
+        Timer {
+            interval: 15000
+            repeat: true
+            running: root.visible
+            onTriggered: MockData.refreshGaming()
+        }
 
         RowLayout {
             Layout.fillWidth: true
@@ -232,6 +241,85 @@ Rectangle {
                         text: SystemStatus.darkModeActive ? "Activado" : "Desactivado"
                         color: SystemStatus.darkModeActive ? Qt.rgba(1, 1, 1, 0.85) : cLightGray
                         font.pixelSize: 11
+                    }
+                }
+            }
+        }
+
+        Rectangle {
+            Layout.fillWidth: true
+            Layout.preferredHeight: 138
+            radius: 16
+            color: cGray
+            border.color: cCardBorder
+            border.width: 1
+
+            ColumnLayout {
+                anchors.fill: parent
+                anchors.margins: 12
+                spacing: 8
+                RowLayout {
+                    Layout.fillWidth: true
+                    Kirigami.Icon {
+                        source: "input-gaming"
+                        isMask: true
+                        color: cCrimson
+                        Layout.preferredWidth: 20
+                        Layout.preferredHeight: 20
+                    }
+                    QQC2.Label {
+                        text: "Gaming"
+                        color: cWhite
+                        font.pixelSize: 14
+                        font.bold: true
+                    }
+                    QQC2.Label {
+                        Layout.fillWidth: true
+                        horizontalAlignment: Text.AlignRight
+                        text: (MockData.gamingStatus.activeProfile || "Sin perfil")
+                              + (MockData.gamingStatus.gpuVendor && MockData.gamingStatus.gpuVendor !== "unknown" ? " · " + MockData.gamingStatus.gpuVendor.toUpperCase() : "")
+                        color: cLightGray
+                        font.pixelSize: 11
+                        elide: Text.ElideRight
+                    }
+                    QQC2.ToolButton {
+                        icon.name: "configure"
+                        icon.color: cLightGray
+                        flat: true
+                        Accessible.name: "Abrir Gaming en DylanOS Configuration"
+                        onClicked: MockData.openGamingSettings()
+                    }
+                }
+                GridLayout {
+                    Layout.fillWidth: true
+                    columns: 3
+                    columnSpacing: 6
+                    rowSpacing: 4
+                    Repeater {
+                        model: [
+                            { id: "balanced", label: "Equilibrado" },
+                            { id: "performance", label: "Rendimiento" },
+                            { id: "competitive", label: "Competitivo" },
+                            { id: "streaming", label: "Streaming" },
+                            { id: "emulation", label: "Emulación" }
+                        ]
+                        delegate: QQC2.ToolButton {
+                            required property var modelData
+                            Layout.fillWidth: true
+                            text: modelData.label
+                            flat: true
+                            highlighted: MockData.gamingStatus.activeProfile === modelData.id
+                            Accessible.name: "Activar perfil Gaming " + modelData.label
+                            onClicked: SystemStatus.applyGamingProfile(modelData.id)
+                        }
+                    }
+                    QQC2.ToolButton {
+                        Layout.fillWidth: true
+                        text: "Restaurar"
+                        flat: true
+                        enabled: MockData.gamingStatus.hasBackup === true
+                        Accessible.name: "Restaurar ajustes previos a Gaming"
+                        onClicked: SystemStatus.restoreGamingProfile()
                     }
                 }
             }
