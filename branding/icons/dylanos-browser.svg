@@ -1,13 +1,32 @@
-<svg xmlns="http://www.w3.org/2000/svg" width="128" height="128" viewBox="0 0 128 128" role="img" aria-labelledby="title desc">
+<svg xmlns="http://www.w3.org/2000/svg" width="512" height="512" viewBox="0 0 512 512" role="img" aria-labelledby="title desc">
   <title id="title">DylanOS Browser</title>
-  <desc id="desc">Ventana Crimson con un globo de navegación</desc>
-  <rect x="7" y="7" width="114" height="114" rx="30" fill="#0A0A0A" stroke="#DC143C" stroke-width="3"/>
-  <path d="M18 42h92" fill="none" stroke="#FFFFFF" stroke-opacity=".82" stroke-width="3"/>
-  <circle cx="29" cy="25" r="4" fill="#DC143C"/>
-  <circle cx="42" cy="25" r="4" fill="#FFFFFF" fill-opacity=".82"/>
-  <circle cx="55" cy="25" r="4" fill="#FFFFFF" fill-opacity=".36"/>
-  <circle cx="64" cy="77" r="25" fill="#1A1A1A" stroke="#FFFFFF" stroke-width="4"/>
-  <path d="M64 52v50M39 77h50M48 61c9 6 23 6 32 0M48 93c9-6 23-6 32 0" fill="none" stroke="#DC143C" stroke-linecap="round" stroke-width="4"/>
-  <path d="M64 52c-7 7-11 16-11 25s4 18 11 25M64 52c7 7 11 16 11 25s-4 18-11 25" fill="none" stroke="#DC143C" stroke-opacity=".72" stroke-width="3"/>
-  <path d="M91 94l13 6-6-13-3 5z" fill="#FFFFFF"/>
+  <desc id="desc">Globo de navegación Crimson sobre vidrio oscuro</desc>
+  <defs>
+    <linearGradient id="background" x1="0" y1="0" x2="0" y2="512" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#1A1A1A"/>
+      <stop offset="1" stop-color="#0A0A0A"/>
+    </linearGradient>
+    <radialGradient id="glow" cx="256" cy="132" r="340" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#DC143C" stop-opacity=".18"/>
+      <stop offset="1" stop-color="#DC143C" stop-opacity="0"/>
+    </radialGradient>
+    <linearGradient id="crimson" x1="128" y1="116" x2="384" y2="420" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#ff5274"/>
+      <stop offset=".48" stop-color="#DC143C"/>
+      <stop offset="1" stop-color="#9c0b28"/>
+    </linearGradient>
+  </defs>
+
+  <rect width="512" height="512" rx="118" fill="url(#background)"/>
+  <rect width="512" height="512" rx="118" fill="url(#glow)"/>
+  <rect x="6" y="6" width="500" height="500" rx="112" fill="none" stroke="#ff5274" stroke-opacity=".25" stroke-width="3"/>
+  <rect x="64" y="26" width="384" height="14" rx="7" fill="#FFFFFF" fill-opacity=".11"/>
+
+  <circle cx="256" cy="274" r="152" fill="url(#crimson)"/>
+  <circle cx="256" cy="274" r="130" fill="#0A0A0A" stroke="#ff5274" stroke-opacity=".58" stroke-width="7"/>
+  <path d="M256 144v260M126 274h260" fill="none" stroke="#FFFFFF" stroke-opacity=".9" stroke-linecap="round" stroke-width="12"/>
+  <path d="M256 144c-39 35-60 78-60 130s21 95 60 130M256 144c39 35 60 78 60 130s-21 95-60 130" fill="none" stroke="#DC143C" stroke-linecap="round" stroke-width="12"/>
+  <path d="M136 219c35 22 76 33 120 33s85-11 120-33M136 329c35-22 76-33 120-33s85 11 120 33" fill="none" stroke="#DC143C" stroke-linecap="round" stroke-width="12"/>
+  <path d="M322 160l76-25-47 76-12-39-17-12z" fill="#FFFFFF"/>
+  <path d="M322 160l76-25-47 76-12-39z" fill="#ffb3c2" fill-opacity=".55"/>
 </svg>

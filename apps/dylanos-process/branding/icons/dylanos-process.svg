@@ -1,15 +1,33 @@
-<svg xmlns="http://www.w3.org/2000/svg" width="128" height="128" viewBox="0 0 128 128" role="img" aria-labelledby="title desc">
+<svg xmlns="http://www.w3.org/2000/svg" width="512" height="512" viewBox="0 0 512 512" role="img" aria-labelledby="title desc">
   <title id="title">DylanOS Process</title>
-  <desc id="desc">Núcleo de procesos conectado a una gráfica de actividad</desc>
-  <rect x="7" y="7" width="114" height="114" rx="30" fill="#0A0A0A" stroke="#DC143C" stroke-width="3"/>
-  <path d="M18 42h92" fill="none" stroke="#FFFFFF" stroke-opacity=".82" stroke-width="3"/>
-  <circle cx="29" cy="25" r="4" fill="#DC143C"/>
-  <circle cx="42" cy="25" r="4" fill="#FFFFFF" fill-opacity=".82"/>
-  <circle cx="55" cy="25" r="4" fill="#FFFFFF" fill-opacity=".36"/>
-  <path d="M34 67h17M77 67h17M64 48v12M64 82v12" fill="none" stroke="#DC143C" stroke-linecap="round" stroke-width="5"/>
-  <circle cx="29" cy="67" r="9" fill="#1A1A1A" stroke="#FFFFFF" stroke-width="4"/>
-  <circle cx="99" cy="67" r="9" fill="#1A1A1A" stroke="#FFFFFF" stroke-width="4"/>
-  <circle cx="64" cy="67" r="18" fill="#1A1A1A" stroke="#DC143C" stroke-width="5"/>
-  <path d="M55 67h18M64 58v18" fill="none" stroke="#FFFFFF" stroke-linecap="round" stroke-width="4"/>
-  <path d="M31 98h18l7-10 8 10 8-16 8 16h17" fill="none" stroke="#DC143C" stroke-linecap="round" stroke-linejoin="round" stroke-width="5"/>
+  <desc id="desc">Monitor de actividad Crimson sobre vidrio oscuro</desc>
+  <defs>
+    <linearGradient id="background" x1="0" y1="0" x2="0" y2="512" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#1A1A1A"/>
+      <stop offset="1" stop-color="#0A0A0A"/>
+    </linearGradient>
+    <radialGradient id="glow" cx="256" cy="132" r="340" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#DC143C" stop-opacity=".18"/>
+      <stop offset="1" stop-color="#DC143C" stop-opacity="0"/>
+    </radialGradient>
+    <linearGradient id="signal" x1="94" y1="168" x2="418" y2="360" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#ff5274"/>
+      <stop offset=".48" stop-color="#DC143C"/>
+      <stop offset="1" stop-color="#9c0b28"/>
+    </linearGradient>
+  </defs>
+
+  <rect width="512" height="512" rx="118" fill="url(#background)"/>
+  <rect width="512" height="512" rx="118" fill="url(#glow)"/>
+  <rect x="6" y="6" width="500" height="500" rx="112" fill="none" stroke="#ff5274" stroke-opacity=".25" stroke-width="3"/>
+  <rect x="64" y="26" width="384" height="14" rx="7" fill="#FFFFFF" fill-opacity=".11"/>
+
+  <rect x="74" y="128" width="364" height="270" rx="76" fill="#0A0A0A" stroke="#ff5274" stroke-opacity=".58" stroke-width="8"/>
+  <rect x="104" y="153" width="304" height="12" rx="6" fill="#FFFFFF" fill-opacity=".16"/>
+  <path d="M104 298h60l42-112 52 164 48-128 44 76h62" fill="none" stroke="url(#signal)" stroke-linecap="round" stroke-linejoin="round" stroke-width="30"/>
+  <path d="M104 298h60l42-112 52 164 48-128 44 76h62" fill="none" stroke="#ff5274" stroke-linecap="round" stroke-linejoin="round" stroke-width="8"/>
+  <circle cx="206" cy="186" r="15" fill="#FFFFFF"/>
+  <circle cx="258" cy="350" r="15" fill="#FFFFFF"/>
+  <circle cx="306" cy="222" r="15" fill="#FFFFFF"/>
+  <circle cx="412" cy="298" r="15" fill="#FFFFFF"/>
 </svg>
