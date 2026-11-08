@@ -644,10 +644,18 @@ bool CrimsonGlassService::reloadDesktop() const
     QDBusInterface effects(QStringLiteral("org.kde.KWin"), QStringLiteral("/Effects"),
                            QStringLiteral("org.kde.kwin.Effects"), QDBusConnection::sessionBus());
     if (effects.isValid()) {
-        for (const QString &effect : {QStringLiteral("blur"), QStringLiteral("contrast"),
-                                      QStringLiteral("glide"), QStringLiteral("slidingpopups"),
-                                      QStringLiteral("translucency")})
-            effects.asyncCall(QStringLiteral("reconfigureEffect"), effect);
+        const QList<QPair<QString, bool>> effectStates = {
+            {QStringLiteral("blur"), m_effectiveEffects.value(QStringLiteral("blur")).toBool()},
+            {QStringLiteral("contrast"), m_effectiveEffects.value(QStringLiteral("contrast")).toBool()},
+            {QStringLiteral("glide"), m_effectiveEffects.value(QStringLiteral("animations")).toBool()},
+            {QStringLiteral("slidingpopups"), m_effectiveEffects.value(QStringLiteral("animations")).toBool()},
+            {QStringLiteral("translucency"), m_effectiveEffects.value(QStringLiteral("windowEffects")).toBool()}
+        };
+        for (const auto &effect : effectStates) {
+            effects.asyncCall(effect.second ? QStringLiteral("reconfigureEffect")
+                                            : QStringLiteral("unloadEffect"),
+                              effect.first);
+        }
     }
 
     const auto opacityMode = [](int value) {
