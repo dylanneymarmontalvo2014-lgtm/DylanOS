@@ -68,17 +68,23 @@ PlasmoidItem {
                 id: dockBackground
                 anchors.fill: parent
                 radius: Plasmoid.configuration.cornerRadius
-                color: "#0a0a0a"
+                color: "#0a080b"
+                antialiasing: true
                 gradient: Gradient {
                     GradientStop {
                         position: 0
-                        color: Qt.rgba(28 / 255, 23 / 255, 31 / 255,
-                            Math.min(0.98, Plasmoid.configuration.backgroundOpacity + 0.18))
+                        color: Qt.rgba(68 / 255, 28 / 255, 42 / 255,
+                            Math.min(0.76, Plasmoid.configuration.backgroundOpacity + 0.18))
+                    }
+                    GradientStop {
+                        position: 0.42
+                        color: Qt.rgba(24 / 255, 18 / 255, 25 / 255,
+                            Math.min(0.92, Plasmoid.configuration.backgroundOpacity + 0.27))
                     }
                     GradientStop {
                         position: 1
-                        color: Qt.rgba(6 / 255, 6 / 255, 8 / 255,
-                            Math.min(0.96, Plasmoid.configuration.backgroundOpacity + 0.08))
+                        color: Qt.rgba(8 / 255, 8 / 255, 11 / 255,
+                            Math.min(0.94, Plasmoid.configuration.backgroundOpacity + 0.30))
                     }
                 }
 
@@ -88,8 +94,25 @@ PlasmoidItem {
                     anchors.fill: parent
                     radius: parent.radius
                     color: "transparent"
-                    border.color: "#2e2736"
+                    border.color: "#66f4dce5"
                     border.width: 1
+                }
+
+                // Reflejo de cristal en la parte alta: se dibuja con gradiente,
+                // sin blur por software ni efectos costosos por fotograma.
+                Rectangle {
+                    anchors.left: parent.left
+                    anchors.right: parent.right
+                    anchors.top: parent.top
+                    anchors.margins: 1
+                    height: Math.max(0, parent.height * 0.62)
+                    radius: Math.max(0, parent.radius - 1)
+                    clip: true
+                    gradient: Gradient {
+                        GradientStop { position: 0; color: "#20ffffff" }
+                        GradientStop { position: 0.42; color: "#0affd9e3" }
+                        GradientStop { position: 1; color: "#00ffffff" }
+                    }
                 }
 
                 // Línea especular carmesí: da profundidad sin animar blur ni
@@ -102,7 +125,18 @@ PlasmoidItem {
                     height: 1
                     radius: 1
                     color: "#ff5274"
-                    opacity: 0.34
+                    opacity: 0.48
+                }
+
+                Rectangle {
+                    anchors.bottom: parent.bottom
+                    anchors.bottomMargin: 1
+                    anchors.horizontalCenter: parent.horizontalCenter
+                    width: Math.max(0, parent.width - parent.radius * 1.5)
+                    height: 1
+                    radius: 1
+                    color: "#dc143c"
+                    opacity: 0.18
                 }
             }
 
