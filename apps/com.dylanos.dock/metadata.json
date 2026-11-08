@@ -7,11 +7,11 @@
             }
         ],
         "Category": "System Information",
-        "Description": "Dock para DylanOS: iconos redondeados, magnificacion, indicador de apps abiertas y apps fijadas",
+        "Description": "Dock Crimson Glass para DylanOS: cristal oscuro con reflejos carmesí, iconos con ampliación suave y estado real de aplicaciones",
         "Icon": "user-desktop",
         "Id": "com.dylanos.dock",
         "Name": "DylanOS Dock",
-        "Version": "0.4"
+        "Version": "0.5"
     },
     "KPackageStructure": "Plasma/Applet",
     "X-Plasma-API-Minimum-Version": "6.0"

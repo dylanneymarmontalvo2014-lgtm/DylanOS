@@ -301,7 +301,11 @@ class StagingTest(unittest.TestCase):
             staged_dock = root / "usr/share/plasma/plasmoids/com.dylanos.dock"
             self.assertTrue((staged_dock / "metadata.json").is_file())
             dock_meta = json.loads((staged_dock / "metadata.json").read_text())
-            self.assertEqual(dock_meta["KPlugin"]["Version"], "0.4")
+            self.assertEqual(dock_meta["KPlugin"]["Version"], "0.5")
+            self.assertIn("Crimson Glass", dock_meta["KPlugin"]["Description"])
+            dock_main = (staged_dock / "contents/ui/main.qml").read_text()
+            self.assertIn("Reflejo de cristal", dock_main)
+            self.assertIn('color: "#66f4dce5"', dock_main)
             dock_delegate = (staged_dock / "contents/ui/DockItemDelegate.qml").read_text()
             self.assertIn("hoverDistance === 1", dock_delegate)
             self.assertIn("hoverDistance === 2", dock_delegate)

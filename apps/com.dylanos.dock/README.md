@@ -32,3 +32,7 @@ El tamaño base y el tamaño máximo al pasar el cursor se configuran por separa
 El dock reserva el mayor de los dos para el ancho/alto de sus celdas y trata un
 `hoverSize` menor que `iconSize` como el tamaño base, evitando recortes o
 solapamientos con configuraciones guardadas fuera del rango visual esperado.
+
+## Acabado Crimson Glass (2026-11-08)
+
+La versión 0.5 refina la superficie con un gradiente carbón/borgoña, reflejo perlado superior, filo carmesí y placas translúcidas bajo los iconos al acercar el cursor. Conserva el zoom, los lanzadores, los indicadores funcionales y el clic derecho. El render QML se implementa sin blur por software; la translucidez del panel depende de KWin. Las pruebas estáticas no sustituyen una revisión visual en Plasma 6 real.

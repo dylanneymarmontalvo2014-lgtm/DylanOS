@@ -233,3 +233,12 @@ layout con `screenGeometry` simulado) y `test_staging.py` cubren el nuevo
 empaquetado; el QML se lintó con qmllint de Qt 6.8 (los avisos restantes son
 del módulo `org.kde.plasma.plasmoid`, compilado dentro de `libPlasmaQuick` y
 por ello invisible al lint standalone). El render real sigue pendiente de VM.
+
+
+## Pulido premium del Dock Crimson Glass (2026-11-08)
+
+- Se refina `com.dylanos.dock` con una superficie de cristal oscuro, un brillo perlado superior, borde fino y reflejo carmesí discreto; el tratamiento usa gradientes QML y no añade efectos de blur por software ni procesos de fondo.
+- Al acercar el cursor, las placas individuales de los iconos aparecen con tinte Crimson y borde translúcido, acompañando la ampliación ya existente. Los indicadores de aplicaciones en ejecución reciben un acabado carmesí degradado, sin cambiar su fuente real.
+- Se pulen las esquinas/opacidad iniciales del dock y el menú contextual; las opciones existentes siguen siendo configurables. No se cambia la distribución, los lanzadores, el wallpaper ni Kitty. Los perfiles ya creados no reciben un reemplazo de sus paneles.
+- Archivos: `apps/com.dylanos.dock/contents/ui/main.qml`, `DockItemDelegate.qml`, `contents/config/main.xml`, `metadata.json`, `scripts/tests/test_shell_contract.py`, `docs/guia-de-uso.md`.
+- Validación local: pruebas de contrato, staging y tema (35/35) pasaron. El CI del commit está pendiente; las pruebas automatizadas no demuestran apariencia. La translucidez exacta y la percepción visual requieren QA en una sesión real de Plasma 6 con KWin.
