@@ -42,6 +42,21 @@ base y este contrato de distribución. No valida todavía:
 Ninguno de esos puntos debe anunciarse como terminado hasta superar la Fase 2 o
 la fase específica posterior que lo implemente y mida.
 
+## Scaffold Debian de Fase 2
+
+`debian/` contiene únicamente el contrato inicial del paquete transitorio:
+metadatos, reglas Debhelper, manifiesto de instalación, política de updater
+desactivado y el lanzador XDG. Las reglas rechazan el empaquetado mientras no
+exista un artefacto real en
+`artifacts/phase-2/package/usr/bin/dylanos-browser`; no se incluye ni se simula
+ningún binario en este repositorio.
+
+La construcción final del `.deb` queda bloqueada hasta que `DylanOS-Browser`
+produzca y autorice ese binario y su árbol de runtime. Hasta entonces,
+`source.lock.json` conserva deliberadamente `source_archive` y `sha256` como
+`unpublished`, Firefox ESR permanece en el perfil predeterminado y no se instala
+nada en el chroot.
+
 La revisión de cierre aplicó los 273 parches del fork sobre Firefox 159.0 y
 verificó el árbol Gecko efectivo. Se conserva la política oficial de firma de
 extensiones, se restauró la validación de certificados del actualizador, el perfil
