@@ -1,0 +1,26 @@
+# This Source Code Form is subject to the terms of the Mozilla Public
+# License, v. 2.0. If a copy of the MPL was not distributed with this
+# file, You can obtain one at http://mozilla.org/MPL/2.0/.
+
+[
+  {
+    "name": "dylanos.browser.schema-version",
+    "value": 1
+  },
+  {
+    "name": "dylanos.browser.follow-system-theme",
+    "value": true
+  },
+  {
+    "name": "dylanos.browser.performance-profile",
+    "value": "balanced"
+  },
+  {
+    "name": "dylanos.browser.crimson-glass.force-opaque",
+    "value": false
+  },
+  {
+    "name": "dylanos.browser.accent",
+    "value": "#E50914"
+  }
+]

@@ -1,0 +1,16 @@
+diff --git a/toolkit/components/pictureinpicture/content/player.js b/toolkit/components/pictureinpicture/content/player.js
+index dfa666aa0a3ab457a6766bf518506e61089893c5..a1671164fb4340afd976fc0407bc409c7327cbdd 100644
+--- a/toolkit/components/pictureinpicture/content/player.js
++++ b/toolkit/components/pictureinpicture/content/player.js
+@@ -975,6 +975,11 @@ let Player = {
+         });
+         break;
+       }
++
++      case "minimize": {
++        this.closePipWindow({ reason: "CloseButton" });
++        break;
++      }
+     }
+     // If the click came from a element that is not inside the subtitles settings panel
+     // then we want to hide the panel

@@ -1,0 +1,19 @@
+#!/usr/bin/make -f
+
+# The browser build is owned by the in-tree DylanOS Browser fork. This package deliberately
+# refuses to proceed until a real candidate artifact is staged here.
+BROWSER_ARTIFACT ?= artifacts/phase-2/package
+
+.PHONY: check-browser-artifact
+
+check-browser-artifact:
+	@test -x "$(BROWSER_ARTIFACT)/usr/bin/dylanos-browser" || { \
+		echo "No se puede empaquetar: falta el binario real dylanos-browser en $(BROWSER_ARTIFACT)." >&2; \
+		exit 1; \
+	}
+
+%:
+	dh $@
+
+override_dh_auto_build: check-browser-artifact
+	@:

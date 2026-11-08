@@ -4,7 +4,7 @@
 
 **Goal:** Establish a real, traceable DylanOS Browser fork of Zen 1.24b plus a tested source contract in DylanOS, without yet replacing the working system browser.
 
-**Architecture:** Browser product code lives in a dedicated `DylanOS-Browser` repository derived from Zen stable, while the DylanOS repository owns only the pinned source/release contract and later Debian integration. Phase 1 changes branding and release metadata, blocks accidental Zen updates, preserves MPL notices, and adds fast contract tests; the full Gecko bootstrap/build is Phase 2.
+**Architecture:** Browser product code lives in `apps/dylanos-browser/` inside the DylanOS repository, derived from Zen stable. The same repository owns the pinned source/release contract and later Debian integration. Phase 1 changes branding and release metadata, blocks accidental Zen updates, preserves MPL notices, and adds fast contract tests; the full Gecko bootstrap/build is Phase 2.
 
 **Tech Stack:** Zen/Firefox overlay, Surfer, Node 22, Python 3.11, Rust 1.95.0, Gecko `mach`, JSON/YAML, Python `unittest`, XDG desktop entry.
 
@@ -33,7 +33,7 @@
 
 ---
 
-### Task 1: Create the dedicated fork and provenance record
+### Task 1: Integrate the fork and provenance record in `apps/dylanos-browser`
 
 **Files:**
 - Create in browser repo: `dylanos/upstream.json`
@@ -45,9 +45,9 @@
 - Consumes: Zen stable tag `1.24b` at the pinned SHA.
 - Produces: `upstream.json` with `repository`, `tag`, `commit`, `firefox_version`, and `audit_date`; local remotes named `upstream` (Zen) and `origin` (intended DylanOS fork).
 
-- [ ] **Step 1: Clone Zen stable into `/home/dylan/DylanOS-Browser` and create `development` from the exact pinned commit**
+- [ ] **Step 1: Import Zen stable into `apps/dylanos-browser` and create the in-tree fork from the exact pinned commit**
 
-Run read-only checks first to ensure the destination does not already contain user work. Rename the official remote to `upstream`; configure `origin` as `git@github.com:dylanneymarmontalvo2014-lgtm/DylanOS-Browser.git` without pushing.
+Run read-only checks first to ensure the destination does not already contain user work. Keep the Zen remote as `upstream`; the product is published through the DylanOS repository and does not require a separate browser remote.
 
 - [ ] **Step 2: Write the failing provenance tests**
 
@@ -166,12 +166,12 @@ git commit -m "feat(browser): añadir preferencias base de producto"
 ### Task 4: Pin the browser source contract in DylanOS
 
 **Files:**
-- Create: `browser/source.lock.json`
-- Create: `browser/README.md`
+- Create: `apps/dylanos-browser/source.lock.json`
+- Modify: `apps/dylanos-browser/README.md`
 - Create: `scripts/tests/test_browser_contract.py`
 
 **Interfaces:**
-- Consumes: release/provenance fields from the dedicated browser repo.
+- Consumes: release/provenance fields from the in-tree browser source.
 - Produces: one canonical DylanOS source lock consumed later by package/build scripts; no browser package is installed in this task.
 
 - [ ] **Step 1: Write the failing DylanOS contract tests**
@@ -201,7 +201,7 @@ Expected: all PASS; Firefox remains the active default in this phase.
 - [ ] **Step 6: Commit the distribution source contract**
 
 ```bash
-git add browser/source.lock.json browser/README.md scripts/tests/test_browser_contract.py
+git add apps/dylanos-browser/source.lock.json apps/dylanos-browser/README.md scripts/tests/test_browser_contract.py
 git commit -m "chore(browser): fijar contrato de fuente para DylanOS"
 ```
 
@@ -216,7 +216,7 @@ git commit -m "chore(browser): fijar contrato de fuente para DylanOS"
 
 - [ ] **Step 1: Run fork-side fast verification**
 
-Run in `/home/dylan/DylanOS-Browser`: `python3 scripts/dylanos/test_product_contract.py -v`, `npm run lc`, and `git diff --check upstream/stable...HEAD`.
+Run in `apps/dylanos-browser`: `python3 scripts/dylanos/test_product_contract.py -v`, `npm run lc`, and `git diff --check`.
 
 Expected: PASS/clean; no Zen update hostname or product identity remains in critical metadata.
 

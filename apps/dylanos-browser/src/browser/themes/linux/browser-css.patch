@@ -1,0 +1,13 @@
+diff --git a/browser/themes/linux/browser.css b/browser/themes/linux/browser.css
+index 2e59f3dcae141899c48d59d0c4b8ec38c52e966f..fa79fca3c831526dd8869c237314f95e439e0ba6 100644
+--- a/browser/themes/linux/browser.css
++++ b/browser/themes/linux/browser.css
+@@ -56,6 +56,8 @@
+       appearance: auto;
+ 
+       body,
++      #zen-main-app-wrapper,
++      #zen-browser-background,
+       dialog::backdrop {
+         border-top-left-radius: env(-moz-gtk-csd-titlebar-radius);
+         border-top-right-radius: env(-moz-gtk-csd-titlebar-radius);

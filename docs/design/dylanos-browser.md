@@ -54,22 +54,20 @@ Firefox con rapidez.
 - No se afirmará superioridad de rendimiento sin resultados reproducibles contra una línea base
   equivalente, en el mismo hardware, perfil y conjunto de páginas.
 
-## 4. Arquitectura de repositorios
+## 4. Arquitectura dentro de DylanOS
 
-Se mantendrán dos repositorios con responsabilidades distintas:
+El fork real vive en `apps/dylanos-browser/`, dentro del repositorio DylanOS. Conserva la
+estructura de Zen, sus parches, el registro `dylanos/upstream.json`, el branding, las
+preferencias, las pruebas y el empaquetado Debian. No es una aplicación Qt WebEngine ni una
+imitación web: mantiene Gecko y el flujo de compilación de Surfer/Mozilla.
 
-1. `DylanOS-Browser`: fork de `zen-browser/desktop`. Tendrá `upstream` apuntando a Zen, rama
-   principal `development`, rama de publicación `stable` y etiquetas de versión. Alojará el
-   código del navegador, branding, preferencias, pruebas de chrome/Gecko, CI y artefactos fuente.
-2. `DylanOS`: distribución. Alojará el empaquetado Debian, instalación en el chroot, asociaciones
-   XDG, iconos del sistema, selección como navegador predeterminado y pruebas de ISO/QEMU.
+El resto de DylanOS aporta el staging, las asociaciones XDG, los iconos del sistema, la selección
+como navegador predeterminado y las pruebas de ISO/QEMU. `apps/dylanos-browser/engine/` y sus
+artefactos de compilación permanecen generados e ignorados; el código fuente distribuible sí forma
+parte del repositorio principal.
 
-No se copiará un checkout de Gecko dentro de `DylanOS`, ni se convertirá el navegador en una app
-Qt WebEngine. El paquete de DylanOS consumirá un artefacto fuente o binario firmado producido por
-el repositorio del navegador y fijado por versión y SHA-256.
-
-Cada actualización seguirá esta secuencia: Firefox → Zen upstream → `DylanOS-Browser/development`
-→ pruebas y revisión de parches → `DylanOS-Browser/stable` → paquete DylanOS → repositorio APT/ISO.
+Cada actualización seguirá esta secuencia: Firefox → Zen upstream → `apps/dylanos-browser`
+→ pruebas y revisión de parches → paquete DylanOS → repositorio APT/ISO.
 Las correcciones críticas podrán partir de `stable`, pero nunca omitirán las pruebas mínimas de
 seguridad, arranque y navegación.
 

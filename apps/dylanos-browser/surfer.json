@@ -1,0 +1,57 @@
+{
+  "name": "DylanOS Browser",
+  "vendor": "DylanOS",
+  "appId": "org.dylanos.browser",
+  "binaryName": "dylanos-browser",
+  "version": {
+    "product": "firefox",
+    "version": "159.0",
+    "candidate": "159.0",
+    "candidateBuild": 1
+  },
+  "buildOptions": {
+    "generateBranding": true
+  },
+  "addons": {},
+  "brands": {
+    "release": {
+      "backgroundColor": "#0A0A0A",
+      "brandShorterName": "DylanOS",
+      "brandShortName": "DylanOS Browser",
+      "brandFullName": "DylanOS Browser",
+      "release": {
+        "displayVersion": "1.0.0-alpha.1",
+        "github": {
+          "repo": "dylanneymarmontalvo2014-lgtm/DylanOS"
+        },
+        "archives": {
+          "windows": "windows.mar",
+          "macos-aarch64": "macos-aarch64.mar",
+          "linux": "linux.mar",
+          "macos-x64": "macos-x64.mar",
+          "windows-arm64": "windows-arm64.mar",
+          "linux-aarch64": "linux-aarch64.mar"
+        }
+      }
+    },
+    "twilight": {
+      "backgroundColor": "#0A0A0A",
+      "brandShorterName": "DylanOS",
+      "brandShortName": "DylanOS Browser Preview",
+      "brandFullName": "DylanOS Browser Preview",
+      "release": {
+        "displayVersion": "1.0.0-alpha.1-dev",
+        "github": {
+          "repo": "dylanneymarmontalvo2014-lgtm/DylanOS"
+        }
+      }
+    }
+  },
+  "license": {
+    "ignoredFiles": [
+      ".*\\.json"
+    ],
+    "licenseType": "MPL-2.0"
+  },
+  "updateHostname": "updates.dylanos.invalid"
+}

@@ -1,0 +1,7 @@
+{
+  "repository": "https://github.com/zen-browser/desktop.git",
+  "tag": "1.24b",
+  "commit": "f75390aa2b797ddc3524ff9ed52ceb32a839f9fa",
+  "firefox_version": "159.0",
+  "audit_date": "2026-11-02"
+}
