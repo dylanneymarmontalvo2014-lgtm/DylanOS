@@ -60,7 +60,8 @@ Window {
         { id: "sound", title: "Sonido", sub: "Volumen, salida, entrada", icon: "volume-2", color: "#d4202f", sidebar: false, keywords: "volumen micrófono altavoces silenciar" },
         { id: "notifications", title: "Notificaciones", sub: "Alertas y notificaciones", icon: "bell", color: "#d4202f", sidebar: false, keywords: "no molestar concentración alertas" },
         { id: "storage", title: "Almacenamiento", sub: "Uso de discos y limpieza", icon: "hard-drive", color: "#d4202f", sidebar: false, keywords: "disco limpieza espacio" },
-        { id: "gaming", title: "Gaming", sub: "Catálogo, perfiles y rendimiento", icon: "gamepad-2", color: "#dc143c", sidebar: true, keywords: "juegos steam lutris proton wine mangohud gamemode streaming emulación" }
+        { id: "gaming", title: "Gaming", sub: "Catálogo, perfiles y rendimiento", icon: "gamepad-2", color: "#dc143c", sidebar: true, keywords: "juegos steam lutris proton wine mangohud gamemode streaming emulación" },
+        { id: "iot", title: "IoT & Embedded Systems", sub: "Dispositivos, firmware y automatización", icon: "cpu", color: "#dc143c", sidebar: true, keywords: "iot embedded arduino esp32 microcontrolador mqtt serial electrónica" }
     ]
 
     readonly property var searchOptions: [
@@ -263,6 +264,7 @@ Window {
                     case "notifications": return Qt.resolvedUrl("pages/NotificationsPage.qml")
                     case "storage": return Qt.resolvedUrl("pages/StoragePage.qml")
                     case "gaming": return Qt.resolvedUrl("pages/GamingPage.qml")
+                    case "iot": return Qt.resolvedUrl("pages/IoTPage.qml")
                     default: return Qt.resolvedUrl("pages/SystemPage.qml")
                     }
                 }

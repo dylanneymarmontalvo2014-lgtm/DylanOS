@@ -59,6 +59,7 @@ def stage(destination, installer_dist=None, version=None):
 
 
     remove("/usr/share/dylanos/gaming")
+    remove("/usr/share/dylanos/iot")
     for source, target in [
         ("apps/workspace", "/usr/share/dylanos/workspace"),
         ("branding/logo.png", "/usr/share/dylanos/workspace/assets/logo.png"),
@@ -95,6 +96,8 @@ def stage(destination, installer_dist=None, version=None):
         ("packages/gaming/catalog.json", "/usr/share/dylanos/gaming/catalog.json"),
         ("packages/gaming/profiles", "/usr/share/dylanos/gaming/profiles"),
         ("packages/gaming/overlay", "/usr/share/dylanos/gaming/overlay"),
+        ("packages/iot/catalog.json", "/usr/share/dylanos/iot/catalog.json"),
+        ("packages/iot/profiles", "/usr/share/dylanos/iot/profiles"),
         ("packages/gaming/polkit/org.dylanos.gaming.policy", "/usr/share/polkit-1/actions/org.dylanos.gaming.policy"),
         ("apps/dylanos-configuration/helper/dylanos-gaming-helper.py", "/usr/lib/dylanos/dylanos-gaming-helper.py"),
         ("installer/dylanos-installer/dist", "/usr/share/dylanos/installer/dist"),
