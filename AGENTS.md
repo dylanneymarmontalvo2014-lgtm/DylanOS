@@ -97,6 +97,10 @@ técnica viva: `docs/architecture.md`. Este archivo es el índice operativo de r
   `-cpu max`) y la página quedaba en "—"; RAM redondeada: MemTotal recorta la memoria que
   reserva el firmware, así que se ajusta a la potencia de dos más próxima si queda a
   ≤10 % (7,6 GiB → "8 GB", 15,4 → 16, 11,6 → 12; nunca "7.60 GB").
+- IoT de usuario: `packages/iot/catalog.json` (20 apps) + cinco perfiles JSON;
+  IoTService/QML en Configuration y resumen/atajo en Control Center. Diferenciarlo
+  siempre de `scripts/build.sh --iot` (perfil de imagen). No inicia servicios ni
+  ejecuta flasheos; detalles y límites actuales en `docs/iot.md`.
 - `apps/archivos/` — prototipo histórico, NO se envía.
 - `branding/` — logo.png (`distributor-logo-dylanos`), colors/, wallpapers/, icons/.
 - `themes/` — look-and-feel `org.dylanos.crimson` (layout de 2 paneles), aurorae (negra),

@@ -8,7 +8,7 @@ set(CMAKE_AUTOMOC ON)
 include(GNUInstallDirs)
 include(CTest)
 
-find_package(Qt6 6.4 REQUIRED COMPONENTS Core Gui Qml Quick QuickControls2 Svg DBus)
+find_package(Qt6 6.4 REQUIRED COMPONENTS Core Gui Qml Quick QuickControls2 Svg DBus Network)
 
 if(BUILD_TESTING)
     find_package(Qt6 6.4 REQUIRED COMPONENTS Test)
@@ -19,6 +19,7 @@ qt_add_executable(dylanos-configuration
     src/services/CrimsonGlassService.cpp
     src/services/SystemService.cpp
     src/services/GamingService.cpp
+    src/services/IoTService.cpp
     src/services/LucideProvider.cpp
 )
 
@@ -75,6 +76,7 @@ qt_add_qml_module(dylanos-configuration
         qml/pages/StoragePage.qml
         qml/pages/CrimsonGlassPage.qml
         qml/pages/GamingPage.qml
+        qml/pages/IoTPage.qml
         qml/Main.qml
 )
 
@@ -148,7 +150,10 @@ qt_add_resources(dylanos-configuration "assets"
 )
 
 target_link_libraries(dylanos-configuration PRIVATE
-    Qt6::Core Qt6::Gui Qt6::Qml Qt6::Quick Qt6::QuickControls2 Qt6::Svg Qt6::DBus
+    Qt6::Core Qt6::Gui Qt6::Qml Qt6::Quick Qt6::QuickControls2 Qt6::Svg Qt6::DBus Qt6::Network
+)
+target_compile_definitions(dylanos-configuration PRIVATE
+    DYLANOS_IOT_SOURCE_DIR="${CMAKE_CURRENT_SOURCE_DIR}/../../packages/iot"
 )
 
 # El logo oficial (branding/logo.png) se incrusta en el binario cuando está

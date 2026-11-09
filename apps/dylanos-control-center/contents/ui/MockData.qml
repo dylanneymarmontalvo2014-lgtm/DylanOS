@@ -13,10 +13,17 @@ QtObject {
     // ejecutor emite comandos que nadie consumirá.
     property bool kcmshellAvailable: true
     property var gamingStatus: ({})
+    property var iotStatus: ({})
     readonly property var gamingProfileIds: ["balanced", "performance", "competitive", "streaming", "emulation"]
 
     function refreshGaming() {
         exec.connectSource("dylanos-configuration --gaming-status --headless")
+    }
+    function refreshIoT() {
+        exec.connectSource("dylanos-configuration --iot-status --headless")
+    }
+    function openIoTSettings() {
+        run("dylanos-configuration --page iot")
     }
     function setGamingProfile(id) {
         if (gamingProfileIds.indexOf(id) < 0) return
@@ -50,6 +57,12 @@ QtObject {
                     MockData.gamingStatus = JSON.parse(data.stdout || "{}")
                 } catch (error) {
                     MockData.gamingStatus = ({})
+                }
+            } else if (sourceName === "dylanos-configuration --iot-status --headless") {
+                try {
+                    MockData.iotStatus = JSON.parse(data.stdout || "{}")
+                } catch (error) {
+                    MockData.iotStatus = ({})
                 }
             }
         }

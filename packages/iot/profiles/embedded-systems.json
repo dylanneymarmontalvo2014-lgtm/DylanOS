@@ -1,0 +1,1 @@
+{"id":"embedded-systems","name":"Embedded Systems","description":"Toolchains, flasheo, depuración y consola serie","apps":["vscode","esp-idf","platformio","openocd","avrdude","esptool","minicom","tio"]}

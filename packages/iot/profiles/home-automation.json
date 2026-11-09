@@ -1,0 +1,1 @@
+{"id":"home-automation","name":"Home Automation","description":"MQTT, flujos y conexión con domótica","apps":["node-red","mosquitto","mqtt-explorer","home-assistant","wireshark"]}

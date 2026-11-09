@@ -20,7 +20,7 @@ Rectangle {
     radius: 22
     border.color: cCardBorder
     border.width: 1
-    onVisibleChanged: if (visible) MockData.refreshGaming()
+    onVisibleChanged: if (visible) { MockData.refreshGaming(); MockData.refreshIoT() }
 
     layer.enabled: true
     layer.effect: MultiEffect {
@@ -37,12 +37,12 @@ Rectangle {
         anchors.margins: 20
         spacing: 16
 
-        Component.onCompleted: MockData.refreshGaming()
+        Component.onCompleted: { MockData.refreshGaming(); MockData.refreshIoT() }
         Timer {
             interval: 15000
             repeat: true
             running: root.visible
-            onTriggered: MockData.refreshGaming()
+            onTriggered: { MockData.refreshGaming(); MockData.refreshIoT() }
         }
 
         RowLayout {
@@ -321,6 +321,44 @@ Rectangle {
                         Accessible.name: "Restaurar ajustes previos a Gaming"
                         onClicked: SystemStatus.restoreGamingProfile()
                     }
+                }
+            }
+        }
+
+        Rectangle {
+            Layout.fillWidth: true
+            Layout.preferredHeight: 82
+            radius: 16
+            color: cGray
+            border.color: cCardBorder
+            border.width: 1
+            RowLayout {
+                anchors.fill: parent
+                anchors.margins: 12
+                spacing: 10
+                Kirigami.Icon {
+                    source: "computer"
+                    isMask: true
+                    color: cCrimson
+                    Layout.preferredWidth: 20
+                    Layout.preferredHeight: 20
+                }
+                ColumnLayout {
+                    Layout.fillWidth: true
+                    spacing: 3
+                    QQC2.Label { text: "IoT & Embedded"; color: cWhite; font.pixelSize: 14; font.bold: true }
+                    QQC2.Label {
+                        text: (MockData.iotStatus.devices ? MockData.iotStatus.devices.length : 0) + " puertos serie · MQTT "
+                              + (MockData.iotStatus.mqttLocal ? "activo" : "inactivo")
+                        color: cLightGray
+                        font.pixelSize: 11
+                    }
+                }
+                QQC2.ToolButton {
+                    text: "Abrir"
+                    flat: true
+                    Accessible.name: "Abrir IoT en DylanOS Configuration"
+                    onClicked: MockData.openIoTSettings()
                 }
             }
         }

@@ -7,7 +7,7 @@ Este directorio define los conjuntos de paquetes Debian que componen los distint
 - **`build/`**: Dependencias y herramientas exclusivas para el proceso de compilación (`packages.list`). Se instalan en el chroot para compilar los binarios nativos de DylanOS y son purgadas al final de `scripts/build.sh` para no engordar la ISO final.
 - **`default/`**: Perfil base (`PROFILE=minimal`). Contiene la base mínima del sistema operativo (KDE Plasma 6, SDDM con tema Crimson, utilidades del sistema y aplicaciones oficiales de DylanOS).
 - **`development/`**: Perfil predeterminado (`PROFILE=development`). Incluye el entorno de desarrollo con Visual Studio Code (repo oficial configurado mediante `setup-repos.sh`), toolchains y utilidades.
-- **`iot/`**: Perfil especializado de IoT/embebidos, seleccionable con `bash scripts/build.sh --iot`. Añade Arduino IDE y toolchain AVR, depuración/flasheo para OpenOCD/ESP/STM32, utilidades MQTT/CAN, serial, I2C/GPIO y análisis lógico. No se mezcla con `development`; parte de la base común `default` + dependencias de build.
+- **`iot/packages.list`**: selección de paquetes para construir una imagen especializada con `bash scripts/build.sh --iot`. No es el perfil de usuario ni implica que todos los componentes se inicien.
 
 ## Perfil de usuario
 
@@ -16,3 +16,4 @@ Este directorio define los conjuntos de paquetes Debian que componen los distint
   DylanOS Configuration y el Centro de Control. El `packages.list` describe
   dependencias del conjunto Gaming y no convierte el perfil en un perfil de
   construcción seleccionable.
+- **`iot/catalog.json` y `iot/profiles/`**: catálogo de veinte herramientas y cinco perfiles de usuario, staged para DylanOS Configuration. Elegir un perfil guarda preferencias; no instala aplicaciones ni inicia servicios.
