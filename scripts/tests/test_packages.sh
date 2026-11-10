@@ -139,6 +139,8 @@ assert_eq "DylanOS Process tiene desktop ID independiente" "si" \
     "$(grep -q 'org.dylanos.process.desktop' "$ROOT/scripts/stage.py" && echo si || echo no)"
 assert_eq "DylanOS Process no sobrescribe el binario de KDE" "si" \
     "$(grep -q 'OUTPUT_NAME dylanos-process' "$ROOT/apps/dylanos-process/src/CMakeLists.txt" && echo si || echo no)"
+assert_eq "DylanOS Process instala su propio ejecutable" "si" \
+    "$(grep -q 'install(TARGETS plasma-systemmonitor' "$ROOT/apps/dylanos-process/src/CMakeLists.txt" && echo si || echo no)"
 assert_eq "DylanOS Process usa IDs KPackage propios" "si" \
     "$(grep -q 'org.dylanos.process.processtable' "$ROOT/apps/dylanos-process/src/faces/CMakeLists.txt" && grep -q 'org.dylanos.process.applicationstable' "$ROOT/apps/dylanos-process/src/faces/CMakeLists.txt" && grep -q 'sensorfaces ksysguard' "$ROOT/apps/dylanos-process/src/faces/CMakeLists.txt" && echo si || echo no)"
 assert_eq "DylanOS Process instala páginas y KNewStuff en rutas propias" "si" \

@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 set -euo pipefail
-VERSION="${1:-${DYLANOS_VERSION:-1.0-beta}}"
+VERSION="${1:-${DYLANOS_VERSION:-1.1.0-pre-beta}}"
 if [[ ! "$VERSION" =~ ^([0-9]+\.[0-9]+\.[0-9]+([+-][A-Za-z0-9.-]+)?|1\.0-beta)$ ]]; then
     echo "Versión DylanOS inválida: $VERSION" >&2
     exit 2
@@ -25,7 +25,7 @@ echo "SquashFS: $SQUASHFS_PROCESSORS procesador(es). Ajusta con DYLANOS_SQUASHFS
 WORK="$ROOT/work"
 CHROOT="$WORK/chroot"
 IMAGE="$WORK/iso"
-VERSION="${DYLANOS_VERSION:-1.0-beta}"
+VERSION="${DYLANOS_VERSION:-1.1.0-pre-beta}"
 OUTPUT="$ROOT/DylanOS-${VERSION}-amd64.iso"
 [[ -f "$WORK/build-complete" ]] || { echo 'Primero completa scripts/build.sh' >&2; exit 1; }
 dylanos_acquire_build_lock "$ROOT" 'La construcción del sistema todavía está en marcha.'

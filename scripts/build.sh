@@ -5,7 +5,7 @@ ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 WORK="$ROOT/work"
 # shellcheck source=scripts/lib/lock.sh
 . "$ROOT/scripts/lib/lock.sh"
-VERSION="${DYLANOS_VERSION:-1.0-beta}"
+VERSION="${DYLANOS_VERSION:-1.1.0-pre-beta}"
 for arg in "$@"; do
     case "$arg" in
         --version=*) VERSION="${arg#*=}" ;;
@@ -45,6 +45,7 @@ if [[ ${1:-} != --inside ]]; then
     DYLANOS_INSTALLER_DIST="$INSTALLER_TMP/dist" bash "$ROOT/scripts/build-installer.sh"
     sudo unshare --mount --propagation private bash "$0" --inside \
         "--jobs=$BUILD_JOBS" "--installer-dist=$INSTALLER_TMP/dist" "--version=$VERSION" "$@"
+    exit $?
 fi
 if [[ ${1:-} == --inside ]]; then
     # En el proceso elevado los argumentos inyectados van precedidos de --inside.

@@ -2,7 +2,7 @@
 # Smoke test del arranque live: mide desde el kernel hasta graphical.target y SDDM.
 set -euo pipefail
 ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
-VERSION="${DYLANOS_VERSION:-1.0-beta}"
+VERSION="${DYLANOS_VERSION:-1.1.0-pre-beta}"
 ISO="${1:-$ROOT/DylanOS-${VERSION}-amd64.iso}"
 BOOT_TIMEOUT="${DYLANOS_QEMU_BOOT_TIMEOUT:-420}"
 [[ -f "$ISO" ]] || { echo "No existe la ISO: $ISO" >&2; exit 1; }

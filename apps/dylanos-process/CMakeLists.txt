@@ -5,7 +5,7 @@ project(dylanos-process)
 set(PROJECT_VERSION "6.3.6")
 set(PROJECT_VERSION_MAJOR 6)
 
-set(PROJECT_DEP_VERSION "6.3.6")
+set(KSYSGUARD_MIN_VERSION "6.3.5")
 set(QT_MIN_VERSION "6.7.0")
 set(KF6_MIN_VERSION "6.10.0")
 set(KDE_COMPILERSETTINGS_LEVEL "5.82")
@@ -28,7 +28,7 @@ list(APPEND CMAKE_MODULE_PATH ${CMAKE_CURRENT_SOURCE_DIR}/cmake)
 
 find_package(Qt6 ${QT_MIN_VERSION} REQUIRED COMPONENTS Quick Widgets DBus)
 find_package(KF6 ${KF6_MIN_VERSION} REQUIRED COMPONENTS I18n Config Crash Service GlobalAccel KIO DBusAddons NewStuff ItemModels WindowSystem Package)
-find_package(KSysGuard ${PROJECT_DEP_VERSION})
+find_package(KSysGuard ${KSYSGUARD_MIN_VERSION})
 set_package_properties(KSysGuard PROPERTIES
     TYPE REQUIRED
     DESCRIPTION "The libksysguard collection of libraries"

@@ -345,6 +345,28 @@ fi
             (xsessions_dir / "plasma.desktop").symlink_to("plasmax11.desktop")
         except FileExistsError:
             pass
+    # KWin X11 puede caerse al inicializar OpenGL sobre la GPU virtual de QEMU
+    # aunque la sesión siga siendo usable. Forzamos QPainter solo dentro de una
+    # máquina virtual; en hardware físico se conserva el compositor y Crimson
+    # Glass completo. El wrapper se usa también para el acceso directo de SDDM.
+    write(
+        "/usr/bin/dylanos-startplasma-x11",
+        """#!/bin/sh
+if command -v systemd-detect-virt >/dev/null 2>&1 && systemd-detect-virt -q; then
+    export KWIN_COMPOSE=Q
+fi
+exec /usr/bin/startplasma-x11 "$@"
+""",
+        0o755,
+    )
+    for session in (xsessions_dir / "plasmax11.desktop", xsessions_dir / "plasma.desktop"):
+        if session.exists() and not session.is_symlink():
+            session_text = session.read_text(encoding="utf-8")
+            session_text = session_text.replace(
+                "Exec=/usr/bin/startplasma-x11",
+                "Exec=/usr/bin/dylanos-startplasma-x11",
+            )
+            session.write_text(session_text, encoding="utf-8")
     # Patch live-config's 0085-sddm to use plasmax11.desktop explicitly for
     # Plasma 6 on Trixie.  The default "plasma.desktop" resolves to the Wayland
     # session first, which fails on VMs without GPU acceleration (TCG).
@@ -371,11 +393,11 @@ fi
             pass
     write("/etc/hostname", "dylanos\n")
     write("/etc/hosts", "127.0.0.1 localhost\n127.0.1.1 dylanos\n::1 localhost ip6-localhost ip6-loopback\n")
-    version = (version or os.environ.get("DYLANOS_VERSION", "1.0-beta")).strip()
+    version = (version or os.environ.get("DYLANOS_VERSION", "1.1.0-pre-beta")).strip()
     if not re.fullmatch(r"[0-9]+\.[0-9]+\.[0-9]+(?:[-+][A-Za-z0-9.-]+)?|1\.0-beta", version):
         raise ValueError(f"Versión DylanOS inválida: {version!r}")
-    version_label = "1.0 Beta" if version == "1.0-beta" else version
-    version_id = "1.0" if version == "1.0-beta" else version.split("+", 1)[0]
+    version_label = version
+    version_id = version.split("+", 1)[0]
     write("/etc/dylanos-release", f"DylanOS {version_label}\nBase: Debian 13 (trixie)\n")
     write("/usr/lib/os-release", f'PRETTY_NAME="DylanOS {version_label}"\nNAME="DylanOS"\nID=dylanos\nID_LIKE=debian\nVERSION_ID="{version_id}"\nVERSION="{version_label} (trixie)"\nVERSION_CODENAME=trixie\nHOME_URL="https://github.com/dylanneymarmontalvo2014-lgtm/DylanOS"\n')
     # DylanOS usa su instalador propio (installer/dylanos-installer);

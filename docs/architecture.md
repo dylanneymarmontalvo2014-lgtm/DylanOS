@@ -153,7 +153,7 @@ Detalles y limitaciones: [DylanOS Gaming](gaming.md).
 ## 7. Compilación, instalación y QA
 
     bash scripts/build.sh            # debootstrap + apt + stage + builds (chroot aislado)
-    bash scripts/iso.sh              # squashfs + GRUB → DylanOS-1.0-beta-amd64.iso
+    bash scripts/iso.sh              # squashfs + GRUB → DylanOS-1.1.0-pre-beta-amd64.iso
     bash scripts/test_QEMU.sh        # VM con la ISO (KVM o TCG)
     DYLANOS_PYTHON=/tmp/opencode/venv/bin/python bash scripts/check.sh   # QA total
 

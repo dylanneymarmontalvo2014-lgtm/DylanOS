@@ -34,6 +34,11 @@ class BuildEntrypointTest(unittest.TestCase):
         self.assertIn('exec 9< "$lock_file"', helper)
         self.assertNotIn('"$WORK/build.lock"', build + iso)
 
+    def test_build_exits_after_privileged_phase_returns(self):
+        build = (ROOT / "scripts/build.sh").read_text(encoding="utf-8")
+        launch = '    sudo unshare --mount --propagation private bash "$0" --inside \\\n        "--jobs=$BUILD_JOBS" "--installer-dist=$INSTALLER_TMP/dist" "--version=$VERSION" "$@"\n'
+        self.assertIn(launch + "    exit $?\nfi\n", build)
+
     def test_build_lock_is_shared_and_stored_outside_work(self):
         helper = ROOT / "scripts/lib/lock.sh"
         with tempfile.TemporaryDirectory() as tmp:
