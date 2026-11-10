@@ -53,6 +53,8 @@
         "Id": "org.dylanos.process.processtable",
         "License": "LGPLv2+",
         "Name": "Process Table",
+        "Description": "Lists running processes and lets you inspect them.",
+        "Description[es]": "Muestra los procesos en ejecución y permite inspeccionarlos.",
         "Name[ar]": "جدول العمليات",
         "Name[ast]": "Tabla de procesos",
         "Name[az]": "Proseslər Cədvəli",

@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 set -euo pipefail
 ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
-VERSION="${DYLANOS_VERSION:-1.0-beta}"
+VERSION="${DYLANOS_VERSION:-1.1.0-pre-beta}"
 ISO="$ROOT/DylanOS-${VERSION}-amd64.iso"
 [[ -f "$ISO" ]] || { echo "No existe la ISO de versión ${VERSION}. Ejecuta scripts/build.sh y scripts/iso.sh con DYLANOS_VERSION=${VERSION}." >&2; exit 1; }
 (cd "$ROOT" && sha256sum -c "$(basename "$ISO").sha256")

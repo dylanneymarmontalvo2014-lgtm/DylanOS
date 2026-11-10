@@ -61,3 +61,4 @@ install(FILES
 )
 
 ecm_finalize_qml_module(plasma-systemmonitor)
+install(TARGETS plasma-systemmonitor ${KDE_INSTALL_TARGETS_DEFAULT_ARGS})

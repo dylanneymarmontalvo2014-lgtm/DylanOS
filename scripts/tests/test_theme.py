@@ -130,14 +130,14 @@ class CrimsonGlassTest(unittest.TestCase):
         for relative in ("DylanOS-Crimson-Glass-Lightrc", "close.svg", "minimize.svg", "maximize.svg", "restore.svg"):
             self.assertTrue((theme / relative).is_file(), relative)
 
-    def test_glass_light_uses_light_colors_and_gradients(self):
+    def test_glass_decorations_use_aurorae_safe_solid_fills(self):
+        self.assertNotIn("<linearGradient", self.glass_svg)
+        self.assertNotIn("url(#", self.glass_svg)
         light_svg = (ROOT / "themes/aurorae/DylanOS-Crimson-Glass-Light/decoration.svg").read_text(encoding="utf-8")
-        self.assertIn('id="glassSheenLight"', light_svg)
-        self.assertIn('id="glassCrimsonLight"', light_svg)
-        self.assertIn('stop-color="#9c8498"', light_svg)
-        self.assertIn('stop-color="#f1e7ee"', light_svg)
-        self.assertIn('stop-color="#8e2a44"', light_svg)
-        self.assertIn('stop-color="#d8788c"', light_svg)
+        self.assertNotIn("<linearGradient", light_svg)
+        self.assertNotIn("url(#", light_svg)
+        self.assertIn('fill="#9c8498"', light_svg)
+        self.assertIn('fill="#8e2a44"', light_svg)
         self.assertIn('fill="#eef0f6"', light_svg)
 
     def test_visible_patches_are_translucent_and_masks_stay_opaque(self):
@@ -154,8 +154,7 @@ class CrimsonGlassTest(unittest.TestCase):
 
     def test_glass_keeps_the_full_nine_patch_contract(self):
         self.assertEqual(self.glass_svg.count("<g "), self.glass_svg.count("</g>"))
-        for prefix in ("decoration-", "decoration-inactive-", "decoration-maximized-",
-                       "decoration-maximized-inactive-", "decoration-opaque-",
+        for prefix in ("decoration-", "decoration-inactive-", "decoration-opaque-",
                        "decoration-opaque-inactive-", "mask-"):
             for part in ("topleft", "top", "topright", "left", "center", "right",
                          "bottomleft", "bottom", "bottomright"):

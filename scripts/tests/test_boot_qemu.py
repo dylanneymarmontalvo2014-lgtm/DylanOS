@@ -43,12 +43,19 @@ class BootQemuSmokeTest(unittest.TestCase):
         iso_script = (ROOT / "scripts/iso.sh").read_text(encoding="utf-8")
         test_script = (ROOT / "scripts/test.sh").read_text(encoding="utf-8")
         boot_script = (ROOT / "scripts/test-boot-qemu.sh").read_text(encoding="utf-8")
-        self.assertIn('VERSION="${DYLANOS_VERSION:-1.0-beta}"', iso_script)
+        self.assertIn('VERSION="${DYLANOS_VERSION:-1.1.0-pre-beta}"', iso_script)
         self.assertIn('DylanOS-${VERSION}-amd64.iso', iso_script)
         self.assertIn('DylanOS %s amd64', iso_script)
         self.assertIn('DylanOS @VERSION@ — Sesión live', iso_script)
         self.assertIn('DylanOS-${VERSION}-amd64.iso', test_script)
         self.assertIn('DylanOS-${VERSION}-amd64.iso', boot_script)
+        self.assertIn('VERSION="${DYLANOS_VERSION:-1.1.0-pre-beta}"', boot_script)
+
+    def test_qemu_desktop_runner_prefers_the_prebeta_iso(self):
+        script = (ROOT / "scripts/test_QEMU.sh").read_text(encoding="utf-8")
+        self.assertIn('VERSION="${DYLANOS_VERSION:-1.1.0-pre-beta}"', script)
+        self.assertIn('DEFAULT_ISO="$ROOT/DylanOS-${VERSION}-amd64.iso"', script)
+        self.assertIn('if [[ -f "$DEFAULT_ISO" ]]; then', script)
 
     def test_tag_release_builds_versioned_iso_and_publishes_only_after_qa(self):
         workflow = (ROOT / ".github/workflows/release.yml").read_text(encoding="utf-8")

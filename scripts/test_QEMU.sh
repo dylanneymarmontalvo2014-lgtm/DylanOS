@@ -24,6 +24,8 @@ else
 fi
 VM_DISK="$VM_DIR/dylanos-vm-40g.qcow2"
 DISK_SIZE="40G"
+VERSION="${DYLANOS_VERSION:-1.1.0-pre-beta}"
+DEFAULT_ISO="$ROOT/DylanOS-${VERSION}-amd64.iso"
 
 show_help() {
     cat <<EOF
@@ -194,17 +196,20 @@ if [[ -n "$CUSTOM_ISO" ]]; then
         exit 1
     fi
 else
-    # Elegir la ISO más reciente: con varias versiones compiladas, el orden
-    # alfabético arrancaría la más antigua sin avisar al usuario.
+    # Priorizar la versión predeterminada; si no existe, elegir la ISO más nueva.
     ISO_PATH=""
     iso_count=0
-    for candidate in "$ROOT"/*.iso; do
-        [[ -f "$candidate" ]] || continue
-        iso_count=$((iso_count + 1))
-        if [[ -z "$ISO_PATH" || "$candidate" -nt "$ISO_PATH" ]]; then
-            ISO_PATH="$candidate"
-        fi
-    done
+    if [[ -f "$DEFAULT_ISO" ]]; then
+        ISO_PATH="$DEFAULT_ISO"
+    else
+        for candidate in "$ROOT"/*.iso; do
+            [[ -f "$candidate" ]] || continue
+            iso_count=$((iso_count + 1))
+            if [[ -z "$ISO_PATH" || "$candidate" -nt "$ISO_PATH" ]]; then
+                ISO_PATH="$candidate"
+            fi
+        done
+    fi
     if [[ $iso_count -gt 1 ]]; then
         echo "[i] Hay $iso_count ISO en la raíz; se usará la más reciente." >&2
         echo "    Usa -i RUTA para elegir otra explícitamente." >&2

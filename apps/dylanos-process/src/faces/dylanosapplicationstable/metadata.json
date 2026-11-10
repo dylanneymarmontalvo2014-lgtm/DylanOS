@@ -53,6 +53,8 @@
         "Id": "org.dylanos.process.applicationstable",
         "License": "LGPLv2+",
         "Name": "Applications Table",
+        "Description": "Shows resource use for each running application.",
+        "Description[es]": "Muestra el uso de recursos de cada aplicación en ejecución.",
         "Name[ar]": "جدول التطبيقات",
         "Name[ast]": "Tabla d'aplicaciones",
         "Name[az]": "Tətbiqlər Cədvəli",

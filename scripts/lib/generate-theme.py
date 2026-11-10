@@ -164,17 +164,9 @@ def plasma_glass():
 
 # Vidrio Crimson-glass: cada parche del marco se pinta con un degradado y el
 # alfa del conjunto, de modo que el desenfoque del compositor se vea a través.
-GLASS_DEFS = ('<defs>'
-              '<linearGradient id="glassSheen" x1="0" y1="0" x2="0" y2="1">'
-              '<stop offset="0" stop-color="#6b5560"/><stop offset="0.16" stop-color="#241a20"/>'
-              '<stop offset="1" stop-color="#161014"/></linearGradient>'
-              '<linearGradient id="glassCrimson" x1="0" y1="0" x2="0" y2="1">'
-              '<stop offset="0" stop-color="#3a1424"/><stop offset="0.5" stop-color="#180f14"/>'
-              '<stop offset="1" stop-color="#1b1218"/></linearGradient>'
-              '</defs>')
-GLASS_COLORS = {"top": "url(#glassSheen)", "topleft": "url(#glassSheen)", "topright": "url(#glassSheen)",
-                "left": "url(#glassCrimson)", "right": "url(#glassCrimson)", "bottom": "url(#glassCrimson)",
-                "bottomleft": "url(#glassCrimson)", "bottomright": "url(#glassCrimson)",
+GLASS_COLORS = {"top": "#6b5560", "topleft": "#6b5560", "topright": "#6b5560",
+                "left": "#3a1424", "right": "#3a1424", "bottom": "#3a1424",
+                "bottomleft": "#3a1424", "bottomright": "#3a1424",
                 "center": "#171116"}
 
 
@@ -202,26 +194,16 @@ def aurorae_glass():
         (target / filename).write_text(content, encoding="utf-8")
     patches = (frame("#171116", "decoration-", edge=12, size=56, fill_opacity=0.42, colors=GLASS_COLORS)
                + frame("#171116", "decoration-inactive-", x=100, edge=12, size=56, fill_opacity=0.55, colors=GLASS_COLORS)
-               + frame("#171116", "decoration-maximized-", x=200, edge=12, size=56, fill_opacity=0.80, colors=GLASS_COLORS)
-               + frame("#171116", "decoration-maximized-inactive-", x=300, edge=12, size=56, fill_opacity=0.86, colors=GLASS_COLORS)
-               + frame("#0f0f11", "decoration-opaque-", x=400, edge=12, size=56)
-               + frame("#0b0b0d", "decoration-opaque-inactive-", x=500, edge=12, size=56)
-               + frame("white", "mask-", x=600, edge=12, size=56))
-    write(f"{glass}/decoration.svg", '<svg xmlns="http://www.w3.org/2000/svg" width="700" height="100">' + GLASS_DEFS + patches + '</svg>')
+               + frame("#0f0f11", "decoration-opaque-", x=200, edge=12, size=56)
+               + frame("#0b0b0d", "decoration-opaque-inactive-", x=300, edge=12, size=56)
+               + frame("white", "mask-", x=400, edge=12, size=56))
+    write(f"{glass}/decoration.svg", '<svg xmlns="http://www.w3.org/2000/svg" width="500" height="100">' + patches + '</svg>')
 
 
 # Vidrio Crimson-glass Light: mismos parches translúcidos sobre fondo claro.
-GLASS_LIGHT_DEFS = ('<defs>'
-                    '<linearGradient id="glassSheenLight" x1="0" y1="0" x2="0" y2="1">'
-                    '<stop offset="0" stop-color="#9c8498"/><stop offset="0.16" stop-color="#d9c8d8"/>'
-                    '<stop offset="1" stop-color="#f1e7ee"/></linearGradient>'
-                    '<linearGradient id="glassCrimsonLight" x1="0" y1="0" x2="0" y2="1">'
-                    '<stop offset="0" stop-color="#8e2a44"/><stop offset="0.5" stop-color="#c05068"/>'
-                    '<stop offset="1" stop-color="#d8788c"/></linearGradient>'
-                    '</defs>')
-GLASS_LIGHT_COLORS = {"top": "url(#glassSheenLight)", "topleft": "url(#glassSheenLight)", "topright": "url(#glassSheenLight)",
-                      "left": "url(#glassCrimsonLight)", "right": "url(#glassCrimsonLight)", "bottom": "url(#glassCrimsonLight)",
-                      "bottomleft": "url(#glassCrimsonLight)", "bottomright": "url(#glassCrimsonLight)",
+GLASS_LIGHT_COLORS = {"top": "#9c8498", "topleft": "#9c8498", "topright": "#9c8498",
+                      "left": "#8e2a44", "right": "#8e2a44", "bottom": "#8e2a44",
+                      "bottomleft": "#8e2a44", "bottomright": "#8e2a44",
                       "center": "#eef0f6"}
 
 
@@ -246,12 +228,10 @@ def aurorae_glass_light():
         (target / filename).write_text(content, encoding="utf-8")
     patches = (frame("#eef0f6", "decoration-", edge=12, size=56, fill_opacity=0.42, colors=GLASS_LIGHT_COLORS)
                + frame("#eef0f6", "decoration-inactive-", x=100, edge=12, size=56, fill_opacity=0.55, colors=GLASS_LIGHT_COLORS)
-               + frame("#eef0f6", "decoration-maximized-", x=200, edge=12, size=56, fill_opacity=0.80, colors=GLASS_LIGHT_COLORS)
-               + frame("#eef0f6", "decoration-maximized-inactive-", x=300, edge=12, size=56, fill_opacity=0.86, colors=GLASS_LIGHT_COLORS)
-               + frame("#e8eaf0", "decoration-opaque-", x=400, edge=12, size=56)
-               + frame("#e8eaf0", "decoration-opaque-inactive-", x=500, edge=12, size=56)
-               + frame("white", "mask-", x=600, edge=12, size=56))
-    write(f"{glass}/decoration.svg", '<svg xmlns="http://www.w3.org/2000/svg" width="700" height="100">' + GLASS_LIGHT_DEFS + patches + '</svg>')
+               + frame("#e8eaf0", "decoration-opaque-", x=200, edge=12, size=56)
+               + frame("#e8eaf0", "decoration-opaque-inactive-", x=300, edge=12, size=56)
+               + frame("white", "mask-", x=400, edge=12, size=56))
+    write(f"{glass}/decoration.svg", '<svg xmlns="http://www.w3.org/2000/svg" width="500" height="100">' + patches + '</svg>')
 
 
 def main():
