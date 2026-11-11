@@ -19,7 +19,7 @@ técnica viva: `docs/architecture.md`. Este archivo es el índice operativo de r
   kcmshell6/nmcli/pactl/bluetoothctl/plasma-apply-*).
   Los demás centros (systemsettings, kinfocenter, otros DE) se ocultan con NoDisplay desde
   `scripts/stage.py`. El paquete `systemsettings` SE CONSERVA: aporta `kcmshell6`.
-- **Una sola app por función**: sin kcalc (la oficial es `dylanos-calculator`), sin
+- **Una sola app por función**: sin kcalc (la oficial es `calculator`), sin
   VSCodium (el editor es Visual Studio Code, paquete `code`, repo apt oficial de Microsoft)
   y sin Konsole (la terminal oficial es `dylanos-console`, basada en Kitty).
 - **NUNCA mostrar "Discover/plasma-discover" al usuario**: la tienda es `dylanos-store`.
@@ -74,13 +74,16 @@ técnica viva: `docs/architecture.md`. Este archivo es el índice operativo de r
 - `apps/workspace/` — App QML/Python (PySide6) con 6 páginas; ventana DylanOS frameless
   (título y semáforos integrados en su barra). En el ISO: `/usr/share/dylanos/workspace`,
   wrapper `/usr/bin/dylanos --page <key>`. Su action("settings"|…) lanza `dylanos-configuration`.
-- `apps/dylanos-app-center/`, `apps/dylanos-calculator/` — apps nativas; calculadora
+- `apps/dylanos-app-center/`, `apps/calculator/` — apps nativas; calculadora
   oficial (kcalc NO se envía). Calculator también es frameless con semáforos.
 - `apps/dylanos-store/` — **DylanOS Store nativa**: fork de plasma-discover 6.3.6, UI 100%
   propia, datos reales vía libdiscover (PackageKit+AppStream+Flatpak). Binario `dylanos-store`,
   DBus `org.dylanos.dylanos-store`, desktop `org.dylanos.store.desktop`. QA de captura:
   `dylanos-store --screenshot out.png --size 1280x800 --view home` (chroot, con DBus).
 - `apps/dylanos-spotlight/` — Búsqueda rápida (Python, ventana frameless).
+- `apps/dylanos-browser/` — fork vendorizado de Zen/Gecko, en cimentación; no se construye ni empaqueta en la ISO. Mantenerlo aquí por procedencia, parches MPL y seguimiento de upstream. Ver la decisión y el checkout ligero en `docs/architecture.md`.
+- `apps/dylanos-process/` — monitor nativo de procesos/recursos, integrado en build y staging.
+- `apps/com.dylanos.dashboard/` — plasmoid histórico; staging lo elimina y no se incluye en el layout actual.
 - `apps/com.dylanos.dock/`, `apps/com.dylanos.activeapp/`, `apps/com.dylanos.search/`,
   `apps/dylanos-control-center/` — Plasmoids (dock alternativo, nombre de app activa,
   lupa que lanza Spotlight, centro de control con bandeja).

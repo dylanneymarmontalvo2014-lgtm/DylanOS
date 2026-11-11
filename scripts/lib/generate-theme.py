@@ -71,6 +71,17 @@ def frame(color, prefix="", x=0, y=0, edge=8, size=64, fill_opacity=None, colors
     return "".join(parts)
 
 
+def link_aurorae_buttons(theme):
+    """Comparte un único juego versionado de iconos entre todos los temas."""
+    target = ROOT / "themes/aurorae" / theme
+    target.mkdir(parents=True, exist_ok=True)
+    for name in ("close", "minimize", "maximize", "restore"):
+        link = target / f"{name}.svg"
+        if link.is_symlink() or link.exists():
+            link.unlink()
+        link.symlink_to(Path("../shared") / f"{name}.svg")
+
+
 def aurorae():
     """Decoración de ventanas DylanOS: sin banda gris tradicional.
 
@@ -90,15 +101,19 @@ def aurorae():
             if state in ("hover", "pressed"):
                 content += f'<path d="{glyph}" fill="none" stroke="#3a2930" stroke-width="1.4"/>'
             content += '</g>'
-        write(f"{aurora}/{name}.svg", content + '</svg>')
+        write(f"themes/aurorae/shared/{name}.svg", content + '</svg>')
     light = ROOT / "themes/aurorae/DylanOS-Crimson-Light"
     light.mkdir(parents=True, exist_ok=True)
     for source in (ROOT / aurora).iterdir():
+        if source.name in {"close.svg", "minimize.svg", "maximize.svg", "restore.svg"}:
+            continue
         filename = source.name.replace("DylanOS-Crimsonrc", "DylanOS-Crimson-Lightrc")
         content = source.read_text().replace("DylanOS-Crimson", "DylanOS-Crimson-Light").replace("Name=DylanOS Crimson", "Name=DylanOS Crimson Light")
         content = content.replace("#0f0f11", "#eef0f6").replace("#0b0b0d", "#e8eaf0")
         content = content.replace("152,154,162", "32,33,43").replace("104,106,114", "99,104,121")
         (light / filename).write_text(content)
+    link_aurorae_buttons("DylanOS-Crimson")
+    link_aurorae_buttons("DylanOS-Crimson-Light")
 
 
 def glass_frame(prefix="", x=0, y=0, edge=18, size=60, opacity=0.72):
@@ -184,7 +199,7 @@ def aurorae_glass():
     target = ROOT / glass
     target.mkdir(parents=True, exist_ok=True)
     for source in (ROOT / "themes/aurorae/DylanOS-Crimson").iterdir():
-        if source.name == "decoration.svg":
+        if source.name == "decoration.svg" or source.name in {"close.svg", "minimize.svg", "maximize.svg", "restore.svg"}:
             continue
         filename = source.name.replace("DylanOS-Crimsonrc", "DylanOS-Crimson-Glassrc")
         content = source.read_text(encoding="utf-8").replace("DylanOS-Crimson", "DylanOS-Crimson-Glass")
@@ -198,6 +213,7 @@ def aurorae_glass():
                + frame("#0b0b0d", "decoration-opaque-inactive-", x=300, edge=12, size=56)
                + frame("white", "mask-", x=400, edge=12, size=56))
     write(f"{glass}/decoration.svg", '<svg xmlns="http://www.w3.org/2000/svg" width="500" height="100">' + patches + '</svg>')
+    link_aurorae_buttons("DylanOS-Crimson-Glass")
 
 
 # Vidrio Crimson-glass Light: mismos parches translúcidos sobre fondo claro.
@@ -218,7 +234,7 @@ def aurorae_glass_light():
     target = ROOT / glass
     target.mkdir(parents=True, exist_ok=True)
     for source in (ROOT / "themes/aurorae/DylanOS-Crimson-Glass").iterdir():
-        if source.name == "decoration.svg":
+        if source.name == "decoration.svg" or source.name in {"close.svg", "minimize.svg", "maximize.svg", "restore.svg"}:
             continue
         filename = source.name.replace("DylanOS-Crimson-Glassrc", "DylanOS-Crimson-Glass-Lightrc")
         content = source.read_text(encoding="utf-8").replace("DylanOS-Crimson-Glass", "DylanOS-Crimson-Glass-Light")

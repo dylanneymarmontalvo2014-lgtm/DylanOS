@@ -28,6 +28,42 @@ class DocumentationTest(unittest.TestCase):
         ):
             self.assertTrue((ROOT / component).is_file(), component)
 
+    def test_agents_app_map_matches_repository_and_routes_exist(self):
+        agents = (ROOT / "AGENTS.md").read_text(encoding="utf-8")
+        app_dirs = {path.name for path in (ROOT / "apps").iterdir() if path.is_dir()}
+        documented = set(re.findall(r"`apps/([^`/]+)/`", agents))
+        self.assertEqual(app_dirs, documented)
+        for relative in re.findall(r"`(apps/[A-Za-z0-9_.-]+(?:/[^`]*)?)`", agents):
+            with self.subTest(path=relative):
+                self.assertTrue((ROOT / relative.rstrip("/")).exists(), relative)
+        self.assertIn("apps/calculator/", agents)
+        self.assertNotIn("apps/dylanos-calculator/", agents)
+        self.assertIn("no se construye ni empaqueta", agents)
+        self.assertIn("checkout ligero", agents)
+
+    def test_brand_assets_have_single_versioned_sources(self):
+        canonical = ROOT / "branding/logo.png"
+        for relative in (
+            "apps/workspace/assets/logo.png",
+            "apps/dylanos-configuration/assets/logo.png",
+            "apps/dylanos-control-center/contents/ui/logo.png",
+            "apps/dylanos-store/src/store/data/logo.png",
+            "themes/lookandfeel/org.dylanos.crimson/contents/splash/images/logo.png",
+            "themes/sddm/DylanOS-Crimson/logo.png",
+            "themes/plymouth/DylanOS-Plymouth/logo.png",
+        ):
+            path = ROOT / relative
+            with self.subTest(path=relative):
+                self.assertTrue(path.is_symlink())
+                self.assertEqual(path.resolve(), canonical.resolve())
+        for name in ("close", "minimize", "maximize", "restore"):
+            source = ROOT / "themes/aurorae/shared" / f"{name}.svg"
+            self.assertTrue(source.is_file())
+            for variant in ("DylanOS-Crimson", "DylanOS-Crimson-Light", "DylanOS-Crimson-Glass", "DylanOS-Crimson-Glass-Light"):
+                link = ROOT / "themes/aurorae" / variant / f"{name}.svg"
+                self.assertTrue(link.is_symlink())
+                self.assertEqual(link.resolve(), source.resolve())
+
     def test_current_docs_do_not_repeat_retired_claims(self):
         files = (
             ROOT / "README.md",

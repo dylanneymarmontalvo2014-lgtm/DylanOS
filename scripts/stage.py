@@ -33,7 +33,7 @@ def stage(destination, installer_dist=None, version=None):
         if source.is_dir():
             shutil.copytree(source, target, dirs_exist_ok=True, ignore=shutil.ignore_patterns("__pycache__", "*.pyc", "tests"))
         else:
-            shutil.copy2(source, target)
+            shutil.copy2(source.resolve() if source.is_symlink() else source, target)
 
     def write(target, text, mode=0o644):
         target = dest / target.lstrip("/")
@@ -62,12 +62,10 @@ def stage(destination, installer_dist=None, version=None):
     remove("/usr/share/dylanos/iot")
     for source, target in [
         ("apps/workspace", "/usr/share/dylanos/workspace"),
-        ("branding/logo.png", "/usr/share/dylanos/workspace/assets/logo.png"),
         ("branding/logo.png", "/usr/share/icons/hicolor/512x512/apps/distributor-logo-dylanos.png"),
         ("branding/icons/dylanos-store.png", "/usr/share/icons/hicolor/512x512/apps/dylanos-store.png"),
         ("branding/icons/dylanos-process.svg", "/usr/share/icons/hicolor/scalable/apps/dylanos-process.svg"),
         ("apps/dylanos-process/org.dylanos.process.metainfo.xml", "/usr/share/metainfo/org.dylanos.process.metainfo.xml"),
-        ("branding/logo.png", "/usr/share/dylanos/configuration/assets/logo.png"),
         ("branding/wallpapers/dylanos-default.png", "/usr/share/wallpapers/DylanOS/dylanos-default.png"),
         ("branding/wallpapers/DylanOS-Dark.png", "/usr/share/wallpapers/DylanOS/DylanOS-Dark.png"),
         ("branding/wallpapers/DylanOS-Light.png", "/usr/share/wallpapers/DylanOS/DylanOS-Light.png"),
@@ -77,10 +75,11 @@ def stage(destination, installer_dist=None, version=None):
         ("themes/icons/DylanIcons-Crimson", "/usr/share/icons/DylanIcons-Crimson"),
         ("themes/plasma/DylanOS-Crimson", "/usr/share/plasma/desktoptheme/DylanOS-Crimson"),
         ("themes/plasma/DylanOS-Crimson-Glass", "/usr/share/plasma/desktoptheme/DylanOS-Crimson-Glass"),
+        ("themes/aurorae/shared", "/usr/share/aurorae/themes/shared"),
         ("themes/aurorae/DylanOS-Crimson", "/usr/share/aurorae/themes/DylanOS-Crimson"),
         ("themes/aurorae/DylanOS-Crimson-Glass", "/usr/share/aurorae/themes/DylanOS-Crimson-Glass"),
         ("themes/aurorae/DylanOS-Crimson-Light", "/usr/share/aurorae/themes/DylanOS-Crimson-Light"),
-        ("themes/aurorae/DylanOS-Crimson-Glass", "/usr/share/aurorae/themes/DylanOS-Crimson-Glass"),
+        ("themes/aurorae/DylanOS-Crimson-Glass-Light", "/usr/share/aurorae/themes/DylanOS-Crimson-Glass-Light"),
         ("themes/lookandfeel/org.dylanos.crimson", "/usr/share/plasma/look-and-feel/org.dylanos.crimson"),
         ("themes/sddm/DylanOS-Crimson", "/usr/share/sddm/themes/DylanOS-Crimson"),
         ("themes/grub/DylanOS-Grub", "/usr/share/grub/themes/dylanos"),

@@ -199,7 +199,8 @@ chroot "$CHROOT" cmake --install /tmp/dylanos-src/dylanos-explorer/build
 # DylanOS Configuration: única app de configuración (Qt6/QML sobre módulos KCM).
 mkdir -p "$CHROOT/tmp/dylanos-src/dylanos-configuration"
 cp -a "$ROOT/apps/dylanos-configuration/." "$CHROOT/tmp/dylanos-src/dylanos-configuration/"
-# El logo oficial se incrusta en el binario (qrc:/assets/logo.png).
+# Materializar el logo compartido dentro del árbol temporal que se compila.
+rm -f "$CHROOT/tmp/dylanos-src/dylanos-configuration/assets/logo.png"
 cp -a "$ROOT/branding/logo.png" "$CHROOT/tmp/dylanos-src/dylanos-configuration/assets/logo.png"
 chroot "$CHROOT" cmake -S /tmp/dylanos-src/dylanos-configuration -B /tmp/dylanos-src/dylanos-configuration/build -GNinja -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX=/usr
 chroot "$CHROOT" cmake --build /tmp/dylanos-src/dylanos-configuration/build --parallel "$BUILD_JOBS"
@@ -207,6 +208,8 @@ chroot "$CHROOT" cmake --install /tmp/dylanos-src/dylanos-configuration/build
 # DylanOS Store: fork nativo de Discover (libdiscover + UI del prototipo).
 mkdir -p "$CHROOT/tmp/dylanos-src/dylanos-store" "$CHROOT/tmp/dylanos-src/catalog"
 cp -a "$ROOT/apps/dylanos-store/src/." "$CHROOT/tmp/dylanos-src/dylanos-store/"
+rm -f "$CHROOT/tmp/dylanos-src/dylanos-store/store/data/logo.png"
+cp -a "$ROOT/branding/logo.png" "$CHROOT/tmp/dylanos-src/dylanos-store/store/data/logo.png"
 cp -a "$ROOT/apps/dylanos-store/catalog/store.db" "$CHROOT/tmp/dylanos-src/catalog/"
 chroot "$CHROOT" cmake -S /tmp/dylanos-src/dylanos-store -B /tmp/dylanos-src/dylanos-store/build -GNinja -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX=/usr
 chroot "$CHROOT" cmake --build /tmp/dylanos-src/dylanos-store/build --parallel "$BUILD_JOBS"
@@ -217,6 +220,7 @@ chroot "$CHROOT" cmake --install /tmp/dylanos-src/dylanos-store/build
 mkdir -p "$CHROOT/tmp/dylanos-src/dylanos-process"
 cp -a "$ROOT/apps/dylanos-process/." "$CHROOT/tmp/dylanos-src/dylanos-process/"
 mkdir -p "$CHROOT/tmp/dylanos-src/dylanos-process/branding/icons"
+rm -f "$CHROOT/tmp/dylanos-src/dylanos-process/branding/icons/dylanos-process.svg"
 cp -a "$ROOT/branding/icons/dylanos-process.svg" "$CHROOT/tmp/dylanos-src/dylanos-process/branding/icons/"
 chroot "$CHROOT" cmake -S /tmp/dylanos-src/dylanos-process -B /tmp/dylanos-src/dylanos-process/build -GNinja -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX=/usr
 chroot "$CHROOT" cmake --build /tmp/dylanos-src/dylanos-process/build --parallel "$BUILD_JOBS"
