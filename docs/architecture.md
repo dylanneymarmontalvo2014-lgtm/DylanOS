@@ -46,8 +46,11 @@ la arquitectura **real** del repositorio tras la iteración de ingeniería de 20
   existe una *blur region*, y esa región es el `decorationMask` que la decoración construye
   desde los ids `mask-*`; por eso la máscara se mantiene opaca y ningún paquete nuevo entra
   (sin Kvantum). El perfil vive en `configs/plasma/skel/kwinrc`: `[Plugins]
-  blurEnabled/translucencyEnabled`, `[Effect-blur] BlurStrength=30 NoiseStrength=4` y
-  `[Effect-translucency]` (Inactive 80, Dialogs 85, Menus 80…). Grupos en minúscula: son los
+  blurEnabled/translucencyEnabled`, `[Effect-blur] BlurStrength=15 NoiseStrength=4` y
+  `[Effect-translucency]` (Inactive 80, Dialogs 85, Menus 80…). BlurStrength solo admite
+  1-15 (rango del slider de `blur.kcfg`): un valor mayor hace que `BlurEffect::reconfigure`
+  lea fuera del vector `blurStrengthValues[]` y caiga con SIGSEGV. Grupos en minúscula: son
+  los
   nombres con los que `blur.kcfg` y `ScriptedEffect` leen kwinrc, y los grupos de efectos del
   `contents/defaults` del look-and-feel los ignora `LookAndFeelManager`, así que ahí solo se
   fija la decoración. `CrimsonGlassService` respalda el estado anterior para que desactivar
