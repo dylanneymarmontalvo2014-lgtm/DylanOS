@@ -167,7 +167,8 @@ class CrimsonGlassTest(unittest.TestCase):
         self.assertEqual(kwinrc.get("org.kde.kdecoration2", "theme"), "__aurorae__svg__DylanOS-Crimson-Glass")
         self.assertEqual(kwinrc.get("Plugins", "blurEnabled"), "true")
         self.assertEqual(kwinrc.get("Plugins", "translucencyEnabled"), "true")
-        self.assertEqual(kwinrc.get("Effect-blur", "BlurStrength"), "30")
+        # BlurStrength solo admite 1-15; fuera de rango es UB (SIGSEGV en BlurEffect)
+        self.assertEqual(kwinrc.get("Effect-blur", "BlurStrength"), "15")
         self.assertEqual(kwinrc.get("Effect-blur", "NoiseStrength"), "4")
         self.assertEqual(kwinrc.get("Effect-translucency", "Inactive"), "80")
         self.assertEqual(kwinrc.get("Effect-translucency", "Dialogs"), "85")
@@ -184,6 +185,22 @@ class CrimsonGlassTest(unittest.TestCase):
         backend = (ROOT / "apps/workspace/backend.py").read_text(encoding="utf-8")
         self.assertIn("DylanOS-Crimson-Glass", backend)
         self.assertIn("kwinDecoration", backend)
+
+
+class SessionWrapperTest(unittest.TestCase):
+    """El wrapper de sesión X11 debe mantener viva la sesión en VM.
+
+    KWin 6.3 no soporta QPainter compositing en X11 y, con KWIN_COMPOSE
+    definido y no cumplible, KWin ejecuta qApp->quit(): escritorio negro
+    (solo queda el welcome, que es un proceso aparte). En VM el render
+    software de Mesa mantiene el compositor OpenGL real.
+    """
+
+    def test_wrapper_never_requests_an_unsupported_compositor(self):
+        wrapper = (ROOT / "scripts/stage.py").read_text(encoding="utf-8")
+        self.assertIn("unset KWIN_COMPOSE", wrapper)
+        self.assertNotIn("export KWIN_COMPOSE=", wrapper)
+        self.assertIn("export LIBGL_ALWAYS_SOFTWARE=1", wrapper)
 
 
 if __name__ == "__main__":

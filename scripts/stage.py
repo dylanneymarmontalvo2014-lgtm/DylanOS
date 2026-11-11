@@ -107,6 +107,10 @@ def stage(destination, installer_dist=None, version=None):
         ("configs/neofetch/config.conf", "/etc/skel/.config/neofetch/config.conf"),
         ("configs/neofetch/config.conf", "/etc/xdg/neofetch/config.conf"),
         ("branding/logo.png", "/usr/share/dylanos/neofetch/logo.png"),
+        # Asset canónico del sistema: los logos del checkout son enlaces a
+        # branding/logo.png y el staging los materializa (neofetch, workspace,
+        # control center y splash leen esta copia real, no un symlink).
+        ("branding/logo.png", "/usr/share/dylanos/branding/logo.png"),
         ("configs/bash/dylanos.bashrc", "/etc/skel/.bashrc"),
         ("configs/bash/dylanos-ghost.sh", "/usr/share/dylanos/shell/dylanos-ghost.sh"),
         ("MAINTAINERS.txt", "/usr/share/dylanos/MAINTAINERS.txt"),
@@ -332,28 +336,53 @@ fi
             grp_content = re.sub(rf"(?m)^({grp}:x:\d+:)(.*)$", lambda m: f"{m.group(1)}{m.group(2) + ',' if m.group(2) and not m.group(2).endswith(',') else m.group(2)}dylan" if "dylan" not in m.group(2) else m.group(0), grp_content)
         group_path.write_text(grp_content, encoding="utf-8")
     home_dylan = dest / "home/dylan"
-    home_dylan.mkdir(parents=True, exist_ok=True)
+    # El home del live debe ser EXACTAMENTE el skel. Copiar encima
+    # (dirs_exist_ok=True) arrastraría al ISO el estado de sesiones de QA
+    # reales sobre el chroot (kwinrc con blur desactivado, appletsrc runtime
+    # que anula el layout de paneles, caches, kwalletd, historial…), y el
+    # usuario live arrancaría con la identidad visual rota.
+    if home_dylan.is_symlink() or home_dylan.is_file():
+        home_dylan.unlink()
+    elif home_dylan.is_dir():
+        shutil.rmtree(home_dylan)
     if (dest / "etc/skel").exists():
-        shutil.copytree(dest / "etc/skel", home_dylan, dirs_exist_ok=True)
+        shutil.copytree(dest / "etc/skel", home_dylan)
+    else:
+        home_dylan.mkdir(parents=True, exist_ok=True)
     if os.geteuid() == 0:
         for p in [home_dylan] + list(home_dylan.rglob("*")):
-            os.chown(p, 1000, 1000)
+            try:
+                # follow_symlinks=False: lchown; un symlink (válido o colgante)
+                # no debe apropiar a su objetivo (p. ej. /etc/passwd).
+                os.chown(p, 1000, 1000, follow_symlinks=False)
+            except FileNotFoundError:
+                # Entrada borrada durante el staging (p. ej. runtime de pulse
+                # en un chroot reutilizado): nada que apropiar.
+                pass
     xsessions_dir = dest / "usr/share/xsessions"
     if (xsessions_dir / "plasmax11.desktop").exists() and not (xsessions_dir / "plasma.desktop").exists():
         try:
             (xsessions_dir / "plasma.desktop").symlink_to("plasmax11.desktop")
         except FileExistsError:
             pass
-    # KWin X11 puede caerse al inicializar OpenGL sobre la GPU virtual de QEMU
-    # aunque la sesión siga siendo usable. Forzamos QPainter solo dentro de una
-    # máquina virtual; en hardware físico se conserva el compositor y Crimson
-    # Glass completo. El wrapper se usa también para el acceso directo de SDDM.
+    # KWin X11 puede caerse al inicializar OpenGL sobre la GPU virtual de QEMU.
+    # NO se usa KWIN_COMPOSE=Q: en KWin 6.3 QPainter no es un compositor válido
+    # en X11 (compositor_x11.cpp: "QPainter compositing is unsupported on X11")
+    # y, si KWIN_COMPOSE está definido y no puede cumplirse, KWin ejecuta
+    # qApp->quit(): sale silencioso, plasmashell no encuentra pantalla válida
+    # ("Did not find a valid screen to place a new panel") y el escritorio queda
+    # negro. En VM se fuerza el renderizado software de Mesa (llvmpipe),
+    # conservando el compositor OpenGL real y Crimson Glass; en hardware físico
+    # se usa el camino normal. KWIN_COMPOSE se limpia siempre para que un valor
+    # heredado (builds reutilizados) no abandone la sesión. El wrapper se usa
+    # también para el acceso directo de SDDM.
     write(
         "/usr/bin/dylanos-startplasma-x11",
         """#!/bin/sh
 if command -v systemd-detect-virt >/dev/null 2>&1 && systemd-detect-virt -q; then
-    export KWIN_COMPOSE=Q
+    export LIBGL_ALWAYS_SOFTWARE=1
 fi
+unset KWIN_COMPOSE
 exec /usr/bin/startplasma-x11 "$@"
 """,
         0o755,

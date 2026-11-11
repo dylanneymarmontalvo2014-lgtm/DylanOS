@@ -471,7 +471,7 @@ bool SystemService::setGlassEnabled(bool enabled)
     static const GlassSetting settings[] = {
         {"org.kde.kdecoration2", "theme", "__aurorae__svg__DylanOS-Crimson-Glass", nullptr},
         {"Plugins", "translucencyEnabled", "true", "false"},
-        {"Effect-blur", "BlurStrength", "30", "15"},
+        {"Effect-blur", "BlurStrength", "15", "15"},
         {"Effect-blur", "NoiseStrength", "4", "5"},
         {"Effect-translucency", "Inactive", "80", "100"},
         {"Effect-translucency", "Dialogs", "85", "100"},

@@ -521,6 +521,46 @@ class StagingTest(unittest.TestCase):
                 self.assertTrue(link.is_symlink())
                 self.assertEqual(link.resolve(), source.resolve())
 
+    def test_live_home_is_reset_to_the_skeleton_not_merged(self):
+        """El home del live es exactamente el skel, nunca un merge.
+
+        Las sesiones de QA reales sobre el chroot dejan estado (kwinrc con
+        blur desactivado, appletsrc runtime, caches, kwalletd…) que, si se
+        fusiona con el skel, entra al ISO y rompe la identidad visual del
+        live: el staging debe reiniciar el home completo.
+        """
+        with tempfile.TemporaryDirectory() as folder:
+            root = Path(folder)
+            module.stage(root)
+            skel_home = {p.relative_to(root / "etc/skel") for p in (root / "etc/skel").rglob("*")}
+            self.assertTrue(skel_home, "El skel no puede estar vacío en este punto")
+
+            # Simula la contaminación que deja una sesión de QA real: config
+            # que desactiva el glass, layout de paneles runtime y caches.
+            session_state = root / "home/dylan"
+            (session_state / ".config").mkdir(parents=True, exist_ok=True)
+            (session_state / ".config/kwinrc").write_text(
+                "[Plugins]\nblurEnabled=false\n", encoding="utf-8")
+            (session_state / ".config/plasma-org.kde.plasma.desktop-appletsrc").write_text(
+                "[Containments][1]\n", encoding="utf-8")
+            (session_state / ".cache/discover/qmlcache").mkdir(parents=True, exist_ok=True)
+            (session_state / ".cache/discover/qmlcache/qa.qmlc").write_text("basura", encoding="utf-8")
+            (session_state / ".bash_history").write_text("comandos de QA\n", encoding="utf-8")
+
+            module.stage(root)
+
+            staged_home = {p.relative_to(root / "home/dylan") for p in session_state.rglob("*")}
+            self.assertEqual(staged_home, skel_home)
+            self.assertNotIn("blurEnabled=false",
+                             (session_state / ".config/kwinrc").read_text(encoding="utf-8"))
+            self.assertFalse((session_state / ".bash_history").exists())
+            self.assertFalse((session_state / ".cache").exists())
+
+            # La identidad visual del live no puede depender de dueños root
+            # heredados de builds con sudo: el home es del usuario 1000.
+            kwinrc_mode = (session_state / ".config/kwinrc").stat().st_mode
+            self.assertTrue(kwinrc_mode & 0o400)
+
     def test_aurorae_required_svg_elements(self):
         for variant in ("DylanOS-Crimson", "DylanOS-Crimson-Light", "DylanOS-Crimson-Glass", "DylanOS-Crimson-Glass-Light"):
             root = ROOT / "themes/aurorae" / variant
