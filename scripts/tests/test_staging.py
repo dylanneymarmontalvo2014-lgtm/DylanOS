@@ -78,11 +78,12 @@ class StagingTest(unittest.TestCase):
                      "usr/share/dylanos/installer/backend/server.py",
                      "usr/share/dylanos/installer/native/main.py",
                      "usr/share/dylanos/spotlight/qml/Main.qml",
-                     "usr/share/dylanos/neofetch/logo.png",
+                     "usr/share/dylanos/branding/logo.png",
                      "usr/share/icons/hicolor/512x512/apps/distributor-logo-dylanos.png",
                      "usr/share/aurorae/themes/DylanOS-Crimson/DylanOS-Crimsonrc",
                      "usr/share/aurorae/themes/DylanOS-Crimson-Light/DylanOS-Crimson-Lightrc",
                      "usr/share/aurorae/themes/DylanOS-Crimson-Glass/decoration.svg",
+                     "usr/share/aurorae/themes/shared/close.svg",
                      "etc/skel/.config/kwinrc",
                      "usr/share/wallpapers/DylanOS/DylanOS-Dark.png",
                      "usr/share/wallpapers/DylanOS/dylanos-default.png",
@@ -237,6 +238,15 @@ class StagingTest(unittest.TestCase):
             self.assertIn("background=/usr/share/wallpapers/DylanOS/dylanos-default.png",
                           (root / "usr/share/sddm/themes/DylanOS-Crimson/theme.conf").read_text())
             self.assertTrue((root / "usr/share/sddm/themes/DylanOS-Crimson/logo.png").is_file())
+            # Las rutas locales de logo provienen de enlaces en el checkout y se materializan durante staging.
+            for logo_path in (
+                "usr/share/dylanos/workspace/assets/logo.png",
+                "usr/share/plasma/plasmoids/com.dylanos.controlcenter/contents/ui/logo.png",
+                "usr/share/plasma/look-and-feel/org.dylanos.crimson/contents/splash/images/logo.png",
+                "usr/share/sddm/themes/DylanOS-Crimson/logo.png",
+                "usr/share/plymouth/themes/dylanos/logo.png",
+            ):
+                self.assertEqual((root / logo_path).read_bytes(), (ROOT / "branding/logo.png").read_bytes(), logo_path)
             # En el sistema instalado el GRUB arranca DylanOS sin menú; el
             # menú visible solo existe en el LIVE (scripts/iso.sh, timeout=3).
             grubcfg = (root / "etc/default/grub.d/dylanos.cfg").read_text()
@@ -500,8 +510,19 @@ class StagingTest(unittest.TestCase):
             after = {path.relative_to(root): path.read_bytes() for path in required + [autostart]}
             self.assertEqual(after, before)
 
+    def test_aurorae_window_buttons_use_shared_sources(self):
+        shared = ROOT / "themes/aurorae/shared"
+        variants = ("DylanOS-Crimson", "DylanOS-Crimson-Light", "DylanOS-Crimson-Glass", "DylanOS-Crimson-Glass-Light")
+        for button in ("close", "minimize", "maximize", "restore"):
+            source = shared / f"{button}.svg"
+            self.assertTrue(source.is_file())
+            for variant in variants:
+                link = ROOT / "themes/aurorae" / variant / f"{button}.svg"
+                self.assertTrue(link.is_symlink())
+                self.assertEqual(link.resolve(), source.resolve())
+
     def test_aurorae_required_svg_elements(self):
-        for variant in ("DylanOS-Crimson", "DylanOS-Crimson-Light", "DylanOS-Crimson-Glass"):
+        for variant in ("DylanOS-Crimson", "DylanOS-Crimson-Light", "DylanOS-Crimson-Glass", "DylanOS-Crimson-Glass-Light"):
             root = ROOT / "themes/aurorae" / variant
             for button in ("close", "minimize", "maximize", "restore"):
                 tree = ET.parse(root / (button + ".svg"))

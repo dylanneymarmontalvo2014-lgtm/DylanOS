@@ -11,8 +11,10 @@ la arquitectura **real** del repositorio tras la iteración de ingeniería de 20
    `dylanos` (workspace, PySide6, 6 páginas), `dylanos-explorer` (gestor de archivos
    único del sistema), `dylanos-store` (tienda, fork de Discover con libdiscover real),
    `dylanos-configuration` (centro de configuración único), `dylanos-app-center`,
-   `dylanos-calculator`, `dylanos-spotlight`, `dylanos-installer`, `dylanos-browser`
-   (fork Gecko en integración) y `dylanos-process` (monitor real de procesos y recursos).
+   `dylanos-calculator`, `dylanos-spotlight`, `dylanos-installer` y `dylanos-process`
+   (monitor real de procesos y recursos). `apps/dylanos-browser/` es un fork vendorizado
+   de Zen/Gecko en cimentación; no tiene binario listo para uso diario ni se compila o
+   empaqueta en el build/ISO actual.
 3. **Shell del escritorio**: paneles Plasma generados por el layout del look-and-feel
    (`org.dylanos.crimson`) con plasmoids propios (`com.dylanos.activeapp`,
    `com.dylanos.search`, `com.dylanos.controlcenter`) y `com.dylanos.dock` como
@@ -196,3 +198,18 @@ de una sola app dejan el staging anterior desactualizado).
 - Diseños aprobados: `previews/` (la referencia del SDDM es
   `previews/pantalla de bloqueo/sddm_preview.png`).
 - Licencias y procedencia de recursos: `docs/licenses/assets.md`.
+
+
+## DylanOS Browser: estado y decisión de ubicación
+
+`apps/dylanos-browser/` permanece vendorizado en este repositorio para conservar junto a DylanOS la procedencia del fork de Zen, sus parches y avisos MPL-2.0; moverlo a un repo/submódulo ahora dividiría la trazabilidad sin resolver la falta de un binario publicable. Su ciclo upstream/CVE y una fuente de build reproducible requieren una fase específica. El build actual no lo compila ni lo empaqueta en la ISO; el navegador estable no se sustituye.
+
+Para un checkout de trabajo ligero con Git partial clone, excluye ese árbol así:
+
+```sh
+git clone --filter=blob:none --sparse https://github.com/dylanneymarmontalvo2014-lgtm/DylanOS.git
+cd DylanOS
+git sparse-checkout set --no-cone '/*' '!/apps/dylanos-browser/**'
+```
+
+El resto queda disponible y Git trae blobs bajo demanda. Para trabajar en el Browser: `git sparse-checkout add apps/dylanos-browser`.
