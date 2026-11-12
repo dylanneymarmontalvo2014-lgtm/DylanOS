@@ -1,0 +1,35 @@
+#!/usr/bin/env bash
+# DylanOS — guardia de autoría.
+#
+# Algunos entornos de automatización exportan GIT_AUTHOR_NAME/GIT_AUTHOR_EMAIL,
+# y git les da prioridad sobre user.name/user.email del repositorio. Eso dejó
+# commits con autores inventados (zwork <zwork@local>, dylan@example.com,
+# ing.dylan@local), que GitHub no puede asociar a ninguna cuenta: sin foto.
+#
+# Este hook detecta esos autores placeholder en el commit recién creado y lo
+# reescribe con la identidad canónica antes de que salga del repositorio.
+# Se instala con:  git config core.hooksPath .githooks
+
+set -u
+
+CANON_NAME="Dylan"
+CANON_EMAIL="dylanneymarmontalvo2014@gmail.com"
+
+# Evita recursión: el amend vuelve a disparar post-commit.
+[ "${DYLANOS_AUTHOR_GUARD:-0}" = "1" ] && exit 0
+
+# Solo actúa en el commit actual y solo con identidades no vinculables.
+email_actual=$(git log -1 --format='%ae')
+case "$email_actual" in
+    zwork@local|dylan@example.com|ing.dylan@local) ;;
+    *) exit 0 ;;
+esac
+
+DYLANOS_AUTHOR_GUARD=1 \
+    env -u GIT_AUTHOR_NAME -u GIT_AUTHOR_EMAIL \
+        -u GIT_COMMITTER_NAME -u GIT_COMMITTER_EMAIL \
+    git -c user.name="$CANON_NAME" -c user.email="$CANON_EMAIL" \
+    commit --amend --no-edit \
+        --author="$CANON_NAME <$CANON_EMAIL>" >/dev/null 2>&1 || true
+
+exit 0
