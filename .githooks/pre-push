@@ -1,0 +1,48 @@
+#!/usr/bin/env bash
+# DylanOS — guardia de autoría en el push.
+#
+# `post-commit` repara los commits individuales, pero los merges crean commits
+# sin pasar por ese hook. Esta comprobación corta el push si algún commit que
+# va a salir del repositorio tiene un autor placeholder que GitHub no puede
+# vincular a ninguna cuenta (y por tanto se quedaría sin foto de perfil).
+#
+# Para publicar una rama histórica a propósito:
+#   DYLANOS_ALLOW_PLACEHOLDER_AUTHOR=1 git push ...
+
+set -u
+
+[ "${DYLANOS_ALLOW_PLACEHOLDER_AUTHOR:-0}" = "1" ] && exit 0
+
+PLACEHOLDER='(zwork@local|dylan@example\.com|ing\.dylan@local)'
+remoto="$1"
+encontrados=""
+
+while read -r local_ref local_sha remoto_ref remoto_sha; do
+    # Rama borrada o sin commits nuevos: nada que revisar.
+    [ "$local_sha" = "0000000000000000000000000000000000000000" ] && continue
+
+    if [ "$remoto_sha" = "0000000000000000000000000000000000000000" ]; then
+        rango="$local_sha"
+    else
+        rango="$remoto_sha..$local_sha"
+    fi
+
+    while read -r sha email; do
+        encontrados="${encontrados}  ${sha}  ${email}"$'\n'
+    done < <(git log --no-use-mailmap --format='%H %ae' "$rango" 2>/dev/null | grep -E " ${PLACEHOLDER}$")
+done
+
+if [ -n "$encontrados" ]; then
+    echo "" >&2
+    echo "push cancelado: hay commits con autor placeholder (sin foto en GitHub)." >&2
+    echo "" >&2
+    printf '%s' "$encontrados" >&2
+    echo "" >&2
+    echo "Reescribe la rama con la identidad canónica y vuelve a intentarlo." >&2
+    echo "Si la rama histórica debe publicarse tal cual:" >&2
+    echo "  DYLANOS_ALLOW_PLACEHOLDER_AUTHOR=1 $remoto" >&2
+    echo "" >&2
+    exit 1
+fi
+
+exit 0
