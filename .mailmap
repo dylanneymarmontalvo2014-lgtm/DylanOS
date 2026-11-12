@@ -1,0 +1,21 @@
+# DylanOS — unificación de autoría
+#
+# Este archivo hace que `git log`, `git shortlog`, `git blame` y las vistas de
+# GitHub agrupen TODAS las variantes históricas de Dylan bajo una sola
+# identidad: Dylan <dylanneymarmontalvo2014@gmail.com>, que es el email
+# verificado en la cuenta de GitHub, de modo que cada commit muestra la foto
+# de perfil real.
+#
+# Formato: Nombre canónico <email canónico> Nombre antiguo <email antiguo>
+#
+# Cristopher Borjas / KernelPanic <borjascristopher88@gmail.com> es otra
+# persona real (cuenta CRISTOP-bot): NO se remapea.
+
+Dylan <dylanneymarmontalvo2014@gmail.com> DylanDev <dylanneymarmontalvo2014@gmail.com>
+Dylan <dylanneymarmontalvo2014@gmail.com> DylanTube <dylanneymarmontalvo2014@gmail.com>
+Dylan <dylanneymarmontalvo2014@gmail.com> dylanneymar26 <dylanneymarmontalvo2014@gmail.com>
+Dylan <dylanneymarmontalvo2014@gmail.com> dylanneymarmontalvo2014-lgtm <dylanneymarmontalvo2014@gmail.com>
+Dylan <dylanneymarmontalvo2014@gmail.com> Dylan <dylan@example.com>
+Dylan <dylanneymarmontalvo2014@gmail.com> dylanneymarmontalvo2014-lgtm <dylan@example.com>
+Dylan <dylanneymarmontalvo2014@gmail.com> Ing.Dylan <ing.dylan@local>
+Dylan <dylanneymarmontalvo2014@gmail.com> zwork <zwork@local>
