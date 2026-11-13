@@ -193,7 +193,8 @@ de una sola app dejan el staging anterior desactualizado).
   cada módulo en QML (decisión: reutilizar el motor de KDE con UI propia DylanOS).
 - Las tarjetas del SDDM (clima, reproducción, recordatorios) son contenido de referencia:
   un greeter no tiene acceso a esos datos; reloj, calendario y usuarios son reales.
-- `apps/archivos/` es un prototipo histórico que no se envía en el ISO.
+- `apps/archivos/` es un prototipo histórico que no se envía en el ISO; su launcher vigente delega a `apps/workspace/`.
+- `apps/dylanos-spotlight/` es una app Python/PySide6 con UI QML; `apps/workspace/` también usa Python/PySide6. La línea base de arranque y RSS, incluido el alias histórico `archivos`, se mide con el método documentado en `docs/benchmarks/apps-python-baseline.md`; no se afirman mejoras ni migraciones hasta medir el piloto por separado.
 
 ## 10. Referencias
 
