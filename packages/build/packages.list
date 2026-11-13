@@ -1,5 +1,6 @@
 # DylanOS — paquetes de compilación
 build-essential
+debhelper
 cmake
 ninja-build
 extra-cmake-modules

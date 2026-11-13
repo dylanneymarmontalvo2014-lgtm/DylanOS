@@ -38,8 +38,9 @@ class DocumentationTest(unittest.TestCase):
                 self.assertTrue((ROOT / relative.rstrip("/")).exists(), relative)
         self.assertIn("apps/calculator/", agents)
         self.assertNotIn("apps/dylanos-calculator/", agents)
-        self.assertIn("no se construye ni empaqueta", agents)
-        self.assertIn("checkout ligero", agents)
+        self.assertIn("DylanOS Browser predeterminado", agents)
+        self.assertIn("payload-manifest.json", agents)
+        self.assertIn("org.dylanos.browser.desktop", agents)
 
     def test_brand_assets_have_single_versioned_sources(self):
         canonical = ROOT / "branding/logo.png"

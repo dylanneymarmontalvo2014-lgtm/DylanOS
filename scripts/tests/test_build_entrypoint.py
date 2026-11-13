@@ -36,8 +36,16 @@ class BuildEntrypointTest(unittest.TestCase):
 
     def test_build_exits_after_privileged_phase_returns(self):
         build = (ROOT / "scripts/build.sh").read_text(encoding="utf-8")
-        launch = '    sudo unshare --mount --propagation private bash "$0" --inside \\\n        "--jobs=$BUILD_JOBS" "--installer-dist=$INSTALLER_TMP/dist" "--version=$VERSION" "$@"\n'
+        launch = '    sudo unshare --mount --propagation private bash "$0" --inside \\\n        "--jobs=$BUILD_JOBS" "--installer-dist=$INSTALLER_TMP/dist" \\\n        "--browser-artifact=$BROWSER_ARTIFACT" "--version=$VERSION" "$@"\n'
         self.assertIn(launch + "    exit $?\nfi\n", build)
+
+    def test_browser_artifact_option_is_resolved_before_preflight(self):
+        build = (ROOT / "scripts/build.sh").read_text(encoding="utf-8")
+        option = '--browser-artifact=*) BROWSER_ARTIFACT="${arg#*=}"'
+        preflight = 'package_payload.py" verify'
+        self.assertIn(option, build)
+        self.assertIn(preflight, build)
+        self.assertLess(build.index(option), build.index(preflight))
 
     def test_build_lock_is_shared_and_stored_outside_work(self):
         helper = ROOT / "scripts/lib/lock.sh"

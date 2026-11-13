@@ -1,69 +1,68 @@
-# Contrato de fuente de DylanOS Browser
+# Contrato de empaquetado de DylanOS Browser
 
-Este directorio fija la fuente que DylanOS consumirá cuando exista un artefacto
-publicado y verificable de DylanOS Browser. En la Fase 1 solo existe el contrato:
-el navegador aún no está compilado, empaquetado ni instalado por DylanOS, y Firefox
-ESR continúa siendo el navegador funcional de la imagen.
+`apps/dylanos-browser/` contiene la fuente vendorizada, el empaquetado Debian y los
+gates que conectan un build Gecko real con la ISO de DylanOS 1.1 pre-beta. La fuente
+upstream permanece fijada por `dylanos/upstream.json` y `source.lock.json`.
 
-`apps/dylanos-browser/source.lock.json` es la única referencia de versión para el empaquetado futuro.
-Registra el fork, la base Zen/Firefox, el binario, el ID XDG y la autoridad de
-actualización. Los valores `source_archive` y `sha256` permanecen como
-`unpublished`; ambos deben sustituirse por una URL inmutable y un SHA-256 real
-antes de que la Fase 2 pueda instalar cualquier paquete del navegador.
+`source.lock.json` conserva `source_archive` y `sha256` como `unpublished` mientras
+no exista una URL pública autorizada. Eso no se reemplaza por una URL ficticia para
+builds locales: el candidato queda ligado al checkout mediante su commit y el
+inventario SHA-256 del payload.
 
-## Actualizar el pin
+## Producir el candidato
 
-1. Integrar y probar la nueva base en `apps/dylanos-browser`, conservando su
-   registro `dylanos/upstream.json`.
-2. Crear una versión identificable y publicar su artefacto fuente correspondiente.
-3. Descargar el artefacto en un entorno limpio, calcular su SHA-256 y comprobar
-   que reproduce el árbol esperado.
-4. Actualizar conjuntamente la versión, los datos upstream, `source_archive` y
-   `sha256`; nunca actualizar solo la URL o solo el hash.
-5. Ejecutar `python3 -m unittest -v scripts.tests.test_browser_contract` y la QA
-   completa de DylanOS antes de preparar el paquete Debian.
+```bash
+npm run build:linux -- candidate
+```
 
-APT será la autoridad de actualización del paquete estable. El navegador interno
-no debe contactar servidores de actualización de Zen ni sustituir archivos
-administrados por el paquete.
+El build release crea el runtime Gecko y ejecuta
+`scripts/dylanos/package_payload.py prepare`. El resultado queda ignorado bajo
+`artifacts/phase-2/package/`:
 
-## Estado verificado de la Fase 1
+- `usr/bin/dylanos-browser`: wrapper estable del sistema;
+- `usr/lib/dylanos-browser/`: runtime completo;
+- `payload-manifest.json`: esquema, modo `candidate`, commit fuente, desktop ID y
+  metadatos/hash SHA-256 de cada archivo regular, además de destinos de symlinks.
 
-La Fase 1 valida el fork, la procedencia, la identidad técnica, las preferencias
-base y este contrato de distribución. No valida todavía:
+Durante la preparación se materializan los enlaces del árbol de compilación para que
+el runtime no dependa de rutas del host. Un enlace roto bloquea la preparación; si un
+payload conserva algún enlace, el verificador exige que resuelva dentro del propio
+payload y también lo incluye en el inventario, aunque apunte a un directorio.
 
-- un binario Gecko compilado o un paquete instalable;
-- benchmarks de memoria, CPU, GPU o tiempo de arranque;
-- asociaciones XDG ni selección como navegador predeterminado;
-- renderizado de Crimson Glass en X11 o Wayland;
-- paridad funcional de pestañas horizontales;
-- el SLA operativo de incorporación de parches de seguridad.
+La verificación es reproducible e independiente del build largo:
 
-Ninguno de esos puntos debe anunciarse como terminado hasta superar la Fase 2 o
-la fase específica posterior que lo implemente y mida.
+```bash
+python3 scripts/dylanos/package_payload.py verify \
+  --payload artifacts/phase-2/package
+python3 -m unittest discover -v scripts/dylanos 'test_*.py'
+```
 
-## Scaffold Debian de Fase 2
+Un archivo faltante, extra o alterado; un modo distinto de `candidate`; un wrapper
+no canónico; o una identidad distinta de DylanOS Browser bloquean el paquete.
 
-`debian/` contiene únicamente el contrato inicial del paquete transitorio:
-metadatos, reglas Debhelper, manifiesto de instalación, política de updater
-desactivado y el lanzador XDG. Las reglas rechazan el empaquetado mientras no
-exista un artefacto real en
-`artifacts/phase-2/package/usr/bin/dylanos-browser`; no se incluye ni se simula
-ningún binario en este repositorio.
+## Integración Debian e ISO
 
-La construcción final del `.deb` queda bloqueada hasta que `apps/dylanos-browser`
-produzca y autorice ese binario y su árbol de runtime. Hasta entonces,
-`source.lock.json` conserva deliberadamente `source_archive` y `sha256` como
-`unpublished`, Firefox ESR permanece en el perfil predeterminado y no se instala
-nada en el chroot.
+`scripts/build.sh` valida primero el payload en el host. Después copia al chroot solo
+el payload, `debian/` y el verificador, ejecuta `dpkg-buildpackage -b -us -uc` sobre
+Debian 13 e instala el `.deb` resultante con APT. `DYLANOS_BROWSER_ARTIFACT` permite
+elegir otro directorio de candidato.
 
-La revisión de cierre aplicó los 273 parches del fork sobre Firefox 159.0 y
-verificó el árbol Gecko efectivo. Se conserva la política oficial de firma de
-extensiones, se restauró la validación de certificados del actualizador, el perfil
-usa un directorio propio y las rutas de publicación heredadas de Zen quedan
-inactivas hasta disponer de infraestructura y claves de DylanOS. Esta importación
-no equivale todavía a una compilación ni a una validación del binario.
+El paquete instala el runtime, el launcher `org.dylanos.browser.desktop`, el icono,
+la política `DisableAppUpdate` y una copia del manifiesto en
+`/usr/share/doc/dylanos-browser`. APT es la autoridad de actualización; el navegador
+no usa el actualizador heredado de Zen.
 
-El fork verificable forma parte del repositorio DylanOS; no debe publicarse un lock
-estable ni activar CI de publicación hasta disponer de una ubicación autorizada para
-el artefacto y sus firmas.
+Firefox ESR no se envía en la ISO y `build.sh` lo purga también de chroots reanudados.
+Los defaults XDG de sistema y skel asignan HTML, HTTP y HTTPS al desktop ID de DylanOS
+Browser. No hay scripts `postinst` ni llamadas a `xdg-settings`, y `stage.py` no
+recorre hogares existentes: una preferencia ya elegida por el usuario no se modifica.
+
+## Actualizar la base o publicar un artefacto
+
+1. Actualizar y auditar la base en `dylanos/upstream.json`.
+2. Ejecutar bootstrap, suites Gecko/DylanOS, build candidato y smoke test.
+3. Regenerar el payload y verificarlo desde un directorio limpio.
+4. Si existe una ubicación pública autorizada, publicar el artefacto fuente inmutable
+   y actualizar juntos `source_archive` y `sha256`; nunca solo uno.
+5. Ejecutar la QA completa de DylanOS y una instalación/purga/reinstalación del `.deb`
+   dentro del chroot antes de generar la ISO.

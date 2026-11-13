@@ -1,5 +1,5 @@
-dylanos-browser (1.0.0~alpha1-1) unstable; urgency=medium
+dylanos-browser (1.0.0~alpha1-2) unstable; urgency=medium
 
-  * Add the initial Debian packaging scaffold for the DylanOS Browser.
+  * Package the verified candidate payload for DylanOS 1.1 pre-beta.
 
- -- DylanOS Maintainers <maintainers@dylanos.local>  Sat, 07 Nov 2026 00:00:00 -0500
+ -- DylanOS Maintainers <maintainers@dylanos.local>  Fri, 13 Nov 2026 00:00:00 -0500

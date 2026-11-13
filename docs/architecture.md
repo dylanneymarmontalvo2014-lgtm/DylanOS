@@ -1,6 +1,6 @@
 # Arquitectura de DylanOS
 
-DylanOS Crimson 1.0 es una distribución basada en Debian 13 (trixie) con KDE Plasma 6,
+DylanOS Crimson 1.1 pre-beta es una distribución basada en Debian 13 (trixie) con KDE Plasma 6,
 Qt 6/QML y una capa de aplicaciones y recursos visuales propios. Este documento describe
 la arquitectura **real** del repositorio tras la iteración de ingeniería de 2026-10.
 
@@ -11,10 +11,9 @@ la arquitectura **real** del repositorio tras la iteración de ingeniería de 20
    `dylanos` (workspace, PySide6, 6 páginas), `dylanos-explorer` (gestor de archivos
    único del sistema), `dylanos-store` (tienda, fork de Discover con libdiscover real),
    `dylanos-configuration` (centro de configuración único), `dylanos-app-center`,
-   `dylanos-calculator`, `dylanos-spotlight`, `dylanos-installer` y `dylanos-process`
-   (monitor real de procesos y recursos). `apps/dylanos-browser/` es un fork vendorizado
-   de Zen/Gecko en cimentación; no tiene binario listo para uso diario ni se compila o
-   empaqueta en el build/ISO actual.
+   `dylanos-calculator`, `dylanos-spotlight`, `dylanos-installer`, `dylanos-process`
+   (monitor real de procesos y recursos) y `dylanos-browser`, fork Gecko/Zen empaquetado
+   como navegador predeterminado a partir de un candidato local verificado.
 3. **Shell del escritorio**: paneles Plasma generados por el layout del look-and-feel
    (`org.dylanos.crimson`) con plasmoids propios (`com.dylanos.activeapp`,
    `com.dylanos.search`, `com.dylanos.controlcenter`) y `com.dylanos.dock` como
@@ -36,7 +35,7 @@ la arquitectura **real** del repositorio tras la iteración de ingeniería de 20
   Ninguna app DylanOS muestra la decoración tradicional. La identidad de cada
   ventana se fija con `QGuiApplication::setDesktopFileName("<id>")` (Wayland app_id) y
   `StartupWMClass` (X11); el `.desktop` de cada app usa el MISMO id (`org.dylanos.*`).
-- **Apps de terceros** (Firefox, Kitty, Kate…): decoración SSD de KWin con el tema
+- **Apps de terceros** (Kitty, Kate…): decoración SSD de KWin con el tema
   **Aurorae DylanOS-Crimson** (regenerable: `python3 scripts/lib/generate-theme.py aurorae`):
   marco negro `#0f0f11` con esquinas redondeadas, título tenue centrado y botones semáforo
   a la izquierda (`kwinrc`: `ButtonsOnLeft=XIA`). No existe banda gris de decoración.
@@ -55,7 +54,7 @@ la arquitectura **real** del repositorio tras la iteración de ingeniería de 20
   `contents/defaults` del look-and-feel los ignora `LookAndFeelManager`, así que ahí solo se
   fija la decoración. `CrimsonGlassService` respalda el estado anterior para que desactivar
   restaure un estado seguro. Generar con `python3 scripts/lib/generate-theme.py aurorae-glass`.
-  Límites: las apps con decoración de cliente (Firefox, GTK CSD) no reciben marco de servidor
+  Límites: las apps con decoración de cliente (Gecko/GTK CSD) no reciben marco de servidor
   que translucir, y KWin 6.3 no transluce el cuerpo de la ventana activa de terceros; el
   selector (`dylanos-configuration` → Personalización → Apariencia) aplica y descarga el
   efecto sin cerrar sesión.
@@ -206,7 +205,20 @@ de una sola app dejan el staging anterior desactualizado).
 
 ## DylanOS Browser: estado y decisión de ubicación
 
-`apps/dylanos-browser/` permanece vendorizado en este repositorio para conservar junto a DylanOS la procedencia del fork de Zen, sus parches y avisos MPL-2.0; moverlo a un repo/submódulo ahora dividiría la trazabilidad sin resolver la falta de un binario publicable. Su ciclo upstream/CVE y una fuente de build reproducible requieren una fase específica. El build actual no lo compila ni lo empaqueta en la ISO; el navegador estable no se sustituye.
+`apps/dylanos-browser/` permanece vendorizado para conservar junto a DylanOS la
+procedencia del fork de Zen, sus parches y avisos MPL-2.0. El build de Gecko sigue
+siendo una fase explícita: `npm run build:linux -- candidate` crea
+`artifacts/phase-2/package` con un manifiesto determinista de identidad, commit y hashes.
+El build de la ISO no recompila Gecko dentro del chroot: exige ese candidato, verifica
+todos sus archivos, construye el paquete Debian con Debhelper y lo instala mediante APT.
+
+La selección inicial se expresa en dos niveles XDG: skel para cuentas nuevas y
+`/usr/share/applications/mimeapps.list` como default del sistema. Ambos asignan
+`text/html`, `x-scheme-handler/http` y `x-scheme-handler/https` a
+`org.dylanos.browser.desktop`. El staging no recorre hogares existentes ni ejecuta
+`xdg-settings`, por lo que una elección previa del usuario prevalece. Firefox ESR se
+elimina de la lista base y de chroots reanudados; continúa disponible para instalación
+voluntaria, pero no forma parte de la imagen.
 
 Para un checkout de trabajo ligero con Git partial clone, excluye ese árbol así:
 

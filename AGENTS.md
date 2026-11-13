@@ -21,7 +21,8 @@ técnica viva: `docs/architecture.md`. Este archivo es el índice operativo de r
   `scripts/stage.py`. El paquete `systemsettings` SE CONSERVA: aporta `kcmshell6`.
 - **Una sola app por función**: sin kcalc (la oficial es `calculator`), sin
   VSCodium (el editor es Visual Studio Code, paquete `code`, repo apt oficial de Microsoft)
-  y sin Konsole (la terminal oficial es `dylanos-console`, basada en Kitty).
+  y sin Konsole (la terminal oficial es `dylanos-console`, basada en Kitty). El navegador
+  oficial es `dylanos-browser`; Firefox ESR no se envía en la ISO 1.1 pre-beta.
 - **NUNCA mostrar "Discover/plasma-discover" al usuario**: la tienda es `dylanos-store`.
 - **KWallet se mantiene** (plasma-nm guarda credenciales Wi-Fi con él).
 - **Crimson Glass** se configura solo desde Personalización en DylanOS
@@ -81,7 +82,11 @@ técnica viva: `docs/architecture.md`. Este archivo es el índice operativo de r
   DBus `org.dylanos.dylanos-store`, desktop `org.dylanos.store.desktop`. QA de captura:
   `dylanos-store --screenshot out.png --size 1280x800 --view home` (chroot, con DBus).
 - `apps/dylanos-spotlight/` — Búsqueda rápida (Python, ventana frameless).
-- `apps/dylanos-browser/` — fork vendorizado de Zen/Gecko, en cimentación; no se construye ni empaqueta en la ISO. Mantenerlo aquí por procedencia, parches MPL y seguimiento de upstream. Ver la decisión y el checkout ligero en `docs/architecture.md`.
+- `apps/dylanos-browser/` — **DylanOS Browser predeterminado**: fork vendorizado de
+  Zen/Gecko. `npm run build:linux -- candidate` genera un payload ignorado con inventario
+  SHA-256; `scripts/build.sh` lo exige, vuelve a verificarlo, construye el `.deb` dentro
+  del chroot y lo instala. Desktop ID `org.dylanos.browser.desktop`; HTTP/HTTPS/HTML
+  apuntan a él solo en defaults de sistema/skel, nunca sobre preferencias existentes.
 - `apps/dylanos-process/` — monitor nativo de procesos/recursos, integrado en build y staging.
 - `apps/com.dylanos.dashboard/` — plasmoid histórico; staging lo elimina y no se incluye en el layout actual.
 - `apps/com.dylanos.dock/`, `apps/com.dylanos.activeapp/`, `apps/com.dylanos.search/`,
@@ -166,10 +171,12 @@ DYLANOS_PYTHON=/tmp/opencode/venv/bin/python bash scripts/check.sh
   desktop-file-validate) y carga QML offscreen de las 6 páginas del workspace + variante light.
 - PySide6/psutil NO están en el python3 del sistema: usar venv (`/tmp/opencode/venv`) o
   instalar `python3-pyside6` + `python3-psutil` (los que usa el ISO: PySide6 6.8.2.1).
-- Tests clave: `test_staging.py` (8 desktop entries org.dylanos.*, sin dolphin/kcalc/settings),
+- Tests clave: `test_staging.py` (11 desktop entries org.dylanos.*, sin dolphin/kcalc/settings),
   `test_configuration.py` (app + staging), `test_sddm_theme.py` (Test Greeter real),
   `test_desktop.py` (layout de paneles con node), `test_store.py`, `test_ui.py`,
-  `test_workspace.py`, `test_backend.py`, `test_packages.sh`.
+  `test_workspace.py`, `test_backend.py`, `test_browser_contract.py`,
+  `test_browser_package.py`, `test_packages.sh`; el fork ejecuta además
+  `python3 -m unittest discover -v scripts/dylanos 'test_*.py'`.
 - QA nativas específicas: capturas offscreen de las 16 páginas base y Crimson Glass (stderr
   limpio), `ctest` del Explorer en el chroot (incluye createFile), Test Greeter del SDDM con
   captura opt-in (artefactos en `artifacts/sddm-qa/`), `bash scripts/test_QEMU.sh` para el ISO.
@@ -179,6 +186,13 @@ DYLANOS_PYTHON=/tmp/opencode/venv/bin/python bash scripts/check.sh
 
 ## Empaquetado
 
+- DylanOS Browser: producir primero el candidato real con
+  `cd apps/dylanos-browser && npm run build:linux -- candidate`. El build ISO valida
+  `artifacts/phase-2/package/payload-manifest.json`, copia el payload al chroot,
+  ejecuta `dpkg-buildpackage` y lo instala por APT. Puede usarse otro payload mediante
+  `DYLANOS_BROWSER_ARTIFACT=/ruta/package`; si falta o cambia un hash, el build falla
+  antes del frontend del instalador. `source.lock.json` conserva `unpublished` hasta
+  que exista una URL fuente pública autorizada; no inventarla para builds locales.
 - Visual Studio Code: paquete `code` del repo oficial `packages.microsoft.com/repos/vscode`
   (`packages/development/setup-repos.sh`, idempotente, borra restos de VSCodium). El
   `.desktop` que instala ese paquete es `com.microsoft.VSCode.desktop` (Icon=vscode) y es
@@ -186,7 +200,8 @@ DYLANOS_PYTHON=/tmp/opencode/venv/bin/python bash scripts/check.sh
   paquete NO es el nombre del .desktop) y fijarlo deja el icono del dock roto.
   Licencia del binario: la de Microsoft; documentada en `docs/licenses/assets.md`.
 - build.sh purga al final: `-dev` exclusivos, `dolphin`, `dolphin-plugins`, `kcalc`,
-  `konsole`, `codium` (chroots reutilizados). KF5/KWallet quedan según dependencias reales.
+  `konsole`, `firefox-esr`, `codium` (chroots reutilizados). KF5/KWallet quedan según
+  dependencias reales.
 - Ejecutar `./scripts/build.sh` sin `sudo`: compila el frontend como el usuario actual y
   eleva privilegios internamente para el chroot. Si `work/chroot` existe, usar `--resume`.
   La entrada externa como root se rechaza para no dejar `node_modules`/`dist` con dueño root.

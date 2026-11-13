@@ -154,9 +154,10 @@ class TestDylanOSConfiguration(unittest.TestCase):
             for oculta in ocultas:
                 if oculta.exists():
                     self.assertIn("NoDisplay=true", oculta.read_text())
-            # El total de entradas org.dylanos.* del menu se mantiene en 9
-            # (workspace + explorer + configuration + store + spotlight + console).
-            self.assertEqual(len(list((root / "usr/share/applications").glob("org.dylanos.*.desktop"))), 10)
+            # El navegador oficial suma su entrada al conjunto canónico del menú.
+            browser = root / "usr/share/applications/org.dylanos.browser.desktop"
+            self.assertTrue(browser.is_file())
+            self.assertEqual(len(list((root / "usr/share/applications").glob("org.dylanos.*.desktop"))), 11)
 
 
 if __name__ == "__main__":

@@ -104,8 +104,8 @@ qml6-module-qtcore
 qml6-module-org-kde-plasma-plasma5support
 qdbus-qt6
 
-# Aplicaciones predeterminadas (espejo de configs/default-apps.conf)
-firefox-esr
+# Aplicaciones predeterminadas (espejo de configs/default-apps.conf;
+# DylanOS Browser se empaqueta desde apps/dylanos-browser durante el build)
 kate
 vlc
 gwenview
