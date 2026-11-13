@@ -11,8 +11,9 @@ un fork mantenible de Zen Browser. Este árbol vive dentro de
 `DylanOS/apps/dylanos-browser` y contiene el producto, sus parches, pruebas y
 empaquetado Debian; la distribución principal aporta el staging y la integración ISO.
 
-El proyecto está en fase de cimentación. Todavía no publica un binario listo para uso
-diario y no sustituye al navegador estable de DylanOS.
+La ISO 1.1 pre-beta integra el candidato Linux como navegador predeterminado. El
+artefacto sigue siendo local: no existe todavía una URL pública autorizada y el contrato
+`source.lock.json` lo declara honestamente como `unpublished`.
 
 ## Procedencia reproducible
 
@@ -79,13 +80,26 @@ npm run smoke:dylanos
 ```
 
 Cada build genera bajo `artifacts/phase-2/` un log y un manifiesto con duración,
-tamaño y hashes SHA-256. El smoke test se ejecuta en Xvfb con HOME y perfil temporales,
+tamaño y hashes SHA-256. El modo `candidate` genera además `package/`: un wrapper en
+`usr/bin`, el runtime en `usr/lib/dylanos-browser` y `payload-manifest.json` con el
+inventario determinista que Debhelper vuelve a verificar. El smoke test se ejecuta en Xvfb con HOME y perfil temporales,
 abre una URL local, una ventana nueva y otra privada, verifica la identidad de la
 ventana y rechaza tráfico hacia el servidor de actualizaciones de Zen.
 El build usa un job por defecto para mantenerse dentro de 8 GiB de RAM cuando Rust
 aplica LTO; `DYLANOS_BUILD_JOBS` permite aumentarlo en hosts con más memoria.
 El gate exige al menos 16 GiB combinados de RAM y swap para evitar que el enlazado
 Rust sea terminado por el OOM killer.
+
+Para construir la ISO después del candidato:
+
+```bash
+cd ../..
+./scripts/build.sh --resume
+```
+
+`DYLANOS_BROWSER_ARTIFACT=/ruta/al/package` permite probar otro candidato. El build
+falla antes del staging si falta el manifiesto, cambia cualquier SHA-256 o la identidad
+Gecko no corresponde a DylanOS Browser.
 
 Los cambios heredados de Zen conservan sus autores y pueden consultarse en el historial
 del repositorio y en sus [guías de contribución](./docs/contribute.md).

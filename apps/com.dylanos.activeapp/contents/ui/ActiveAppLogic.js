@@ -15,6 +15,7 @@ function nameFromId(value) {
         "org.dylanos.configuration": "DylanOS Configuration",
         "org.dylanos.store": "DylanOS Store",
         "org.dylanos.spotlight": "DylanOS Spotlight",
+        "org.dylanos.browser": "DylanOS Browser",
         "com.microsoft.VSCode": "Visual Studio Code",
         "code": "Visual Studio Code",
         "firefox-esr": "Firefox",

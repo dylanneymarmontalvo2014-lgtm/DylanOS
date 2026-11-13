@@ -1,5 +1,6 @@
 artifacts/phase-2/package/usr/bin/dylanos-browser usr/bin
 artifacts/phase-2/package/usr/lib/dylanos-browser usr/lib
-debian/dylanos-browser.policy.json usr/lib/dylanos-browser/distribution/policies.json
+artifacts/phase-2/package/payload-manifest.json usr/share/doc/dylanos-browser
+debian/policies.json usr/lib/dylanos-browser/distribution
 debian/org.dylanos.browser.desktop usr/share/applications
 debian/dylanos-browser.svg usr/share/icons/hicolor/scalable/apps

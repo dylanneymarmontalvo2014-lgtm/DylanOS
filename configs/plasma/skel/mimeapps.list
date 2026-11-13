@@ -1,7 +1,7 @@
 [Default Applications]
-text/html=firefox-esr.desktop;
-x-scheme-handler/http=firefox-esr.desktop;
-x-scheme-handler/https=firefox-esr.desktop;
+text/html=org.dylanos.browser.desktop;
+x-scheme-handler/http=org.dylanos.browser.desktop;
+x-scheme-handler/https=org.dylanos.browser.desktop;
 inode/directory=org.dylanos.explorer.desktop;
 x-scheme-handler/terminal=org.dylanos.console.desktop;
 text/plain=org.kde.kate.desktop;

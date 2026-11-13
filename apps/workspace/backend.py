@@ -268,7 +268,7 @@ class Backend(QObject):
     @Slot(str)
     def action(self, name):
         commands = {
-            "terminal": ["dylanos-console"], "editor": ["code"], "browser": ["firefox-esr"],
+            "terminal": ["dylanos-console"], "editor": ["code"], "browser": ["dylanos-browser"],
             "settings": ["dylanos-configuration"], "network": ["dylanos-configuration", "--page", "network"],
             "bluetooth": ["dylanos-configuration", "--page", "bluetooth"], "audio": ["dylanos-configuration", "--page", "sound"],
             "display": ["dylanos-configuration", "--page", "display"], "power": ["dylanos-configuration", "--page", "power"],

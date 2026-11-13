@@ -10,7 +10,8 @@ X-DylanOS-Source-Contract: apps/dylanos-browser/source.lock.json
 
 Package: dylanos-browser
 Architecture: amd64
+Provides: www-browser
 Depends: ${shlibs:Depends}, ${misc:Depends}
 Description: DylanOS web browser
- A DylanOS-branded browser built from the in-tree Gecko/Zen fork. It is packaged
- alongside Firefox ESR during the transition.
+ A DylanOS-branded browser built from the in-tree Gecko/Zen fork and integrated
+ as the default web browser in DylanOS.

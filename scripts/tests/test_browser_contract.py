@@ -39,7 +39,7 @@ class BrowserSourceContractTest(unittest.TestCase):
         self.assertEqual(source_lock["source_archive"], "unpublished")
         self.assertEqual(source_lock["sha256"], "unpublished")
 
-    def test_phase_one_keeps_firefox_and_does_not_install_unpublished_browser(self):
+    def test_pre_beta_packages_browser_in_tree_without_firefox_esr(self):
         packages = {
             line.strip()
             for line in (ROOT / "packages" / "default" / "packages.list")
@@ -47,8 +47,30 @@ class BrowserSourceContractTest(unittest.TestCase):
             .splitlines()
             if line.strip() and not line.lstrip().startswith("#")
         }
-        self.assertIn("firefox-esr", packages)
+        self.assertNotIn("firefox-esr", packages)
         self.assertNotIn("dylanos-browser", packages)
+        defaults = (ROOT / "configs" / "default-apps.conf").read_text(
+            encoding="utf-8"
+        )
+        self.assertIn("[Browser]\ndylanos-browser\n", defaults)
+        build = (ROOT / "scripts" / "build.sh").read_text(encoding="utf-8")
+        self.assertIn("dpkg-buildpackage", build)
+        self.assertIn("dylanos-browser_*_amd64.deb", build)
+        self.assertIn("purge dolphin dolphin-plugins kcalc konsole firefox-esr", build)
+
+    def test_resumed_build_resets_browser_packaging_workspace(self):
+        build = (ROOT / "scripts" / "build.sh").read_text(encoding="utf-8")
+        reset = 'rm -rf -- "$CHROOT/tmp/dylanos-src/dylanos-browser"'
+        create = 'mkdir -p "$CHROOT/tmp/dylanos-src/dylanos-browser/scripts/dylanos"'
+        old_debs = 'rm -f -- "$CHROOT"/tmp/dylanos-src/dylanos-browser_*_amd64.deb'
+        self.assertIn(reset, build)
+        self.assertIn(create, build)
+        self.assertLess(build.index(reset), build.index(create))
+        self.assertIn(old_debs, build)
+        self.assertIn(
+            'BROWSER_ARTIFACT="$(cd -- "$BROWSER_ARTIFACT" && pwd -P)"',
+            build,
+        )
 
 
 if __name__ == "__main__":

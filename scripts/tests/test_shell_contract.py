@@ -81,8 +81,9 @@ class ShellContractTest(unittest.TestCase):
         self.assertIn("dockRoot.hoverIndex = delegateRoot.delegateIndex", delegate)
         self.assertIn("dockRoot.hoverIndex = -1", delegate)
         self.assertIn("<default>64</default>", config)
-        for app in ("org.dylanos.explorer.desktop", "firefox-esr.desktop", "com.microsoft.VSCode.desktop", "dylanos-app-center.desktop", "org.dylanos.store.desktop", "org.dylanos.configuration.desktop", "org.dylanos.calculator.desktop"):
+        for app in ("org.dylanos.explorer.desktop", "org.dylanos.browser.desktop", "com.microsoft.VSCode.desktop", "dylanos-app-center.desktop", "org.dylanos.store.desktop", "org.dylanos.configuration.desktop", "org.dylanos.calculator.desktop"):
             self.assertIn("applications:" + app, dock)
+        self.assertNotIn("applications:firefox-esr.desktop", dock)
 
 
     def test_dashboard_and_control_center_use_real_local_and_global_state(self):

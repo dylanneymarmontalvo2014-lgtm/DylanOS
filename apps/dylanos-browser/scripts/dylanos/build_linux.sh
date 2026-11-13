@@ -53,6 +53,11 @@ python3 scripts/dylanos/write_build_artifact.py \
     --log "${dylanos_log_dir}/build-${dylanos_mode}.log" \
     --output "${dylanos_log_dir}/build-${dylanos_mode}.json"
 
+if test "$dylanos_mode" = candidate; then
+    python3 scripts/dylanos/package_payload.py prepare \
+        --output "${DYLANOS_BROWSER_PACKAGE_DIR:-${dylanos_root}/artifacts/phase-2/package}"
+fi
+
 printf 'Build %s terminado. Log: %s\n' \
     "$dylanos_mode" \
     "${dylanos_log_dir}/build-${dylanos_mode}.log"

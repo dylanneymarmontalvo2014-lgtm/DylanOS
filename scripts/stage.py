@@ -116,6 +116,8 @@ def stage(destination, installer_dist=None, version=None):
         ("MAINTAINERS.txt", "/usr/share/dylanos/MAINTAINERS.txt"),
         ("branding/icons/dylanos-console.svg", "/usr/share/icons/hicolor/scalable/apps/dylanos-console.svg"),
         ("branding/icons/dylanos-console.png", "/usr/share/icons/hicolor/512x512/apps/dylanos-console.png"),
+        ("apps/dylanos-browser/debian/org.dylanos.browser.desktop", "/usr/share/applications/org.dylanos.browser.desktop"),
+        ("apps/dylanos-browser/debian/dylanos-browser.svg", "/usr/share/icons/hicolor/scalable/apps/dylanos-browser.svg"),
     ]:
         copy(source, target)
     legacy_lf = dest / "usr/share/plasma/lookandfeel/org.dylanos.crimson"
@@ -316,7 +318,12 @@ fi
     # DylanOS Explorer es el gestor de archivos predeterminado del sistema:
     # cualquier "Abrir carpeta" (navegador, GTK, Qt) lo abre él.
     write("/usr/share/applications/mimeapps.list",
-          "[Default Applications]\ninode/directory=org.dylanos.explorer.desktop;\nx-directory/normal=org.dylanos.explorer.desktop;\n")
+          "[Default Applications]\n"
+          "text/html=org.dylanos.browser.desktop;\n"
+          "x-scheme-handler/http=org.dylanos.browser.desktop;\n"
+          "x-scheme-handler/https=org.dylanos.browser.desktop;\n"
+          "inode/directory=org.dylanos.explorer.desktop;\n"
+          "x-directory/normal=org.dylanos.explorer.desktop;\n")
     write("/etc/default/grub.d/dylanos.cfg", 'GRUB_DISTRIBUTOR="DylanOS"\nGRUB_THEME="/usr/share/grub/themes/dylanos/theme.txt"\nGRUB_CMDLINE_LINUX_DEFAULT="quiet splash"\nGRUB_TIMEOUT=0\nGRUB_TIMEOUT_STYLE=hidden\n')
     write("/etc/sudoers.d/dylan", "dylan ALL=(ALL) NOPASSWD: ALL\n", 0o440)
     passwd_path = dest / "etc/passwd"

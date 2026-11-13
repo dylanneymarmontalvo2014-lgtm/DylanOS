@@ -70,6 +70,8 @@ class BackendTest(unittest.TestCase):
             self.assertEqual(args[-2:], ["--page", "monitor"])
             isolated.openApp("invalid")
             self.assertEqual(launch.call_count, 1)
+            isolated.action("browser")
+            self.assertEqual(launch.call_args.args[0], ["dylanos-browser"])
         self.backend.pauseMonitor(True)
         self.assertFalse(self.backend.timer.isActive())
         self.backend.pauseMonitor(False)

@@ -14,6 +14,42 @@ spec.loader.exec_module(module)
 
 
 class StagingTest(unittest.TestCase):
+    def test_browser_defaults_preserve_existing_user_preferences(self):
+        with tempfile.TemporaryDirectory() as folder:
+            root = Path(folder)
+            user_mimeapps = root / "home/alice/.config/mimeapps.list"
+            user_mimeapps.parent.mkdir(parents=True)
+            original = (
+                b"[Default Applications]\n"
+                b"text/html=custom-browser.desktop;\n"
+                b"x-scheme-handler/http=custom-browser.desktop;\n"
+            )
+            user_mimeapps.write_bytes(original)
+
+            module.stage(root)
+
+            self.assertEqual(user_mimeapps.read_bytes(), original)
+            for relative in (
+                "usr/share/applications/org.dylanos.browser.desktop",
+                "usr/share/icons/hicolor/scalable/apps/dylanos-browser.svg",
+            ):
+                self.assertTrue((root / relative).is_file(), relative)
+            for relative in (
+                "etc/skel/.config/mimeapps.list",
+                "usr/share/applications/mimeapps.list",
+            ):
+                mimeapps = (root / relative).read_text(encoding="utf-8")
+                self.assertIn(
+                    "text/html=org.dylanos.browser.desktop;", mimeapps
+                )
+                self.assertIn(
+                    "x-scheme-handler/http=org.dylanos.browser.desktop;", mimeapps
+                )
+                self.assertIn(
+                    "x-scheme-handler/https=org.dylanos.browser.desktop;", mimeapps
+                )
+                self.assertNotIn("firefox-esr.desktop", mimeapps)
+
     def test_about_command_uses_the_maintainers_file(self):
         with tempfile.TemporaryDirectory() as folder:
             root = Path(folder)
@@ -421,7 +457,7 @@ class StagingTest(unittest.TestCase):
             self.assertFalse(stale_kwalletrc.exists(),
                              "KWallet debe seguir disponible como backend para plasma-nm y KIO")
             self.assertEqual((root / "etc/skel/.config/kdeglobals").read_text(), original)
-            self.assertEqual(len(list((root / "usr/share/applications").glob("org.dylanos.*.desktop"))), 10)
+            self.assertEqual(len(list((root / "usr/share/applications").glob("org.dylanos.*.desktop"))), 11)
             self.assertFalse(list(root.rglob("*.otf")))
 
     def test_installer_frontend_can_be_staged_from_temporary_dist(self):

@@ -48,7 +48,7 @@ PlasmoidItem {
         //   find /usr/share/applications ~/.local/share/applications -iname "*dylanos*"
         launcherList: [
             "applications:org.dylanos.explorer.desktop",
-            "applications:firefox-esr.desktop",
+            "applications:org.dylanos.browser.desktop",
             "applications:com.microsoft.VSCode.desktop",
             "applications:dylanos-app-center.desktop",
             "applications:org.dylanos.store.desktop",

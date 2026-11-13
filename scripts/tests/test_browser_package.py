@@ -59,8 +59,10 @@ class BrowserDebianPackageTest(unittest.TestCase):
         self.assertEqual(binary["Architecture"], "amd64")
         self.assertIn("${shlibs:Depends}", binary["Depends"])
         self.assertIn("${misc:Depends}", binary["Depends"])
+        self.assertIn("www-browser", binary["Provides"])
         self.assertNotIn("Conflicts", binary)
         self.assertNotIn("Replaces", binary)
+        self.assertNotIn("alongside Firefox", binary["Description"])
 
     def test_rules_is_executable_and_exposes_a_dh_build_entrypoint(self):
         rules = DEBIAN / "rules"
@@ -101,19 +103,45 @@ class BrowserDebianPackageTest(unittest.TestCase):
         self.assertIn("real", result.stderr.lower())
         self.assertIn("dylanos-browser", result.stderr)
 
+    def test_rules_verify_the_complete_candidate_payload_manifest(self):
+        rules = (DEBIAN / "rules").read_text(encoding="utf-8")
+        self.assertIn("package_payload.py verify", rules)
+        self.assertIn('"$(BROWSER_ARTIFACT)"', rules)
+
+    def test_candidate_build_prepares_the_debian_payload(self):
+        build_script = (
+            BROWSER / "scripts" / "dylanos" / "build_linux.sh"
+        ).read_text(encoding="utf-8")
+        self.assertIn("package_payload.py", build_script)
+        self.assertIn("artifacts/phase-2/package", build_script)
+        self.assertIn('if test "$dylanos_mode" = candidate', build_script)
+
     def test_install_manifest_names_only_real_payload_and_package_metadata(self):
         install = DEBIAN / "dylanos-browser.install"
         self.assertTrue(install.is_file(), f"Falta {install}")
         entries = [line.split() for line in install.read_text(encoding="utf-8").splitlines() if line.strip()]
-        sources = {parts[0] for parts in entries}
+        destinations = {parts[0]: parts[1] for parts in entries}
+        sources = set(destinations)
 
         self.assertIn("artifacts/phase-2/package/usr/bin/dylanos-browser", sources)
         self.assertIn("artifacts/phase-2/package/usr/lib/dylanos-browser", sources)
-        self.assertIn("debian/dylanos-browser.policy.json", sources)
+        self.assertIn("artifacts/phase-2/package/payload-manifest.json", sources)
+        self.assertIn("debian/policies.json", sources)
+        self.assertEqual(
+            destinations["debian/policies.json"],
+            "usr/lib/dylanos-browser/distribution",
+        )
         self.assertIn("debian/org.dylanos.browser.desktop", sources)
         self.assertIn("debian/dylanos-browser.svg", sources)
         self.assertNotIn("usr/bin/firefox", sources)
         self.assertNotIn("fake", " ".join(sources).lower())
+
+    def test_package_ships_mpl_copyright_metadata(self):
+        copyright_path = DEBIAN / "copyright"
+        self.assertTrue(copyright_path.is_file(), f"Falta {copyright_path}")
+        copyright_text = copyright_path.read_text(encoding="utf-8")
+        self.assertIn("License: MPL-2.0", copyright_text)
+        self.assertIn("https://www.mozilla.org/MPL/2.0/", copyright_text)
 
     def test_icon_is_a_dylanos_brand_asset(self):
         icon = (DEBIAN / "dylanos-browser.svg").read_text(encoding="utf-8")
@@ -134,6 +162,8 @@ class BrowserDebianPackageTest(unittest.TestCase):
         self.assertEqual(entry["Name"], "DylanOS Browser")
         self.assertEqual(entry["Exec"], "dylanos-browser %U")
         self.assertEqual(entry["Icon"], "dylanos-browser")
+        self.assertEqual(entry["StartupWMClass"], "org.dylanos.browser")
+        self.assertEqual(entry["GenericName"], "Navegador web")
         self.assertIn("Network;", entry["Categories"])
         self.assertIn("WebBrowser;", entry["Categories"])
         for mime in (
@@ -147,9 +177,14 @@ class BrowserDebianPackageTest(unittest.TestCase):
         actions = {action for action in entry["Actions"].split(";") if action}
         self.assertEqual(actions, {"new-window", "private-window"})
         self.assertEqual(desktop["Desktop Action new-window"]["Exec"], "dylanos-browser")
+        self.assertEqual(desktop["Desktop Action new-window"]["Name"], "Nueva ventana")
         self.assertEqual(
             desktop["Desktop Action private-window"]["Exec"],
             "dylanos-browser --private-window",
+        )
+        self.assertEqual(
+            desktop["Desktop Action private-window"]["Name"],
+            "Nueva ventana privada",
         )
         self.assertNotIn("update", " ".join(entry.values()).lower())
 

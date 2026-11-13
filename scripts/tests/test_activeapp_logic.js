@@ -2,6 +2,7 @@ const assert = require("node:assert/strict");
 const logic = require("../../apps/com.dylanos.activeapp/contents/ui/ActiveAppLogic.js");
 
 assert.equal(logic.nameFromId("org.dylanos.explorer.desktop"), "DylanOS Explorer");
+assert.equal(logic.nameFromId("org.dylanos.browser.desktop"), "DylanOS Browser");
 assert.equal(logic.nameFromId("com.microsoft.VSCode"), "Visual Studio Code");
 assert.equal(logic.nameFromId("org.example.SuperEditor"), "SuperEditor");
 assert.equal(logic.nameFromId("simple-player"), "Simple player");
