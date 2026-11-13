@@ -672,7 +672,12 @@ bool CrimsonGlassService::reloadDesktop() const
                           QStringLiteral("org.kde.PlasmaShell"), QDBusConnection::sessionBus());
     if (plasma.isValid()) {
         plasma.asyncCall(QStringLiteral("evaluateScript"), script);
-        plasma.asyncCall(QStringLiteral("refreshCurrentShell"));
+        // NUNCA llamar a refreshCurrentShell: en Plasma 6.3.6 sobre X11
+        // termina plasmashell en silencio y el relanzado muere igual, así que
+        // la sesión se queda sin shell (escritorio negro con solo el splash y
+        // el Centro de bienvenida). Reproducido en VM: con el binario que
+        // llama refreshCurrentShell plasmashell muere tras el autostart; sin
+        // la llamada sobrevive. El shell ya aplica evaluateScript sin refresco.
     }
     return kwin.isValid() || plasma.isValid();
 }

@@ -365,6 +365,40 @@ fi
             (xsessions_dir / "plasma.desktop").symlink_to("plasmax11.desktop")
         except FileExistsError:
             pass
+    # En QEMU TCG (sin KVM) la primera carga de Qt sobre llvmpipe tarda varios
+    # segundos por proceso. Los timeouts por defecto de los servicios de sesión
+    # se agotan y systemd los mata, dejando la sesión a medias:
+    #
+    #   plasma-kglobalaccel.service: start operation timed out   (TimeoutSec=5)
+    #   plasma-kwin_x11.service: start operation timed out        (default 90)
+    #   plasma-plasmashell.service: start operation timed out     (TimeoutSec=40)
+    #   xdg-desktop-portal.service: Failed with result 'timeout'
+    #   ksmserver: Couldn't start kglobalaccel: ServiceUnknown
+    #
+    # Sin KWin no hay compositor y sin plasmashell no hay paneles ni fondo: el
+    # usuario ve KSplash con el logo y los puntos grises (stage 0) y después
+    # todo negro. Reproducido en la VM con el journal a la serial. Los drop-ins
+    # solo amplían el margen; en hardware real el arranque sigue siendo rápido.
+    session_units = (
+        "plasma-kglobalaccel",
+        "plasma-kwin_x11",
+        "plasma-plasmashell",
+        "plasma-ksmserver",
+        "plasma-kcminit",
+        "plasma-kactivitymanagerd",
+        "xdg-desktop-portal",
+    )
+    for unit in session_units:
+        write(
+            f"/etc/systemd/user/{unit}.service.d/50-dylanos-vm-timeout.conf",
+            "[Service]\n"
+            "# TCG sin KVM: la primera carga de Qt puede exceder el timeout por\n"
+            "# defecto y systemd mataría el servicio, rompiendo la sesión.\n"
+            "TimeoutStartSec=300\n"
+            "TimeoutSec=300\n"
+            "RestartSec=2\n",
+            0o644,
+        )
     # KWin X11 puede caerse al inicializar OpenGL sobre la GPU virtual de QEMU.
     # NO se usa KWIN_COMPOSE=Q: en KWin 6.3 QPainter no es un compositor válido
     # en X11 (compositor_x11.cpp: "QPainter compositing is unsupported on X11")
@@ -376,6 +410,12 @@ fi
     # se usa el camino normal. KWIN_COMPOSE se limpia siempre para que un valor
     # heredado (builds reutilizados) no abandone la sesión. El wrapper se usa
     # también para el acceso directo de SDDM.
+    #
+    # El wrapper NO intenta arrancar kactivitymanagerd: en este punto
+    # startplasma-x11 todavía no ha creado el bus de sesión, así que
+    # DBUS_SESSION_BUS_ADDRESS no existe y cualquier dbus-send falla (solo
+    # quema 30 s de espera inútil antes del splash). startplasma-x11 arranca
+    # el bus y plasma-kactivitymanagerd.service se activa por DBus.
     write(
         "/usr/bin/dylanos-startplasma-x11",
         """#!/bin/sh
