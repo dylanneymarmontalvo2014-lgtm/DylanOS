@@ -30,7 +30,7 @@ Las mediciones se registrarán aquí después de ejecutar el workflow en GitHub 
 | `dylanos-spotlight` | 121.298 | 146.770 | 90.28 | 90.48 |
 | `workspace` | 124.309 | 131.006 | 97.90 | 98.06 |
 
-**Ejecución medida:** SHA `bb28521e89ce3610adc12218d81f306301186df3`, 2026-11-13 22:13:51 UTC, Python 3.12.16, PySide6/Qt 6.8.3, Ubuntu runner Linux 7.0.0-1017-azure x86_64; 10 muestras después de 1 calentamiento. Es una línea base del runner CI, no del hardware del usuario. Las muestras en JSON se adjuntan en el artefacto `apps-python-baseline` de la ejecución de benchmark. No constituye una medición posterior al piloto ni afirma ganancia de rendimiento.
+**Ejecución medida:** workflow PR #55, head `ba8febcd6674499e4740efb8ddeea4da94244111`, código de las apps tomado de `development` base `e6095bb34e54b5b3f2d889ba48a136d5d2050946`, 2026-11-13 22:13:51 UTC, Python 3.12.16, PySide6/Qt 6.8.3, Ubuntu runner Linux 7.0.0-1017-azure x86_64; 10 muestras después de 1 calentamiento. Es una línea base del runner CI, no del hardware del usuario. Las muestras en JSON se adjuntan en el artefacto `apps-python-baseline` de la ejecución de benchmark. No constituye una medición posterior al piloto ni afirma ganancia de rendimiento.
 
 ## Siguiente fase
 
