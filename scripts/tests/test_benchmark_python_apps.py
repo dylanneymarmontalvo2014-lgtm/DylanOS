@@ -49,6 +49,7 @@ class BenchmarkPythonAppsTests(unittest.TestCase):
         }
         report = {
             "commit": "abc123",
+            "code_commit": "base123",
             "date_utc": "2026-01-01 00:00:00 UTC",
             "python": "3.12.1",
             "pyside6": "6.8.2",
