@@ -22,6 +22,7 @@ fi
 # Cada módulo de unittest corre en su propio proceso: las suites QML
 # (workspace, app-center) comparten un solo QApplication y mezclarlas en un
 # proceso único provocaba destrucciones fuera de fase (segfault intermitente).
+python3 -m unittest scripts.tests.test_benchmark_python_apps
 for t in scripts/tests/test_*.py; do
     echo "── unittest $(basename "$t" .py)"
     QT_QPA_PLATFORM=offscreen QT_QUICK_BACKEND=software "$PYTHON" -m unittest "scripts.tests.$(basename "$t" .py)"
