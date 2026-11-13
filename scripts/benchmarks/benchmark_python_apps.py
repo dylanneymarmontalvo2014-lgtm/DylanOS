@@ -177,7 +177,7 @@ def render_markdown(report: dict[str, Any]) -> str:
         "# Python apps startup and memory baseline",
         "",
         f"- Commit ejecutado: `{report.get('commit', 'unknown')}`",
-        f"- Código bajo prueba: `{report.get('code_commit', 'unknown')}`",
+        f"- Fuente de las apps medidas: `{report.get('app_source_commit', 'unknown')}`",
         f"- Date (UTC): `{report.get('date_utc', 'unknown')}`",
         f"- Python: `{report['python']}`",
         f"- PySide6: `{report['pyside6']}`; Qt: `{report['qt']}`",
@@ -221,7 +221,7 @@ def main() -> int:
 
     report: dict[str, Any] = {
         "commit": os.environ.get("GITHUB_SHA", "unknown"),
-        "code_commit": os.environ.get("DYLANOS_BENCHMARK_COMMIT", os.environ.get("GITHUB_SHA", "unknown")),
+        "app_source_commit": os.environ.get("GITHUB_BASE_SHA", os.environ.get("GITHUB_SHA", "unknown")),
         "date_utc": time.strftime("%Y-%m-%d %H:%M:%S UTC", time.gmtime()),
         "python": sys.version.split()[0],
         "pyside6": PySide6.__version__,
