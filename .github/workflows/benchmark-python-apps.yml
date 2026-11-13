@@ -1,0 +1,42 @@
+name: Benchmark Python apps
+on:
+  pull_request:
+    paths:
+      - 'apps/archivos/**'
+      - 'apps/dylanos-spotlight/**'
+      - 'apps/workspace/**'
+      - 'scripts/benchmarks/**'
+      - 'scripts/tests/test_benchmark_python_apps.py'
+      - '.github/workflows/benchmark-python-apps.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+  pull-requests: read
+jobs:
+  benchmark:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - run: sudo apt-get update && sudo apt-get install -y libegl1 libopengl0 libxkbcommon0
+      - run: pip install -r apps/workspace/requirements-dev.txt
+      - name: Verify benchmark unit tests
+        run: python3 -m unittest scripts.tests.test_benchmark_python_apps -v
+      - name: Measure current apps
+        env:
+          GITHUB_SHA: ${{ github.sha }}
+          GITHUB_BASE_SHA: ${{ github.event.pull_request.base.sha || github.sha }}
+        run: |
+          python3 scripts/benchmarks/benchmark_python_apps.py \
+            --iterations 10 --warmups 1 --output-dir benchmark-results | tee benchmark-summary.md
+          cat benchmark-summary.md >> "$GITHUB_STEP_SUMMARY"
+      - uses: actions/upload-artifact@v4
+        with:
+          name: apps-python-baseline-${{ github.event.pull_request.head.sha || github.sha }}
+          if-no-files-found: error
+          path: |
+            benchmark-results/apps-python-baseline.json
+            benchmark-results/apps-python-baseline.md
