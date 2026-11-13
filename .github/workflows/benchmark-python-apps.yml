@@ -28,7 +28,7 @@ jobs:
       - name: Measure current apps
         env:
           GITHUB_SHA: ${{ github.sha }}
-          DYLANOS_BENCHMARK_COMMIT: ${{ github.event.pull_request.base.sha || github.sha }}
+          GITHUB_BASE_SHA: ${{ github.event.pull_request.base.sha || github.sha }}
         run: |
           python3 scripts/benchmarks/benchmark_python_apps.py \
             --iterations 10 --warmups 1 --output-dir benchmark-results | tee benchmark-summary.md
