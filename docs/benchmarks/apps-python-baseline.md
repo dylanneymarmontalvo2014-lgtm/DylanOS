@@ -22,15 +22,13 @@ El workflow `Benchmark Python apps` ejecuta las mismas diez muestras, publica es
 
 ## Resultado
 
-Las mediciones se registrarán aquí después de ejecutar el workflow en GitHub Actions sobre el SHA de la rama de esta PR, junto con las versiones de Python/PySide6/Qt y el SHA medido. No se presentan tiempos simulados ni cifras obtenidas en un entorno distinto.
-
 | App | Arranque mediana (ms) | Arranque p95 (ms) | RSS pico mediana (MiB) | RSS pico máximo (MiB) |
 |---|---:|---:|---:|---:|
-| `archivos` | 135.874 | 140.851 | 99.02 | 99.19 |
-| `dylanos-spotlight` | 121.298 | 146.770 | 90.28 | 90.48 |
-| `workspace` | 124.309 | 131.006 | 97.90 | 98.06 |
+| `archivos` | 137.637 | 138.495 | 99.08 | 99.31 |
+| `dylanos-spotlight` | 126.259 | 142.134 | 90.36 | 90.52 |
+| `workspace` | 131.077 | 131.759 | 98.04 | 98.10 |
 
-**Ejecución medida:** workflow PR #55, head `ba8febcd6674499e4740efb8ddeea4da94244111`, código de las apps tomado de `development` base `e6095bb34e54b5b3f2d889ba48a136d5d2050946`, 2026-11-13 22:13:51 UTC, Python 3.12.16, PySide6/Qt 6.8.3, Ubuntu runner Linux 7.0.0-1017-azure x86_64; 10 muestras después de 1 calentamiento. Es una línea base del runner CI, no del hardware del usuario. Las muestras en JSON se adjuntan en el artefacto `apps-python-baseline` de la ejecución de benchmark. No constituye una medición posterior al piloto ni afirma ganancia de rendimiento.
+**Ejecución medida:** workflow de la PR #55, código fuente de apps en el SHA base `e6095bb34e54b5b3f2d889ba48a136d5d2050946`; ejecutado el 2026-11-13 22:27:23 UTC en `ubuntu-24.04` (Linux `7.0.0-1014-aws`, x86_64), Python 3.12.16, PySide6/Qt 6.8.3; 10 muestras tras 1 calentamiento. El SHA de merge del job fue `fad2d93324b273c9f6c09cfcde740eb90af9c258`. Es una línea base del runner CI, no del hardware del usuario. Las lecturas por muestra se adjuntan en el artefacto `apps-python-baseline-554103b0e00a2c26f5b1bfe4feacb7507f4dbe68` de la ejecución del [workflow de benchmark](https://github.com/dylanneymarmontalvo2014-lgtm/DylanOS/actions/runs/43519209179). No constituye una medición posterior al piloto ni afirma ganancia de rendimiento.
 
 ## Siguiente fase
 
