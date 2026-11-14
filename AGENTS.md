@@ -82,6 +82,7 @@ técnica viva: `docs/architecture.md`. Este archivo es el índice operativo de r
   DBus `org.dylanos.dylanos-store`, desktop `org.dylanos.store.desktop`. QA de captura:
   `dylanos-store --screenshot out.png --size 1280x800 --view home` (chroot, con DBus).
 - `apps/dylanos-spotlight/` — Búsqueda rápida (Python, ventana frameless).
+- `apps/ozi-flappy/` — Easter egg de consola: Flappy Bird ASCII, iniciado únicamente por `echo "ozi ozi"` en una sesión Bash interactiva con TTY; lógica comprobable con `python3 apps/ozi-flappy/ozi-flappy.py --self-test`.
 - `apps/dylanos-browser/` — **DylanOS Browser predeterminado**: fork vendorizado de
   Zen/Gecko. `npm run build:linux -- candidate` genera un payload ignorado con inventario
   SHA-256; `scripts/build.sh` lo exige, vuelve a verificarlo, construye el `.deb` dentro
