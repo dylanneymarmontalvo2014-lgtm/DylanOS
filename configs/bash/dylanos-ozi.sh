@@ -1,3 +1,4 @@
+# shellcheck shell=bash
 # Easter egg opcional de DylanOS Console.
 # Se carga solo en Bash interactivo desde dylanos.bashrc.
 # El builtin echo se conserva para cualquier otro uso.
