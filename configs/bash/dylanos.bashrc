@@ -138,6 +138,12 @@ command_not_found_handle() {
     return 127
 }
 
+# Easter egg: ejecuta `echo "ozi ozi"` en una terminal interactiva para jugar.
+if [ -f /usr/share/dylanos/shell/dylanos-ozi.sh ]; then
+    # shellcheck source=configs/bash/dylanos-ozi.sh
+    . /usr/share/dylanos/shell/dylanos-ozi.sh
+fi
+
 # Sugerencia fantasma mientras se escribe (Tab la acepta).
 if [ -f /usr/share/dylanos/shell/dylanos-ghost.sh ]; then
     # shellcheck source=configs/bash/dylanos-ghost.sh

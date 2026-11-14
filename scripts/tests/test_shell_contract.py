@@ -221,6 +221,31 @@ class ShellContractTest(unittest.TestCase):
         self.assertNotIn('file_count = max(10992', backend)
         self.assertIn('return f"{app_count} apps · {proj_count} proyectos"', backend)
 
+    def test_ozi_ozi_echo_easter_egg_is_exact_and_preserves_normal_echo(self):
+        hook = ROOT / "configs/bash/dylanos-ozi.sh"
+        source = f'''source "{hook}"
+printf 'normal='
+echo "hello"
+printf 'case='
+echo "Ozi Ozi"
+printf 'extra='
+echo "ozi ozi" extra
+'''
+        result = subprocess.run(
+            ["bash", "--noprofile", "--norc", "-c", source],
+            text=True, capture_output=True, check=False,
+        )
+        self.assertEqual(result.returncode, 0, result.stderr)
+        self.assertEqual(result.stdout, "normal=hello\ncase=Ozi Ozi\nextra=ozi ozi extra\n")
+        self.assertNotIn("python3 /usr/lib/dylanos/ozi-flappy.py", result.stdout)
+
+    def test_ozi_flappy_has_deterministic_logic_self_test(self):
+        game = ROOT / "apps/ozi-flappy/ozi-flappy.py"
+        result = subprocess.run(["python3", str(game), "--self-test"], text=True,
+                                capture_output=True, check=False)
+        self.assertEqual(result.returncode, 0, result.stderr)
+        self.assertEqual(result.stdout.strip(), "Ozi Ozi Flappy: pruebas de estado OK")
+
     def test_shell_keeps_wallpaper_and_console_contract(self):
         layout = (ROOT / "themes/lookandfeel/org.dylanos.crimson/contents/layouts/org.kde.plasma.desktop-layout.js").read_text(encoding="utf-8")
         kitty = (ROOT / "configs/kitty/kitty.conf").read_text(encoding="utf-8")
