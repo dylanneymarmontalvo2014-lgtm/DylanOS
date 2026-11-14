@@ -113,6 +113,8 @@ def stage(destination, installer_dist=None, version=None):
         ("branding/logo.png", "/usr/share/dylanos/branding/logo.png"),
         ("configs/bash/dylanos.bashrc", "/etc/skel/.bashrc"),
         ("configs/bash/dylanos-ghost.sh", "/usr/share/dylanos/shell/dylanos-ghost.sh"),
+        ("configs/bash/dylanos-ozi.sh", "/usr/share/dylanos/shell/dylanos-ozi.sh"),
+        ("apps/ozi-flappy/ozi-flappy.py", "/usr/lib/dylanos/ozi-flappy.py"),
         ("MAINTAINERS.txt", "/usr/share/dylanos/MAINTAINERS.txt"),
         ("branding/icons/dylanos-console.svg", "/usr/share/icons/hicolor/scalable/apps/dylanos-console.svg"),
         ("branding/icons/dylanos-console.png", "/usr/share/icons/hicolor/512x512/apps/dylanos-console.png"),

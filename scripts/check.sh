@@ -5,7 +5,7 @@ cd "$ROOT"
 PYTHON="${DYLANOS_PYTHON:-python3}"
 bash -n init.sh
 while IFS= read -r script; do bash -n "$script"; done < <(find scripts packages -name '*.sh' -type f)
-shellcheck -x init.sh scripts/build.sh scripts/build-installer.sh scripts/lib/lock.sh scripts/build-host.sh scripts/docker-compose.sh scripts/iso.sh scripts/test.sh scripts/test-boot-qemu.sh scripts/check.sh scripts/lib/packages.sh scripts/tests/test_plasmoid_runtime.sh packages/development/setup-repos.sh configs/bash/dylanos.bashrc configs/bash/dylanos-ghost.sh
+shellcheck -x init.sh scripts/build.sh scripts/build-installer.sh scripts/lib/lock.sh scripts/build-host.sh scripts/docker-compose.sh scripts/iso.sh scripts/test.sh scripts/test-boot-qemu.sh scripts/check.sh scripts/lib/packages.sh scripts/tests/test_plasmoid_runtime.sh packages/development/setup-repos.sh configs/bash/dylanos.bashrc configs/bash/dylanos-ghost.sh configs/bash/dylanos-ozi.sh
 make --no-print-directory --dry-run help installer check build iso test-iso qemu-test >/dev/null
 make --no-print-directory --dry-run build PROFILE=minimal RESUME=1 >/dev/null
 "$PYTHON" -c 'import yaml; config = yaml.safe_load(open("compose.yaml", encoding="utf-8")); assert config["services"]["builder"]["privileged"] is True'
@@ -27,7 +27,7 @@ for t in scripts/tests/test_*.py; do
     echo "── unittest $(basename "$t" .py)"
     QT_QPA_PLATFORM=offscreen QT_QUICK_BACKEND=software "$PYTHON" -m unittest "scripts.tests.$(basename "$t" .py)"
 done
-"$PYTHON" -m compileall -q apps/workspace apps/dylanos-configuration/helper scripts/stage.py scripts/check_boot_log.py scripts/lib/generate-theme.py
+"$PYTHON" -m compileall -q apps/workspace apps/dylanos-configuration/helper apps/ozi-flappy scripts/stage.py scripts/check_boot_log.py scripts/lib/generate-theme.py
 staging="$(mktemp -d)"
 trap 'rm -rf "$staging"' EXIT
 "$PYTHON" scripts/stage.py "$staging/root"
