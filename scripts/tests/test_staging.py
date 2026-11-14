@@ -136,6 +136,8 @@ class StagingTest(unittest.TestCase):
                      "usr/bin/neofetch",
                      "usr/share/applications/org.dylanos.console.desktop",
                      "usr/share/dylanos/shell/dylanos-ghost.sh",
+                     "usr/share/dylanos/shell/dylanos-ozi.sh",
+                     "usr/lib/dylanos/ozi-flappy.py",
                      "usr/share/icons/hicolor/scalable/apps/dylanos-console.svg",
                      "etc/skel/.bashrc",
                      "usr/share/applications/dylanos-installer.desktop",
@@ -323,6 +325,14 @@ class StagingTest(unittest.TestCase):
             self.assertIn('image_backend="kitty"', neofetch)
             self.assertIn("/usr/share/dylanos/neofetch/logo.png", neofetch)
             self.assertIn("DylanOS · Resumen del sistema", neofetch)
+            self.assertIn("echo \"ozi ozi\"", (root / "etc/skel/.bashrc").read_text(encoding="utf-8"))
+            self.assertIn("command python3 /usr/lib/dylanos/ozi-flappy.py",
+                          (root / "usr/share/dylanos/shell/dylanos-ozi.sh").read_text(encoding="utf-8"))
+            game = root / "usr/lib/dylanos/ozi-flappy.py"
+            result = subprocess.run(["python3", str(game), "--self-test"], text=True,
+                                    capture_output=True, check=False)
+            self.assertEqual(result.returncode, 0, result.stderr)
+            self.assertEqual(result.stdout.strip(), "Ozi Ozi Flappy: pruebas de estado OK")
             self.assertEqual((root / "usr/share/dylanos/neofetch/logo.png").read_bytes(),
                              (ROOT / "branding/logo.png").read_bytes())
             neofetch_wrapper = (root / "usr/bin/neofetch").read_text()
