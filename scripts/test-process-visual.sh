@@ -137,9 +137,18 @@ for libroot in "$PREFIX/lib" "$PREFIX/lib64"; do
     while IFS= read -r path; do LIBRARY_PATHS+=("$path"); done < <(find "$libroot" -type f \( -name '*.so' -o -name '*.so.*' \) -printf '%h\n' 2>/dev/null | sort -u)
 done
 join_paths() { local IFS=:; printf '%s' "$*"; }
-if ((${#QML_PATHS[@]})); then export QML2_IMPORT_PATH="$(join_paths "${QML_PATHS[@]}")${QML2_IMPORT_PATH:+:$QML2_IMPORT_PATH}"; fi
-if ((${#PLUGIN_PATHS[@]})); then export QT_PLUGIN_PATH="$(join_paths "${PLUGIN_PATHS[@]}")${QT_PLUGIN_PATH:+:$QT_PLUGIN_PATH}"; fi
-if ((${#LIBRARY_PATHS[@]})); then export LD_LIBRARY_PATH="$(join_paths "${LIBRARY_PATHS[@]}")${LD_LIBRARY_PATH:+:$LD_LIBRARY_PATH}"; fi
+if ((${#QML_PATHS[@]})); then
+    QML_IMPORT_PATH="$(join_paths "${QML_PATHS[@]}")"
+    export QML2_IMPORT_PATH="$QML_IMPORT_PATH${QML2_IMPORT_PATH:+:$QML2_IMPORT_PATH}"
+fi
+if ((${#PLUGIN_PATHS[@]})); then
+    QT_PLUGIN_PATH_VALUE="$(join_paths "${PLUGIN_PATHS[@]}")"
+    export QT_PLUGIN_PATH="$QT_PLUGIN_PATH_VALUE${QT_PLUGIN_PATH:+:$QT_PLUGIN_PATH}"
+fi
+if ((${#LIBRARY_PATHS[@]})); then
+    LIBRARY_PATH="$(join_paths "${LIBRARY_PATHS[@]}")"
+    export LD_LIBRARY_PATH="$LIBRARY_PATH${LD_LIBRARY_PATH:+:$LD_LIBRARY_PATH}"
+fi
 
 if [[ -z "$SCREENSHOT" ]]; then
     echo "Abriendo DylanOS Process en la página Processes. Cierra la ventana para terminar."
