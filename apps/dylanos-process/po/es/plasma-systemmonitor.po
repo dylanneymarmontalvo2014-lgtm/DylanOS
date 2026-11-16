@@ -759,3 +759,52 @@ msgstr "Lanzar %1"
 #~ msgctxt "@action:button"
 #~ msgid "Cancel"
 #~ msgstr "Cancelar"
+
+
+#: src/faces/dylanosprocesstable/contents/ui/FullRepresentation.qml
+#, kde-format
+msgctxt "@title:section"
+msgid "Process activity"
+msgstr "Actividad de procesos"
+
+#: src/faces/dylanosprocesstable/contents/ui/FullRepresentation.qml
+#, kde-format
+msgctxt "@info"
+msgid "Find resource-heavy tasks and manage them safely."
+msgstr "Localiza las tareas que consumen recursos y gestiónalas de forma segura."
+
+#: src/faces/dylanosprocesstable/contents/ui/FullRepresentation.qml
+#, kde-format
+msgctxt "@info:status"
+msgid "LIVE"
+msgstr "EN VIVO"
+
+#: src/faces/dylanosprocesstable/contents/ui/FullRepresentation.qml
+#, kde-format
+msgctxt "@label"
+msgid "VIEW"
+msgstr "VISTA"
+
+#: src/faces/dylanosprocesstable/contents/ui/FullRepresentation.qml
+#, kde-format
+msgctxt "@action:button"
+msgid "Mine"
+msgstr "Propios"
+
+#: src/faces/dylanosprocesstable/contents/ui/FullRepresentation.qml
+#, kde-format
+msgctxt "@action:button"
+msgid "Users"
+msgstr "Usuarios"
+
+#: src/faces/dylanosprocesstable/contents/ui/FullRepresentation.qml
+#, kde-format
+msgctxt "@action:button"
+msgid "System"
+msgstr "Sistema"
+
+#: src/faces/dylanosprocesstable/contents/ui/FullRepresentation.qml
+#, kde-format
+msgctxt "@action:button"
+msgid "All"
+msgstr "Todos"
