@@ -9,6 +9,8 @@ Rectangle {
     property string title: ""
     property string sub: ""
     property bool active: false
+    // Modo compacto: solo icono centrado (sidebar colapsada).
+    property bool compact: false
 
     signal clicked()
 
@@ -32,7 +34,7 @@ Rectangle {
 
     Row {
         anchors.fill: parent
-        anchors.leftMargin: 12
+        anchors.leftMargin: root.compact ? Math.max(12, (root.width - 34) / 2) : 12
         anchors.rightMargin: 12
         spacing: 14
         IconTile {
@@ -45,6 +47,7 @@ Rectangle {
         Column {
             anchors.verticalCenter: parent.verticalCenter
             width: parent.width - 62
+            visible: !root.compact
             Text {
                 width: parent.width
                 text: root.title
@@ -54,6 +57,7 @@ Rectangle {
             }
             Text {
                 width: parent.width
+                visible: root.sub !== ""
                 text: root.sub
                 font.pixelSize: 12
                 color: Theme.c.textDim

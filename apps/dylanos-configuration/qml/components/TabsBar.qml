@@ -1,8 +1,10 @@
 import QtQuick
 import org.dylanos.configuration
 
-// Pestañas de píldoras (Personalización, Aplicaciones).
-Row {
+// Pestañas de píldoras (Personalización, Aplicaciones, Gaming).
+// Flow en lugar de Row: con muchas pestañas (Gaming tiene 7) se envuelven
+// a una segunda línea en ventanas estrechas en vez de desbordar.
+Flow {
     id: root
     property string value: ""
     property var tabs: []

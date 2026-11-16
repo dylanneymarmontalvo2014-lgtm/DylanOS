@@ -15,6 +15,8 @@ class SystemService : public QObject
     Q_OBJECT
     Q_PROPERTY(bool dark READ dark NOTIFY darkChanged)
     Q_PROPERTY(QString accent READ accent WRITE setAccent NOTIFY accentChanged)
+    Q_PROPERTY(QString version READ version CONSTANT)
+    Q_PROPERTY(QString releaseChannel READ releaseChannel CONSTANT)
     Q_PROPERTY(int brightness READ brightness WRITE setBrightness NOTIFY brightnessChanged)
     Q_PROPERTY(int maxBrightness READ maxBrightness CONSTANT)
     Q_PROPERTY(bool brightnessAvailable READ brightnessAvailable CONSTANT)
@@ -40,6 +42,10 @@ public:
 
     // Información del sistema (página Sistema / Acerca de).
     Q_INVOKABLE QVariantMap sysInfo() const;
+
+    // Versión del sistema y canal de lanzamiento (página Sistema / Acerca de).
+    QString version() const;
+    QString releaseChannel() const;
 
     // Apariencia: esquemas de color, acento, fondos.
     Q_INVOKABLE QVariantList colorSchemes();
@@ -101,6 +107,10 @@ public:
     Q_INVOKABLE bool singleClick() const;
     Q_INVOKABLE bool setRestoreSession(bool enabled);
     Q_INVOKABLE bool restoreSession() const;
+
+    // Actualizaciones automáticas reales (unattended-upgrades, vía polkit).
+    Q_INVOKABLE QVariantMap autoUpdates() const;
+    Q_INVOKABLE bool setAutoUpdates(bool enabled);
 
     Q_INVOKABLE bool configBool(const QString &file, const QString &group, const QString &key) const;
     Q_INVOKABLE QString configString(const QString &file, const QString &group, const QString &key) const;

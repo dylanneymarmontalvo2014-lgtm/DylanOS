@@ -8,9 +8,6 @@ ScrollView {
     anchors.fill: parent
     contentWidth: availableWidth
 
-    property bool autolock: !System.configBool("kscreenlockerrc", "Daemon", "Autolock") || true
-    property int lockTimeout: parseInt(System.configString("kscreenlockerrc", "Daemon", "Timeout") || "5", 10)
-
     Column {
         x: 32
         y: 4

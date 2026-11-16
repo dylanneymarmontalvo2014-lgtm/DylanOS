@@ -40,6 +40,7 @@ ScrollView {
                 return
             }
         }
+        toast.show("No hay ningún esquema " + (oscuro ? "oscuro" : "claro") + " disponible")
     }
 
     Column {
