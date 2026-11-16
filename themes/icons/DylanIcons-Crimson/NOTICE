@@ -1,0 +1,27 @@
+DylanIcons — Solid Dark Red
+===========================
+
+Tema de iconos de DylanOS (subconjunto de explorador de archivos: places,
+mimes y devices).
+
+ORIGEN Y LICENCIA
+-----------------
+Los archivos SVG de este tema derivan de MacTahoe-icon-theme de
+Vince Liuice (https://github.com/vinceliuice/MacTahoe-icon-theme),
+variante "red" + esquema "-dark", que a su vez deriva de WhiteSur
+icon-theme del mismo autor.
+
+Distribuido bajo GNU GPL versión 3 (ver COPYING). Este NOTICE conserva
+la atribución de origen exigida por la licencia; el nombre público del
+tema y su integración en DylanOS son propios (rebranding permitido por
+GPL-3.0).
+
+MODIFICACIONES
+--------------
+- Selección de un subconjunto de iconos de explorador de archivos y
+  renombrado como DylanIcons — Solid Dark Red.
+- Alias adicionales bajo nombres estándar del XDG Icon Theme
+  Specification (text-plain, application-x-shellscript,
+  inode-directory).
+- Copias de los iconos simbólicos bajo nombres no simbólicos para que
+  las peticiones estándar de QIcon resuelvan dentro del tema.

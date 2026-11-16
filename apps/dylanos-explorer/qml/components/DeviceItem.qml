@@ -5,6 +5,7 @@ Item {
     id: root
     property string name
     property string detail
+    property string icon: ""
     property real usedFraction: 0
     signal clicked()
 
@@ -15,11 +16,14 @@ Item {
         radius: 10
         color: area.containsMouse ? Theme.cardHover : "transparent"
     }
-    Icon {
-        x: 12; y: 4
-        name: "drive"
-        size: 19
-        color: Theme.textDim
+    // Icono real de la unidad según el icon theme activo (KFilePlacesModel).
+    DylanIcon {
+        x: 12
+        y: 2
+        width: 19
+        height: 19
+        name: root.icon
+        fallback: "drive-harddisk"
     }
     Txt {
         x: 42; y: 2

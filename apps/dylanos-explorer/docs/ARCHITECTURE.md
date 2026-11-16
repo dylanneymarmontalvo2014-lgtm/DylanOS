@@ -6,7 +6,7 @@ dylanos-explorer/
 ├── assets/                   .desktop e icono SVG
 ├── qml/
 │   ├── Main.qml              Ventana sin marco, atajos, menús, diálogos, toasts
-│   ├── theme/                Theme.qml (tokens), Icons.qml (trazos SVG)   [singletons]
+│   ├── theme/                Theme.qml (tokens), Icons.qml (trazos SVG de chrome)   [singletons]
 │   ├── components/           Piezas reutilizables: Sidebar, Header, vistas, diálogos...
 │   └── pages/                HomePage (referencia) y DirectoryPage (resto de carpetas)
 ├── src/
@@ -35,8 +35,11 @@ comportamiento con la papelera, dispositivos, red, permisos y deshacer es idént
    Contiene toda la lógica destructiva (copiar, mover, papelera, borrado) y las rutas protegidas.
 2. **`models/`**: `FileListModel` lista un directorio (o busca recursivamente), ordena (carpetas primero, orden numérico
    con `QCollator`), mantiene la selección y recarga con `QFileSystemWatcher` (con antirrebote de 200 ms).
-   `PlacesService` expone favoritos, dispositivos, carpetas de Inicio y archivos recientes.
-3. **`ExplorerController`**: único objeto que ve la UI. Mantiene ubicación e historial, portapapeles, ajustes (`QSettings`)
+   `PlacesService` expone favoritos, dispositivos, carpetas de Inicio y archivos recientes, con iconos
+   estándar del XDG icon theme (`KFilePlacesModel::IconNameRole` para unidades).
+3. **`services/DylanIcon`**: `DylanIcon` (QQuickPaintedItem) pinta iconos con `QIcon::fromTheme` y repinta al
+   cambiar `[Icons] Theme` en `kdeglobals` (vigilado por el singleton `DylanIconTheme`); sin caché propia —
+   la resolución la lleva Qt. **`ExplorerController`**: único objeto que ve la UI. Mantiene ubicación e historial, portapapeles, ajustes (`QSettings`)
    y ejecuta las operaciones largas en `QtConcurrent` con progreso y cancelación, notificando mediante `notify()`.
 4. **QML**: sin lógica de archivos. Las acciones llaman al controlador; las confirmaciones destructivas viven en `Main.qml`.
 

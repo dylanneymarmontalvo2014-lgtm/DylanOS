@@ -5,6 +5,9 @@ Rectangle {
     id: root
     property string text
     property string icon
+    // true = el icono es un nombre del tema XDG (lugares, unidades);
+    // false = trazo stroke propio del app (chrome de la interfaz).
+    property bool themed: false
     property bool active: false
     signal clicked()
     signal rightClicked()
@@ -17,7 +20,17 @@ Rectangle {
         GradientStop { position: 1; color: root.active ? "#6a1218" : (area.containsMouse ? Theme.cardHover : "transparent") }
     }
 
+    DylanIcon {
+        visible: root.themed
+        x: 12
+        width: 19
+        height: 19
+        anchors.verticalCenter: parent.verticalCenter
+        name: root.icon
+        fallback: "folder"
+    }
     Icon {
+        visible: !root.themed
         x: 12
         anchors.verticalCenter: parent.verticalCenter
         name: root.icon

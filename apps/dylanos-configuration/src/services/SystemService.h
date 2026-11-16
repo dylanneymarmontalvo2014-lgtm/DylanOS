@@ -54,6 +54,12 @@ public:
     Q_INVOKABLE bool applyWallpaper(const QString &path);
     Q_INVOKABLE void applyCursor(const QString &theme);
 
+    // Tema de iconos (kdeglobals [Icons] Theme).
+    Q_INVOKABLE QVariantList iconThemes();
+    Q_INVOKABLE bool applyIconTheme(const QString &name);
+    QString iconThemeName() const;
+    Q_PROPERTY(QString iconThemeName READ iconThemeName NOTIFY iconThemeChanged)
+
     // Acabado Crimson-glass: marco translúcido + desenfoque del compositor.
     Q_INVOKABLE bool glassEnabled();
     Q_INVOKABLE bool setGlassEnabled(bool enabled);
@@ -119,6 +125,7 @@ public:
 signals:
     void darkChanged();
     void accentChanged();
+    void iconThemeChanged();
     void brightnessChanged();
     void actionFailed(const QString &message);
     void taskDone(const QString &tag, bool ok, const QString &output);
@@ -138,6 +145,7 @@ private:
 
     QFileSystemWatcher m_watcher;
     mutable QString m_lastError;
+    QString m_iconTheme;
 };
 
 #endif

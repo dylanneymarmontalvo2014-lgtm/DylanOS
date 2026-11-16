@@ -109,6 +109,47 @@ class ExplorerStructureTest(unittest.TestCase):
             self.assertTrue(preview.is_file(), name)
             self.assertGreater(preview.stat().st_size, 0, name)
 
+    def test_dynamic_icon_theme_resolution(self):
+        # Los archivos, carpetas, lugares y unidades se resuelven del icon
+        # theme activo del sistema (kdeglobals [Icons] Theme), no de trazos
+        # embebidos; el chrome de la app conserva sus glifos stroke.
+        main = (APP / "src/main.cpp").read_text(encoding="utf-8")
+        self.assertIn("DylanIcon", main)
+        cmake = (APP / "CMakeLists.txt").read_text(encoding="utf-8")
+        self.assertIn("src/services/DylanIcon.cpp", cmake)
+        icon_source = (APP / "src/services/DylanIcon.cpp").read_text(encoding="utf-8")
+        self.assertIn("DylanIconTheme", icon_source)
+        self.assertIn("QIcon::fromTheme", icon_source)
+        self.assertIn("kdeglobals", icon_source)
+        self.assertIn("Icons/Theme", icon_source)
+        self.assertIn("setThemeName", icon_source)
+
+        file_type = (APP / "qml/components/FileTypeIcon.qml").read_text(encoding="utf-8")
+        self.assertIn("DylanIcon", file_type)
+        self.assertIn("x-office-document", file_type)
+        self.assertIn("image-x-generic", file_type)
+        self.assertNotIn('#2b6cd9', file_type)  # badge W duro eliminado
+        folder = (APP / "qml/components/FolderIcon.qml").read_text(encoding="utf-8")
+        self.assertIn('name: "folder"', folder)
+        self.assertNotIn("#c0141f", folder)  # carpeta pintada a mano eliminada
+        card = (APP / "qml/components/FolderCard.qml").read_text(encoding="utf-8")
+        self.assertIn("DylanIcon", card)
+
+        places = (APP / "src/models/PlacesService.cpp").read_text(encoding="utf-8")
+        self.assertIn("user-home", places)
+        self.assertIn("folder-documents", places)
+        self.assertIn("network-workgroup", places)
+        self.assertIn("KFilePlacesModel::IconNameRole", places)
+        sidebar = (APP / "qml/components/SidebarItem.qml").read_text(encoding="utf-8")
+        self.assertIn("DylanIcon", sidebar)
+        device = (APP / "qml/components/DeviceItem.qml").read_text(encoding="utf-8")
+        self.assertIn("DylanIcon", device)
+        self.assertIn("drive-harddisk", device)
+
+    def test_file_type_icon_no_conserva_estado_calculado_sin_consumidor(self):
+        file_type = (APP / "qml/components/FileTypeIcon.qml").read_text(encoding="utf-8")
+        self.assertNotIn("property bool themed", file_type)
+
 
 if __name__ == "__main__":
     unittest.main()

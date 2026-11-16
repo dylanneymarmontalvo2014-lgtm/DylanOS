@@ -98,17 +98,19 @@ PlacesService::PlacesService(QObject *parent)
     auto fav = [this](const QString &name, const QString &icon, const QString &path) {
         m_favorites.append(QVariantMap{{"name", name}, {"icon", icon}, {"path", path}});
     };
-    fav(QStringLiteral("Inicio"), QStringLiteral("home"), QStringLiteral("home://"));
-    fav(QStringLiteral("Escritorio"), QStringLiteral("desktop"), standardDir(QStandardPaths::DesktopLocation, "Escritorio"));
-    fav(QStringLiteral("Documentos"), QStringLiteral("doc"), standardDir(QStandardPaths::DocumentsLocation, "Documentos"));
-    fav(QStringLiteral("Descargas"), QStringLiteral("download"), standardDir(QStandardPaths::DownloadLocation, "Descargas"));
-    fav(QStringLiteral("Imágenes"), QStringLiteral("image"), standardDir(QStandardPaths::PicturesLocation, "Imágenes"));
-    fav(QStringLiteral("Música"), QStringLiteral("music"), standardDir(QStandardPaths::MusicLocation, "Música"));
-    fav(QStringLiteral("Videos"), QStringLiteral("video"), standardDir(QStandardPaths::MoviesLocation, "Videos"));
-    fav(QStringLiteral("Papelera"), QStringLiteral("trash"), FileOperations::trashFilesDir());
+    // Iconos estándar del XDG icon theme: se resuelven contra el tema
+    // activo del sistema, no contra trazos embebidos.
+    fav(QStringLiteral("Inicio"), QStringLiteral("user-home"), QStringLiteral("home://"));
+    fav(QStringLiteral("Escritorio"), QStringLiteral("user-desktop"), standardDir(QStandardPaths::DesktopLocation, "Escritorio"));
+    fav(QStringLiteral("Documentos"), QStringLiteral("folder-documents"), standardDir(QStandardPaths::DocumentsLocation, "Documentos"));
+    fav(QStringLiteral("Descargas"), QStringLiteral("folder-download"), standardDir(QStandardPaths::DownloadLocation, "Descargas"));
+    fav(QStringLiteral("Imágenes"), QStringLiteral("folder-images"), standardDir(QStandardPaths::PicturesLocation, "Imágenes"));
+    fav(QStringLiteral("Música"), QStringLiteral("folder-music"), standardDir(QStandardPaths::MusicLocation, "Música"));
+    fav(QStringLiteral("Videos"), QStringLiteral("folder-videos"), standardDir(QStandardPaths::MoviesLocation, "Videos"));
+    fav(QStringLiteral("Papelera"), QStringLiteral("user-trash"), FileOperations::trashFilesDir());
 
-    m_network.append(QVariantMap{{"name", QStringLiteral("Red local")}, {"icon", QStringLiteral("desktop")}, {"kind", QStringLiteral("local")}});
-    m_network.append(QVariantMap{{"name", QStringLiteral("Servidor DLN")}, {"icon", QStringLiteral("server")}, {"kind", QStringLiteral("server")}});
+    m_network.append(QVariantMap{{"name", QStringLiteral("Red local")}, {"icon", QStringLiteral("network-workgroup")}, {"kind", QStringLiteral("local")}});
+    m_network.append(QVariantMap{{"name", QStringLiteral("Servidor DLN")}, {"icon", QStringLiteral("network-server")}, {"kind", QStringLiteral("server")}});
 
     connect(&m_recentWatcher, &QFutureWatcher<QVariantList>::finished, this, [this] {
         m_recent = m_recentWatcher.result();
@@ -162,6 +164,10 @@ void PlacesService::refreshDevices()
         m["name"] = m_places->text(idx);
         m["path"] = url.toString();
         m["mounted"] = mounted;
+        // Nombre de icono estándar de la unidad (p. ej. drive-harddisk,
+        // drive-removable-media) tal como lo resuelve el tema de iconos
+        // activo del sistema.
+        m["icon"] = m_places->data(idx, KFilePlacesModel::IconNameRole).toString();
         if (mounted && !mountPoint.isEmpty()) {
             const QStorageInfo s(mountPoint);
             const qint64 total = s.bytesTotal();
@@ -219,14 +225,14 @@ void PlacesService::refreshHomeFolders()
         QString path;
     };
     const QList<Def> defs = {
-        {"Escritorio", "desktop", standardDir(QStandardPaths::DesktopLocation, "Escritorio")},
-        {"Documentos", "doc", standardDir(QStandardPaths::DocumentsLocation, "Documentos")},
-        {"Descargas", "download", standardDir(QStandardPaths::DownloadLocation, "Descargas")},
-        {"Imágenes", "image", standardDir(QStandardPaths::PicturesLocation, "Imágenes")},
-        {"Música", "music", standardDir(QStandardPaths::MusicLocation, "Música")},
-        {"Videos", "film", standardDir(QStandardPaths::MoviesLocation, "Videos")},
-        {"Plantillas", "grid", standardDir(QStandardPaths::TemplatesLocation, "Plantillas")},
-        {"Proyectos", "code", projectsDir()},
+        {"Escritorio", "user-desktop", standardDir(QStandardPaths::DesktopLocation, "Escritorio")},
+        {"Documentos", "folder-documents", standardDir(QStandardPaths::DocumentsLocation, "Documentos")},
+        {"Descargas", "folder-download", standardDir(QStandardPaths::DownloadLocation, "Descargas")},
+        {"Imágenes", "folder-images", standardDir(QStandardPaths::PicturesLocation, "Imágenes")},
+        {"Música", "folder-music", standardDir(QStandardPaths::MusicLocation, "Música")},
+        {"Videos", "folder-videos", standardDir(QStandardPaths::MoviesLocation, "Videos")},
+        {"Plantillas", "folder-templates", standardDir(QStandardPaths::TemplatesLocation, "Plantillas")},
+        {"Proyectos", "folder-code", projectsDir()},
     };
     QVariantList list;
     for (const Def &d : defs) {

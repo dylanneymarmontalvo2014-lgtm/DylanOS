@@ -6,6 +6,97 @@ import unittest
 
 ROOT = Path(__file__).resolve().parents[2]
 GTK_THEME = ROOT / "themes/gtk/DylanOS-Crimson"
+ICONS_THEME = ROOT / "themes/icons/DylanIcons-Crimson"
+
+
+class DylanIconsThemeTest(unittest.TestCase):
+    """DylanIcons — Solid Dark Red: tema de iconos nativo del explorador."""
+
+    def test_structure_and_identity(self):
+        self.assertTrue((ICONS_THEME / "index.theme").is_file())
+        index_theme = (ICONS_THEME / "index.theme").read_text(encoding="utf-8")
+        self.assertIn("Name=DylanIcons — Solid Dark Red", index_theme)
+        self.assertIn("Inherits=ePapirus-Dark", index_theme)
+        self.assertIn("Directories=places/scalable,mimes/scalable,mimes/symbolic,devices/scalable",
+                      index_theme)
+        self.assertIn("[places/scalable]", index_theme)
+        self.assertIn("[mimes/scalable]", index_theme)
+        self.assertIn("[devices/scalable]", index_theme)
+
+    def test_explorer_icon_set_is_complete(self):
+        required = [
+            # carpetas y estados (abierta, remota, compartida)
+            "places/scalable/folder.svg",
+            "places/scalable/folder-open.svg",
+            "places/scalable/folder-remote.svg",
+            "places/scalable/folder-public.svg",
+            "places/scalable/inode-directory.svg",
+            # favoritos de navegación
+            "places/scalable/user-home.svg",
+            "places/scalable/user-desktop.svg",
+            "places/scalable/folder-documents.svg",
+            "places/scalable/folder-download.svg",
+            "places/scalable/folder-images.svg",
+            "places/scalable/folder-music.svg",
+            "places/scalable/folder-videos.svg",
+            "places/scalable/folder-templates.svg",
+            "places/scalable/folder-code.svg",
+            "places/scalable/folder-public.svg",
+            "places/scalable/network-server.svg",
+            "places/scalable/network-workgroup.svg",
+            # papelera (normal y llena)
+            "places/scalable/user-trash.svg",
+            "places/scalable/user-trash-full.svg",
+            # unidades y equipos
+            "devices/scalable/drive-harddisk.svg",
+            "devices/scalable/drive-harddisk-root.svg",
+            "devices/scalable/drive-removable-media.svg",
+            "devices/scalable/drive-removable-media-usb.svg",
+            "devices/scalable/drive-optical.svg",
+            "devices/scalable/media-optical.svg",
+            "devices/scalable/media-flash.svg",
+            "devices/scalable/computer.svg",
+            "devices/scalable/computer-laptop.svg",
+            # tipos de archivo (nombres estándar XDG)
+            "mimes/scalable/text-x-generic.svg",
+            "mimes/scalable/text-plain.svg",
+            "mimes/scalable/text-markdown.svg",
+            "mimes/scalable/x-office-document.svg",
+            "mimes/scalable/x-office-spreadsheet.svg",
+            "mimes/scalable/x-office-presentation.svg",
+            "mimes/scalable/application-pdf.svg",
+            "mimes/scalable/image-x-generic.svg",
+            "mimes/scalable/video-x-generic.svg",
+            "mimes/scalable/audio-x-generic.svg",
+            "mimes/scalable/application-zip.svg",
+            "mimes/scalable/application-x-shellscript.svg",
+            "mimes/scalable/application-x-executable.svg",
+            "mimes/scalable/text-x-python.svg",
+            "mimes/scalable/text-x-javascript.svg",
+            "mimes/scalable/text-x-cpp.svg",
+            # petición simbólica explícita
+            "mimes/symbolic/text-x-generic-symbolic.svg",
+        ]
+        for relative in required:
+            self.assertTrue((ICONS_THEME / relative).is_file(), relative)
+
+    def test_license_and_attribution(self):
+        copying = (ICONS_THEME / "COPYING").read_text(encoding="utf-8")
+        self.assertIn("GNU GENERAL PUBLIC LICENSE", copying)
+        self.assertIn("Version 3", copying)
+        notice = (ICONS_THEME / "NOTICE").read_text(encoding="utf-8")
+        # La atribución de origen vive solo aquí: archivo legal, no UI.
+        self.assertIn("derivan de", notice)
+        self.assertIn("GPL", notice)
+
+    def test_rebranding_no_upstream_name_outside_the_notice(self):
+        upstream_marker = "".join(("mac", "tahoe"))
+        for path in ICONS_THEME.rglob("*"):
+            if not path.is_file() or path.name in ("NOTICE", "COPYING"):
+                continue
+            self.assertNotIn(upstream_marker, path.read_text(encoding="utf-8", errors="ignore").lower(),
+                             path)
+            self.assertNotIn(upstream_marker, str(path).lower(), path)
 
 
 class GtkThemeTest(unittest.TestCase):

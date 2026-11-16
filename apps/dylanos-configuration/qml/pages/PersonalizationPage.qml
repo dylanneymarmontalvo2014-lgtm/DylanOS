@@ -11,16 +11,27 @@ ScrollView {
     property string tab: Window.window && Window.window.tab ? Window.window.tab : "Apariencia"
     property var schemes: []
     property var walls: []
+    property var iconThemeList: []
     property string currentScheme: System.configString("kdeglobals", "General", "ColorScheme")
     property bool glassOn: false
 
     function refresh() {
         schemes = System.colorSchemes()
         walls = System.wallpapers()
+        iconThemeList = System.iconThemes()
         currentScheme = System.configString("kdeglobals", "General", "ColorScheme")
         glassOn = System.glassEnabled()
     }
     Component.onCompleted: Qt.callLater(refresh)
+    Connections {
+        target: System
+        function onIconThemeChanged() { root.iconThemeList = System.iconThemes() }
+    }
+
+    function currentIconTheme(key) {
+        const t = root.iconThemeList.find(i => i.name === System.iconThemeName)
+        return t ? t[key] : System.iconThemeName
+    }
 
     function applyTema(oscuro) {
         let candidates = oscuro ? ["DylanOSDark", "BreezeDark"] : ["DylanOSLight", "BreezeLight"]
@@ -230,12 +241,18 @@ ScrollView {
                 RowItem {
                     width: parent.width
                     icon: "palette"
-                    title: "Tema de iconos y cursores"
-                    desc: "Gestionados por los módulos nativos"
-                    ActionButton {
+                    title: "Tema de iconos"
+                    desc: currentIconTheme("comment") || "Se aplica a todo el sistema"
+                    DSelect {
                         anchors.verticalCenter: parent.verticalCenter
-                        text: "Abrir iconos"
-                        onClicked: System.openKcm(["kcm_icons"])
+                        menuWidth: 260
+                        value: currentIconTheme("display")
+                        options: root.iconThemeList.map(i => i.display)
+                        onPicked: function (display) {
+                            const t = root.iconThemeList.find(i => i.display === display)
+                            if (t && System.applyIconTheme(t.name))
+                                toast.show("Tema de iconos aplicado: " + t.display)
+                        }
                     }
                 }
                 RowItem {

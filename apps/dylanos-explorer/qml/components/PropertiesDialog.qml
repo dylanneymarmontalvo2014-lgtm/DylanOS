@@ -9,7 +9,8 @@ DlgBase {
     property string sizeText: ""
 
     width: 500
-    icon: info.isDir ? "folder" : "doc"
+    icon: ""
+    themedIcon: info.isDir ? "folder" : "text-x-generic"
     title: "Propiedades"
 
     function formatSize(b) {

@@ -6,6 +6,8 @@ Popup {
     id: root
     property string title
     property string icon: "info"
+    // Nombre de icono del tema XDG (opcional): tiene prioridad sobre icon.
+    property string themedIcon: ""
     property color tint: Theme.accentLabel
     default property alias body: bodyCol.data
     property alias footer: footerRow.data
@@ -39,10 +41,21 @@ Popup {
         Item {
             width: parent.width; height: 68
             Rectangle {
+                visible: root.icon !== "" || root.themedIcon !== ""
                 x: 24; anchors.verticalCenter: parent.verticalCenter
                 width: 36; height: 36; radius: 18
                 color: Qt.rgba(root.tint.r, root.tint.g, root.tint.b, 0.16)
-                Icon { anchors.centerIn: parent; name: root.icon; size: 19; color: root.tint }
+                DylanIcon {
+                    visible: root.themedIcon !== ""
+                    anchors.centerIn: parent
+                    width: 19; height: 19
+                    name: root.themedIcon
+                    fallback: "text-x-generic"
+                }
+                Icon {
+                    visible: root.themedIcon === ""
+                    anchors.centerIn: parent; name: root.icon; size: 19; color: root.tint
+                }
             }
             Txt {
                 x: 74; width: parent.width - 74 - 24
