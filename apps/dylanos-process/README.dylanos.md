@@ -23,6 +23,17 @@ cmake --build build/dylanos-process --parallel 4
 sudo cmake --install build/dylanos-process
 ```
 
+## Vista previa sin compilar una ISO
+
+Desde la raíz del checkout, con las dependencias de compilación KDE/Qt instaladas en el host:
+
+```bash
+bash scripts/test-process-visual.sh --build-only
+bash scripts/test-process-visual.sh --no-build --screenshot work/process-visual/processes.png
+```
+
+La primera orden compila e instala **solo** DylanOS Process en `work/process-visual/`; no ejecuta el builder del sistema ni genera una ISO. La segunda abre esa app real en la página Processes en la sesión X11/Wayland actual y guarda una captura de su ventana. El script usa un perfil de configuración aislado y copia `kdeglobals` para heredar la paleta activa sin alterar los ajustes normales. Requiere un capturador (Spectacle o GNOME Screenshot; en X11 también ImageMagick y `xdotool`). Para compilar y abrir en una sola orden, omite `--build-only`; `--no-build` reutiliza el prefijo ya instalado. Las pruebas automatizadas verifican el flujo con ejecutables simulados y no sustituyen una inspección visual real de la captura.
+
 ## Procedencia y licencia
 
 Código adaptado desde KDE `plasma-systemmonitor`, upstream https://invent.kde.org/plasma/plasma-systemmonitor, rama `Plasma/6.3`, commit `be4f1594995698cac59959b8baa4421f435a1015` (versión 6.3.6). Se conservan los avisos SPDX/copyright por archivo, los textos de licencia y las traducciones upstream. La licencia del código es `GPL-2.0-only OR GPL-3.0-only OR LicenseRef-KDE-Accepted-GPL`; algunos componentes están bajo LGPL según sus propios encabezados.
