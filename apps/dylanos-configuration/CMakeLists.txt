@@ -1,5 +1,10 @@
 cmake_minimum_required(VERSION 3.16)
-project(dylanos-configuration VERSION 1.0.0 LANGUAGES CXX)
+project(dylanos-configuration VERSION 1.1.0 LANGUAGES CXX)
+
+# Fuente única de la versión del producto para este binario: el valor real
+# del sistema lo fija scripts/stage.py (DYLANOS_VERSION) en os-release; esta
+# constante solo cubre el binario en desarrollo y builds sin os-release.
+set(DYLANOS_RELEASE "1.1.0-pre-beta" CACHE STRING "Versión DylanOS mostrada por Configuration")
 
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
@@ -154,6 +159,7 @@ target_link_libraries(dylanos-configuration PRIVATE
 )
 target_compile_definitions(dylanos-configuration PRIVATE
     DYLANOS_IOT_SOURCE_DIR="${CMAKE_CURRENT_SOURCE_DIR}/../../packages/iot"
+    DYLANOS_VERSION="${DYLANOS_RELEASE}"
 )
 
 # El logo oficial (branding/logo.png) se incrusta en el binario cuando está

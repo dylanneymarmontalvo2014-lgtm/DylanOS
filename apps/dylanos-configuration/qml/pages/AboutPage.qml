@@ -41,8 +41,8 @@ ScrollView {
                 Row {
                     spacing: 10
                     Text { anchors.verticalCenter: parent.verticalCenter; text: "DylanOS Crimson"; font.pixelSize: 24; color: Theme.c.text }
-                    Text { anchors.verticalCenter: parent.verticalCenter; text: root.info.version || "1.0 Beta"; font.pixelSize: 14; color: Theme.c.textDim }
-                    BadgePill { anchors.verticalCenter: parent.verticalCenter; text: "Estable" }
+                    Text { anchors.verticalCenter: parent.verticalCenter; text: System.version; font.pixelSize: 14; color: Theme.c.textDim }
+                    BadgePill { anchors.verticalCenter: parent.verticalCenter; text: System.releaseChannel }
                 }
             }
         }

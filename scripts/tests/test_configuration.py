@@ -159,6 +159,69 @@ class TestDylanOSConfiguration(unittest.TestCase):
             self.assertTrue(browser.is_file())
             self.assertEqual(len(list((root / "usr/share/applications").glob("org.dylanos.*.desktop"))), 11)
 
+    def test_version_single_source_pre_beta_1_1_0(self):
+        """La versión vive en CMake (DYLANOS_RELEASE) y os-release; sin copias."""
+        cmake = (APP / "CMakeLists.txt").read_text(encoding="utf-8")
+        self.assertIn('project(dylanos-configuration VERSION 1.1.0', cmake)
+        self.assertIn('set(DYLANOS_RELEASE "1.1.0-pre-beta" CACHE STRING', cmake)
+        self.assertIn('DYLANOS_VERSION="${DYLANOS_RELEASE}"', cmake)
+        main_cpp = (APP / "src/main.cpp").read_text(encoding="utf-8")
+        self.assertIn('setApplicationVersion(QStringLiteral(DYLANOS_VERSION))', main_cpp)
+        cpp = (APP / "src/services/SystemService.cpp").read_text(encoding="utf-8")
+        self.assertIn('QStringLiteral(DYLANOS_VERSION)', cpp)
+        self.assertNotIn('QStringLiteral("1.0 Beta")', cpp)
+        self.assertIn("QString SystemService::version() const", cpp)
+        self.assertIn("QString SystemService::releaseChannel() const", cpp)
+        for page in ["qml/pages/SystemPage.qml", "qml/pages/AboutPage.qml"]:
+            content = (APP / page).read_text(encoding="utf-8")
+            self.assertIn("System.version", content)
+            self.assertIn("System.releaseChannel", content)
+            self.assertNotIn("1.0 Beta", content)
+            self.assertNotIn('text: "Estable"', content)
+
+    def test_theme_watch_survives_kdeglobals_rewrite(self):
+        cpp = (APP / "src/services/SystemService.cpp").read_text(encoding="utf-8")
+        self.assertIn("m_watcher.files().contains(path)", cpp)
+        self.assertIn("m_watcher.addPath(path)", cpp)
+
+    def test_auto_updates_backend_real(self):
+        cpp = (APP / "src/services/SystemService.cpp").read_text(encoding="utf-8")
+        self.assertIn("QVariantMap SystemService::autoUpdates() const", cpp)
+        self.assertIn("bool SystemService::setAutoUpdates(bool enabled)", cpp)
+        self.assertIn("20auto-upgrades", cpp)
+        self.assertIn("unattended-upgrade", cpp)
+        updates = (APP / "qml/pages/UpdatesPage.qml").read_text(encoding="utf-8")
+        self.assertIn("System.autoUpdates()", updates)
+        self.assertIn("System.setAutoUpdates(v)", updates)
+        self.assertNotIn('"Pendiente"', updates)
+        # Sin herramienta de copias en el ecosistema: estado honesto, no botón muerto.
+        self.assertIn('"No disponible"', updates)
+
+    def test_estados_honestos_y_sin_codigo_muerto(self):
+        access = (APP / "qml/pages/AccessibilityPage.qml").read_text(encoding="utf-8")
+        self.assertIn('System.has("orca")', access)
+        privacy = (APP / "qml/pages/PrivacyPage.qml").read_text(encoding="utf-8")
+        self.assertNotIn("property bool autolock", privacy)
+        self.assertNotIn("property int lockTimeout", privacy)
+
+    def test_responsive_sidebar_compacta_y_breakpoints(self):
+        theme = (APP / "qml/theme/Theme.qml").read_text(encoding="utf-8")
+        self.assertIn("property bool compact: false", theme)
+        main = (APP / "qml/Main.qml").read_text(encoding="utf-8")
+        self.assertIn("minimumWidth: 880", main)
+        self.assertIn("readonly property bool compact: width < 1024", main)
+        self.assertIn("window.compact ? 92 : Theme.sidebarWidth", main)
+        navrow = (APP / "qml/components/NavRow.qml").read_text(encoding="utf-8")
+        self.assertIn("property bool compact: false", navrow)
+        tabs = (APP / "qml/components/TabsBar.qml").read_text(encoding="utf-8")
+        self.assertIn("Flow {", tabs)
+        self.assertNotIn("\nRow {", tabs)
+
+    def test_medidor_de_salida_proporcional_al_volumen(self):
+        sound = (APP / "qml/pages/SoundPage.qml").read_text(encoding="utf-8")
+        self.assertIn("Math.round((state.volume || 0) / 100 * 14)", sound)
+        self.assertNotIn("index < 9", sound)
+
 
 if __name__ == "__main__":
     unittest.main()

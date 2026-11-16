@@ -18,7 +18,7 @@ int main(int argc, char *argv[])
 {
     QGuiApplication app(argc, argv);
     QGuiApplication::setApplicationName("DylanOS Configuration");
-    QGuiApplication::setApplicationVersion("1.0");
+    QGuiApplication::setApplicationVersion(QStringLiteral(DYLANOS_VERSION));
     QGuiApplication::setOrganizationName("DylanOS");
     QGuiApplication::setDesktopFileName("org.dylanos.configuration");
 

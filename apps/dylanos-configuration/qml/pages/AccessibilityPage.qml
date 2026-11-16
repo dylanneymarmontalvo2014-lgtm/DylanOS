@@ -87,9 +87,15 @@ ScrollView {
             RowItem {
                 width: parent.width
                 title: "Lector de pantalla"
-                desc: "Orca no está instalado en este sistema"
+                desc: System.has("orca") ? "Orca está instalado en el sistema"
+                                         : "Orca no está instalado en este sistema"
                 last: true
-                Text { anchors.verticalCenter: parent.verticalCenter; text: "Pendiente"; font.pixelSize: 12; color: Theme.c.textDim }
+                ActionButton {
+                    visible: System.has("orca")
+                    anchors.verticalCenter: parent.verticalCenter
+                    text: "Abrir lector"
+                    onClicked: System.launchDetached("orca", [])
+                }
             }
         }
     }

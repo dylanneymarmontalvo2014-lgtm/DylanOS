@@ -7,6 +7,10 @@ QtObject {
 
     property bool dark: true
 
+    // Breakpoints de ventana (Main.qml enlaza `compact` al ancho real):
+    // compacto < 1024 px (sidebar de iconos), mediano < 1360 px, amplio ≥ 1360.
+    property bool compact: false
+
     // --accent / --accent-strong
     // Acento de marca oficial compartido con Plasma, GTK y los demás componentes.
     readonly property color accent: "#DC143C"

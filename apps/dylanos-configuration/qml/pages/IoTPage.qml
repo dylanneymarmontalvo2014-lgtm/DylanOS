@@ -40,10 +40,15 @@ ScrollView {
                 id: envColumn
                 width: parent.width; spacing: 12
                 SectionTitle { text: "Entorno" }
-                Row {
+                // Flow: en ventanas estrechas los controles se envuelven
+                // en vez de desbordar el panel.
+                Flow {
                     width: parent.width; spacing: 16
-                    Text { text: "Activar preferencias IoT"; color: Theme.c.text; anchors.verticalCenter: parent.verticalCenter }
-                    DToggle { on: IoT.enabled; onToggled: function(value) { IoT.setEnabled(value) } }
+                    Row {
+                        spacing: 10
+                        Text { text: "Activar preferencias IoT"; color: Theme.c.text; anchors.verticalCenter: parent.verticalCenter }
+                        DToggle { on: IoT.enabled; onToggled: function(value) { IoT.setEnabled(value) } }
+                    }
                     DSelect {
                         width: 300
                         options: root.profileList.map(function(p) { return p.name })
@@ -59,10 +64,10 @@ ScrollView {
             }
         }
 
-        Row {
+        Flow {
             width: parent.width; spacing: 14
             PanelBox {
-                width: (parent.width - 14) / 2
+                width: Theme.compact ? parent.width : (parent.width - 14) / 2
                 height: 300
                 Column {
                     width: parent.width; spacing: 10

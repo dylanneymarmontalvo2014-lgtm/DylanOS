@@ -149,7 +149,7 @@ ScrollView {
                             height: 4 + (index * 7 % 5) * 3
                             radius: 1
                             anchors.verticalCenter: parent.verticalCenter
-                            color: !state.muted && (state.volume || 0) > 0 && index < 9 ? Theme.accent : Theme.c.track
+                            color: !state.muted && index < Math.round((state.volume || 0) / 100 * 14) ? Theme.accent : Theme.c.track
                         }
                     }
                 }

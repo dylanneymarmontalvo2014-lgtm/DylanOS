@@ -7,14 +7,22 @@ Window {
     id: window
     width: 1280
     height: 800
-    minimumWidth: 1024
+    minimumWidth: 880
     minimumHeight: 640
     visible: true
     title: "DylanOS Configuration"
     flags: Qt.Window | Qt.FramelessWindowHint
     color: "transparent"
 
-    Component.onCompleted: Theme.dark = Qt.binding(function () { return System.dark })
+    Component.onCompleted: {
+        Theme.dark = Qt.binding(function () { return System.dark })
+        Theme.compact = Qt.binding(function () { return window.compact })
+    }
+
+    // Compacto: la barra lateral colapsa a iconos para liberar contenido.
+    readonly property bool compact: width < 1024
+    readonly property int sidebarW: window.compact ? 92 : Theme.sidebarWidth
+    readonly property int headerPad: window.compact ? 16 : 32
 
     property string route: startPage
     property string tab: ""
@@ -132,7 +140,7 @@ Window {
         anchors.fill: parent
 
         Rectangle {
-            width: Theme.sidebarWidth
+            width: window.sidebarW
             height: parent.height
             color: Theme.c.sidebar
 
@@ -146,10 +154,11 @@ Window {
                 WindowControls {
                     onCloseClicked: window.close()
                     onMinimizeClicked: window.showMinimized()
-                    onMaximizeClicked: window.showMaximized()
+                    onMaximizeClicked: window.visibility === Window.Maximized ? window.showNormal() : window.showMaximized()
                 }
 
                 SearchField {
+                    visible: !window.compact
                     width: parent.width
                     placeholder: "Buscar en configuración"
                     onTextChanged: {
@@ -169,7 +178,7 @@ Window {
                 ListView {
                     id: navList
                     width: parent.width
-                    height: parent.height - 76
+                    height: parent.height - (window.compact ? 36 : 76)
                     clip: true
                     spacing: 2
                     model: window.searchQuery === ""
@@ -178,6 +187,7 @@ Window {
                     delegate: NavRow {
                         required property var modelData
                         width: navList.width
+                        compact: window.compact
                         icon: modelData.icon
                         iconColor: modelData.color
                         title: modelData.title
@@ -190,7 +200,7 @@ Window {
         }
 
         Column {
-            width: parent.width - Theme.sidebarWidth
+            width: parent.width - window.sidebarW
             height: parent.height
 
             Item {
@@ -206,7 +216,7 @@ Window {
                     radius: 18
                     color: Theme.c.surfaceStrong
                     anchors.left: parent.left
-                    anchors.leftMargin: 32
+                    anchors.leftMargin: window.headerPad
                     anchors.verticalCenter: parent.verticalCenter
                     LucideIcon { anchors.centerIn: parent; name: "arrow-left"; color: Theme.c.text; size: 18 }
                     MouseArea {
@@ -218,7 +228,7 @@ Window {
 
                 Column {
                     anchors.left: parent.left
-                    anchors.leftMargin: backBtn.visible ? 80 : 32
+                    anchors.leftMargin: backBtn.visible ? window.headerPad + 48 : window.headerPad
                     anchors.verticalCenter: parent.verticalCenter
                     Text {
                         text: window.route === "system" ? "Configuración del sistema" : window.pageTitle(window.route)

@@ -56,8 +56,8 @@ ScrollView {
                     Text { text: "DylanOS"; font.pixelSize: 22; color: Theme.c.text }
                     Row {
                         spacing: 10
-                        Text { text: "Versión 1.0 Beta"; font.pixelSize: 16; color: Theme.c.text }
-                        BadgePill { anchors.verticalCenter: parent.verticalCenter; text: "Estable" }
+                        Text { text: "Versión " + System.version; font.pixelSize: 16; color: Theme.c.text }
+                        BadgePill { anchors.verticalCenter: parent.verticalCenter; text: System.releaseChannel }
                     }
                     Text {
                         width: 220
@@ -144,7 +144,8 @@ ScrollView {
                 ]
                 delegate: Rectangle {
                     required property var modelData
-                    width: (col.width - 32) / 3
+                    // 2 columnas en modo compacto, 3 en el resto.
+                    width: (col.width - (Theme.compact ? 16 : 32)) / (Theme.compact ? 2 : 3)
                     height: 84
                     radius: Theme.radiusCard
                     color: quickMouse.containsMouse ? Theme.c.surfaceHover : Theme.c.surface

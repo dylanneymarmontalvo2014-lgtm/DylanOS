@@ -103,7 +103,10 @@ ScrollView {
                 }
 
                 Column {
-                    width: parent.width - parent.spacing - 470
+                    // Ancho real restante: la vista previa puede medir menos
+                    // de 470 px en ventanas estrechas (min(470, 58 %)), así
+                    // que hay que restar su tamaño efectivo, no el máximo.
+                    width: parent.width - parent.spacing - Math.min(470, parent.width * 0.58)
                     anchors.verticalCenter: parent.verticalCenter
                     spacing: 12
                     Text {

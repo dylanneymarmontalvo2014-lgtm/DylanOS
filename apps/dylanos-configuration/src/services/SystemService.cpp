@@ -116,6 +116,49 @@ QString SystemService::kcmShell() const
 
 /* --------------------------- Sistema ------------------------------ */
 
+// Versión del sistema: la declara scripts/stage.py en /usr/lib/os-release e
+// /etc/dylanos-release (DYLANOS_VERSION). Solo se confía en os-release cuando
+// describe DylanOS (en el host de desarrollo es la de Debian). Sin os-release
+// de DylanOS se usa la constante de CMake (DYLANOS_RELEASE), única copia del
+// literal de versión en este componente.
+QString SystemService::version() const
+{
+    QFile release(QStringLiteral("/usr/lib/os-release"));
+    bool isDylanOs = false;
+    QString versionId;
+    if (release.open(QIODevice::ReadOnly | QIODevice::Text)) {
+        while (!release.atEnd()) {
+            const QString line = QString::fromUtf8(release.readLine()).trimmed();
+            if (line == QLatin1String("ID=dylanos"))
+                isDylanOs = true;
+            else if (line.startsWith(QLatin1String("VERSION_ID=")))
+                versionId = line.mid(11).remove(QLatin1Char('"'));
+        }
+    }
+    if (isDylanOs && !versionId.isEmpty())
+        return versionId;
+    QFile dylan(QStringLiteral("/etc/dylanos-release"));
+    if (dylan.open(QIODevice::ReadOnly | QIODevice::Text)) {
+        const QString first = QString::fromUtf8(dylan.readLine()).trimmed();
+        if (first.startsWith(QLatin1String("DylanOS ")))
+            return first.mid(8).trimmed();
+    }
+    return QStringLiteral(DYLANOS_VERSION);
+}
+
+// Canal de lanzamiento derivado del sufijo de la versión (pre-beta, beta…).
+QString SystemService::releaseChannel() const
+{
+    const QString base = version().split(QLatin1Char('+')).value(0);
+    if (base.contains(QLatin1String("pre-beta")))
+        return QStringLiteral("Pre-beta");
+    if (base.contains(QLatin1String("beta")))
+        return QStringLiteral("Beta");
+    if (base.contains(QLatin1String("rc")))
+        return QStringLiteral("Candidata");
+    return QStringLiteral("Estable");
+}
+
 QVariantMap SystemService::sysInfo() const
 {
     QVariantMap info;
@@ -188,7 +231,7 @@ QVariantMap SystemService::sysInfo() const
         uptimeHours = si.uptime / 3600.0;
 
     info.insert(QStringLiteral("distro"), pretty.isEmpty() ? QStringLiteral("DylanOS") : pretty);
-    info.insert(QStringLiteral("version"), version.isEmpty() ? QStringLiteral("1.0 Beta") : version);
+    info.insert(QStringLiteral("version"), version.isEmpty() ? QStringLiteral(DYLANOS_VERSION) : version);
     info.insert(QStringLiteral("base"), base.isEmpty() ? QStringLiteral("debian") : base);
     info.insert(QStringLiteral("kernel"), QSysInfo::kernelVersion());
     info.insert(QStringLiteral("arch"), QSysInfo::currentCpuArchitecture());
@@ -333,6 +376,11 @@ bool SystemService::dark() const
 
 void SystemService::reloadTheme()
 {
+    // plasma-apply-colorscheme puede reemplazar kdeglobals de forma atómica:
+    // si el watcher perdió la ruta al reescribirse el archivo, se repone.
+    const QString path = QDir::homePath() + QStringLiteral("/.config/kdeglobals");
+    if (!m_watcher.files().contains(path))
+        m_watcher.addPath(path);
     emit darkChanged();
 }
 
@@ -1145,6 +1193,50 @@ bool SystemService::restoreSession() const
 {
     return readKey(configPath(QStringLiteral("ksmserverrc")), QStringLiteral("General"),
                    QStringLiteral("loginMode")) == QLatin1String("restorePreviousLogout");
+}
+
+/* ------------- Actualizaciones automáticas (unattended-upgrades) --- */
+
+QVariantMap SystemService::autoUpdates() const
+{
+    QVariantMap info;
+    info.insert(QStringLiteral("available"), has(QStringLiteral("unattended-upgrade")));
+    // 20auto-upgrades usa líneas planas 'APT::Periodic::Clave "valor";'
+    // (no grupos INI), así que se lee directamente.
+    bool enabled = false;
+    QFile conf(QStringLiteral("/etc/apt/apt.conf.d/20auto-upgrades"));
+    if (conf.open(QIODevice::ReadOnly | QIODevice::Text)) {
+        while (!conf.atEnd()) {
+            const QString line = QString::fromUtf8(conf.readLine()).trimmed();
+            if (line.startsWith(QStringLiteral("APT::Periodic::Unattended-Upgrade"))) {
+                enabled = line.contains(QLatin1String("\"1\""));
+                break;
+            }
+        }
+    }
+    info.insert(QStringLiteral("enabled"), enabled);
+    return info;
+}
+
+bool SystemService::setAutoUpdates(bool enabled)
+{
+    if (!has(QStringLiteral("unattended-upgrade"))) {
+        m_lastError = QStringLiteral("unattended-upgrades no está instalado en el sistema");
+        emit actionFailed(m_lastError);
+        return false;
+    }
+    // Escritura con mínimo privilegio vía polkit: el contenido es constante
+    // (no interpola entrada del usuario), por lo que no hay inyección.
+    const QString script = QStringLiteral(
+        "printf 'APT::Periodic::Update-Package-Lists \"1\";\\n"
+        "APT::Periodic::Unattended-Upgrade \"%1\";\\n' > /etc/apt/apt.conf.d/20auto-upgrades")
+        .arg(enabled ? QLatin1String("1") : QLatin1String("0"));
+    exec(QStringLiteral("pkexec"), {QStringLiteral("/bin/sh"), QStringLiteral("-c"), script}, 120000);
+    if (!m_lastError.isEmpty()) {
+        emit actionFailed(m_lastError);
+        return false;
+    }
+    return true;
 }
 
 

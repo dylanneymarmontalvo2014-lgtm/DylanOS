@@ -4,7 +4,8 @@ import org.dylanos.configuration
 // Controles de ventana estilo prototipo (semáforo macOS en la barra lateral).
 Row {
     id: root
-    spacing: 8
+    // 6 px: los tres semáforos (54 px) caben en la sidebar compacta de 92 px.
+    spacing: 6
 
     signal closeClicked()
     signal minimizeClicked()
