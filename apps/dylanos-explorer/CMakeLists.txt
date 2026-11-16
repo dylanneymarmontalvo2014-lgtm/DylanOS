@@ -42,6 +42,8 @@ qt_add_qml_module(dylanos-explorer
         src/models/PlacesService.h
         src/services/ExplorerController.cpp
         src/services/ExplorerController.h
+        src/services/DylanIcon.cpp
+        src/services/DylanIcon.h
     QML_FILES
         qml/Main.qml
         qml/theme/Theme.qml

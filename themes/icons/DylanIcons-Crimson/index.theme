@@ -1,6 +1,50 @@
 [Icon Theme]
-Name=DylanIcons Crimson
-Comment=Iconos de DylanOS Crimson basados en ePapirus
+Name=DylanIcons — Solid Dark Red
+Comment=Tema de iconos nativo de DylanOS Crimson: carpetas rojas sólidas y archivos neutros sobre fondo oscuro
 Inherits=ePapirus-Dark,ePapirus,Papirus-Dark,breeze-dark,hicolor
-Directories=
+Example=folder
+DisplayDepth=32
+DesktopDefault=48
+DesktopSizes=16,22,32,48,64,96,128,256
+ToolbarDefault=22
+ToolbarSizes=16,22,32,48
+MainToolbarDefault=22
+MainToolbarSizes=16,22,32,48
+SmallDefault=16
+SmallSizes=16,22,32,48
+PanelDefault=48
+PanelSizes=16,22,32,48,64,96,128,256
+DialogDefault=32
+DialogSizes=16,22,32,48,64,128,256
+FollowsColorScheme=true
+KDE-Extensions=.svg
+Directories=places/scalable,mimes/scalable,mimes/symbolic,devices/scalable
 Hidden=false
+
+[places/scalable]
+Size=64
+MinSize=16
+MaxSize=512
+Type=Scalable
+Context=Places
+
+[mimes/scalable]
+Size=64
+MinSize=16
+MaxSize=512
+Type=Scalable
+Context=MimeTypes
+
+[mimes/symbolic]
+Size=16
+MinSize=16
+MaxSize=512
+Type=Scalable
+Context=MimeTypes
+
+[devices/scalable]
+Size=64
+MinSize=16
+MaxSize=512
+Type=Scalable
+Context=Devices

@@ -5,7 +5,7 @@ Rectangle {
     id: root
     property string name
     property string countText
-    property string glyph
+    property string icon
     signal opened()
     signal menuRequested(real x, real y)
 
@@ -30,10 +30,13 @@ Rectangle {
         }
     }
 
-    FolderIcon {
+    DylanIcon {
         x: 24
+        width: 66
+        height: 56
         anchors.verticalCenter: parent.verticalCenter
-        glyph: root.glyph
+        name: root.icon
+        fallback: "folder"
     }
     Column {
         x: 105

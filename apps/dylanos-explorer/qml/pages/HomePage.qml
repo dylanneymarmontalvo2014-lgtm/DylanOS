@@ -46,7 +46,7 @@ Flickable {
                     width: grid.cellW
                     name: modelData.name
                     countText: modelData.countText
-                    glyph: modelData.icon
+                    icon: modelData.icon
                     onOpened: root.ctl.navigate(modelData.path)
                     onMenuRequested: (x, y) => root.folderMenu(modelData, x, y)
                 }

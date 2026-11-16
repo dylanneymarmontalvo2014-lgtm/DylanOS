@@ -184,6 +184,35 @@ class TestDylanOSConfiguration(unittest.TestCase):
         self.assertIn("m_watcher.files().contains(path)", cpp)
         self.assertIn("m_watcher.addPath(path)", cpp)
 
+    def test_selector_nativo_de_iconos(self):
+        # El selector de tema de iconos es nativo (no atajo al KCM externo),
+        # lista los temas instalados y aplica vía kdeglobals [Icons] Theme.
+        cpp = (APP / "src/services/SystemService.cpp").read_text(encoding="utf-8")
+        self.assertIn("QVariantList SystemService::iconThemes()", cpp)
+        self.assertIn("bool SystemService::applyIconTheme(const QString &name)", cpp)
+        self.assertIn("QString SystemService::iconThemeName() const", cpp)
+        self.assertIn("Icon Theme", cpp)   # grupos [Icon Theme] de los index.theme
+        self.assertIn("Icons", cpp)        # grupo [Icons] de kdeglobals
+        self.assertIn("GenericDataLocation", cpp)
+        self.assertIn("XDG_DATA_DIRS", cpp)
+        header = (APP / "src/services/SystemService.h").read_text(encoding="utf-8")
+        self.assertIn("iconThemeName", header)
+        self.assertIn("iconThemeChanged", header)
+        page = (APP / "qml/pages/PersonalizationPage.qml").read_text(encoding="utf-8")
+        self.assertIn("System.applyIconTheme", page)
+        self.assertIn("iconThemeList", page)
+        self.assertNotIn("kcm_icons", page)
+
+    def test_selector_valida_temas_y_descubre_rutas_xdg(self):
+        cpp = (APP / "src/services/SystemService.cpp").read_text(encoding="utf-8")
+        self.assertIn("QStandardPaths::locateAll", cpp)
+        self.assertIn("index.theme", cpp)
+        self.assertIn("iconThemes()", cpp.split("bool SystemService::applyIconTheme", 1)[1])
+
+    def test_selector_reintenta_watcher_despues_de_reescritura_atomica(self):
+        cpp = (APP / "src/services/SystemService.cpp").read_text(encoding="utf-8")
+        self.assertIn("QTimer::singleShot", cpp)
+
     def test_auto_updates_backend_real(self):
         cpp = (APP / "src/services/SystemService.cpp").read_text(encoding="utf-8")
         self.assertIn("QVariantMap SystemService::autoUpdates() const", cpp)

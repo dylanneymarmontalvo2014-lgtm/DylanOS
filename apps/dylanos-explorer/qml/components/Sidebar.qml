@@ -80,6 +80,7 @@ Rectangle {
                     height: 34
                     text: modelData.name
                     icon: modelData.icon
+                    themed: true
                     active: root.ctl.location === modelData.path
                     onClicked: root.ctl.navigate(modelData.path)
                     onRightClicked: { const p = mapToItem(null, width / 2, height / 2); root.itemContext(modelData.path, p.x, p.y) }
@@ -101,6 +102,7 @@ Rectangle {
                     width: col.width
                     name: modelData.name
                     detail: modelData.text
+                    icon: modelData.icon
                     usedFraction: modelData.usedFraction
                     onClicked: root.ctl.navigate(modelData.path)
                 }
@@ -122,6 +124,7 @@ Rectangle {
                     height: 32
                     text: modelData.name
                     icon: modelData.icon
+                    themed: true
                     onClicked: root.ctl.openNetwork(modelData.kind)
                 }
             }

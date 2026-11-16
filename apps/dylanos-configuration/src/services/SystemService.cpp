@@ -9,6 +9,7 @@
 #include <QFileSystemWatcher>
 #include <QProcess>
 #include <QRegularExpression>
+#include <QSet>
 #include <QStandardPaths>
 #include <QStorageInfo>
 #include <QSysInfo>
@@ -38,8 +39,12 @@ static QStringList schemeSearchPaths()
 SystemService::SystemService(QObject *parent)
     : QObject(parent)
 {
-    m_watcher.addPath(QDir::homePath() + QStringLiteral("/.config/kdeglobals"));
+    const QString configDir = QDir::homePath() + QStringLiteral("/.config");
+    m_watcher.addPath(configDir);
+    m_watcher.addPath(configDir + QStringLiteral("/kdeglobals"));
     connect(&m_watcher, &QFileSystemWatcher::fileChanged, this, &SystemService::reloadTheme);
+    connect(&m_watcher, &QFileSystemWatcher::directoryChanged, this, &SystemService::reloadTheme);
+    m_iconTheme = iconThemeName();
 }
 
 bool SystemService::has(const QString &program) const
@@ -378,10 +383,102 @@ void SystemService::reloadTheme()
 {
     // plasma-apply-colorscheme puede reemplazar kdeglobals de forma atómica:
     // si el watcher perdió la ruta al reescribirse el archivo, se repone.
-    const QString path = QDir::homePath() + QStringLiteral("/.config/kdeglobals");
+    const QString configDir = QDir::homePath() + QStringLiteral("/.config");
+    const QString path = configDir + QStringLiteral("/kdeglobals");
+    if (!m_watcher.directories().contains(configDir))
+        m_watcher.addPath(configDir);
     if (!m_watcher.files().contains(path))
         m_watcher.addPath(path);
+    if (!QFileInfo::exists(path))
+        QTimer::singleShot(50, this, &SystemService::reloadTheme);
     emit darkChanged();
+
+    // La clave del tema de iconos vive en el mismo archivo: notificar si cambió.
+    const QString icons = iconThemeName();
+    if (icons != m_iconTheme) {
+        m_iconTheme = icons;
+        emit iconThemeChanged();
+    }
+}
+
+/* ------------------------ Tema de iconos ------------------------- */
+
+QString SystemService::iconThemeName() const
+{
+    return readKey(configPath(QStringLiteral("kdeglobals")),
+                   QStringLiteral("Icons"), QStringLiteral("Theme"));
+}
+
+QVariantList SystemService::iconThemes()
+{
+    QVariantList result;
+    QSet<QString> seen;
+    // Rutas de búsqueda estándar del XDG Icon Theme Specification.
+    QStringList dirs{QDir::homePath() + QStringLiteral("/.icons")};
+    dirs.append(QStandardPaths::locateAll(QStandardPaths::GenericDataLocation,
+                                          QStringLiteral("icons"),
+                                          QStandardPaths::LocateDirectory));
+    const QStringList dataDirs = QString::fromLocal8Bit(qgetenv("XDG_DATA_DIRS"))
+                                     .split(QLatin1Char(':'), Qt::SkipEmptyParts);
+    for (const QString &dataDir : dataDirs)
+        dirs.append(QDir(dataDir).filePath(QStringLiteral("icons")));
+    dirs << QStringLiteral("/usr/local/share/icons") << QStringLiteral("/usr/share/icons");
+    dirs.removeDuplicates();
+    for (const QString &dirPath : dirs) {
+        const QDir dir(dirPath);
+        if (!dir.exists())
+            continue;
+        const QStringList entries = dir.entryList(QDir::Dirs | QDir::NoDotAndDotDot, QDir::Name);
+        for (const QString &entry : entries) {
+            if (seen.contains(entry))
+                continue;
+            const QString index = dirPath + QLatin1Char('/') + entry + QStringLiteral("/index.theme");
+            const QString display = readKey(index, QStringLiteral("Icon Theme"), QStringLiteral("Name"));
+            if (display.isEmpty())
+                continue; // sin index.theme no es un tema de iconos
+            if (readKey(index, QStringLiteral("Icon Theme"), QStringLiteral("Hidden")).toLower()
+                    == QLatin1String("true"))
+                continue;
+            seen.insert(entry);
+            QVariantMap item;
+            item.insert(QStringLiteral("name"), entry);
+            item.insert(QStringLiteral("display"), display);
+            item.insert(QStringLiteral("comment"),
+                        readKey(index, QStringLiteral("Icon Theme"), QStringLiteral("Comment")));
+            // DylanIcons primero en la lista.
+            item.insert(QStringLiteral("dylanos"), entry.startsWith(QLatin1String("DylanIcons")));
+            result.append(item);
+        }
+    }
+    std::stable_sort(result.begin(), result.end(), [](const QVariant &a, const QVariant &b) {
+        return a.toMap().value("dylanos").toBool() && !b.toMap().value("dylanos").toBool();
+    });
+    return result;
+}
+
+bool SystemService::applyIconTheme(const QString &name)
+{
+    bool known = false;
+    for (const QVariant &entry : iconThemes()) {
+        if (entry.toMap().value(QStringLiteral("name")).toString() == name) {
+            known = true;
+            break;
+        }
+    }
+    if (!known) {
+        m_lastError = QStringLiteral("El tema de iconos no está instalado");
+        emit actionFailed(m_lastError);
+        return false;
+    }
+    if (name == m_iconTheme)
+        return true;
+    if (!writeKey(QStringLiteral("kdeglobals"), QStringLiteral("Icons"), QStringLiteral("Theme"), name)) {
+        emit actionFailed(m_lastError);
+        return false;
+    }
+    m_iconTheme = name;
+    emit iconThemeChanged();
+    return true;
 }
 
 /* -------------------------- Apariencia ---------------------------- */
@@ -1238,8 +1335,6 @@ bool SystemService::setAutoUpdates(bool enabled)
     }
     return true;
 }
-
-
 
 
 

@@ -8,6 +8,7 @@
 #include <QTimer>
 #include <QUrl>
 
+#include "services/DylanIcon.h"
 #include "services/ExplorerController.h"
 
 int main(int argc, char *argv[])
@@ -44,6 +45,8 @@ int main(int argc, char *argv[])
     cli.process(app);
 
     QQmlApplicationEngine engine;
+    // Iconos dinámicos: los archivos, carpetas, lugares y unidades se
+    // resuelven contra el icon theme activo (kdeglobals [Icons] Theme).
     const QString startDir = cli.value(start);
     const bool hasStart = cli.isSet(start);
     QObject::connect(
