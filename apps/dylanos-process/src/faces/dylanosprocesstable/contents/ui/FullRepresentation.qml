@@ -22,7 +22,7 @@ import org.dylanos.process.table as Table
 Faces.SensorFace {
     id: root
 
-    Layout.minimumHeight: Kirigami.Units.gridUnit * 10
+    Layout.minimumHeight: Kirigami.Units.gridUnit * 18
     Layout.minimumWidth: Kirigami.Units.gridUnit * 5
     readonly property var config: controller.faceConfiguration
 
@@ -80,46 +80,6 @@ Faces.SensorFace {
             }
         },
 
-        Kirigami.Action {
-            icon.name: showGroup.checkedAction.icon.name
-            text: i18nc("@action %1 is view type", "Show: %1", showGroup.checkedAction.text)
-
-            Kirigami.Action {
-                text: i18nc("@item:inmenu", "Own Processes")
-                checkable: true
-                checked: root.config.userFilterMode == mode
-                icon.name: "view-process-own"
-                property int mode: Table.ProcessSortFilterModel.ViewOwn
-                ActionGroup.group: showGroup
-            }
-
-            Kirigami.Action {
-                text: i18nc("@item:inmenu", "User Processes")
-                checkable: true
-                checked: root.config.userFilterMode == mode
-                icon.name: "view-process-users"
-                property int mode: Table.ProcessSortFilterModel.ViewUser
-                ActionGroup.group: showGroup
-            }
-
-            Kirigami.Action {
-                text: i18nc("@item:inmenu", "System Processes")
-                checkable: true
-                checked: root.config.userFilterMode == mode
-                icon.name: "view-process-system"
-                property int mode: Table.ProcessSortFilterModel.ViewSystem
-                ActionGroup.group: showGroup
-            }
-
-            Kirigami.Action {
-                text: i18nc("@item:inmenu", "All Processes")
-                checkable: true
-                checked: root.config.userFilterMode == mode
-                icon.name: "view-process-all"
-                property int mode: Table.ProcessSortFilterModel.ViewAll
-                ActionGroup.group: showGroup
-            }
-        },
 
         Kirigami.Action {
             id: configureColumnsAction
@@ -129,42 +89,223 @@ Faces.SensorFace {
         }
     ]
 
-    ActionGroup { id: showGroup; onTriggered: root.config.userFilterMode = action.mode }
+    contentItem: ColumnLayout {
+        id: processPage
+        spacing: Kirigami.Units.largeSpacing
 
-    contentItem: ProcessTableView {
-        id: table
+        Rectangle {
+            id: activityHeader
+            Layout.fillWidth: true
+            Layout.preferredHeight: 112
+            radius: 18
+            color: Qt.rgba(Kirigami.Theme.backgroundColor.r,
+                           Kirigami.Theme.backgroundColor.g,
+                           Kirigami.Theme.backgroundColor.b, 0.78)
+            border.width: 1
+            border.color: Qt.rgba(Kirigami.Theme.highlightColor.r,
+                                  Kirigami.Theme.highlightColor.g,
+                                  Kirigami.Theme.highlightColor.b, 0.30)
+            clip: true
 
-        flatList: root.config.viewMode === 0
-        viewMode: root.config.userFilterMode
-        onViewModeChanged: root.config.userFilterMode = viewMode
+            Rectangle {
+                anchors.left: parent.left
+                anchors.top: parent.top
+                anchors.bottom: parent.bottom
+                width: 5
+                radius: 2
+                gradient: Gradient {
+                    GradientStop { position: 0.0; color: Kirigami.Theme.highlightColor }
+                    GradientStop { position: 1.0; color: Qt.rgba(Kirigami.Theme.highlightColor.r,
+                                                                  Kirigami.Theme.highlightColor.g,
+                                                                  Kirigami.Theme.highlightColor.b, 0.22) }
+                }
+            }
 
-        columnWidths: root.config.columnWidths
-        onColumnWidthsChanged: root.config.columnWidths = columnWidths
-        sortName: root.config.sortColumn
-        onSortNameChanged: root.config.sortColumn = sortName
-        sortOrder: root.config.sortDirection
-        onSortOrderChanged: root.config.sortDirection = sortOrder
+            RowLayout {
+                anchors.fill: parent
+                anchors.leftMargin: Kirigami.Units.largeSpacing * 1.5
+                anchors.rightMargin: Kirigami.Units.largeSpacing * 1.5
+                spacing: Kirigami.Units.largeSpacing
 
-        onContextMenuRequested: (index, position) => {
-            contextMenu.index = index;
-            contextMenu.popup(null, position.x, position.y)
+                Rectangle {
+                    Layout.preferredWidth: 48
+                    Layout.preferredHeight: 48
+                    radius: 15
+                    color: Qt.rgba(Kirigami.Theme.highlightColor.r,
+                                   Kirigami.Theme.highlightColor.g,
+                                   Kirigami.Theme.highlightColor.b, 0.14)
+                    border.width: 1
+                    border.color: Qt.rgba(Kirigami.Theme.highlightColor.r,
+                                          Kirigami.Theme.highlightColor.g,
+                                          Kirigami.Theme.highlightColor.b, 0.22)
+
+                    Kirigami.Icon {
+                        anchors.centerIn: parent
+                        width: 25
+                        height: 25
+                        source: "view-process-system"
+                        color: Kirigami.Theme.highlightColor
+                    }
+                }
+
+                ColumnLayout {
+                    Layout.fillWidth: true
+                    spacing: Kirigami.Units.smallSpacing / 2
+
+                    Kirigami.Heading {
+                        Layout.fillWidth: true
+                        level: 2
+                        text: i18nc("@title:section", "Process activity")
+                        elide: Text.ElideRight
+                    }
+
+                    Label {
+                        Layout.fillWidth: true
+                        text: i18nc("@info", "Find resource-heavy tasks and manage them safely.")
+                        color: Kirigami.Theme.disabledTextColor
+                        elide: Text.ElideRight
+                    }
+                }
+
+                Rectangle {
+                    Layout.alignment: Qt.AlignVCenter
+                    visible: processPage.width >= Kirigami.Units.gridUnit * 32
+                    radius: height / 2
+                    implicitWidth: liveStatus.implicitWidth + Kirigami.Units.largeSpacing * 1.5
+                    implicitHeight: 32
+                    color: Qt.rgba(Kirigami.Theme.highlightColor.r,
+                                   Kirigami.Theme.highlightColor.g,
+                                   Kirigami.Theme.highlightColor.b, 0.12)
+                    border.width: 1
+                    border.color: Qt.rgba(Kirigami.Theme.highlightColor.r,
+                                          Kirigami.Theme.highlightColor.g,
+                                          Kirigami.Theme.highlightColor.b, 0.24)
+
+                    RowLayout {
+                        id: liveStatus
+                        anchors.centerIn: parent
+                        spacing: Kirigami.Units.smallSpacing
+
+                        Rectangle {
+                            Layout.preferredWidth: 7
+                            Layout.preferredHeight: 7
+                            radius: width / 2
+                            color: Kirigami.Theme.highlightColor
+                        }
+
+                        Label {
+                            text: i18nc("@info:status", "LIVE")
+                            font.bold: true
+                            font.pixelSize: 11
+                            color: Kirigami.Theme.textColor
+                        }
+                    }
+                }
+            }
         }
 
-        onHeaderContextMenuRequested: (column, columnId, position) => {
-            headerContextMenu.columnId = columnId;
-            headerContextMenu.popup(null, position)
+        Rectangle {
+            Layout.fillWidth: true
+            Layout.preferredHeight: 48
+            radius: 14
+            color: Qt.rgba(Kirigami.Theme.backgroundColor.r,
+                           Kirigami.Theme.backgroundColor.g,
+                           Kirigami.Theme.backgroundColor.b, 0.52)
+            border.width: 1
+            border.color: Qt.rgba(Kirigami.Theme.textColor.r,
+                                  Kirigami.Theme.textColor.g,
+                                  Kirigami.Theme.textColor.b, 0.08)
+
+            RowLayout {
+                anchors.fill: parent
+                anchors.leftMargin: Kirigami.Units.smallSpacing
+                anchors.rightMargin: Kirigami.Units.smallSpacing
+                spacing: Kirigami.Units.smallSpacing
+
+                Label {
+                    Layout.leftMargin: Kirigami.Units.smallSpacing
+                    text: i18nc("@label", "VIEW")
+                    font.bold: true
+                    font.pixelSize: 10
+                    color: Kirigami.Theme.disabledTextColor
+                }
+
+                Repeater {
+                    model: [
+                        { label: i18nc("@action:button", "Mine"), icon: "view-process-own", mode: Table.ProcessSortFilterModel.ViewOwn },
+                        { label: i18nc("@action:button", "Users"), icon: "view-process-users", mode: Table.ProcessSortFilterModel.ViewUser },
+                        { label: i18nc("@action:button", "System"), icon: "view-process-system", mode: Table.ProcessSortFilterModel.ViewSystem },
+                        { label: i18nc("@action:button", "All"), icon: "view-process-all", mode: Table.ProcessSortFilterModel.ViewAll }
+                    ]
+
+                    delegate: ToolButton {
+                        required property var modelData
+                        Layout.fillWidth: true
+                        Layout.fillHeight: true
+                        checkable: true
+                        checked: root.config.userFilterMode === modelData.mode
+                        text: modelData.label
+                        icon.name: modelData.icon
+                        display: root.width < Kirigami.Units.gridUnit * 28
+                                 ? AbstractButton.TextOnly
+                                 : AbstractButton.TextBesideIcon
+                        onClicked: root.config.userFilterMode = modelData.mode
+                        background: Rectangle {
+                            radius: 10
+                            color: parent.checked
+                                   ? Qt.rgba(Kirigami.Theme.highlightColor.r,
+                                             Kirigami.Theme.highlightColor.g,
+                                             Kirigami.Theme.highlightColor.b, 0.16)
+                                   : "transparent"
+                            border.width: parent.checked ? 1 : 0
+                            border.color: Qt.rgba(Kirigami.Theme.highlightColor.r,
+                                                  Kirigami.Theme.highlightColor.g,
+                                                  Kirigami.Theme.highlightColor.b, 0.28)
+                        }
+                    }
+                }
+
+                Item { Layout.fillWidth: true; Layout.maximumWidth: Kirigami.Units.smallSpacing }
+            }
         }
 
-        enabledColumns: columnDialog.visibleColumns
-        columnDisplay: columnDialog.columnDisplay
+        ProcessTableView {
+            id: table
+            Layout.fillWidth: true
+            Layout.fillHeight: true
 
-        Keys.onPressed: event => {
-            if (event.matches(StandardKey.Delete)) {
-                processHelper.sendSignalToSelection(Process.ProcessController.TerminateSignal);
-                event.accepted = true;
-            } else if ((event.modifiers & Qt.ShiftModifier) && (event.key == Qt.Key_Delete)) {
-                processHelper.sendSignalToSelection(Process.ProcessController.KillSignal);
-                event.accepted = true;
+            flatList: root.config.viewMode === 0
+            viewMode: root.config.userFilterMode
+            onViewModeChanged: root.config.userFilterMode = viewMode
+
+            columnWidths: root.config.columnWidths
+            onColumnWidthsChanged: root.config.columnWidths = columnWidths
+            sortName: root.config.sortColumn
+            onSortNameChanged: root.config.sortColumn = sortName
+            sortOrder: root.config.sortDirection
+            onSortOrderChanged: root.config.sortDirection = sortOrder
+
+            onContextMenuRequested: (index, position) => {
+                contextMenu.index = index;
+                contextMenu.popup(null, position.x, position.y)
+            }
+
+            onHeaderContextMenuRequested: (column, columnId, position) => {
+                headerContextMenu.columnId = columnId;
+                headerContextMenu.popup(null, position)
+            }
+
+            enabledColumns: columnDialog.visibleColumns
+            columnDisplay: columnDialog.columnDisplay
+
+            Keys.onPressed: event => {
+                if (event.matches(StandardKey.Delete)) {
+                    processHelper.sendSignalToSelection(Process.ProcessController.TerminateSignal);
+                    event.accepted = true;
+                } else if ((event.modifiers & Qt.ShiftModifier) && (event.key == Qt.Key_Delete)) {
+                    processHelper.sendSignalToSelection(Process.ProcessController.KillSignal);
+                    event.accepted = true;
+                }
             }
         }
     }

@@ -6,6 +6,10 @@ DylanOS Process es la adaptación de identidad de Plasma System Monitor 6.3.6. C
 
 Las acciones de finalizar proceso solicitan confirmación siempre. La preferencia upstream para omitir el diálogo se deshabilitó en esta compilación. Las señales se envían mediante `ProcessController` de KDE y los permisos siguen siendo los del usuario de la sesión; la aplicación no eleva privilegios.
 
+## Interfaz DylanOS
+
+La página de procesos usa una cabecera translúcida con acento Crimson y filtros visibles para procesos propios, de usuario, del sistema o todos. La tabla, sensores, búsqueda, selección y señales siguen usando los modelos reales de KSysGuard; las acciones de finalizar conservan siempre su diálogo de confirmación. El acabado de cristal es una superficie semitransparente compatible con las variantes de color de DylanOS, no un efecto de blur que dependa de la composición del escritorio.
+
 ## Integración y compilación
 
 El paquete runtime `plasma-systemmonitor` permanece instalado en DylanOS para aportar `ksystemstats`, libksysguard y los módulos de ejecución. Este fork produce el binario separado `dylanos-process` y el desktop ID `org.dylanos.process`; no sobrescribe `/usr/bin/plasma-systemmonitor` ni sus archivos de paquete.
