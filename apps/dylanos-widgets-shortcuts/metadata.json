@@ -1,0 +1,22 @@
+{
+    "KPackageStructure": "Plasma/Applet",
+    "KPlugin": {
+        "Authors": [
+            {
+                "Name": "DylanOS Team"
+            }
+        ],
+        "Category": "Productivity",
+        "Description": "DylanOS Widgets: Accesos",
+        "Description[es]": "DylanOS Widgets: Accesos",
+        "Icon": "system-run",
+        "Id": "com.dylanos.widgets.shortcuts",
+        "Name": "DylanOS Accesos",
+        "Name[es]": "Accesos DylanOS",
+        "ServiceTypes": [
+            "Plasma/Applet"
+        ],
+        "Version": "1.0.0"
+    },
+    "X-Plasma-API-Minimum-Version": "6.0"
+}

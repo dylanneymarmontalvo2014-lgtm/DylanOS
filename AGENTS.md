@@ -93,6 +93,33 @@ técnica viva: `docs/architecture.md`. Este archivo es el índice operativo de r
 - `apps/com.dylanos.dock/`, `apps/com.dylanos.activeapp/`, `apps/com.dylanos.search/`,
   `apps/dylanos-control-center/` — Plasmoids (dock alternativo, nombre de app activa,
   lupa que lanza Spotlight, centro de control con bandeja).
+- `apps/dylanos-widgets-clock/`, `apps/dylanos-widgets-calendar/`,
+  `apps/dylanos-widgets-weather/`, `apps/dylanos-widgets-battery/`,
+  `apps/dylanos-widgets-resources/`, `apps/dylanos-widgets-network/`,
+  `apps/dylanos-widgets-notes/`, `apps/dylanos-widgets-media/`,
+  `apps/dylanos-widgets-calculator/`, `apps/dylanos-widgets-shortcuts/`,
+  `apps/dylanos-widgets-photos/`, `apps/dylanos-widgets-screenshot/`,
+  `apps/dylanos-widgets-clipboard/`, `apps/dylanos-widgets-todo/`,
+  `apps/dylanos-widgets-worldclock/`, `apps/dylanos-widgets-pomodoro/`,
+  `apps/dylanos-widgets-disk/`, `apps/dylanos-widgets-updates/`,
+  `apps/dylanos-widgets-info/`, `apps/dylanos-widgets-nextevent/`
+  — **DylanOS Widgets**: los 20 plasmoides del escritorio
+  (`com.dylanos.widgets.*`). Reloj, Calendario y Clima son los tres del layout
+  inicial. Cada uno es autocontenido y lleva su copia de
+  `apps/dylanos-widgets-lib/` (tokens, datos, calculadora, `WidgetCard`,
+  `WidgetHeader`, `WidgetShell`, `WidgetMeter`); `test_widgets.py` exige que las
+  copias no diverjan y que ningún widget declare colores fuera de los tokens. El
+  layout por defecto NO se crea desde `layout.js`: lo aplica una sola vez
+  `scripts/dylanos-widget-layout` en sistema instalado (en live no pone nada).
+  `apps/dylanos-widgets-lib/` — librería común (JS `pragma library`, mismo patrón
+  que `PomodoroClock.js`; un singleton QML exigiría import path real).
+  `apps/dylanos-widgets/` — **Galería de Widgets** (`dylanos-widgets`), app QML
+  frameless con el catálogo de 20 widgets y su contrato de datos.
+  `scripts/new-widget.py` genera el andamiaje y `--sync` reinstala la librería en
+  todos los paquetes.
+  Límites declarados en el widget, nunca datos simulados: Clima sin proveedor -
+  Portapapeles sin historial (xclip va en el perfil) y Próximo evento leyendo un
+  `.ics` local (la imagen no trae calendario de sistema).
 - `apps/dylanos-explorer/` — **DylanOS Explorer**: KIO real (KDirLister, KFilePlacesModel,
   FileUndoManager, OpenUrlJob) + operaciones reales en FileOperations (crear archivo y
   carpeta, renombrar, copiar/mover con progreso, papelera/restore/vaciar). Tests reales

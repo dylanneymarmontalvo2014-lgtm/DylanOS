@@ -1,0 +1,215 @@
+#!/usr/bin/env python3
+"""Aplica el layout inicial de DylanOS Widgets una sola vez por usuario.
+
+Regla crítica del encargo: la sesión Live (USB, sin instalar) no debe mostrar
+NINGÚN widget; solo un sistema instalado en disco, en el primer inicio de
+sesión de un usuario real, recibe los tres widgets por defecto.
+
+Por qué no basta con el layout de Plasma
+----------------------------------------
+`.../layouts/org.kde.plasma.desktop-layout.js` se ejecuta tanto en la sesión
+Live como en la instalada cuando el perfil es nuevo, y el squashfs es el
+mismo en ambos casos. Un marcador en /usr/share tampoco distingue: viaja en
+la imagen. Por eso el layout NO se toca (sigue sin añadir widgets, con su
+test intacto) y la decisión se toma aquí, en tiempo de sesión:
+
+  1. ¿Estamos en el medio live? (misma detección que el instalador:
+     /run/live/medium o /lib/live/mount/medium) → salir sin hacer nada.
+  2. ¿Este usuario ya recibió el layout? → salir (nunca se re-aplica).
+  3. ¿El escritorio ya tiene widgets de estos tipos? → marcar y salir.
+
+El script se invoca desde el autostart de sesión con
+`--apply-widget-layout --headless` a través de dylanos-configuration.
+
+Salida: 0 si no había nada que hacer o si se aplicó; 2 si el shell de Plasma
+no respondió (para que el autostart pueda reintentar en el siguiente login
+sin marcar el layout como aplicado).
+"""
+import argparse
+import json
+import os
+from pathlib import Path
+import subprocess
+import sys
+
+# Mismo criterio que installer/dylanos-installer/backend/server.py: es donde
+# live-boot expone el medio de instalación. El instalador purga live-boot del
+# sistema destino, así que una instalación en disco nunca presenta estas rutas.
+LIVE_MEDIUM_MOUNTPOINTS = (
+    Path("/run/live/medium"),
+    Path("/lib/live/mount/medium"),
+)
+
+# Tipos de applet que forman el layout por defecto, en orden de creación.
+DEFAULT_LAYOUT = (
+    ("com.dylanos.widgets.clock", "small"),
+    ("com.dylanos.widgets.calendar", "small"),
+    ("com.dylanos.widgets.weather", "medium-wide"),
+)
+
+# Dimensiones en celdas por clase de tamaño. Espejo de WidgetMetrics.cells de
+# apps/dylanos-widgets-lib; el test de contrato comprueba que no divergen.
+SIZE_CELLS = {
+    "small": (1, 1),
+    "medium-wide": (2, 1),
+    "medium-tall": (1, 2),
+    "large": (2, 2),
+    "extra-large": (4, 2),
+}
+
+MIN_CELL = 120
+MAX_CELL = 190
+DEFAULT_CELL = 140
+
+
+def is_live_session(probe=None):
+    """True si la sesión arrancó desde el medio live.
+
+    `probe` permite inyectar un comprobador en los tests sin tocar el sistema
+    de archivos real.
+    """
+    check = probe if probe is not None else Path.is_dir
+    return any(check(str(mount)) for mount in LIVE_MEDIUM_MOUNTPOINTS)
+
+
+def cell_size(screen_height):
+    """Lado de celda, idéntico a WidgetMetrics.cellFor()."""
+    try:
+        raw = round(int(screen_height) / 6)
+    except (TypeError, ValueError):
+        return DEFAULT_CELL
+    if raw <= 0:
+        return DEFAULT_CELL
+    return max(MIN_CELL, min(MAX_CELL, raw))
+
+
+def layout_geometry(screen_height):
+    """Geometría del layout por defecto: (tipo, x, y, w, h) por widget.
+
+    Fila superior: Reloj y Calendario, dos cuadrados contiguos.
+    Fila inferior: Clima, con ancho exactamente 2x celda y alto 1x celda,
+    alineado con el borde izquierdo del Reloj.
+    """
+    cell = cell_size(screen_height)
+    margin = round(cell / 3)
+    gap = margin
+    positions = []
+    x = margin
+    for widget_type, size_class in DEFAULT_LAYOUT[:2]:
+        cols, rows = SIZE_CELLS[size_class]
+        positions.append((widget_type, x, margin, cols * cell, rows * cell))
+        x += cols * cell + gap
+    widget_type, size_class = DEFAULT_LAYOUT[2]
+    cols, rows = SIZE_CELLS[size_class]
+    positions.append((widget_type, margin, margin * 2 + cell,
+                      cols * cell, rows * cell))
+    return positions
+
+
+def build_script(screen_height):
+    """Script JavaScript que Plasma evalúa vía org.kde.PlasmaShell."""
+    rects = layout_geometry(screen_height)
+    parts = ["var d=desktops(); if (d.length === 0) { print('sin escritorio'); }",
+             "for (var i = 0; i < d.length; i++) {",
+             "  var desk = d[i];"]
+    for widget_type, x, y, w, h in rects:
+        parts.append(
+            "  if (desk.widgets('%s').length === 0) "
+            "desk.addWidget('%s', %d, %d, %d, %d);"
+            % (widget_type, widget_type, x, y, w, h)
+        )
+    parts.append("}")
+    return "\n".join(parts)
+
+
+def state_dir():
+    base = os.environ.get("XDG_STATE_HOME")
+    if base:
+        return Path(base) / "dylanos" / "widgets"
+    return Path.home() / ".local" / "state" / "dylanos" / "widgets"
+
+
+def marker_path():
+    return state_dir() / "layout-applied.json"
+
+
+def has_marker():
+    return marker_path().is_file()
+
+
+def write_marker(screen_height):
+    target = marker_path()
+    target.parent.mkdir(parents=True, exist_ok=True)
+    target.write_text(json.dumps({
+        "version": 1,
+        "screenHeight": int(screen_height),
+        "widgets": [name for name, _ in DEFAULT_LAYOUT],
+    }, indent=2) + "\n", encoding="utf-8")
+
+
+def evaluate_in_plasma(script, timeout=10):
+    """Envía el script al shell de Plasma por DBus.
+
+    Se usa `qdbus6` porque es el binario que el perfil base instala
+    (qdbus-qt6) y el que ya emplea el Centro de Control.
+    """
+    import shutil
+
+    binary = shutil.which("qdbus6") or shutil.which("qdbus")
+    if not binary:
+        return False, "qdbus6 no está disponible"
+    try:
+        result = subprocess.run(
+            [binary, "org.kde.plasmashell", "/PlasmaShell",
+             "org.kde.PlasmaShell.evaluateScript", script],
+            capture_output=True, text=True, timeout=timeout,
+        )
+    except subprocess.TimeoutExpired:
+        return False, "plasmashell no respondió"
+    if result.returncode != 0:
+        return False, (result.stderr or result.stdout).strip() or "DBus falló"
+    return True, result.stdout.strip()
+
+
+def main(argv=None):
+    parser = argparse.ArgumentParser(
+        description="Aplica el layout inicial de DylanOS Widgets.")
+    parser.add_argument("--apply", action="store_true",
+                        help="Aplicar el layout si procede.")
+    parser.add_argument("--print-layout", action="store_true",
+                        help="Imprimir la geometría calculada como JSON y salir.")
+    parser.add_argument("--screen-height", type=int, default=None,
+                        help="Alto de pantalla para el cálculo (QA).")
+    args = parser.parse_args(argv)
+
+    height = args.screen_height if args.screen_height else 800
+
+    if args.print_layout:
+        print(json.dumps([{"type": t, "x": x, "y": y, "w": w, "h": h}
+                          for t, x, y, w, h in layout_geometry(height)]))
+        return 0
+
+    if not args.apply:
+        parser.error("se requiere --apply o --print-layout")
+
+    if is_live_session():
+        print("Sesión live: no se añaden widgets.", file=sys.stderr)
+        return 0
+
+    if has_marker():
+        print("El layout ya se aplicó a este usuario; nada que hacer.",
+              file=sys.stderr)
+        return 0
+
+    ok, output = evaluate_in_plasma(build_script(height))
+    if not ok:
+        print("No se pudo aplicar el layout: %s" % output, file=sys.stderr)
+        return 2
+
+    write_marker(height)
+    print("Layout inicial de DylanOS Widgets aplicado.", file=sys.stderr)
+    return 0
+
+
+if __name__ == "__main__":
+    sys.exit(main())

@@ -1,0 +1,22 @@
+{
+    "KPackageStructure": "Plasma/Applet",
+    "KPlugin": {
+        "Authors": [
+            {
+                "Name": "DylanOS Team"
+            }
+        ],
+        "Category": "Graphics",
+        "Description": "DylanOS Widgets: Fotos",
+        "Description[es]": "DylanOS Widgets: Fotos",
+        "Icon": "image-x-generic",
+        "Id": "com.dylanos.widgets.photos",
+        "Name": "DylanOS Fotos",
+        "Name[es]": "Fotos DylanOS",
+        "ServiceTypes": [
+            "Plasma/Applet"
+        ],
+        "Version": "1.0.0"
+    },
+    "X-Plasma-API-Minimum-Version": "6.0"
+}

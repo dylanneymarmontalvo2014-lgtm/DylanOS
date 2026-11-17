@@ -157,7 +157,10 @@ class TestDylanOSConfiguration(unittest.TestCase):
             # El navegador oficial suma su entrada al conjunto canónico del menú.
             browser = root / "usr/share/applications/org.dylanos.browser.desktop"
             self.assertTrue(browser.is_file())
-            self.assertEqual(len(list((root / "usr/share/applications").glob("org.dylanos.*.desktop"))), 11)
+            # 11 entradas canónicas + la galería DylanOS Widgets (app nativa).
+            entries = sorted(p.name for p in (root / "usr/share/applications").glob("org.dylanos.*.desktop"))
+            self.assertEqual(len(entries), 12, entries)
+            self.assertIn("org.dylanos.widgets.desktop", entries)
 
     def test_version_single_source_pre_beta_1_1_0(self):
         """La versión vive en CMake (DYLANOS_RELEASE) y os-release; sin copias."""

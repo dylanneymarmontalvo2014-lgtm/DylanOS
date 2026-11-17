@@ -1,0 +1,22 @@
+{
+    "KPackageStructure": "Plasma/Applet",
+    "KPlugin": {
+        "Authors": [
+            {
+                "Name": "DylanOS Team"
+            }
+        ],
+        "Category": "System",
+        "Description": "DylanOS Widgets: Actualizaciones",
+        "Description[es]": "DylanOS Widgets: Actualizaciones",
+        "Icon": "system-software-update",
+        "Id": "com.dylanos.widgets.updates",
+        "Name": "DylanOS Actualizaciones",
+        "Name[es]": "Actualizaciones DylanOS",
+        "ServiceTypes": [
+            "Plasma/Applet"
+        ],
+        "Version": "1.0.0"
+    },
+    "X-Plasma-API-Minimum-Version": "6.0"
+}

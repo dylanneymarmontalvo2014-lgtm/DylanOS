@@ -1,0 +1,22 @@
+{
+    "KPackageStructure": "Plasma/Applet",
+    "KPlugin": {
+        "Authors": [
+            {
+                "Name": "DylanOS Team"
+            }
+        ],
+        "Category": "Multimedia",
+        "Description": "DylanOS Widgets: Reproductor",
+        "Description[es]": "DylanOS Widgets: Reproductor",
+        "Icon": "multimedia-player",
+        "Id": "com.dylanos.widgets.media",
+        "Name": "DylanOS Reproductor",
+        "Name[es]": "Reproductor DylanOS",
+        "ServiceTypes": [
+            "Plasma/Applet"
+        ],
+        "Version": "1.0.0"
+    },
+    "X-Plasma-API-Minimum-Version": "6.0"
+}

@@ -1,0 +1,22 @@
+{
+    "KPackageStructure": "Plasma/Applet",
+    "KPlugin": {
+        "Authors": [
+            {
+                "Name": "DylanOS Team"
+            }
+        ],
+        "Category": "Productivity",
+        "Description": "DylanOS Widgets: Pomodoro",
+        "Description[es]": "DylanOS Widgets: Pomodoro",
+        "Icon": "preferences-system-time",
+        "Id": "com.dylanos.widgets.pomodoro",
+        "Name": "DylanOS Pomodoro",
+        "Name[es]": "Pomodoro DylanOS",
+        "ServiceTypes": [
+            "Plasma/Applet"
+        ],
+        "Version": "1.0.0"
+    },
+    "X-Plasma-API-Minimum-Version": "6.0"
+}

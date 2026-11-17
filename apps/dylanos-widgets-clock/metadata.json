@@ -1,0 +1,22 @@
+{
+    "KPackageStructure": "Plasma/Applet",
+    "KPlugin": {
+        "Authors": [
+            {
+                "Name": "DylanOS Team"
+            }
+        ],
+        "Category": "Date and Time",
+        "Description": "DylanOS Widgets clock: real system time and date",
+        "Description[es]": "Reloj de DylanOS Widgets: hora y fecha reales del sistema",
+        "Icon": "preferences-system-time",
+        "Id": "com.dylanos.widgets.clock",
+        "Name": "DylanOS Clock",
+        "Name[es]": "Reloj DylanOS",
+        "ServiceTypes": [
+            "Plasma/Applet"
+        ],
+        "Version": "1.0.0"
+    },
+    "X-Plasma-API-Minimum-Version": "6.0"
+}

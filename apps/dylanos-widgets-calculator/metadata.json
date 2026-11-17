@@ -1,0 +1,22 @@
+{
+    "KPackageStructure": "Plasma/Applet",
+    "KPlugin": {
+        "Authors": [
+            {
+                "Name": "DylanOS Team"
+            }
+        ],
+        "Category": "Productivity",
+        "Description": "DylanOS Widgets: Calculadora",
+        "Description[es]": "DylanOS Widgets: Calculadora",
+        "Icon": "accessories-calculator",
+        "Id": "com.dylanos.widgets.calculator",
+        "Name": "DylanOS Calculadora",
+        "Name[es]": "Calculadora DylanOS",
+        "ServiceTypes": [
+            "Plasma/Applet"
+        ],
+        "Version": "1.0.0"
+    },
+    "X-Plasma-API-Minimum-Version": "6.0"
+}

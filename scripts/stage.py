@@ -65,6 +65,7 @@ def stage(destination, installer_dist=None, version=None):
         ("branding/logo.png", "/usr/share/icons/hicolor/512x512/apps/distributor-logo-dylanos.png"),
         ("branding/icons/dylanos-store.png", "/usr/share/icons/hicolor/512x512/apps/dylanos-store.png"),
         ("branding/icons/dylanos-process.svg", "/usr/share/icons/hicolor/scalable/apps/dylanos-process.svg"),
+        ("apps/dylanos-widgets/assets/org.dylanos.widgets.svg", "/usr/share/icons/hicolor/scalable/apps/org.dylanos.widgets.svg"),
         ("apps/dylanos-process/org.dylanos.process.metainfo.xml", "/usr/share/metainfo/org.dylanos.process.metainfo.xml"),
         ("branding/wallpapers/dylanos-default.png", "/usr/share/wallpapers/DylanOS/dylanos-default.png"),
         ("branding/wallpapers/DylanOS-Dark.png", "/usr/share/wallpapers/DylanOS/DylanOS-Dark.png"),
@@ -92,6 +93,31 @@ def stage(destination, installer_dist=None, version=None):
         ("apps/com.dylanos.dock", "/usr/share/plasma/plasmoids/com.dylanos.dock"),
         ("apps/com.dylanos.search", "/usr/share/plasma/plasmoids/com.dylanos.search"),
         ("apps/dylanos-control-center", "/usr/share/plasma/plasmoids/com.dylanos.controlcenter"),
+        # DylanOS Widgets: los plasmoides del escritorio y su librería QML
+        # compartida. El layout por defecto NO se crea aquí: depende de si la
+        # sesión es live o instalada y lo decide scripts/dylanos-widget-layout
+        # en el primer inicio de sesión de cada usuario.
+        ("apps/dylanos-widgets-clock", "/usr/share/plasma/plasmoids/com.dylanos.widgets.clock"),
+        ("apps/dylanos-widgets-calendar", "/usr/share/plasma/plasmoids/com.dylanos.widgets.calendar"),
+        ("apps/dylanos-widgets-weather", "/usr/share/plasma/plasmoids/com.dylanos.widgets.weather"),
+        ("apps/dylanos-widgets-battery", "/usr/share/plasma/plasmoids/com.dylanos.widgets.battery"),
+        ("apps/dylanos-widgets-resources", "/usr/share/plasma/plasmoids/com.dylanos.widgets.resources"),
+        ("apps/dylanos-widgets-network", "/usr/share/plasma/plasmoids/com.dylanos.widgets.network"),
+        ("apps/dylanos-widgets-notes", "/usr/share/plasma/plasmoids/com.dylanos.widgets.notes"),
+        ("apps/dylanos-widgets-media", "/usr/share/plasma/plasmoids/com.dylanos.widgets.media"),
+        ("apps/dylanos-widgets-calculator", "/usr/share/plasma/plasmoids/com.dylanos.widgets.calculator"),
+        ("apps/dylanos-widgets-shortcuts", "/usr/share/plasma/plasmoids/com.dylanos.widgets.shortcuts"),
+        ("apps/dylanos-widgets-photos", "/usr/share/plasma/plasmoids/com.dylanos.widgets.photos"),
+        ("apps/dylanos-widgets-screenshot", "/usr/share/plasma/plasmoids/com.dylanos.widgets.screenshot"),
+        ("apps/dylanos-widgets-clipboard", "/usr/share/plasma/plasmoids/com.dylanos.widgets.clipboard"),
+        ("apps/dylanos-widgets-todo", "/usr/share/plasma/plasmoids/com.dylanos.widgets.todo"),
+        ("apps/dylanos-widgets-worldclock", "/usr/share/plasma/plasmoids/com.dylanos.widgets.worldclock"),
+        ("apps/dylanos-widgets-pomodoro", "/usr/share/plasma/plasmoids/com.dylanos.widgets.pomodoro"),
+        ("apps/dylanos-widgets-disk", "/usr/share/plasma/plasmoids/com.dylanos.widgets.disk"),
+        ("apps/dylanos-widgets-updates", "/usr/share/plasma/plasmoids/com.dylanos.widgets.updates"),
+        ("apps/dylanos-widgets-info", "/usr/share/plasma/plasmoids/com.dylanos.widgets.info"),
+        ("apps/dylanos-widgets-nextevent", "/usr/share/plasma/plasmoids/com.dylanos.widgets.nextevent"),
+        ("scripts/dylanos-widget-layout", "/usr/lib/dylanos/dylanos-widget-layout"),
         ("packages/gaming/catalog.json", "/usr/share/dylanos/gaming/catalog.json"),
         ("packages/gaming/profiles", "/usr/share/dylanos/gaming/profiles"),
         ("packages/gaming/overlay", "/usr/share/dylanos/gaming/overlay"),
@@ -273,6 +299,25 @@ exec /usr/bin/python3 /usr/share/dylanos/installer/native/main.py "$@"
           "Comment=Aplica la apariencia visual de DylanOS al iniciar sesión\n"
           "Exec=dylanos-configuration --apply-crimson-glass --headless\n"
           "OnlyShowIn=KDE;\nNoDisplay=true\nX-KDE-autostart-after=panel\n")
+    # DylanOS Widgets: layout inicial solo en sistema instalado. El script
+    # comprueba el medio live (/run/live/medium) y deja la sesión live sin
+    # ningún widget; en disco aplica los tres widgets una única vez por
+    # usuario. Se ejecuta después del panel para que plasmashell ya exista.
+    write("/etc/xdg/autostart/org.dylanos.widgets.desktop",
+          "[Desktop Entry]\nType=Application\nName=DylanOS Widgets\n"
+          "Comment=Añade los widgets por defecto al escritorio instalado\n"
+          "Exec=/usr/bin/python3 /usr/lib/dylanos/dylanos-widget-layout --apply\n"
+          "OnlyShowIn=KDE;\nNoDisplay=true\nX-KDE-autostart-after=panel\n"
+          "X-DylanOS-Installed-Only=true\n")
+    # La galería (dylanos-widgets) es una app nativa instalada por CMake; su
+    # .desktop canónico se conserva tal cual. Este write es solo el respaldo
+    # idempotente previo al build, igual que el de Configuration.
+    write("/usr/share/applications/org.dylanos.widgets.desktop",
+          "[Desktop Entry]\nType=Application\nName=DylanOS Widgets\n"
+          "GenericName=Galería de widgets\nComment=Galería de widgets del escritorio DylanOS\n"
+          "Exec=dylanos-widgets\nTryExec=dylanos-widgets\nIcon=org.dylanos.widgets\n"
+          "Terminal=false\nStartupNotify=true\nStartupWMClass=org.dylanos.widgets\n"
+          "Categories=Utility;\n")
     # Iconos propios de la app (existen tras compilarla: los genera CMake y el
     # script de preparación de recursos; se instalan solo si están presentes).
     if (ROOT / "apps/dylanos-configuration/assets/dylanos-configuration.png").exists():
