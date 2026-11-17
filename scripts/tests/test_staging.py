@@ -468,7 +468,11 @@ class StagingTest(unittest.TestCase):
             self.assertFalse(stale_kwalletrc.exists(),
                              "KWallet debe seguir disponible como backend para plasma-nm y KIO")
             self.assertEqual((root / "etc/skel/.config/kdeglobals").read_text(), original)
-            self.assertEqual(len(list((root / "usr/share/applications").glob("org.dylanos.*.desktop"))), 11)
+            # 11 entradas originales + la galería DylanOS Widgets, que es una
+            # app nativa más del sistema (no un plasmoid).
+            entries = sorted(p.name for p in (root / "usr/share/applications").glob("org.dylanos.*.desktop"))
+            self.assertEqual(len(entries), 12, entries)
+            self.assertIn("org.dylanos.widgets.desktop", entries)
             self.assertFalse(list(root.rglob("*.otf")))
 
     def test_installer_frontend_can_be_staged_from_temporary_dist(self):
@@ -556,6 +560,58 @@ class StagingTest(unittest.TestCase):
             module.stage(root)
             after = {path.relative_to(root): path.read_bytes() for path in required + [autostart]}
             self.assertEqual(after, before)
+
+    def test_widgets_payload_never_ships_a_default_layout(self):
+        """Los widgets llegan al ISO, pero el layout NO viaja en la imagen.
+
+        Si el layout por defecto se escribiera en /etc/skel (o en cualquier
+        ruta compartida), la sesión live —que copia el skel al home— mostraría
+        los tres widgets, incumpliendo la regla crítica del encargo.
+        """
+        with tempfile.TemporaryDirectory() as folder:
+            root = Path(folder)
+            module.stage(root)
+
+            for applet in ("com.dylanos.widgets.clock",
+                           "com.dylanos.widgets.calendar",
+                           "com.dylanos.widgets.weather"):
+                base = root / "usr/share/plasma/plasmoids" / applet
+                self.assertTrue((base / "metadata.json").is_file(), applet)
+                self.assertTrue((base / "contents/ui/main.qml").is_file(), applet)
+                # Librería común vendorizada: el plasmoid es autocontenido.
+                self.assertTrue((base / "contents/ui/lib/WidgetTokens.js").is_file())
+
+            script = root / "usr/lib/dylanos/dylanos-widget-layout"
+            self.assertTrue(script.is_file())
+            self.assertTrue(script.stat().st_mode & 0o111, "el script no es ejecutable")
+
+            autostart = root / "etc/xdg/autostart/org.dylanos.widgets.desktop"
+            self.assertTrue(autostart.is_file())
+            entry = autostart.read_text(encoding="utf-8")
+            self.assertIn("--apply", entry)
+            self.assertIn("OnlyShowIn=KDE;", entry)
+
+            # Ninguna marca de layout en el skel ni en el home live.
+            self.assertFalse((root / "etc/skel/.local/state/dylanos/widgets").exists())
+            self.assertFalse((root / "home/dylan/.local/state/dylanos/widgets").exists())
+
+            # El layout de Plasma sigue sin añadir widgets de escritorio: la
+            # decisión live/instalado es de la sesión, no de la imagen.
+            layout = (root / "usr/share/plasma/look-and-feel/org.dylanos.crimson"
+                             "/contents/layouts/org.kde.plasma.desktop-layout.js").read_text(
+                                 encoding="utf-8")
+            for applet in ("com.dylanos.widgets.clock",
+                           "com.dylanos.widgets.calendar",
+                           "com.dylanos.widgets.weather"):
+                self.assertNotIn(applet, layout,
+                                 "el layout de la imagen no debe crear widgets")
+
+            before = {p.relative_to(root): p.read_bytes()
+                      for p in [autostart, script]}
+            module.stage(root)
+            after = {p.relative_to(root): p.read_bytes()
+                     for p in [autostart, script]}
+            self.assertEqual(after, before, "el staging de widgets no es idempotente")
 
     def test_aurorae_window_buttons_use_shared_sources(self):
         shared = ROOT / "themes/aurorae/shared"

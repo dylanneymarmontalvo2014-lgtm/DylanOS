@@ -19,7 +19,13 @@ la arquitectura **real** del repositorio tras la iteración de ingeniería de 20
    `com.dylanos.search`, `com.dylanos.controlcenter`) y `com.dylanos.dock` como
    dock inferior con zoom suave al pasar el cursor. El layout inicial no añade widgets
    sobre el escritorio; el antiguo `com.dylanos.dashboard` permanece como fuente histórica,
-   pero staging lo elimina de la imagen. El Centro de Control integra notificaciones,
+   pero staging lo elimina de la imagen. **DylanOS Widgets** añade widgets nativos
+   (`com.dylanos.widgets.{clock,calendar,weather}`) solo en sistema instalado: la
+   sesión live queda sin ninguno y, en el primer inicio de sesión de cada usuario,
+   `scripts/dylanos-widget-layout` crea una única vez Reloj y Calendario arriba y
+   Clima debajo a doble ancho. La decisión no puede vivir en `layout.js` (se ejecuta
+   también en live) ni en la imagen (el squashfs es el mismo). Ver [Widgets](widgets.md).
+   El Centro de Control integra notificaciones,
    interruptores y audio con datos locales/de Plasma. Ver [DylanOS Shell](dylanos-shell.md)
    y la [guía de uso](guia-de-uso.md) para disponibilidad y límites.
 4. **Identidad visual**: `branding/` + `themes/` (aurorae, SDDM, Plymouth, GRUB, GTK,

@@ -8,6 +8,7 @@ Este directorio reúne la documentación activa y útil del proyecto DylanOS Cri
 - [optimization.md](optimization.md): estrategia y verificación de optimización del sistema/ISO.
 - [architecture.md](architecture.md): arquitectura y principios del proyecto.
 - [dylanos-shell.md](dylanos-shell.md): dashboard, Control Center y DylanOS Console.
+- [widgets.md](widgets.md): DylanOS Widgets (plasmoides, retícula, live frente a instalado) y su [auditoría](widgets-auditoria.md).
 - [guia-de-uso.md](guia-de-uso.md): catálogo de comandos, apps y widgets, límites conocidos y precauciones del instalador.
 - [apps/workspace/README.md](../apps/workspace/README.md): páginas y datos locales del Workspace.
 - [apps/dylanos-spotlight/README.md](../apps/dylanos-spotlight/README.md): búsqueda real y filtros pendientes.

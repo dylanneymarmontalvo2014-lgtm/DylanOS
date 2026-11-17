@@ -1,0 +1,22 @@
+{
+    "KPackageStructure": "Plasma/Applet",
+    "KPlugin": {
+        "Authors": [
+            {
+                "Name": "DylanOS Team"
+            }
+        ],
+        "Category": "Productivity",
+        "Description": "DylanOS Widgets: Portapapeles",
+        "Description[es]": "DylanOS Widgets: Portapapeles",
+        "Icon": "edit-paste",
+        "Id": "com.dylanos.widgets.clipboard",
+        "Name": "DylanOS Portapapeles",
+        "Name[es]": "Portapapeles DylanOS",
+        "ServiceTypes": [
+            "Plasma/Applet"
+        ],
+        "Version": "1.0.0"
+    },
+    "X-Plasma-API-Minimum-Version": "6.0"
+}

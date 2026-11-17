@@ -1,0 +1,22 @@
+{
+    "KPackageStructure": "Plasma/Applet",
+    "KPlugin": {
+        "Authors": [
+            {
+                "Name": "DylanOS Team"
+            }
+        ],
+        "Category": "Graphics",
+        "Description": "DylanOS Widgets: Captura",
+        "Description[es]": "DylanOS Widgets: Captura",
+        "Icon": "camera-photo",
+        "Id": "com.dylanos.widgets.screenshot",
+        "Name": "DylanOS Captura",
+        "Name[es]": "Captura DylanOS",
+        "ServiceTypes": [
+            "Plasma/Applet"
+        ],
+        "Version": "1.0.0"
+    },
+    "X-Plasma-API-Minimum-Version": "6.0"
+}

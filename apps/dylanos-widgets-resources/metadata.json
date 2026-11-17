@@ -1,0 +1,22 @@
+{
+    "KPackageStructure": "Plasma/Applet",
+    "KPlugin": {
+        "Authors": [
+            {
+                "Name": "DylanOS Team"
+            }
+        ],
+        "Category": "System",
+        "Description": "DylanOS Widgets: Recursos",
+        "Description[es]": "DylanOS Widgets: Recursos",
+        "Icon": "utilities-system-monitor",
+        "Id": "com.dylanos.widgets.resources",
+        "Name": "DylanOS Recursos",
+        "Name[es]": "Recursos DylanOS",
+        "ServiceTypes": [
+            "Plasma/Applet"
+        ],
+        "Version": "1.0.0"
+    },
+    "X-Plasma-API-Minimum-Version": "6.0"
+}

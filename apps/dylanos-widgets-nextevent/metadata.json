@@ -1,0 +1,22 @@
+{
+    "KPackageStructure": "Plasma/Applet",
+    "KPlugin": {
+        "Authors": [
+            {
+                "Name": "DylanOS Team"
+            }
+        ],
+        "Category": "Date",
+        "Description": "DylanOS Widgets: ProximoEvento",
+        "Description[es]": "DylanOS Widgets: ProximoEvento",
+        "Icon": "and Time view-calendar",
+        "Id": "com.dylanos.widgets.nextevent",
+        "Name": "DylanOS ProximoEvento",
+        "Name[es]": "ProximoEvento DylanOS",
+        "ServiceTypes": [
+            "Plasma/Applet"
+        ],
+        "Version": "1.0.0"
+    },
+    "X-Plasma-API-Minimum-Version": "6.0"
+}

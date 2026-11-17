@@ -1,0 +1,22 @@
+{
+    "KPackageStructure": "Plasma/Applet",
+    "KPlugin": {
+        "Authors": [
+            {
+                "Name": "DylanOS Team"
+            }
+        ],
+        "Category": "System",
+        "Description": "DylanOS Widgets: Disco",
+        "Description[es]": "DylanOS Widgets: Disco",
+        "Icon": "drive-harddisk",
+        "Id": "com.dylanos.widgets.disk",
+        "Name": "DylanOS Disco",
+        "Name[es]": "Disco DylanOS",
+        "ServiceTypes": [
+            "Plasma/Applet"
+        ],
+        "Version": "1.0.0"
+    },
+    "X-Plasma-API-Minimum-Version": "6.0"
+}

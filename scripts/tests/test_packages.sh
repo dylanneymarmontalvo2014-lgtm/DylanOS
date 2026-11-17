@@ -120,6 +120,13 @@ assert_contains_line "Explorer tiene el módulo QML QtQuick.Shapes en runtime" \
     "$default_pkgs" "qml6-module-qtquick-shapes"
 assert_contains_line "El shell tiene Plasma5Support en runtime" \
     "$default_pkgs" "qml6-module-org-kde-plasma-plasma5support"
+# DylanOS Widgets: Fotos necesita FolderListModel y el Portapapeles lee con xclip
+# en la sesión X11 del ISO. Sin ellos esos dos widgets mostrarían su estado
+# explícito de «falta backend» en lugar de funcionar.
+assert_contains_line "Widgets Fotos tiene FolderListModel en runtime" \
+    "$default_pkgs" "qml6-module-qt-labs-folderlistmodel"
+assert_contains_line "Widgets Portapapeles tiene xclip en runtime" \
+    "$default_pkgs" "xclip"
 assert_contains_line "Neofetch conserva ImageMagick para el logo de Kitty" \
     "$default_pkgs" "imagemagick"
 assert_eq "default ya no contiene dolphin" "no" \

@@ -1,0 +1,22 @@
+{
+    "KPackageStructure": "Plasma/Applet",
+    "KPlugin": {
+        "Authors": [
+            {
+                "Name": "DylanOS Team"
+            }
+        ],
+        "Category": "Weather",
+        "Description": "DylanOS Widgets weather: condition and short forecast from the Plasma provider",
+        "Description[es]": "Clima de DylanOS Widgets: condición y pronóstico corto del proveedor de Plasma",
+        "Icon": "weather-few-clouds",
+        "Id": "com.dylanos.widgets.weather",
+        "Name": "DylanOS Weather",
+        "Name[es]": "Clima DylanOS",
+        "ServiceTypes": [
+            "Plasma/Applet"
+        ],
+        "Version": "1.0.0"
+    },
+    "X-Plasma-API-Minimum-Version": "6.0"
+}

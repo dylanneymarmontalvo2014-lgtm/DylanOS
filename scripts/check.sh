@@ -57,4 +57,31 @@ else
     echo 'PySide6/psutil ausentes: no se ejecutó QA QML. Instala las dependencias para verificar la interfaz.' >&2
     exit 1
 fi
+# DylanOS Widgets: la galería es una app Qt como las demás; se carga de verdad
+# (no solo se parsea) porque los errores de referencia QML —"WidgetTheme is
+# not defined"— solo aparecen al instanciar.
+"$PYTHON" - <<'PY'
+import os, sys
+os.environ.setdefault("QT_QPA_PLATFORM", "offscreen")
+os.environ.setdefault("QT_QUICK_BACKEND", "software")
+from PySide6.QtCore import QUrl, QTimer
+from PySide6.QtGui import QGuiApplication
+from PySide6.QtQml import QQmlApplicationEngine
+
+app = QGuiApplication([])
+engine = QQmlApplicationEngine()
+warnings = []
+engine.warnings.connect(lambda ws: warnings.extend(w.toString() for w in ws))
+engine.load(QUrl.fromLocalFile("apps/dylanos-widgets/qml/Main.qml"))
+if not engine.rootObjects():
+    print("La galería de DylanOS Widgets no se pudo instanciar", file=sys.stderr)
+    sys.exit(1)
+QTimer.singleShot(200, app.quit)
+app.exec()
+if warnings:
+    print("Advertencias QML en la galería de widgets:", file=sys.stderr)
+    for w in warnings:
+        print("  " + w, file=sys.stderr)
+    sys.exit(1)
+PY
 echo 'Comprobaciones de código, datos, staging y carga QML: OK'

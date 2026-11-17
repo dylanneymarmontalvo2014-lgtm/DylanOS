@@ -1,0 +1,22 @@
+{
+    "KPackageStructure": "Plasma/Applet",
+    "KPlugin": {
+        "Authors": [
+            {
+                "Name": "DylanOS Team"
+            }
+        ],
+        "Category": "Date and Time",
+        "Description": "DylanOS Widgets calendar: current month with today highlighted",
+        "Description[es]": "Calendario de DylanOS Widgets: mes actual con el día de hoy resaltado",
+        "Icon": "view-calendar",
+        "Id": "com.dylanos.widgets.calendar",
+        "Name": "DylanOS Calendar",
+        "Name[es]": "Calendario DylanOS",
+        "ServiceTypes": [
+            "Plasma/Applet"
+        ],
+        "Version": "1.0.0"
+    },
+    "X-Plasma-API-Minimum-Version": "6.0"
+}

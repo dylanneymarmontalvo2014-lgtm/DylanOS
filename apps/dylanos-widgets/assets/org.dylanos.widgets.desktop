@@ -1,0 +1,16 @@
+[Desktop Entry]
+Type=Application
+Name=DylanOS Widgets
+Name[es]=DylanOS Widgets
+GenericName=Galería de widgets
+GenericName[es]=Galería de widgets
+Comment=Galería de widgets del escritorio DylanOS
+Comment[es]=Galería de widgets del escritorio DylanOS
+Exec=dylanos-widgets
+TryExec=dylanos-widgets
+Icon=org.dylanos.widgets
+Terminal=false
+StartupNotify=true
+StartupWMClass=org.dylanos.widgets
+Categories=Utility;
+Keywords=widget;escritorio;galeria;desktop;
