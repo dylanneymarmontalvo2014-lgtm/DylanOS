@@ -148,6 +148,60 @@ class TestDylanOSConfiguration(unittest.TestCase):
         self.assertIn("/usr/bin/plasma-open-settings", stage)
         self.assertIn("/usr/bin/dylanos-configuration", stage)
 
+    def test_systemsettings_redirige_a_dylanos_configuration(self):
+        """El binario systemsettings no puede abrir el centro de KDE.
+
+        Se conserva en la imagen porque históricamente aportaba kcmshell6, y
+        cualquier invocación suya (bandeja, «Configurar escritorio», un KCM con
+        Exec=systemsettings) abría «Configuración del sistema» de KDE en lugar
+        de la configuración de DylanOS.
+        """
+        with tempfile.TemporaryDirectory() as folder:
+            root = Path(folder)
+            fake = root / "usr/bin/systemsettings"
+            fake.parent.mkdir(parents=True)
+            fake.write_text("#!/bin/sh\necho KDE\n", encoding="utf-8")
+            fake.chmod(0o755)
+
+            stage.stage(root)
+
+            wrapper = fake.read_text(encoding="utf-8")
+            self.assertIn("exec /usr/bin/dylanos-configuration", wrapper)
+            self.assertNotIn("echo KDE", wrapper)
+            backup = root / "usr/bin/systemsettings.kde"
+            self.assertTrue(backup.is_file(), "el binario original debe conservarse")
+            self.assertIn("echo KDE", backup.read_text(encoding="utf-8"))
+
+    def test_kcmshell6_no_abre_ventanas_de_kde(self):
+        """kcmshell6 es la puerta por la que seguía apareciendo Configuración de KDE.
+
+        Cada botón que abre un módulo lanzaba un proceso aparte con su propio
+        marco de KDE. El wrapper debe traducir el módulo a una página de DylanOS
+        Configuration y no invocar nunca al kcmshell6 real.
+        """
+        with tempfile.TemporaryDirectory() as folder:
+            root = Path(folder)
+            fake = root / "usr/bin/kcmshell6"
+            fake.parent.mkdir(parents=True)
+            fake.write_text("#!/bin/sh\necho KDE_SHELL\n", encoding="utf-8")
+            fake.chmod(0o755)
+
+            stage.stage(root)
+
+            wrapper = fake.read_text(encoding="utf-8")
+            self.assertIn("exec /usr/bin/dylanos-configuration", wrapper)
+            self.assertNotIn("echo KDE_SHELL", wrapper)
+            # El binario original se conserva aparte para depuración.
+            self.assertTrue((root / "usr/bin/kcmshell6.kde").is_file())
+            # Todo módulo mapeado apunta a una página que existe de verdad.
+            import re as _re
+            main = (APP / "qml/Main.qml").read_text(encoding="utf-8")
+            paginas = set(_re.findall(r'\{ id: "([a-z-]+)"', main))
+            destinos = set(_re.findall(r"page=([a-z-]+) ;;", wrapper))
+            self.assertTrue(destinos, "el wrapper debe mapear módulos a páginas")
+            for destino in destinos:
+                self.assertIn(destino, paginas, f"la página {destino} no existe en Main.qml")
+
     def test_entrada_de_escritorio(self):
         entry = (APP / "assets/org.dylanos.configuration.desktop").read_text()
         self.assertIn("Name=DylanOS Configuration", entry)
