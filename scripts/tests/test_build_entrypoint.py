@@ -36,8 +36,13 @@ class BuildEntrypointTest(unittest.TestCase):
 
     def test_build_exits_after_privileged_phase_returns(self):
         build = (ROOT / "scripts/build.sh").read_text(encoding="utf-8")
-        launch = '    sudo unshare --mount --propagation private bash "$0" --inside \\\n        "--jobs=$BUILD_JOBS" "--installer-dist=$INSTALLER_TMP/dist" \\\n        "--browser-artifact=$BROWSER_ARTIFACT" "--version=$VERSION" "$@"\n'
+        launch = '    sudo unshare --mount --propagation private bash "$0" --inside \\\n        "--jobs=$BUILD_JOBS" "--installer-dist=$INSTALLER_TMP/dist" \\\n        "--version=$VERSION" "${BROWSER_ARGS[@]}" "$@"\n'
         self.assertIn(launch + "    exit $?\nfi\n", build)
+        # El argumento del navegador solo se propaga cuando hay payload
+        # verificado: sin él, BROWSER_ARGS queda vacío y el chroot se construye
+        # sin DylanOS Browser.
+        self.assertIn('BROWSER_ARGS=()', build)
+        self.assertIn('BROWSER_ARGS=("--browser-artifact=$BROWSER_ARTIFACT")', build)
 
     def test_browser_artifact_option_is_resolved_before_preflight(self):
         build = (ROOT / "scripts/build.sh").read_text(encoding="utf-8")

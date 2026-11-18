@@ -30,26 +30,29 @@ class StagingTest(unittest.TestCase):
             module.stage(root)
 
             self.assertEqual(user_mimeapps.read_bytes(), original)
-            for relative in (
-                "usr/share/applications/org.dylanos.browser.desktop",
-                "usr/share/icons/hicolor/scalable/apps/dylanos-browser.svg",
-            ):
-                self.assertTrue((root / relative).is_file(), relative)
+            # Sin payload verificado no se instala un .desktop que no abre nada.
+            self.assertFalse(
+                (root / "usr/share/applications/org.dylanos.browser.desktop").exists()
+            )
+            # Firefox ESR es el navegador predeterminado del sistema.
+            self.assertFalse(
+                (root / "usr/share/applications/firefox-esr.desktop").exists()
+            )
             for relative in (
                 "etc/skel/.config/mimeapps.list",
                 "usr/share/applications/mimeapps.list",
             ):
                 mimeapps = (root / relative).read_text(encoding="utf-8")
                 self.assertIn(
-                    "text/html=org.dylanos.browser.desktop;", mimeapps
+                    "text/html=firefox-esr.desktop;", mimeapps
                 )
                 self.assertIn(
-                    "x-scheme-handler/http=org.dylanos.browser.desktop;", mimeapps
+                    "x-scheme-handler/http=firefox-esr.desktop;", mimeapps
                 )
                 self.assertIn(
-                    "x-scheme-handler/https=org.dylanos.browser.desktop;", mimeapps
+                    "x-scheme-handler/https=firefox-esr.desktop;", mimeapps
                 )
-                self.assertNotIn("firefox-esr.desktop", mimeapps)
+                self.assertNotIn("org.dylanos.browser.desktop", mimeapps)
 
     def test_about_command_uses_the_maintainers_file(self):
         with tempfile.TemporaryDirectory() as folder:
@@ -468,10 +471,12 @@ class StagingTest(unittest.TestCase):
             self.assertFalse(stale_kwalletrc.exists(),
                              "KWallet debe seguir disponible como backend para plasma-nm y KIO")
             self.assertEqual((root / "etc/skel/.config/kdeglobals").read_text(), original)
-            # 11 entradas originales + la galería DylanOS Widgets, que es una
-            # app nativa más del sistema (no un plasmoid).
+            # 10 entradas originales + la galería DylanOS Widgets, que es una
+            # app nativa más del sistema (no un plasmoid). El navegador propio
+            # no suma entrada mientras no exista su payload empaquetado.
             entries = sorted(p.name for p in (root / "usr/share/applications").glob("org.dylanos.*.desktop"))
-            self.assertEqual(len(entries), 12, entries)
+            self.assertEqual(len(entries), 11, entries)
+            self.assertNotIn("org.dylanos.browser.desktop", entries)
             self.assertIn("org.dylanos.widgets.desktop", entries)
             self.assertFalse(list(root.rglob("*.otf")))
 
@@ -674,6 +679,63 @@ class StagingTest(unittest.TestCase):
             ids = {node.get("id") for node in tree.iter()}
             for suffix in ("center", "top", "bottom", "left", "right", "topleft", "topright", "bottomleft", "bottomright"):
                 self.assertIn("decoration-" + suffix, ids)
+
+    def test_staged_payload_is_readable_by_every_user(self):
+        """Nada del payload puede quedar en 0600.
+
+        Un main.qml del dock con modo 0600 llegó al ISO y Plasma respondió
+        «Permission denied» al cargar el applet: el panel se quedaba sin dock y
+        sin apps. El checkout puede tener archivos así (un editor con umask
+        restrictivo los deja en 0600) y `shutil.copy2` conservaba el modo, de
+        modo que el defecto volvía a colarse en cada build.
+        """
+        with tempfile.TemporaryDirectory() as folder:
+            root = Path(folder)
+            module.stage(root)
+
+            for relative in (
+                "usr/share/plasma/plasmoids/com.dylanos.dock/contents/ui/main.qml",
+                "usr/share/plasma/plasmoids/com.dylanos.widgets.shortcuts/contents/ui/main.qml",
+                "usr/share/dylanos/workspace/backend.py",
+            ):
+                entry = root / relative
+                self.assertTrue(entry.exists(), relative)
+                mode = entry.stat().st_mode & 0o777
+                self.assertTrue(
+                    mode & 0o004,
+                    f"{relative} quedó con modo {oct(mode)}: el usuario no puede leerlo",
+                )
+
+            # Ningún archivo staged del payload DylanOS puede quedar ilegible.
+            for tree in ("usr/share/plasma", "usr/share/dylanos", "usr/lib/dylanos"):
+                base = root / tree
+                if not base.is_dir():
+                    continue
+                for entry in base.rglob("*"):
+                    if entry.is_symlink() or not entry.is_file():
+                        continue
+                    mode = entry.stat().st_mode & 0o777
+                    self.assertTrue(
+                        mode & 0o004,
+                        f"{entry.relative_to(root)} quedó con modo {oct(mode)}",
+                    )
+
+    def test_staging_repairs_permissions_left_by_an_old_chroot(self):
+        """`build.sh --resume` debe corregir un chroot con archivos ilegibles."""
+        with tempfile.TemporaryDirectory() as folder:
+            root = Path(folder)
+            stale = root / "usr/share/plasma/plasmoids/com.dylanos.dock/contents/ui/main.qml"
+            stale.parent.mkdir(parents=True)
+            stale.write_text("// resto de un build anterior\n", encoding="utf-8")
+            stale.chmod(0o600)
+
+            module.stage(root)
+
+            mode = stale.stat().st_mode & 0o777
+            self.assertTrue(
+                mode & 0o004,
+                f"el staging no reparó los permisos heredados: modo {oct(mode)}",
+            )
 
 
 if __name__ == "__main__":

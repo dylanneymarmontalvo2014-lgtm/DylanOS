@@ -56,13 +56,16 @@ class AppCenterUiTest(unittest.TestCase):
         app.processEvents()
         return app, model, engine, engine.rootObjects()[0]
 
-    def test_app_center_opens_as_fullscreen_overlay(self):
+    def test_app_center_opens_as_a_normal_window_with_chrome(self):
+        # Antes la app se forzaba a FullScreen sobre una ventana frameless y sin
+        # ningún control: ocupaba todo el escritorio sin forma visible de
+        # cerrarla. Ahora abre como ventana normal con semáforos integrados.
         _app, _model, _engine, window = self.load_window()
-        self.assertEqual(window.visibility(), QWindow.FullScreen)
+        self.assertNotEqual(window.visibility(), QWindow.FullScreen)
         self.assertTrue(window.flags() & Qt.FramelessWindowHint)
         window.close()
 
-    def test_app_center_has_no_window_chrome_actions(self):
+    def test_app_center_exposes_real_window_controls(self):
         _app, _model, _engine, window = self.load_window()
         names = set()
         for item in [window, *window.findChildren(QObject)]:
@@ -71,11 +74,10 @@ class AppCenterUiTest(unittest.TestCase):
                 name = interface.text(QAccessible.Text.Name)
                 if name:
                     names.add(name)
-        self.assertTrue(names.isdisjoint({
-            'Cerrar App Center',
-            'Minimizar App Center',
-            'Maximizar o restaurar App Center',
-        }))
+        # La ventana no tiene decoración de KWin: sin estos controles no hay
+        # manera de cerrarla, minimizarla ni maximizarla.
+        for control in ('Cerrar', 'Minimizar', 'Maximizar'):
+            self.assertIn(control, names, f"falta el control de ventana {control}")
         window.close()
 
     def test_search_paging_and_resize(self):
@@ -89,7 +91,10 @@ class AppCenterUiTest(unittest.TestCase):
         window = engine.rootObjects()[0]
         window.setVisibility(QWindow.Windowed)
         window.resize(800, 600)
-        app.processEvents()
+        # `columns`/`rows` se recalculan con Qt.callLater (una recarga por cada
+        # cambio de tamaño); hay que dejar que se asienten antes de medir.
+        for _ in range(4):
+            app.processEvents()
         self.assertEqual(window.property('columns'), 4)
         self.assertEqual(window.property('pageSize'), 8)
         self.assertEqual(window.property('totalPages'), 4)

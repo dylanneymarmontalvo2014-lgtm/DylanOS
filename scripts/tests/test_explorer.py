@@ -45,6 +45,24 @@ class ExplorerStructureTest(unittest.TestCase):
         main_qml = (APP / "qml/Main.qml").read_text(encoding="utf-8")
         self.assertIn('Ctrl+Z', main_qml)  # deshacer, como Dolphin
 
+    def test_no_duplicate_rows_on_reload(self):
+        """La vista no puede acumular filas al recargar la misma carpeta.
+
+        KDirLister reemite newItems al reabrir la ruta, al refrescar tras una
+        copia y en cada lote de un protocolo lento. Si el modelo se limitaba a
+        añadir sobre la lista anterior, los archivos aparecían duplicados y el
+        duplicado —sin ruta real en disco— tampoco se podía borrar.
+        """
+        model = (APP / "src/models/FileListModel.cpp").read_text(encoding="utf-8")
+        # Deduplicación explícita por ruta al recibir lotes del lister.
+        self.assertIn("known.contains(e.path)", model)
+        # Y vaciado incondicional antes de pedir un listado nuevo: el lister es
+        # la única fuente de verdad, también al recargar la misma ruta.
+        reload_body = model.split("void FileListModel::reload()", 1)[1]
+        reload_body = reload_body.split("void FileListModel::reloadSearch", 1)[0]
+        self.assertIn("publishEntries({});", reload_body)
+        self.assertNotIn("if (m_lister->url() != url) {", reload_body)
+
     def test_no_web_runtime(self):
         main = (APP / "src/main.cpp").read_text(encoding="utf-8")
         self.assertIn("QQmlApplicationEngine", main)

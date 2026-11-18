@@ -15,6 +15,18 @@ def stage(destination, installer_dist=None, version=None):
         raise ValueError("El destino debe ser un directorio de staging independiente.")
     dest.mkdir(parents=True, exist_ok=True)
 
+    def readable_mode(path):
+        """Modo que debe tener un archivo instalado, sin heredar el del checkout.
+
+        El checkout puede tener archivos en 0600 (por ejemplo tras un editor que
+        escribe con umask restrictivo). Si eso llega al sistema, el usuario dylan
+        no puede leer main.qml del dock y Plasma descarta el applet con
+        «Permission denied»: el dock se queda sin apps. Todo lo instalado debe ser
+        legible por cualquiera; el bit de ejecución solo se conserva si el origen
+        ya lo tenía.
+        """
+        return 0o755 if path.stat().st_mode & 0o111 else 0o644
+
     def copy(source, target):
         # El frontend recién compilado se copia abajo desde installer_dist;
         # no intentes leer un dist viejo o inexistente dentro del checkout.
@@ -31,9 +43,24 @@ def stage(destination, installer_dist=None, version=None):
                 return
         target.parent.mkdir(parents=True, exist_ok=True)
         if source.is_dir():
+            # copy2 conserva el modo del origen: un directorio 0700 en el
+            # checkout dejaría el contenido inaccesible en el sistema.
             shutil.copytree(source, target, dirs_exist_ok=True, ignore=shutil.ignore_patterns("__pycache__", "*.pyc", "tests"))
+            for dirpath, dirnames, filenames in os.walk(target):
+                base = Path(dirpath)
+                base.chmod(0o755)
+                for name in dirnames:
+                    (base / name).chmod(0o755)
+                for name in filenames:
+                    entry = base / name
+                    if entry.is_symlink():
+                        continue
+                    origin = source / entry.relative_to(target)
+                    entry.chmod(readable_mode(origin if origin.exists() else entry))
         else:
-            shutil.copy2(source.resolve() if source.is_symlink() else source, target)
+            real = source.resolve() if source.is_symlink() else source
+            shutil.copy2(real, target)
+            target.chmod(readable_mode(real))
 
     def write(target, text, mode=0o644):
         target = dest / target.lstrip("/")
@@ -144,10 +171,21 @@ def stage(destination, installer_dist=None, version=None):
         ("MAINTAINERS.txt", "/usr/share/dylanos/MAINTAINERS.txt"),
         ("branding/icons/dylanos-console.svg", "/usr/share/icons/hicolor/scalable/apps/dylanos-console.svg"),
         ("branding/icons/dylanos-console.png", "/usr/share/icons/hicolor/512x512/apps/dylanos-console.png"),
-        ("apps/dylanos-browser/debian/org.dylanos.browser.desktop", "/usr/share/applications/org.dylanos.browser.desktop"),
-        ("apps/dylanos-browser/debian/dylanos-browser.svg", "/usr/share/icons/hicolor/scalable/apps/dylanos-browser.svg"),
     ]:
         copy(source, target)
+    # DylanOS Browser es opcional: sin payload empaquetado no existe su
+    # ejecutable, así que su .desktop/icono tampoco se instalan (un lanzador
+    # que no abre nada sería un acceso roto). El navegador predeterminado
+    # pasa a ser Firefox ESR, que sí viene del repositorio de Debian.
+    browser_desktop = ROOT / "apps/dylanos-browser/debian/org.dylanos.browser.desktop"
+    if browser_desktop.is_file() and (dest / "usr/lib/dylanos-browser/dylanos-browser").is_file():
+        copy("apps/dylanos-browser/debian/org.dylanos.browser.desktop",
+             "/usr/share/applications/org.dylanos.browser.desktop")
+        copy("apps/dylanos-browser/debian/dylanos-browser.svg",
+             "/usr/share/icons/hicolor/scalable/apps/dylanos-browser.svg")
+    else:
+        remove("/usr/share/applications/org.dylanos.browser.desktop")
+        remove("/usr/share/icons/hicolor/scalable/apps/dylanos-browser.svg")
     legacy_lf = dest / "usr/share/plasma/lookandfeel/org.dylanos.crimson"
     if legacy_lf.is_dir() and not legacy_lf.is_symlink():
         shutil.rmtree(legacy_lf)
@@ -250,6 +288,22 @@ exec /usr/bin/python3 /usr/share/dylanos/installer/native/main.py "$@"
     # página de archivos en lugar del gestor: es un artefacto obsoleto y no
     # debe volver a aparecer en chroots reutilizados.
     remove("/usr/share/applications/org.dylanos.files.desktop")
+    # "Configuración del sistema" desde CUALQUIER otra aplicación (bandeja de
+    # Plasma, menús contextuales, el panel de control, apps GTK/Qt) terminaba en
+    # el centro de KDE: kde-cli-tools instala /usr/bin/plasma-open-settings, que
+    # ejecuta systemsettings. DylanOS Configuration es el único centro de
+    # configuración, así que ese punto de entrada se sustituye por el nuestro.
+    # Es idempotente: si el chroot ya lo trae, se reescribe igual.
+    if (dest / "usr/bin/plasma-open-settings").exists():
+        write("/usr/bin/plasma-open-settings",
+              "#!/bin/sh\n"
+              "# Sustituye el lanzador de KDE Settings: DylanOS Configuration es el\n"
+              "# único centro de configuración del sistema.\n"
+              "if [ -x /usr/bin/dylanos-configuration ]; then\n"
+              "    exec /usr/bin/dylanos-configuration \"$@\"\n"
+              "fi\n"
+              "exec /usr/bin/systemsettings \"$@\"\n",
+              0o755)
     for key, name, icon, category in [
         ("welcome", "Bienvenido a DylanOS", "distributor-logo-dylanos", "Utility"),
         ("notes", "Notas", "accessories-text-editor", "Utility;TextEditor"),
@@ -364,11 +418,13 @@ fi
     # directamente. El menú del LIVE lo genera scripts/iso.sh (timeout=10).
     # DylanOS Explorer es el gestor de archivos predeterminado del sistema:
     # cualquier "Abrir carpeta" (navegador, GTK, Qt) lo abre él.
+    # El navegador predeterminado es Firefox ESR: DylanOS Browser todavía no
+    # tiene payload verificado, así que su .desktop no se instala.
     write("/usr/share/applications/mimeapps.list",
           "[Default Applications]\n"
-          "text/html=org.dylanos.browser.desktop;\n"
-          "x-scheme-handler/http=org.dylanos.browser.desktop;\n"
-          "x-scheme-handler/https=org.dylanos.browser.desktop;\n"
+          "text/html=firefox-esr.desktop;\n"
+          "x-scheme-handler/http=firefox-esr.desktop;\n"
+          "x-scheme-handler/https=firefox-esr.desktop;\n"
           "inode/directory=org.dylanos.explorer.desktop;\n"
           "x-directory/normal=org.dylanos.explorer.desktop;\n")
     write("/etc/default/grub.d/dylanos.cfg", 'GRUB_DISTRIBUTOR="DylanOS"\nGRUB_THEME="/usr/share/grub/themes/dylanos/theme.txt"\nGRUB_CMDLINE_LINUX_DEFAULT="quiet splash"\nGRUB_TIMEOUT=0\nGRUB_TIMEOUT_STYLE=hidden\n')
@@ -526,6 +582,37 @@ exec /usr/bin/startplasma-x11 "$@"
     # Calamares ya no forma parte de la imagen.
     write("/etc/initramfs-tools/conf.d/dylanos-permissions", "UMASK=0077\n")
     write("/etc/dpkg/origins/dylanos", "Vendor: DylanOS\nVendor-URL: https://github.com/dylanneymarmontalvo2014-lgtm/DylanOS\nParent: Debian\n")
+
+    # Saneado final del payload DylanOS. `copy()` ya normaliza lo que instala en
+    # esta pasada, pero un chroot reutilizado (`build.sh --resume`) puede
+    # conservar archivos de un build anterior con modo 0600 —así llegó al ISO un
+    # main.qml del dock ilegible y Plasma descartó el applet—. Solo se tocan los
+    # árboles que pertenecen a DylanOS: los permisos sensibles del sistema
+    # (/etc/shadow, /etc/sudoers, claves) quedan intactos.
+    for tree in (
+        "usr/share/plasma/plasmoids",
+        "usr/share/plasma/look-and-feel",
+        "usr/share/aurorae/themes",
+        "usr/share/sddm/themes",
+        "usr/share/wallpapers",
+        "usr/share/dylanos",
+        "usr/share/dylanos-app-center",
+        "usr/lib/dylanos",
+        "usr/share/icons/DylanIcons-Crimson",
+    ):
+        base = dest / tree
+        if not base.is_dir():
+            continue
+        for dirpath, dirnames, filenames in os.walk(base):
+            here = Path(dirpath)
+            here.chmod(0o755)
+            for name in dirnames:
+                (here / name).chmod(0o755)
+            for name in filenames:
+                entry = here / name
+                if entry.is_symlink():
+                    continue
+                entry.chmod(0o755 if entry.stat().st_mode & 0o111 else 0o644)
     print(f"Payload DylanOS instalado en {dest}")
 
 

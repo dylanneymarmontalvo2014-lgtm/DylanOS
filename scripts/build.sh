@@ -44,16 +44,25 @@ if [[ ${1:-} != --inside ]]; then
     # shellcheck disable=SC2317 # Invoked by EXIT trap.
     cleanup_installer_tmp() { rm -rf -- "$INSTALLER_TMP"; }
     trap cleanup_installer_tmp EXIT
-    python3 "$ROOT/apps/dylanos-browser/scripts/dylanos/package_payload.py" verify \
-        --payload "$BROWSER_ARTIFACT" || {
-        echo "Genera primero el candidato: cd apps/dylanos-browser && npm run build:linux -- candidate" >&2
-        exit 1
-    }
-    BROWSER_ARTIFACT="$(cd -- "$BROWSER_ARTIFACT" && pwd -P)"
+    # DylanOS Browser es opcional mientras su payload no exista: si no hay
+    # candidato verificado, el ISO se construye sin navegador propio y el
+    # sistema usa firefox-esr como navegador predeterminado.
+    BROWSER_ARGS=()
+    if [[ -d "$BROWSER_ARTIFACT" ]]; then
+        python3 "$ROOT/apps/dylanos-browser/scripts/dylanos/package_payload.py" verify \
+            --payload "$BROWSER_ARTIFACT" || {
+            echo "Genera primero el candidato: cd apps/dylanos-browser && npm run build:linux -- candidate" >&2
+            exit 1
+        }
+        BROWSER_ARTIFACT="$(cd -- "$BROWSER_ARTIFACT" && pwd -P)"
+        BROWSER_ARGS=("--browser-artifact=$BROWSER_ARTIFACT")
+    else
+        echo "DylanOS Browser: sin candidato en $BROWSER_ARTIFACT; se omite su empaquetado." >&2
+    fi
     DYLANOS_INSTALLER_DIST="$INSTALLER_TMP/dist" bash "$ROOT/scripts/build-installer.sh"
     sudo unshare --mount --propagation private bash "$0" --inside \
         "--jobs=$BUILD_JOBS" "--installer-dist=$INSTALLER_TMP/dist" \
-        "--browser-artifact=$BROWSER_ARTIFACT" "--version=$VERSION" "$@"
+        "--version=$VERSION" "${BROWSER_ARGS[@]}" "$@"
     exit $?
 fi
 if [[ ${1:-} == --inside ]]; then
@@ -192,25 +201,29 @@ mkdir -p "$CHROOT/tmp/dylanos-src"
 # DylanOS Browser: el build candidato genera un payload con inventario SHA-256.
 # Debhelper lo vuelve a verificar, construye el paquete dentro de Debian 13 y APT
 # lo instala para que dependencias y base de dpkg queden reproducibles.
-rm -rf -- "$CHROOT/tmp/dylanos-src/dylanos-browser"
-rm -f -- "$CHROOT"/tmp/dylanos-src/dylanos-browser_*_amd64.deb
-mkdir -p "$CHROOT/tmp/dylanos-src/dylanos-browser/scripts/dylanos" \
-    "$CHROOT/tmp/dylanos-src/dylanos-browser/artifacts/phase-2"
-cp -a "$ROOT/apps/dylanos-browser/debian" \
-    "$CHROOT/tmp/dylanos-src/dylanos-browser/"
-cp -a "$ROOT/apps/dylanos-browser/scripts/dylanos/package_payload.py" \
-    "$CHROOT/tmp/dylanos-src/dylanos-browser/scripts/dylanos/"
-cp -a "$BROWSER_ARTIFACT" \
-    "$CHROOT/tmp/dylanos-src/dylanos-browser/artifacts/phase-2/package"
-chroot "$CHROOT" /bin/bash -c \
-    'cd /tmp/dylanos-src/dylanos-browser && dpkg-buildpackage -b -us -uc'
-browser_debs=("$CHROOT"/tmp/dylanos-src/dylanos-browser_*_amd64.deb)
-if [[ ${#browser_debs[@]} -ne 1 || ! -f "${browser_debs[0]}" ]]; then
-    echo "El empaquetado no produjo exactamente un dylanos-browser_*_amd64.deb." >&2
-    exit 1
+# Sin candidato verificado el ISO se construye sin navegador propio y el
+# navegador predeterminado es firefox-esr (paquete de Debian).
+if [[ -d "${BROWSER_ARTIFACT:-}" ]]; then
+    rm -rf -- "$CHROOT/tmp/dylanos-src/dylanos-browser"
+    rm -f -- "$CHROOT"/tmp/dylanos-src/dylanos-browser_*_amd64.deb
+    mkdir -p "$CHROOT/tmp/dylanos-src/dylanos-browser/scripts/dylanos" \
+        "$CHROOT/tmp/dylanos-src/dylanos-browser/artifacts/phase-2"
+    cp -a "$ROOT/apps/dylanos-browser/debian" \
+        "$CHROOT/tmp/dylanos-src/dylanos-browser/"
+    cp -a "$ROOT/apps/dylanos-browser/scripts/dylanos/package_payload.py" \
+        "$CHROOT/tmp/dylanos-src/dylanos-browser/scripts/dylanos/"
+    cp -a "$BROWSER_ARTIFACT" \
+        "$CHROOT/tmp/dylanos-src/dylanos-browser/artifacts/phase-2/package"
+    chroot "$CHROOT" /bin/bash -c \
+        'cd /tmp/dylanos-src/dylanos-browser && dpkg-buildpackage -b -us -uc'
+    browser_debs=("$CHROOT"/tmp/dylanos-src/dylanos-browser_*_amd64.deb)
+    if [[ ${#browser_debs[@]} -ne 1 || ! -f "${browser_debs[0]}" ]]; then
+        echo "El empaquetado no produjo exactamente un dylanos-browser_*_amd64.deb." >&2
+        exit 1
+    fi
+    chroot "$CHROOT" /usr/bin/env DEBIAN_FRONTEND=noninteractive apt-get -y --no-install-recommends install \
+        "/tmp/dylanos-src/$(basename "${browser_debs[0]}")"
 fi
-chroot "$CHROOT" /usr/bin/env DEBIAN_FRONTEND=noninteractive apt-get -y --no-install-recommends install \
-    "/tmp/dylanos-src/$(basename "${browser_debs[0]}")"
 for app in calculator dylanos-app-center; do
     mkdir -p "$CHROOT/tmp/dylanos-src/$app"
     cp -a "$ROOT/apps/$app/CMakeLists.txt" "$ROOT/apps/$app/src" "$ROOT/apps/$app/qml" "$CHROOT/tmp/dylanos-src/$app/"
@@ -278,7 +291,9 @@ apt-get -y purge libflatpak-dev libostree-dev libappstreamqt-dev libpackagekitqt
 # del Explorer (libkf6kio*) y el resto de la pila Plasma permanecen intactos.
 # DylanOS Console (Kitty) es la única terminal: konsole entra a veces como
 # recomendación de kde-plasma-desktop y se retira del sistema final.
-apt-get -y purge dolphin dolphin-plugins kcalc konsole firefox-esr
+# firefox-esr NO se purga: es el navegador predeterminado mientras DylanOS
+# Browser no tenga payload verificado.
+apt-get -y purge dolphin dolphin-plugins kcalc konsole
 # Retira únicamente dependencias automáticas que APT confirme como huérfanas.
 apt-get -y autoremove --purge
 apt-get clean

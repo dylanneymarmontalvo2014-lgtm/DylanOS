@@ -6,12 +6,21 @@ import QtQuick.Window
 ApplicationWindow {
     id: window
     visible: true
+    // Ventana DylanOS: nunca a pantalla completa. Antes se forzaba
+    // `visibility: Window.FullScreen` sobre una ventana frameless y sin ningún
+    // control de ventana, así que el App Center ocupaba todo el escritorio sin
+    // forma visible de cerrarlo, minimizarlo ni moverlo. Ahora es una ventana
+    // normal con semáforos integrados, como la calculadora y el Explorer.
+    width: 1280
+    height: 800
+    minimumWidth: 940
+    minimumHeight: 600
     title: "App Center · DylanOS"
-    flags: Qt.FramelessWindowHint
+    flags: Qt.Window | Qt.FramelessWindowHint
     color: "#0a080c"
-    visibility: Window.FullScreen
     font.family: "Inter"
 
+    readonly property bool maximized: visibility === Window.Maximized || visibility === Window.FullScreen
     readonly property color accent: "#DC143C"
     // Cuadrícula adaptable: en ventanas pequeñas caben menos columnas y filas,
     // así que cada página muestra menos aplicaciones y el resto se desplaza.
@@ -92,7 +101,7 @@ ApplicationWindow {
     // los bordes); un Shortcut de ventana se comería esas teclas antes de que
     // la cuadrícula pudiera navegar.
 
-    // Superficie principal Crimson: overlay de aplicaciones a pantalla completa.
+    // Superficie principal Crimson.
     Rectangle {
         anchors.fill: parent
         gradient: Gradient {
@@ -102,12 +111,42 @@ ApplicationWindow {
             GradientStop { position: 0.65; color: "#14050a" }
             GradientStop { position: 1.0; color: "#080608" }
         }
+    }
 
-        // El fondo se comporta como una superposición: un clic fuera del
-        // contenido cierra el selector de aplicaciones.
-        MouseArea {
-            anchors.fill: parent
-            onClicked: window.close()
+    // Barra de ventana DylanOS. La ventana no tiene decoración de KWin, así que
+    // los semáforos y el arrastre viven aquí: sin ellos la app se quedaba sin
+    // ninguna forma de cerrarse (antes era además FullScreen permanente).
+    Item {
+        id: titleBar
+        anchors { top: parent.top; left: parent.left; right: parent.right }
+        height: 40
+        z: 20
+
+        DragHandler { target: null; onActiveChanged: if (active) window.startSystemMove() }
+
+        Row {
+            anchors.left: parent.left
+            anchors.leftMargin: 18
+            anchors.verticalCenter: parent.verticalCenter
+            spacing: 8
+            Rectangle {
+                width: 12; height: 12; radius: 12
+                color: closeBtn.containsMouse ? "#ff766d" : "#ff5f57"
+                Accessible.name: "Cerrar"; Accessible.role: Accessible.Button
+                MouseArea { id: closeBtn; anchors.fill: parent; hoverEnabled: true; cursorShape: Qt.PointingHandCursor; onClicked: window.close() }
+            }
+            Rectangle {
+                width: 12; height: 12; radius: 12
+                color: minBtn.containsMouse ? "#ffd066" : "#febc2e"
+                Accessible.name: "Minimizar"; Accessible.role: Accessible.Button
+                MouseArea { id: minBtn; anchors.fill: parent; hoverEnabled: true; cursorShape: Qt.PointingHandCursor; onClicked: window.showMinimized() }
+            }
+            Rectangle {
+                width: 12; height: 12; radius: 12
+                color: maxBtn.containsMouse ? "#48dc60" : "#28c840"
+                Accessible.name: "Maximizar"; Accessible.role: Accessible.Button
+                MouseArea { id: maxBtn; anchors.fill: parent; hoverEnabled: true; cursorShape: Qt.PointingHandCursor; onClicked: window.maximized ? window.showNormal() : window.showMaximized() }
+            }
         }
     }
 
@@ -119,7 +158,9 @@ ApplicationWindow {
     Flickable {
         id: scroller
         anchors.fill: parent
-        anchors.topMargin: 24
+        // El contenido empieza bajo la barra de ventana: si no, los semáforos
+        // se dibujarían encima de la cuadrícula y el buscador.
+        anchors.topMargin: titleBar.height + 8
         anchors.bottomMargin: 110
         anchors.leftMargin: Math.max(32, (window.width - 1280) / 2)
         anchors.rightMargin: Math.max(32, (window.width - 1280) / 2)

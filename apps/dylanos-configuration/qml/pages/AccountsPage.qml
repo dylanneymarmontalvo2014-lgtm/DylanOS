@@ -54,7 +54,7 @@ ScrollView {
                 ActionButton {
                     anchors.verticalCenter: parent.verticalCenter
                     text: "Gestionar usuarios"
-                    onClicked: System.openKcm(["kcm_users", "user_manager"])
+                    onClicked: System.openKcm(["kcm_users"])
                 }
             }
         }
@@ -71,7 +71,10 @@ ScrollView {
                 ActionButton {
                     anchors.verticalCenter: parent.verticalCenter
                     text: "Abrir ajustes"
-                    onClicked: System.openKcm(["kcm_sddm", "kcm_login"])
+                    // kcm_sddm y kcm_login no existen en DylanOS (el tema SDDM es
+                    // propio y no se expone un KCM). El módulo real disponible
+                    // para el arranque es el de gestor de sesión de Plasma.
+                    onClicked: System.openKcm(["kcm_smserver", "kcm_splashscreen"])
                 }
             }
             RowItem {
@@ -122,7 +125,11 @@ ScrollView {
             variant: "primary"
             onClicked: {
                 confirmLogout.close()
-                System.launchDetached("qdbus", ["org.kde.ksmserver", "/KSMServer", "logout", "0", "2", "0"])
+                // En Qt 6 el binario es qdbus6; "qdbus" no existe en DylanOS y el
+                // botón de cerrar sesión fallaba sin avisar. Se prueban ambos
+                // nombres para no depender del que instale la imagen.
+                var dbus = System.has("qdbus6") ? "qdbus6" : "qdbus"
+                System.launchDetached(dbus, ["org.kde.ksmserver", "/KSMServer", "logout", "0", "2", "0"])
             }
         }
     }
