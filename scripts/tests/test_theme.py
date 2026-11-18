@@ -16,7 +16,18 @@ class DylanIconsThemeTest(unittest.TestCase):
         self.assertTrue((ICONS_THEME / "index.theme").is_file())
         index_theme = (ICONS_THEME / "index.theme").read_text(encoding="utf-8")
         self.assertIn("Name=DylanIcons — Solid Dark Red", index_theme)
-        self.assertIn("Inherits=ePapirus-Dark", index_theme)
+        self.assertIn("Inherits=", index_theme)
+        # La cadena de herencia solo puede nombrar temas que existan en la imagen.
+        # ePapirus/ePapirus-Dark no los instala papirus-icon-theme (solo aporta
+        # Papirus, Papirus-Dark y Papirus-Light): el primer eslabón roto puede
+        # dejar sin resolver iconos como firefox o vscode.
+        heredados = index_theme.split("Inherits=", 1)[1].splitlines()[0].split(",")
+        self.assertIn("Papirus-Dark", heredados)
+        for inexistente in ("ePapirus-Dark", "ePapirus"):
+            self.assertNotIn(
+                inexistente, heredados,
+                f"{inexistente} no existe en la imagen y rompe la herencia de iconos",
+            )
         self.assertIn("Directories=places/scalable,mimes/scalable,mimes/symbolic,devices/scalable",
                       index_theme)
         self.assertIn("[places/scalable]", index_theme)

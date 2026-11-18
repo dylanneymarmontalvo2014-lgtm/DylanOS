@@ -1,7 +1,7 @@
 [Icon Theme]
 Name=DylanIcons — Solid Dark Red
 Comment=Tema de iconos nativo de DylanOS Crimson: carpetas rojas sólidas y archivos neutros sobre fondo oscuro
-Inherits=ePapirus-Dark,ePapirus,Papirus-Dark,breeze-dark,hicolor
+Inherits=Papirus-Dark,Papirus,breeze-dark,hicolor
 Example=folder
 DisplayDepth=32
 DesktopDefault=48

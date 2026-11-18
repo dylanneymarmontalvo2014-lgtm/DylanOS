@@ -304,6 +304,66 @@ exec /usr/bin/python3 /usr/share/dylanos/installer/native/main.py "$@"
               "fi\n"
               "exec /usr/bin/systemsettings \"$@\"\n",
               0o755)
+    # Mismo problema por la puerta de atrás: el binario systemsettings sigue en la
+    # imagen (aportaba kcmshell6, que ahora viene de libkf6kcmutils-bin) y
+    # cualquier cosa que lo invoque —«Configurar escritorio», la bandeja, el menú
+    # de inicio, un KCM con Exec=systemsettings— abre el centro de KDE. Se
+    # conserva como wrapper hacia DylanOS Configuration para no romper a quien lo
+    # llame por nombre. El binario real queda accesible como systemsettings.kde
+    # solo si hiciera falta depurar.
+    real_settings = dest / "usr/bin/systemsettings"
+    if real_settings.exists() and not real_settings.is_symlink():
+        backup = dest / "usr/bin/systemsettings.kde"
+        if not backup.exists():
+            shutil.copy2(real_settings, backup)
+            backup.chmod(0o755)
+        write("/usr/bin/systemsettings",
+              "#!/bin/sh\n"
+              "# DylanOS Configuration es el único centro de configuración. El centro\n"
+              "# de KDE se conserva en systemsettings.kde solo para depuración.\n"
+              "if [ -x /usr/bin/dylanos-configuration ]; then\n"
+              "    exec /usr/bin/dylanos-configuration \"$@\"\n"
+              "fi\n"
+              "exec /usr/bin/systemsettings.kde \"$@\"\n",
+              0o755)
+    # `kcmshell6` es la puerta por la que seguía apareciendo una ventana de KDE:
+    # cada botón que abre un módulo lanzaba este proceso aparte con su propio
+    # marco de «Configuración del sistema». Se sustituye por un traductor que
+    # convierte el módulo pedido en la página equivalente de DylanOS
+    # Configuration. Los módulos sin equivalente declarado no abren nada de KDE:
+    # avisan y salen, que es preferible a mostrar un panel ajeno.
+    if (dest / "usr/bin/kcmshell6").exists() and not (dest / "usr/bin/kcmshell6.kde").exists():
+        shutil.copy2(dest / "usr/bin/kcmshell6", dest / "usr/bin/kcmshell6.kde")
+        (dest / "usr/bin/kcmshell6.kde").chmod(0o755)
+    write("/usr/bin/kcmshell6",
+          "#!/bin/sh\n"
+          "# Traduce un módulo KCM a la página equivalente de DylanOS Configuration.\n"
+          "# Nunca abre la ventana de Configuración del sistema de KDE.\n"
+          "page=\n"
+          "for arg in \"$@\"; do\n"
+          "    case \"$arg\" in\n"
+          "        kcm_fonts|kcm_colors|kcm_cursortheme|kcm_icons|kcm_desktoptheme|kcm_lookandfeel|kcm_style|kcm_splashscreen) page=personalization ;;\n"
+          "        kcm_kwindecoration|kcm_kwin_effects|kcm_kwin_scripts|kcm_kwinrules|kcm_kwin_virtualdesktops|kcm_kwinxwayland|kcm_behavior|desktopbehavior|kcm_desktopbehavior) page=personalization ;;\n"
+          "        kcm_users|kcm_sddm|kcm_login|kcm_smserver) page=accounts ;;\n"
+          "        kcm_notifications) page=notifications ;;\n"
+          "        kcm_bluetooth|kcm_gamecontroller|kcm_mouse|kcm_touchpad|kcm_touchscreen|kcm_tablet) page=bluetooth ;;\n"
+          "        kcm_networkmanagement|kcm_proxy|kcm_ssl) page=network ;;\n"
+          "        kcm_kscreen|kcm_nightlight|kcm_nightcolor) page=display ;;\n"
+          "        kcm_pulseaudio|kcm_soundtheme) page=sound ;;\n"
+          "        kcm_powerdevilprofilesconfig|kcm_powerdevilglobalconfig|kcm_energyinfo) page=power ;;\n"
+          "        kcm_access|kcm_accessibility) page=accessibility ;;\n"
+          "        kcm_regionandlang|kcm_locale|kcm_keyboard|kcm_keys) page=datetime ;;\n"
+          "        kcm_baloofile|kcm_kded|kcm_autostart|kcm_activities) page=privacy ;;\n"
+          "        *) page= ;;\n"
+          "    esac\n"
+          "    [ -n \"$page\" ] && break\n"
+          "done\n"
+          "if [ -z \"$page\" ]; then\n"
+          "    echo 'Ese ajuste todavía no está integrado en DylanOS Configuration.' >&2\n"
+          "    exit 1\n"
+          "fi\n"
+          "exec /usr/bin/dylanos-configuration --page \"$page\"\n",
+          0o755)
     for key, name, icon, category in [
         ("welcome", "Bienvenido a DylanOS", "distributor-logo-dylanos", "Utility"),
         ("notes", "Notas", "accessories-text-editor", "Utility;TextEditor"),
