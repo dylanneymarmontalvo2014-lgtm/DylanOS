@@ -10,6 +10,7 @@
 #include <KIOWidgets/kdirlister.h>
 
 #include <algorithm>
+#include <utility>
 
 namespace {
 constexpr int kMaxSearchResults = 5000;
@@ -47,13 +48,30 @@ FileListModel::FileListModel(QObject *parent)
     connect(m_lister, &KDirLister::newItems, this, [this](const KFileItemList &items) {
         if (m_path.isEmpty() || !m_search.isEmpty())
             return;
+        // KDirLister puede emitir newItems varias veces para el mismo elemento:
+        // al reabrir la carpeta, al refrescar por cambios en disco o al recibir
+        // lotes de un protocolo lento. Acumular sin comprobar la ruta duplicaba
+        // los archivos en la vista (aparecían copias que no existían en disco y
+        // que por tanto no se podían borrar).
+        QSet<QString> known;
+        known.reserve(m_entries.size() + int(items.size()));
         QVector<Entry> entries = m_entries;
+        for (const Entry &e : std::as_const(m_entries))
+            known.insert(e.path);
+        bool added = false;
         for (const KFileItem &item : items) {
             const Entry e = makeEntry(item);
             if (!m_showHidden && e.hidden)
                 continue;
+            if (known.contains(e.path))
+                continue;
+            known.insert(e.path);
             entries.append(e);
+            added = true;
         }
+        if (!added)
+            return;
+        sortEntries(entries);
         publishEntries(entries);
     });
     connect(m_lister, &KDirLister::completed, this, [this] {
@@ -315,10 +333,16 @@ void FileListModel::reload()
         }
     }
     setErrorKind(QString());
-    if (m_lister->url() != url) {
-        // Cambio de carpeta: vacía de inmediato; el listado llega por lotes.
-        publishEntries({});
-    }
+    // Vaciar SIEMPRE antes de pedir el listado, no solo al cambiar de carpeta.
+    // Al recargar la misma ruta (tras copiar, borrar o un refresco del lister)
+    // las filas anteriores sobrevivían y los lotes de newItems se sumaban a
+    // ellas: el usuario veía archivos duplicados que no existían en disco y,
+    // como el duplicado no tiene ruta real, tampoco había forma de borrarlo.
+    // El lister es la única fuente de verdad: se limpia su caché (clear) para
+    // que openUrl vuelva a emitir los elementos aunque la URL no cambie, y se
+    // vacía el modelo para que no queden filas viejas mientras llegan los lotes.
+    publishEntries({});
+    m_lister->clear();
     m_lister->setShowHiddenFiles(m_showHidden);
     m_lister->openUrl(url);
 }

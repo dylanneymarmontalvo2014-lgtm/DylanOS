@@ -374,7 +374,10 @@ ScrollView {
                     ActionButton {
                         anchors.verticalCenter: parent.verticalCenter
                         text: "Abrir escritorio"
-                        onClicked: System.openKcm(["kcm_behavior", "desktopbehavior", "kcm_desktopbehavior"])
+                        // No existe kcm_behavior/desktopbehavior en Plasma 6; el
+                        // comportamiento de paneles y efectos vive en los KCM de
+                        // KWin, que sí están instalados.
+                        onClicked: System.openKcm(["kcm_kwin_effects", "kcm_kwindecoration"])
                     }
                 }
             }

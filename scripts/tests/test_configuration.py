@@ -101,6 +101,53 @@ class TestDylanOSConfiguration(unittest.TestCase):
             contenido = qml.read_text(encoding="utf-8")
             self.assertNotIn("systemsettings", contenido.lower(), str(qml))
 
+    def test_no_invoca_modulos_kcm_inexistentes(self):
+        """Cada openKcm() debe pedir módulos que DylanOS instala de verdad.
+
+        La UI pedía kcm_sddm, kcm_login, kcm_behavior, kcm_location y
+        user_manager, que no existen en la imagen: esos botones fallaban siempre
+        con «No se encontró el módulo de configuración solicitado».
+        """
+        invalidos = {
+            "kcm_sddm", "kcm_login", "kcm_behavior", "kcm_location",
+            "desktopbehavior", "kcm_desktopbehavior", "kcm_locale", "user_manager",
+        }
+        usados = set()
+        for qml in APP.rglob("*.qml"):
+            contenido = qml.read_text(encoding="utf-8")
+            for llamada in contenido.split("System.openKcm(")[1:]:
+                lista = llamada.split("]", 1)[0]
+                for modulo in lista.replace('"', ' ').replace(',', ' ').split():
+                    if modulo.startswith("kcm_") or modulo in invalidos:
+                        usados.add(modulo)
+                        self.assertNotIn(
+                            modulo, invalidos,
+                            f"{qml.name} pide el módulo inexistente {modulo}",
+                        )
+        self.assertTrue(usados, "la UI debería seguir ofreciendo módulos reales")
+
+    def test_kcmshell6_se_instala_en_la_imagen(self):
+        """Configuration abre sus KCM con kcmshell6, que aporta libkf6kcmutils-bin.
+
+        El ISO enviaba systemsettings pero no ese paquete, así que no existía
+        /usr/bin/kcmshell6 y todas las acciones de configuración fallaban.
+        """
+        packages = (ROOT / "packages/default/packages.list").read_text(encoding="utf-8")
+        lineas = [l.strip() for l in packages.splitlines() if l.strip() and not l.strip().startswith("#")]
+        self.assertIn("libkf6kcmutils-bin", lineas)
+
+    def test_qdbus_usa_el_binario_de_qt6(self):
+        """`qdbus` no existe en Qt 6: el binario es qdbus6 (cerrar sesión fallaba)."""
+        accounts = (APP / "qml/pages/AccountsPage.qml").read_text(encoding="utf-8")
+        self.assertIn('System.has("qdbus6")', accounts)
+        self.assertNotIn('launchDetached("qdbus"', accounts)
+
+    def test_configuracion_del_sistema_no_delega_en_kde(self):
+        """Abrir la configuración del sistema nunca debe mostrar el centro de KDE."""
+        stage = (ROOT / "scripts/stage.py").read_text(encoding="utf-8")
+        self.assertIn("/usr/bin/plasma-open-settings", stage)
+        self.assertIn("/usr/bin/dylanos-configuration", stage)
+
     def test_entrada_de_escritorio(self):
         entry = (APP / "assets/org.dylanos.configuration.desktop").read_text()
         self.assertIn("Name=DylanOS Configuration", entry)
@@ -154,12 +201,13 @@ class TestDylanOSConfiguration(unittest.TestCase):
             for oculta in ocultas:
                 if oculta.exists():
                     self.assertIn("NoDisplay=true", oculta.read_text())
-            # El navegador oficial suma su entrada al conjunto canónico del menú.
+            # Sin payload verificado no se instala el .desktop del navegador:
+            # un lanzador sin binario sería un acceso roto en el menú.
             browser = root / "usr/share/applications/org.dylanos.browser.desktop"
-            self.assertTrue(browser.is_file())
-            # 11 entradas canónicas + la galería DylanOS Widgets (app nativa).
+            self.assertFalse(browser.exists())
+            # 10 entradas base + la galería DylanOS Widgets (app nativa).
             entries = sorted(p.name for p in (root / "usr/share/applications").glob("org.dylanos.*.desktop"))
-            self.assertEqual(len(entries), 12, entries)
+            self.assertEqual(len(entries), 11, entries)
             self.assertIn("org.dylanos.widgets.desktop", entries)
 
     def test_version_single_source_pre_beta_1_1_0(self):

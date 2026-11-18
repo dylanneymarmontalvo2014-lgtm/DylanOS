@@ -137,14 +137,18 @@ assert_eq "default ya no contiene fastfetch" "no" \
     "$(printf '%s' "$default_pkgs" | grep -qx fastfetch && echo si || echo no)"
 assert_eq "default no pide el paquete obsoleto neofetch" "no" \
     "$(printf '%s' "$default_pkgs" | grep -qx neofetch && echo si || echo no)"
-assert_eq "default ya no instala Firefox ESR" "no" \
-    "$(printf '%s' "$default_pkgs" | grep -qx firefox-esr && echo si || echo no)"
-assert_eq "el build purga konsole" "si" \
+assert_contains_line "default instala Firefox ESR como navegador predeterminado" \
+    "$default_pkgs" "firefox-esr"
+assert_eq "el build ya no purga Firefox ESR" "no" \
     "$(grep -q 'purge dolphin dolphin-plugins kcalc konsole firefox-esr' "$ROOT/scripts/build.sh" && echo si || echo no)"
+assert_eq "el build purga konsole" "si" \
+    "$(grep -q 'purge dolphin dolphin-plugins kcalc konsole' "$ROOT/scripts/build.sh" && echo si || echo no)"
 assert_contains_line "build contiene Debhelper para empaquetar Browser" \
     "$(parse_package_list "$ROOT/packages/build/packages.list")" "debhelper"
 assert_eq "DylanOS Browser se empaqueta e instala en el chroot" "si" \
     "$(grep -q 'dpkg-buildpackage' "$ROOT/scripts/build.sh" && grep -q 'dylanos-browser_\*_amd64.deb' "$ROOT/scripts/build.sh" && echo si || echo no)"
+assert_eq "el empaquetado del Browser es opcional sin payload" "si" \
+    "$(grep -q 'if \[\[ -d "${BROWSER_ARTIFACT:-}" \]\]' "$ROOT/scripts/build.sh" && echo si || echo no)"
 assert_eq "APT instala el paquete Browser sin frontend interactivo" "si" \
     "$(grep -A2 'chroot.*apt-get.*install' "$ROOT/scripts/build.sh" | grep -q 'DEBIAN_FRONTEND=noninteractive' && echo si || echo no)"
 assert_contains_line "default instala Plasma System Monitor como backend" "$default_pkgs" "plasma-systemmonitor"
@@ -215,6 +219,11 @@ while IFS= read -r app; do
     fi
     if [ "$app" = dylanos-browser ]; then
         assert_eq "browser se empaqueta en build" "si" "$(grep -q 'dpkg-buildpackage' "$ROOT/scripts/build.sh" && echo si || echo no)"
+        continue
+    fi
+    if [ "$app" = firefox-esr ]; then
+        assert_eq "Firefox ESR está en la lista default" "si" \
+            "$(printf '%s' "$default_pkgs" | grep -qx firefox-esr && echo si || echo no)"
         continue
     fi
     assert_contains_line "default-apps.conf: $app está en la lista default" \

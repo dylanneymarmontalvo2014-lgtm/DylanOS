@@ -94,7 +94,9 @@ ScrollView {
                 ActionButton {
                     anchors.verticalCenter: parent.verticalCenter
                     text: "Abrir formato"
-                    onClicked: System.openKcm(["kcm_regionandlang", "kcm_locale"])
+                    // kcm_locale no existe en Plasma 6: la región, el formato y el
+                    // idioma se gestionan en kcm_regionandlang.
+                    onClicked: System.openKcm(["kcm_regionandlang"])
                 }
             }
         }
@@ -111,7 +113,7 @@ ScrollView {
                 ActionButton {
                     anchors.verticalCenter: parent.verticalCenter
                     text: "Abrir idioma"
-                    onClicked: System.openKcm(["kcm_regionandlang", "kcm_locale"])
+                    onClicked: System.openKcm(["kcm_regionandlang"])
                 }
             }
             RowItem {

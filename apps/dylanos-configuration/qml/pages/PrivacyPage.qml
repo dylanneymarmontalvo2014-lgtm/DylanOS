@@ -79,7 +79,10 @@ ScrollView {
                 ActionButton {
                     anchors.verticalCenter: parent.verticalCenter
                     text: "Abrir ajustes"
-                    onClicked: System.openKcm(["kcm_location", "kcm_energyinfo"])
+                    // kcm_location no se envía en DylanOS (no hay módulo de
+                    // geolocalización instalado); el control real disponible de
+                    // privacidad del escritorio es el de la sesión.
+                    onClicked: System.openKcm(["kcm_smserver"])
                 }
             }
         }

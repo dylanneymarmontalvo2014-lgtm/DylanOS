@@ -14,6 +14,11 @@ sddm
 # La terminal oficial es DylanOS Console (Kitty); konsole no se envía.
 kitty
 systemsettings
+# DylanOS Configuration abre sus controles de KDE con kcmshell6, que NO lo
+# aporta systemsettings: viene del paquete libkf6kcmutils-bin. Sin él, todas
+# las acciones System.openKcm() fallaban con «No hay kcmshell disponible» y la
+# configuración del sistema se quedaba sin efecto.
+libkf6kcmutils-bin
 
 # Instalador propio DylanOS (dylanos-installer)
 parted
@@ -109,8 +114,10 @@ qml6-module-qt-labs-folderlistmodel
 xclip
 qdbus-qt6
 
-# Aplicaciones predeterminadas (espejo de configs/default-apps.conf;
-# DylanOS Browser se empaqueta desde apps/dylanos-browser durante el build)
+# Aplicaciones predeterminadas (espejo de configs/default-apps.conf)
+# El navegador predeterminado es Firefox ESR mientras DylanOS Browser no
+# tenga un payload verificado; build.sh solo empaqueta el Browser si existe.
+firefox-esr
 kate
 vlc
 gwenview

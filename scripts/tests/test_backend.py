@@ -71,7 +71,9 @@ class BackendTest(unittest.TestCase):
             isolated.openApp("invalid")
             self.assertEqual(launch.call_count, 1)
             isolated.action("browser")
-            self.assertEqual(launch.call_args.args[0], ["dylanos-browser"])
+            # Firefox ESR es el navegador predeterminado mientras DylanOS
+            # Browser no tenga payload empaquetado.
+            self.assertEqual(launch.call_args.args[0], ["firefox-esr"])
         self.backend.pauseMonitor(True)
         self.assertFalse(self.backend.timer.isActive())
         self.backend.pauseMonitor(False)

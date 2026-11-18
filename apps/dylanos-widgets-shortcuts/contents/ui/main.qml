@@ -43,7 +43,7 @@ PlasmoidItem {
     function defaults() {
         return [
             { "name": "Explorer", "icon": "system-file-manager", "id": "org.dylanos.explorer.desktop" },
-            { "name": "Navegador", "icon": "web-browser", "id": "org.dylanos.browser.desktop" },
+            { "name": "Navegador", "icon": "web-browser", "id": "firefox-esr.desktop" },
             { "name": "Tienda", "icon": "store", "id": "org.dylanos.store.desktop" },
             { "name": "Terminal", "icon": "utilities-terminal", "id": "org.dylanos.console.desktop" }
         ];
