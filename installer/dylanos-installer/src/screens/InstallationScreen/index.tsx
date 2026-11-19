@@ -1,9 +1,10 @@
-import { useEffect } from "react";
+import { useEffect, useRef, useState } from "react";
 import HeroImage from "@/components/HeroImage";
 import BottomBar from "@/components/BottomBar";
 import { CheckIcon, DownloadIcon, LocationIcon, ClockIcon, KeyboardIcon, HardDriveIcon, UserIcon, MonitorIcon } from "@/components/Icons";
 import { mockInstallationSteps } from "@/data/mockInstallation";
 import { useInstaller } from "@/state/installerState";
+import { usePlan } from "@/state/planState";
 import StatusNotice from "@/components/StatusNotice";
 
 // El POST /api/install lanza la instalación real del backend (particionado,
@@ -16,12 +17,26 @@ interface InstallationScreenProps {
 
 export default function InstallationScreen({ onCancel }: InstallationScreenProps) {
   const { state, dispatch } = useInstaller();
+  const { plan } = usePlan();
+  // El efecto de instalación debe arrancar una sola vez por estado, pero tiene
+  // que enviar el plan vigente: sin esta referencia capturaría el valor del
+  // primer render y aplicaría un plan ya editado.
+  const planRef = useRef(plan);
+  planRef.current = plan;
+  const [timezone, setTimezone] = useState("");
+
+  // La zona horaria se mostraba fija («América/Bogotá»); ahora viene del equipo.
+  useEffect(() => {
+    fetch("/api/system-info")
+      .then(r => r.json())
+      .then(data => { if (data?.timezone) setTimezone(data.timezone); })
+      .catch(() => {});
+  }, []);
 
   useEffect(() => {
     if (state.installationComplete || state.installationStatus !== "running") return;
 
-    let pollInterval: any = null;
-    let fallbackStop: (() => void) | null = null;
+    let pollInterval: ReturnType<typeof setInterval> | null = null;
 
     const startPolling = () => {
       if (pollInterval) return;
@@ -34,7 +49,7 @@ export default function InstallationScreen({ onCancel }: InstallationScreenProps
           .then(status => {
             if (status.status === "error") {
               dispatch({ type: "SET_INSTALLATION_ERROR", error: status.error || "Error desconocido durante la instalación." });
-              clearInterval(pollInterval);
+              if (pollInterval) clearInterval(pollInterval);
               pollInterval = null;
               return;
             }
@@ -45,7 +60,7 @@ export default function InstallationScreen({ onCancel }: InstallationScreenProps
               pkg: status.pkg || status.phaseLabel,
             });
             if (status.complete || status.progress >= 100) {
-              clearInterval(pollInterval);
+              if (pollInterval) clearInterval(pollInterval);
               pollInterval = null;
               dispatch({ type: "SET_INSTALLATION_COMPLETE" });
               setTimeout(() => dispatch({ type: "NEXT_STEP" }), 1200);
@@ -91,6 +106,8 @@ export default function InstallationScreen({ onCancel }: InstallationScreenProps
         language: state.language,
         keyboard: state.keyboard,
         user: state.user,
+        // En modo manual el backend revalida y aplica este plan con parted.
+        plan: state.partitioning.mode === "manual" ? { partitions: planRef.current } : undefined,
       }),
     })
       .then(async res => {
@@ -102,7 +119,6 @@ export default function InstallationScreen({ onCancel }: InstallationScreenProps
 
     return () => {
       if (pollInterval) clearInterval(pollInterval);
-      if (fallbackStop) fallbackStop();
     };
   }, [state.installationComplete, state.installationStatus, dispatch]);
 
@@ -110,8 +126,8 @@ export default function InstallationScreen({ onCancel }: InstallationScreenProps
   const exceptional = state.installationStatus === "cancelled" || state.installationStatus === "error";
 
   const infoItems = [
-    { icon: <LocationIcon size={13} color="#9ca3af" />, label: "Ubicación:", value: "Bogotá, Colombia" },
-    { icon: <ClockIcon size={13} color="#9ca3af" />, label: "Zona horaria:", value: "América/Bogotá" },
+    { icon: <LocationIcon size={13} color="#9ca3af" />, label: "Ubicación:", value: state.user.hostname || "DylanOS" },
+    { icon: <ClockIcon size={13} color="#9ca3af" />, label: "Zona horaria:", value: timezone || "—" },
     { icon: <KeyboardIcon size={13} color="#9ca3af" />, label: "Teclado:", value: state.keyboard.layout },
     { icon: <HardDriveIcon size={13} color="#9ca3af" />, label: "Particionado:", value: `${state.partitioning.mode === "auto" ? "GPT automático" : "Manual"} en ${state.partitioning.disk}` },
     { icon: <UserIcon size={13} color="#9ca3af" />, label: "Usuario:", value: state.user.username || "dylan" },

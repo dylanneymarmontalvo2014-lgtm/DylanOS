@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { InstallerProvider, useInstaller } from "@/state/installerState";
+import { PlanProvider } from "@/state/planState";
 import Sidebar from "@/components/Sidebar";
 import SystemInfo from "@/components/SystemInfo";
 import CancelDialog from "@/components/CancelDialog";
@@ -137,7 +138,9 @@ function InstallerApp() {
 export default function App() {
   return (
     <InstallerProvider>
-      <InstallerApp />
+      <PlanProvider>
+        <InstallerApp />
+      </PlanProvider>
     </InstallerProvider>
   );
 }
