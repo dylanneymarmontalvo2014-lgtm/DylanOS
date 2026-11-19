@@ -1,0 +1,27 @@
+[package]
+name = "dylanos-process-core"
+version = "1.0.0"
+edition = "2021"
+rust-version = "1.75"
+license = "GPL-3.0-only"
+description = "Núcleo de datos reales de DylanOS Process"
+publish = false
+
+[lib]
+name = "dylanos_process_core"
+crate-type = ["staticlib", "rlib"]
+
+[[bin]]
+name = "dylanos-process-probe"
+path = "src/bin/probe.rs"
+
+# Sin dependencias: el ISO no arrastra cadena de suministro ni necesita red
+# para compilar dentro del chroot (`cargo build --offline`).
+[dependencies]
+
+[profile.release]
+opt-level = 3
+lto = "fat"
+codegen-units = 1
+panic = "abort"
+strip = "symbols"

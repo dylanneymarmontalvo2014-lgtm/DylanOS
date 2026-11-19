@@ -260,15 +260,32 @@ chroot "$CHROOT" cmake -S /tmp/dylanos-src/dylanos-store -B /tmp/dylanos-src/dyl
 chroot "$CHROOT" cmake --build /tmp/dylanos-src/dylanos-store/build --parallel "$BUILD_JOBS"
 chroot "$CHROOT" ctest --test-dir /tmp/dylanos-src/dylanos-store/build --output-on-failure
 chroot "$CHROOT" cmake --install /tmp/dylanos-src/dylanos-store/build
-# DylanOS Process mantiene los motores de Plasma System Monitor y los instala
-# en paralelo con identidad propia para no sobrescribir archivos de dpkg.
+# DylanOS Process: monitor de procesos nativo (núcleo Rust + Qt6/QML).
+#
+# El núcleo Rust se compila DENTRO del chroot para que el binario enlace la
+# glibc y las bibliotecas Qt del ISO, no las del host de desarrollo. El crate no
+# tiene dependencias externas, así que `--offline` funciona sin red. rustc y
+# cargo se instalan solo para compilar y se purgan al final, como el resto de
+# las herramientas de build.
 mkdir -p "$CHROOT/tmp/dylanos-src/dylanos-process"
 cp -a "$ROOT/apps/dylanos-process/." "$CHROOT/tmp/dylanos-src/dylanos-process/"
-mkdir -p "$CHROOT/tmp/dylanos-src/dylanos-process/branding/icons"
-rm -f "$CHROOT/tmp/dylanos-src/dylanos-process/branding/icons/dylanos-process.svg"
-cp -a "$ROOT/branding/icons/dylanos-process.svg" "$CHROOT/tmp/dylanos-src/dylanos-process/branding/icons/"
+# El árbol de compilación de Rust del host no entra en el chroot (arquitectura
+# y rutas distintas, y son ~100 MB): se compila desde cero allí.
+rm -rf "$CHROOT/tmp/dylanos-src/dylanos-process/core/target"
+chroot "$CHROOT" /bin/bash -c 'set -euo pipefail
+    apt-get -y install --no-install-recommends rustc cargo
+    cd /tmp/dylanos-src/dylanos-process/core
+    cargo build --release --offline --locked
+'
 chroot "$CHROOT" cmake -S /tmp/dylanos-src/dylanos-process -B /tmp/dylanos-src/dylanos-process/build -GNinja -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX=/usr
-chroot "$CHROOT" cmake --build /tmp/dylanos-src/dylanos-process/build --parallel "$BUILD_JOBS"
+# La interfaz QML son ~20 unidades de compilación grandes: con 4 jobs en un host
+# de 8 GB g++ llega a morir con "internal compiler error: Segmentation fault"
+# (OOM). Se limita este target a 2 jobs; el resto del build conserva BUILD_JOBS.
+chroot "$CHROOT" cmake --build /tmp/dylanos-src/dylanos-process/build --parallel 2
+# Los tests de la interfaz (QtQuickTest, offscreen) corren en el chroot: es el
+# único sitio donde existe la misma pila Qt que verá el usuario.
+chroot "$CHROOT" env QT_QPA_PLATFORM=offscreen QT_QUICK_BACKEND=software \
+    ctest --test-dir /tmp/dylanos-src/dylanos-process/build --output-on-failure
 chroot "$CHROOT" cmake --install /tmp/dylanos-src/dylanos-process/build
 chroot "$CHROOT" /bin/bash <<'CHROOT_SCRIPT'
 set -euo pipefail
@@ -278,6 +295,10 @@ update-initramfs -u -k all
 apt-get -y install --no-install-recommends desktop-file-utils
 update-desktop-database /usr/share/applications
 apt-get -y purge desktop-file-utils
+# rustc y cargo solo se necesitan para compilar el núcleo de DylanOS Process:
+# no se envía una cadena de herramientas de Rust dentro del ISO. El autoremove
+# posterior retira las dependencias que hayan traído.
+apt-get -y purge rustc cargo
 # Los -dev exclusivos de la DylanOS Store no se envían en el ISO.
 apt-get -y purge libflatpak-dev libostree-dev libappstreamqt-dev libpackagekitqt6-dev \
     qcoro-qt6-dev kirigami-addons-dev libkirigami-dev libkf6xmlgui-dev \

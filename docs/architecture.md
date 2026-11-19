@@ -12,7 +12,8 @@ la arquitectura **real** del repositorio tras la iteración de ingeniería de 20
    único del sistema), `dylanos-store` (tienda, fork de Discover con libdiscover real),
    `dylanos-configuration` (centro de configuración único), `dylanos-app-center`,
    `dylanos-calculator`, `dylanos-spotlight`, `dylanos-installer`, `dylanos-process`
-   (monitor real de procesos y recursos) y `dylanos-browser`, fork Gecko/Zen empaquetado
+   (monitor real de procesos y recursos, con núcleo Rust y UI Qt6/QML propia) y
+   `dylanos-browser`, fork Gecko/Zen empaquetado
    como navegador predeterminado a partir de un candidato local verificado.
 3. **Shell del escritorio**: paneles Plasma generados por el layout del look-and-feel
    (`org.dylanos.crimson`) con plasmoids propios (`com.dylanos.activeapp`,
