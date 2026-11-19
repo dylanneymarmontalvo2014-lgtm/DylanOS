@@ -1,129 +1,170 @@
-/*
- * SPDX-FileCopyrightText: 2019 Arjen Hiemstra <ahiemstra@heimr.nl>
- *
- * SPDX-License-Identifier: GPL-2.0-only OR GPL-3.0-only OR LicenseRef-KDE-Accepted-GPL
- */
+// DylanOS Process: monitor de procesos y recursos con datos reales.
+//
+// El núcleo de datos es Rust (../core); aquí solo se expone a QML y se pinta la
+// ventana DylanOS frameless. No hay valores simulados en ninguna capa.
 
-#include <QApplication>
-#include <QCommandLineParser>
-#include <QDBusConnection>
-#include <QDBusConnectionInterface>
+#include "applicationmodel.h"
+#include "iconprovider.h"
+#include "processcontroller.h"
+#include "processmodel.h"
+#include "servicemodel.h"
+
+#include <QDir>
+#include <QGuiApplication>
+#include <QIcon>
+#include <QImage>
 #include <QQmlApplicationEngine>
 #include <QQmlContext>
-#include <QSessionManager>
-#include <QSurfaceFormat>
-#include <QWindow>
+#include <QQuickWindow>
+#include <QTimer>
+#include <QUrl>
+#include <QVariantMap>
 
-#include <KAboutData>
-#include <KCrash>
-#include <KDBusService>
-#include <KLocalizedString>
-#include <KWindowSystem>
+// El módulo QML se compila como plugin ESTÁTICO. Sin registrarlo explícitamente,
+// `import org.dylanos.process` dentro de un componente del propio módulo falla
+// con "plugin not found" en una app sin instalación en disco.
+#include <QtQml/qqmlextensionplugin.h>
+Q_IMPORT_QML_PLUGIN(org_dylanos_processPlugin)
 
-#include "CommandLineArguments.h"
-#include "Configuration.h"
-#include "ToolsModel.h"
+#include <cstdio>
+#include <cstring>
 
-#if KI18N_VERSION >= QT_VERSION_CHECK(6, 8, 0)
-#include <KLocalizedQmlContext>
-#endif
+namespace {
 
-class SessionManager : public QObject
-{
-    Q_OBJECT
-public:
-    explicit SessionManager(QObject *parent);
-
-private:
-    QString m_pageId;
+// Modo QA: `--screenshot ruta.png --page <pestaña> --size 1280x800`.
+//
+// Se resuelve aquí (y no en QML) para que la captura ocurra después del primer
+// refresco real: así la imagen muestra datos del sistema, no ceros.
+struct CliOptions {
+    QString screenshot;
+    QString page = QStringLiteral("processes");
+    QSize size{1280, 800};
+    int delayMs = 1200;
 };
 
-SessionManager::SessionManager(QObject *parent)
-    : QObject(parent)
+CliOptions parseArgs(const QStringList &args)
 {
-    connect(qApp, &QGuiApplication::saveStateRequest, this, [this](QSessionManager &manager) {
-        QString lastPageId = Configuration::globalConfig()->lastPage();
-        if (lastPageId.isEmpty()) {
-            return;
+    CliOptions options;
+    for (int i = 1; i < args.size(); ++i) {
+        const QString &arg = args.at(i);
+        if (arg == QLatin1String("--screenshot") && i + 1 < args.size()) {
+            options.screenshot = args.at(++i);
+        } else if (arg == QLatin1String("--page") && i + 1 < args.size()) {
+            options.page = args.at(++i);
+        } else if (arg == QLatin1String("--size") && i + 1 < args.size()) {
+            const QStringList parts = args.at(++i).split(QLatin1Char('x'));
+            if (parts.size() == 2) {
+                options.size = QSize(parts.at(0).toInt(), parts.at(1).toInt());
+            }
+        } else if (arg == QLatin1String("--delay") && i + 1 < args.size()) {
+            options.delayMs = args.at(++i).toInt();
         }
-        QStringList args;
-        args << qApp->applicationName();
-        args << QStringLiteral("--page-id") << lastPageId;
-        args << QStringLiteral("-session") << manager.sessionId();
-        manager.setRestartCommand(args);
-    });
+    }
+    return options;
 }
 
-int main(int argc, char **argv)
-{
-    auto format = QSurfaceFormat::defaultFormat();
-    format.setOption(QSurfaceFormat::ResetNotification);
-    QSurfaceFormat::setDefaultFormat(format);
+} // namespace
 
-    QApplication app(argc, argv);
-    app.setApplicationName(QStringLiteral("dylanos-process"));
+int main(int argc, char *argv[])
+{
+    QGuiApplication app(argc, argv);
+    app.setApplicationName(QStringLiteral("DylanOS Process"));
+    app.setApplicationVersion(QStringLiteral(DYLANOS_VERSION));
     app.setOrganizationName(QStringLiteral("DylanOS"));
+    // App id Wayland: debe coincidir con el nombre del .desktop sin extensión.
+    app.setDesktopFileName(QStringLiteral("org.dylanos.process"));
     app.setWindowIcon(QIcon::fromTheme(QStringLiteral("dylanos-process")));
 
-    KLocalizedString::setApplicationDomain(QByteArrayLiteral("plasma-systemmonitor"));
+    const CliOptions options = parseArgs(app.arguments());
 
-    KAboutData aboutData{/* componentName */ QStringLiteral("dylanos-process"),
-                         /* displayName */ i18n("DylanOS Process"),
-                         /* version */ PROJECT_VERSION,
-                         /* shortDescription */ i18n("An application for monitoring system resources"),
-                         /* licenseType */ KAboutLicense::GPL,
-                         /* copyrightStatement */ i18n("© 2024 Plasma Development Team"),
-                         /* otherText */ QString{},
-                         /* homePageAddress */ QString{}};
-    aboutData.setDesktopFileName(QStringLiteral("org.dylanos.process"));
-    aboutData.setProgramLogo(app.windowIcon());
+    // Tema de iconos: la app se dibuja con los iconos reales del pack.
+    //
+    // Sin escritorio (QA offscreen, o un arranque fuera de sesión) Qt deja
+    // themeSearchPaths solo en ":/icons" y QIcon::fromTheme no encuentra nada
+    // del sistema. Se añaden las rutas estándar XDG para que el tema activo se
+    // resuelva igual que en una sesión KDE normal.
+    QStringList iconPaths = QIcon::themeSearchPaths();
+    const QStringList systemIconPaths = {
+        QStringLiteral("/usr/share/icons"),
+        QStringLiteral("/usr/local/share/icons"),
+        QDir::homePath() + QStringLiteral("/.local/share/icons"),
+    };
+    for (const QString &path : systemIconPaths) {
+        if (!iconPaths.contains(path)) {
+            iconPaths.append(path);
+        }
+    }
+    QIcon::setThemeSearchPaths(iconPaths);
+    QIcon::setFallbackThemeName(QStringLiteral("hicolor"));
 
-    aboutData.addAuthor(i18n("Arjen Hiemstra"), i18n("Development"), QStringLiteral("ahiemstra@heimr.nl"));
-    aboutData.addAuthor(i18n("Uri Herrera"), i18n("Design"), QStringLiteral("uri_herrera@nxos.org"));
-    aboutData.addAuthor(i18n("Nate Graham"), i18n("Design and Quality Assurance"), QStringLiteral("nate@kde.org"));
-    aboutData.addAuthor(i18n("David Redondo"), i18n("Development"), QStringLiteral("kde@david-redondo.de"));
-    aboutData.addAuthor(i18n("Noah Davis"), i18n("Design and Quality Assurance"), QStringLiteral("noahadvs@gmail.com"));
-    aboutData.addAuthor(i18n("Marco Martin"), i18n("Development"), QStringLiteral("notmart@gmail.com"));
-    aboutData.addAuthor(i18n("David Edmundson"), i18n("Development"), QStringLiteral("david@davidedmundson.co.uk"));
+    // El tema configurado por DylanOS se aplica cuando Qt no deduce ninguno.
+    if (QIcon::themeName().isEmpty()) {
+        for (const char *candidate : {"DylanIcons-Crimson", "breeze", "hicolor"}) {
+            if (QDir(QStringLiteral("/usr/share/icons/") + QLatin1String(candidate)).exists()) {
+                QIcon::setThemeName(QString::fromLatin1(candidate));
+                break;
+            }
+        }
+    }
 
-    aboutData.setTranslator(i18ndc(nullptr, "NAME OF TRANSLATORS", "Your names"), i18ndc(nullptr, "EMAIL OF TRANSLATORS", "Your emails"));
+    ProcessModel processModel;
+    ProcessFilterModel filterModel;
+    filterModel.setSourceModel(&processModel);
+    ApplicationModel applicationModel;
+    applicationModel.setSource(&processModel);
+    ServiceModel serviceModel;
+    ProcessController controller;
 
-    aboutData.setBugAddress("https://github.com/dylanneymarmontalvo2014-lgtm/DylanOS/issues");
-    KAboutData::setApplicationData(aboutData);
-
-    KCrash::initialize();
-
-    KDBusService service(KDBusService::Unique);
-
-    auto parser = std::make_shared<QCommandLineParser>();
-    aboutData.setupCommandLine(parser.get());
-    parser->addOption({QStringLiteral("page-id"), QStringLiteral("Start with the specified page ID shown"), QStringLiteral("page-id")});
-    parser->addOption({QStringLiteral("page-name"), QStringLiteral("Start with the specified page name shown"), QStringLiteral("page-name")});
-    parser->process(app);
-    aboutData.processCommandLine(parser.get());
-    CommandLineArguments::setCommandLineParser(parser);
-
-    auto sessionManager = new SessionManager(&app);
+    // Primer refresco antes de crear la ventana: la tabla nunca aparece vacía.
+    processModel.refresh();
 
     QQmlApplicationEngine engine;
-#if KI18N_VERSION < QT_VERSION_CHECK(6, 8, 0)
-    engine.rootContext()->setContextObject(new KLocalizedContext(&engine));
-#else
-    engine.rootContext()->setContextObject(new KLocalizedQmlContext(&engine));
-#endif
-    engine.loadFromModule("org.dylanos.process", "Main");
+    // Iconos reales del tema activo para la interfaz (image://icon/<nombre>).
+    engine.addImageProvider(QStringLiteral("icon"), new IconImageProvider);
+    engine.rootContext()->setContextProperty(QStringLiteral("processModel"), &processModel);
+    engine.rootContext()->setContextProperty(QStringLiteral("processFilter"), &filterModel);
+    engine.rootContext()->setContextProperty(QStringLiteral("applicationModel"), &applicationModel);
+    engine.rootContext()->setContextProperty(QStringLiteral("serviceModel"), &serviceModel);
+    engine.rootContext()->setContextProperty(QStringLiteral("processController"), &controller);
+    engine.rootContext()->setContextProperty(QStringLiteral("initialPage"), options.page);
+    engine.rootContext()->setContextProperty(QStringLiteral("screenshotPath"), options.screenshot);
+    engine.rootContext()->setContextProperty(QStringLiteral("screenshotSize"), options.size);
+    engine.rootContext()->setContextProperty(QStringLiteral("screenshotDelay"), options.delayMs);
 
-    QObject::connect(&service, &KDBusService::activateRequested, &engine, []() {
-        if (!qApp->topLevelWindows().isEmpty()) {
-            QWindow *win = qApp->topLevelWindows().first();
-            KWindowSystem::updateStartupId(win);
-            KWindowSystem::activateWindow(win);
+    QObject::connect(
+        &engine, &QQmlApplicationEngine::objectCreationFailed, &app,
+        [] {
+            std::fprintf(stderr, "No se pudo crear la ventana de DylanOS Process.\n");
+            QCoreApplication::exit(-1);
+        },
+        Qt::QueuedConnection);
+
+    engine.load(QUrl(QStringLiteral("qrc:/qt/qml/org/dylanos/process/qml/Main.qml")));
+    if (engine.rootObjects().isEmpty()) {
+        std::fprintf(stderr, "No se cargó la interfaz de DylanOS Process.\n");
+        return 1;
+    }
+
+    // QA opt-in: graba la ventana real con datos ya pintados. `grabWindow()`
+    // es el único camino que funciona con la plataforma offscreen.
+    if (!options.screenshot.isEmpty()) {
+        auto *window = qobject_cast<QQuickWindow *>(engine.rootObjects().constFirst());
+        if (window) {
+            QObject::connect(
+                window, &QQuickWindow::sceneGraphInitialized, window,
+                [window, options] {
+                    QTimer::singleShot(options.delayMs, window, [window, options] {
+                        const QImage image = window->grabWindow();
+                        if (!image.save(options.screenshot)) {
+                            std::fprintf(stderr, "No se pudo guardar la captura en %s\n",
+                                         options.screenshot.toLocal8Bit().constData());
+                        }
+                        QGuiApplication::quit();
+                    });
+                },
+                Qt::SingleShotConnection);
         }
-    });
-    // QDBusConnectionInterface::StartService is blocking so we do it manually
-    const auto busInterface = QDBusConnection::sessionBus().interface();
-    busInterface->asyncCall(QStringLiteral("StartServiceByName"), QStringLiteral("org.kde.ksystemstats"), 0u);
+    }
+
     return app.exec();
 }
-
-#include "main.moc"

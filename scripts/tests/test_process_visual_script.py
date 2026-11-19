@@ -110,7 +110,7 @@ class ProcessVisualScriptTests(unittest.TestCase):
             )
             self.assertTrue(screenshot.is_file())
             output = calls.read_text(encoding="utf-8")
-            self.assertIn("app:--page-id processes", output)
+            self.assertIn("app:--page processes", output)
             self.assertIn("xdotool:windowactivate --sync 987", output)
             self.assertIn(f"capture:-window 987 {screenshot}", output)
 

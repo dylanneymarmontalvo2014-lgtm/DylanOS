@@ -5,6 +5,9 @@
 *.tar.gz
 *.zip
 
+# Rust (núcleo de DylanOS Process)
+apps/dylanos-process/core/target/
+
 # System files
 .DS_Store
 Thumbs.db

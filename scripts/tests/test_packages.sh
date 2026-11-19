@@ -152,22 +152,22 @@ assert_eq "el empaquetado del Browser es opcional sin payload" "si" \
 assert_eq "APT instala el paquete Browser sin frontend interactivo" "si" \
     "$(grep -A2 'chroot.*apt-get.*install' "$ROOT/scripts/build.sh" | grep -q 'DEBIAN_FRONTEND=noninteractive' && echo si || echo no)"
 assert_contains_line "default instala Plasma System Monitor como backend" "$default_pkgs" "plasma-systemmonitor"
-assert_eq "DylanOS Process compila el fork en el build" "si" \
-    "$(grep -q 'dylanos-src/dylanos-process' "$ROOT/scripts/build.sh" && echo si || echo no)"
+# DylanOS Process es ahora un monitor propio (núcleo Rust + Qt6/QML). Los
+# checks apuntan a su estructura real: núcleo, interfaz y pruebas de interfaz.
+assert_eq "DylanOS Process compila el núcleo Rust en el build" "si" \
+    "$(grep -q 'cargo build --release --offline --locked' "$ROOT/scripts/build.sh" && echo si || echo no)"
 assert_eq "DylanOS Process tiene desktop ID independiente" "si" \
     "$(grep -q 'org.dylanos.process.desktop' "$ROOT/scripts/stage.py" && echo si || echo no)"
 assert_eq "DylanOS Process no sobrescribe el binario de KDE" "si" \
-    "$(grep -q 'OUTPUT_NAME dylanos-process' "$ROOT/apps/dylanos-process/src/CMakeLists.txt" && echo si || echo no)"
+    "$(grep -q 'qt_add_executable(dylanos-process' "$ROOT/apps/dylanos-process/CMakeLists.txt" && echo si || echo no)"
 assert_eq "DylanOS Process instala su propio ejecutable" "si" \
-    "$(grep -q 'install(TARGETS plasma-systemmonitor' "$ROOT/apps/dylanos-process/src/CMakeLists.txt" && echo si || echo no)"
-assert_eq "DylanOS Process usa IDs KPackage propios" "si" \
-    "$(grep -q 'org.dylanos.process.processtable' "$ROOT/apps/dylanos-process/src/faces/CMakeLists.txt" && grep -q 'org.dylanos.process.applicationstable' "$ROOT/apps/dylanos-process/src/faces/CMakeLists.txt" && grep -q 'sensorfaces ksysguard' "$ROOT/apps/dylanos-process/src/faces/CMakeLists.txt" && echo si || echo no)"
-assert_eq "DylanOS Process instala páginas y KNewStuff en rutas propias" "si" \
-    "$(grep -q 'KDE_INSTALL_DATADIR}/dylanos-process' "$ROOT/apps/dylanos-process/src/CMakeLists.txt" && grep -q 'dylanos-process.knsrc' "$ROOT/apps/dylanos-process/src/CMakeLists.txt" && grep -q 'XdgTargetDir=dylanos-process' "$ROOT/apps/dylanos-process/src/dylanos-process.knsrc" && echo si || echo no)"
-assert_eq "el build purga las dependencias -dev exclusivas de Process" "si" \
-    "$(grep -q 'libksysguard-dev' "$ROOT/scripts/build.sh" && grep -q 'libkf6globalaccel-dev' "$ROOT/scripts/build.sh" && grep -q 'libkf6itemmodels-dev' "$ROOT/scripts/build.sh" && grep -q 'libkf6newstuff-dev' "$ROOT/scripts/build.sh" && grep -q 'libkf6package-dev' "$ROOT/scripts/build.sh" && echo si || echo no)"
-assert_eq "ambas tablas de Process exigen confirmar antes de terminar" "si" \
-    "$(grep -q 'if (killSignals.includes(sig))' "$ROOT/apps/dylanos-process/src/faces/dylanosapplicationstable/contents/ui/FullRepresentation.qml" && grep -q 'allowDoNotAskAgain: false' "$ROOT/apps/dylanos-process/src/faces/dylanosapplicationstable/contents/ui/FullRepresentation.qml" && grep -q 'if (killSignals.includes(sig))' "$ROOT/apps/dylanos-process/src/faces/dylanosprocesstable/contents/ui/FullRepresentation.qml" && grep -q 'allowDoNotAskAgain: false' "$ROOT/apps/dylanos-process/src/faces/dylanosprocesstable/contents/ui/FullRepresentation.qml" && ! grep -Rq 'askWhenKilling' "$ROOT/apps/dylanos-process/src/faces" && echo si || echo no)"
+    "$(grep -q 'install(TARGETS dylanos-process' "$ROOT/apps/dylanos-process/CMakeLists.txt" && echo si || echo no)"
+assert_eq "DylanOS Process exige confirmación antes de terminar" "si" \
+    "$(grep -q 'confirming = true' "$ROOT/apps/dylanos-process/qml/ProcessesPage.qml" && grep -q 'forceTerminateProcess' "$ROOT/apps/dylanos-process/qml/ProcessesPage.qml" && echo si || echo no)"
+assert_eq "DylanOS Process corre sus tests de interfaz en el build" "si" \
+    "$(grep -q 'ctest --test-dir /tmp/dylanos-src/dylanos-process/build' "$ROOT/scripts/build.sh" && echo si || echo no)"
+assert_eq "el build purga la cadena de herramientas de Rust" "si" \
+    "$(grep -q 'apt-get -y purge rustc cargo' "$ROOT/scripts/build.sh" && echo si || echo no)"
 
 # Calamares quedó eliminado: el instalador propio debe ocupar su lugar.
 assert_eq "default ya no contiene calamares" "no" \

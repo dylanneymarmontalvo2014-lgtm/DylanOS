@@ -82,9 +82,21 @@ if [[ "$BUILD" == true ]]; then
     CMAKE="${DYLANOS_CMAKE:-cmake}"
     command -v "$CMAKE" >/dev/null 2>&1 || { echo "No se encontró CMake ($CMAKE)." >&2; exit 1; }
     command -v ninja >/dev/null 2>&1 || { echo "No se encontró Ninja; instálalo en el host para compilar la app, sin construir una ISO." >&2; exit 1; }
+    # El núcleo de datos es Rust: CMake lo compila si cargo está disponible.
+    # Si ya existe una libcore.a construida se puede omitir con
+    # DYLANOS_PROCESS_SKIP_CORE=1 (útil en hosts sin cargo).
+    CORE_ARGS=()
+    if [[ "${DYLANOS_PROCESS_SKIP_CORE:-0}" == 1 ]]; then
+        CORE_ARGS+=("-DDYLANOS_PROCESS_SKIP_CORE=ON")
+    else
+        command -v cargo >/dev/null 2>&1 || {
+            echo "No se encontró cargo (Rust). Instala rustc+cargo o exporta DYLANOS_PROCESS_SKIP_CORE=1 con la libcore.a ya construida." >&2
+            exit 1
+        }
+    fi
     "$CMAKE" -S "$ROOT/apps/dylanos-process" -B "$BUILD_DIR" -GNinja \
         -DCMAKE_BUILD_TYPE=RelWithDebInfo \
-        -DCMAKE_INSTALL_PREFIX="$PREFIX"
+        -DCMAKE_INSTALL_PREFIX="$PREFIX" "${CORE_ARGS[@]}"
     "$CMAKE" --build "$BUILD_DIR" --parallel "${DYLANOS_BUILD_JOBS:-2}"
     "$CMAKE" --install "$BUILD_DIR"
 fi
@@ -152,7 +164,7 @@ fi
 
 if [[ -z "$SCREENSHOT" ]]; then
     echo "Abriendo DylanOS Process en la página Processes. Cierra la ventana para terminar."
-    "$BINARY" --page-id processes
+    "$BINARY" --page processes
     exit $?
 fi
 
@@ -167,9 +179,9 @@ trap cleanup EXIT INT TERM
 # An isolated session bus prevents the app's single-instance activation from
 # handing the screenshot request to an already-running window on another page.
 if command -v dbus-run-session >/dev/null 2>&1; then
-    dbus-run-session -- "$BINARY" --page-id processes &
+    dbus-run-session -- "$BINARY" --page processes &
 else
-    "$BINARY" --page-id processes &
+    "$BINARY" --page processes &
 fi
 APP_PID=$!
 sleep "$CAPTURE_DELAY"

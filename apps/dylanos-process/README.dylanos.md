@@ -1,39 +1,122 @@
 # DylanOS Process
 
-DylanOS Process es la adaptación de identidad de Plasma System Monitor 6.3.6. Conserva los modelos de procesos, sensores, páginas configurables, gráficos y operaciones de señales de KSysGuard; no utiliza datos simulados ni sustituye `ksystemstats`.
+Monitor de procesos y recursos de DylanOS. El núcleo de datos está escrito en
+**Rust** y la interfaz en **Qt 6 / QML**; ninguna cifra de la ventana es
+simulada: todo sale de `/proc`, del tema de iconos del sistema y de systemd.
 
-## Seguridad
+## Por qué un núcleo en Rust
 
-Las acciones de finalizar proceso solicitan confirmación siempre. La preferencia upstream para omitir el diálogo se deshabilitó en esta compilación. Las señales se envían mediante `ProcessController` de KDE y los permisos siguen siendo los del usuario de la sesión; la aplicación no eleva privilegios.
+El monitor anterior era el fork de `plasma-systemmonitor` con los modelos de
+KSysGuard. Esa pila obliga a arrastrar `libksysguard`, `ksystemstats` y los
+módulos QML de KDE para leer cuatro contadores. El núcleo propio lee los mismos
+archivos del kernel con una fracción del coste y sin dependencias externas del
+crate, así que el binario arranca sin cargar la cadena de KDE.
 
-## Interfaz DylanOS
+`plasma-systemmonitor` **sigue instalado en el ISO**: es la fuente de
+`ksystemstats`/`libksysguard` que usa `plasma-desktop`, y purgarlo rompería
+Plasma. Lo que cambia es que ya no es la aplicación visible: `stage.py` oculta
+su lanzador y el menú abre `dylanos-process`.
 
-La página de procesos usa una cabecera translúcida con acento Crimson y filtros visibles para procesos propios, de usuario, del sistema o todos. La tabla, sensores, búsqueda, selección y señales siguen usando los modelos reales de KSysGuard; las acciones de finalizar conservan siempre su diálogo de confirmación. El acabado de cristal es una superficie semitransparente compatible con las variantes de color de DylanOS, no un efecto de blur que dependa de la composición del escritorio.
+## Datos reales
 
-## Integración y compilación
+| Dato | Fuente |
+| --- | --- |
+| Procesos, estado, PPID, hilos, prioridad | `/proc/<pid>/stat` y `/proc/<pid>/status` |
+| CPU por proceso | delta de `utime+stime` entre muestras, normalizado por núcleo |
+| CPU total | delta de `/proc/stat` |
+| Memoria y swap | `/proc/meminfo` (`MemAvailable`, no `MemFree`) |
+| Memoria por proceso | `VmRSS` (con respaldo de páginas × tamaño de página) |
+| E/S de disco | `/proc/<pid>/io` y `/proc/diskstats` (sin `loop` ni `ram`) |
+| Red | `/proc/net/dev` (excluye `lo`) |
+| Usuario | `getpwuid_r` con caché por uid |
+| Icono | `.desktop` instalado → `kdeglobals` → `index.theme` del tema activo |
+| Servicios | `systemctl list-units` + `start`/`stop` reales |
 
-El paquete runtime `plasma-systemmonitor` permanece instalado en DylanOS para aportar `ksystemstats`, libksysguard y los módulos de ejecución. Este fork produce el binario separado `dylanos-process` y el desktop ID `org.dylanos.process`; no sobrescribe `/usr/bin/plasma-systemmonitor` ni sus archivos de paquete.
+Cuando el kernel no permite leer algo (procesos de otro usuario, contadores
+restringidos) la interfaz muestra `—` o `0 B`. Nunca rellena el hueco con un
+valor inventado ni con aleatoriedad.
 
-La compilación oficial de DylanOS se ejecuta desde `scripts/build.sh` en el chroot Debian 13. Para compilar en un entorno Debian 13 con las dependencias KDE/Qt de `CMakeLists.txt`:
+## Acciones
+
+- **Finalizar proceso**: `SIGTERM` real vía `kill(2)`, siempre con confirmación.
+- **Forzar finalización**: `SIGKILL` real, también con confirmación.
+- **Prioridad**: `setpriority(2)` real. El kernel exige `CAP_SYS_NICE` para
+  subirla; si la deniega, se muestra el motivo real (`EACCES`/`EPERM`).
+- **Servicios**: `systemctl start|stop`. Polkit decide si hace falta
+  autenticarse; el mensaje de systemd se muestra tal cual.
+
+La aplicación no eleva privilegios en ningún caso.
+
+## Compilación
+
+El núcleo se compila con cargo y se enlaza al binario Qt:
 
 ```bash
-cmake -S apps/dylanos-process -B build/dylanos-process -GNinja \
-  -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX=/usr
-cmake --build build/dylanos-process --parallel 4
-sudo cmake --install build/dylanos-process
+cd apps/dylanos-process/core
+cargo build --release --offline --locked   # sin dependencias externas
+cd ..
+cmake -S . -B build -GNinja -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX=/usr
+cmake --build build --parallel 4
+ctest --test-dir build --output-on-failure
+sudo cmake --install build
 ```
 
-## Vista previa sin compilar una ISO
+`scripts/build.sh` hace exactamente esto dentro del chroot Debian 13, instala
+`rustc`/`cargo` solo para compilar y los purga al final: el ISO no lleva cadena
+de herramientas de Rust.
 
-Desde la raíz del checkout, con las dependencias de compilación KDE/Qt instaladas en el host:
+Si el núcleo ya está construido (por ejemplo en el host) se puede saltar cargo
+con `-DDYLANOS_PROCESS_SKIP_CORE=ON`, que enlaza la `libcore.a` existente.
+
+## Pruebas
 
 ```bash
-bash scripts/test-process-visual.sh --build-only
-bash scripts/test-process-visual.sh --no-build --screenshot work/process-visual/processes.png
+# Núcleo: parsers con fixtures reales de /proc, deltas de CPU, señales reales.
+cd core && cargo test --release
+
+# Interfaz: QtQuickTest offscreen contra los modelos de producción.
+QT_QPA_PLATFORM=offscreen QT_QUICK_BACKEND=software \
+  ./build/tests/tst_process_ui -input tests/qml
+
+# Contrato estático (sin Rust ni Qt): núcleo sin datos simulados, UI fiel al
+# prototipo, integración con build/staging.
+python3 -m unittest scripts.tests.test_process_ui_contract
 ```
 
-La primera orden compila e instala **solo** DylanOS Process en `work/process-visual/`; no ejecuta el builder del sistema ni genera una ISO. La segunda abre esa app real en la página Processes en la sesión X11/Wayland actual y guarda una captura de su ventana. El script usa un perfil de configuración aislado y copia `kdeglobals` para heredar la paleta activa sin alterar los ajustes normales. Requiere un capturador (Spectacle o GNOME Screenshot; en X11 también ImageMagick y `xdotool`). Para compilar y abrir en una sola orden, omite `--build-only`; `--no-build` reutiliza el prefijo ya instalado. Las pruebas automatizadas verifican el flujo con ejecutables simulados y no sustituyen una inspección visual real de la captura.
+Los tests de señal crean procesos reales y los terminan; los de prioridad
+comprueban las dos caras del modelo de permisos del kernel (bajar prioridad
+siempre se permite, subirla exige privilegios) sin elevar nada.
+
+## Capturas de QA
+
+```bash
+QT_QPA_PLATFORM=offscreen QT_QUICK_BACKEND=software \
+  ./build/dylanos-process --page processes --screenshot salida.png --size 1280x800
+```
+
+`--page` acepta `processes`, `performance`, `apps` y `services`. La captura es
+opt-in: sin `--screenshot` la app no escribe nada. En una sesión real la ventana
+es frameless con semáforos integrados, como el resto de apps DylanOS.
+
+## Estructura
+
+- `core/` — núcleo Rust (`dylanos-process-core`): `parse.rs` (analizadores puros
+  de `/proc`), `sampler.rs` (deltas y agregados), `icons.rs` (tema real),
+  `services.rs` (systemd), `signals.rs`/`priority.rs` (kernel) y `ffi.rs`
+  (API C estable para Qt).
+- `src/` — modelos Qt (`ProcessModel`, `ProcessFilterModel`,
+  `ApplicationModel`, `ServiceModel`), controlador y proveedor de iconos.
+- `qml/` — interfaz fiel al prototipo (barra de título, 4 pestañas, tarjetas,
+  tabla, detalle, rendimiento, aplicaciones, servicios).
+- `tests/` — QtQuickTest de la interfaz.
+- `legacy/` — fork original de `plasma-systemmonitor` 6.3.6, conservado como
+  referencia y por sus avisos de licencia. **No se compila.**
 
 ## Procedencia y licencia
 
-Código adaptado desde KDE `plasma-systemmonitor`, upstream https://invent.kde.org/plasma/plasma-systemmonitor, rama `Plasma/6.3`, commit `be4f1594995698cac59959b8baa4421f435a1015` (versión 6.3.6). Se conservan los avisos SPDX/copyright por archivo, los textos de licencia y las traducciones upstream. La licencia del código es `GPL-2.0-only OR GPL-3.0-only OR LicenseRef-KDE-Accepted-GPL`; algunos componentes están bajo LGPL según sus propios encabezados.
+La interfaz es nueva y sigue el prototipo de DylanOS. El árbol `legacy/`
+procede de KDE `plasma-systemmonitor`, upstream
+https://invent.kde.org/plasma/plasma-systemmonitor, rama `Plasma/6.3`, commit
+`be4f1594995698cac59959b8baa4421f435a1015` (versión 6.3.6), y conserva sus
+avisos SPDX/copyright, textos de licencia y traducciones. El código nuevo se
+distribuye bajo `GPL-3.0-only`, coherente con el resto de DylanOS.
