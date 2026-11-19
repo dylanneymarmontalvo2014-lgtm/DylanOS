@@ -17,15 +17,19 @@ La ventana nativa arranca el backend en `127.0.0.1:8088`. Si ya existe un backen
 
 ## API local
 
-GET: `/api/health`, `/api/system-info`, `/api/disks`, `/api/locales`, `/api/keyboards`, `/api/install/status`.
+GET: `/api/health`, `/api/system-info`, `/api/disks`, `/api/locales`, `/api/keyboards`, `/api/partition/filesystems`, `/api/install/status`.
 
-POST: `/api/apply-keyboard`, `/api/validate-user`, `/api/install`, `/api/reboot`, `/api/quit`. El frontend consulta `install/status` durante el progreso. La API escucha solo en localhost; no está concebida como servicio remoto ni como interfaz autenticada para una red.
+POST: `/api/apply-keyboard`, `/api/validate-user`, `/api/partition/validate`, `/api/install`, `/api/reboot`, `/api/quit`. El frontend consulta `install/status` durante el progreso. La API escucha solo en localhost; no está concebida como servicio remoto ni como interfaz autenticada para una red.
 
 ## Flujo real y protección de disco
 
-El backend obtiene datos de sistema/discos mediante fuentes locales (`/proc`, `lsblk` y herramientas del sistema), enumera discos físicos omitiendo el medio live y responde con progreso de instalación. En modo automático, sobre una ruta de dispositivo existente y con privilegios root, puede escribir una tabla GPT, formatear ESP y raíz ext4, extraer el filesystem, crear la cuenta/locale/teclado y configurar GRUB. Es una operación **destructiva para el disco seleccionado**. Antes de confirmar, verifica dispositivo, tamaño, modo y copia de seguridad; primero prueba en VM con un disco virtual descartable. No uses un disco del host como prueba.
+El backend obtiene datos de sistema/discos mediante fuentes locales (`/proc`, `lsblk` y herramientas del sistema), enumera discos físicos omitiendo el medio live y responde con progreso de instalación. En modo automático, sobre una ruta de dispositivo existente y con privilegios root, puede escribir una tabla GPT, formatear ESP y raíz ext4, extraer el filesystem, crear la cuenta/locale/teclado y configurar GRUB.
 
-En modo manual, el backend no ofrece un editor de particiones completo: busca una partición ext4 existente y una ESP opcional. Los botones visuales «Nueva partición», «Editar», «Eliminar» y «Revertir» del prototipo de particionado no tienen acciones conectadas. No los trates como funcionales ni elijas el modo manual esperando que apliquen esos cambios.
+En modo manual el instalador ofrece un **editor de particiones real**. La pantalla de particionado mantiene un *plan* (borradores de partición: función, sistema de archivos, tamaño y etiqueta) que no toca el disco mientras se edita. «Nueva partición», «Editar», «Eliminar», «Revertir» y «Plan sugerido» operan sobre ese plan; al pulsar Siguiente el plan se valida contra el servidor (`POST /api/partition/validate`) y, cuando arranca la instalación real, el backend lo revalida y lo aplica con `parted` (tabla GPT nueva) y `mkfs`/`mkswap`. Solo se crean los sistemas de archivos cuyas herramientas existan en el medio: ext4 (`e2fsprogs`), FAT32 (`dosfstools`) y swap (`util-linux`).
+
+Reglas que el servidor impone al plan: exactamente una raíz y como mínimo 12 GB; ESP de 300 MiB o más y obligatoriamente FAT32; `/home` y swap únicos; suma de tamaños que no exceda el disco real. El orden de creación es ESP, raíz, `/home`, swap, datos. Si el plan crea `/home` o swap, se añaden a `/etc/fstab` del sistema instalado; la ESP existente recibe el flag `esp`.
+
+Los comandos que escriben solo se ejecutan dentro de `perform_installation`, nunca mientras se edita. Es una operación **destructiva para el disco seleccionado**: la tabla anterior se descarta. Antes de confirmar, verifica dispositivo, tamaño y copia de seguridad; primero prueba en VM con un disco virtual descartable. No uses un disco del host como prueba.
 
 ## Vista previa y límites del frontend
 
@@ -37,7 +41,7 @@ Solo el estado del endpoint real y el log del backend, corriendo con privilegios
 
 - Frontend: `npm run build` valida compilación de Vite/TypeScript según los scripts instalados.
 - Ventana nativa: `dylanos-installer --smoke`; requiere runtime PySide6/Qt WebEngine y sesión gráfica/offscreen apropiada.
-- Backend: ejecutar pruebas dirigidas desde `scripts/tests/test_installer_backend.py`; deben usar dispositivos temporales/mocks, nunca el disco de trabajo.
+- Backend: ejecutar pruebas dirigidas desde `scripts/tests/test_installer_backend.py` y `scripts/tests/test_installer_partitioning.py`; deben usar dispositivos temporales/mocks, nunca el disco de trabajo.
 - ISO: seguir [`../../../docs/install.md`](../../../docs/install.md). La instalación real debe ejecutarse en VM con un disco virtual desechable y comprobar el arranque instalado por separado.
 
 ## Referencias

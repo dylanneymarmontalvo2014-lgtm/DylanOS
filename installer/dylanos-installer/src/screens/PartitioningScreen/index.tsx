@@ -1,20 +1,70 @@
 import { useState, useEffect, useCallback, useRef } from "react";
 import BottomBar from "@/components/BottomBar";
 import { HardDriveIcon, ChevronDownIcon, PlusCircleIcon, EditIcon, TrashIcon, RefreshIcon } from "@/components/Icons";
-import type { Disk } from "@/data/mockDiskInfo";
 import { useInstaller } from "@/state/installerState";
+import {
+  GIB,
+  ROLE_LABELS,
+  checkPlan,
+  formatSize,
+  planTotalBytes,
+  usePlan,
+  type PartitionRole,
+} from "@/state/planState";
 import StatusNotice from "@/components/StatusNotice";
+import PartitionDialog from "./PartitionDialog";
 
 interface PartitioningScreenProps {
   onCancel: () => void;
 }
 
+// Forma exacta de /api/disks. sizeBytes lo añade el backend para que el editor
+// calcule el espacio libre sin depender del GB redondeado que se muestra.
+interface ApiPartition {
+  device: string;
+  type: string;
+  mount: string;
+  fs: string;
+  size: string;
+  sizeGB: number;
+  sizeBytes?: number;
+  used: string;
+  color: string;
+}
+
+interface Disk {
+  device: string;
+  size: string;
+  sizeGB: number;
+  sizeBytes?: number;
+  model: string;
+  partitions: ApiPartition[];
+}
+
 export default function PartitioningScreen({ onCancel }: PartitioningScreenProps) {
   const { state, dispatch } = useInstaller();
+  const { plan, addPartition, updatePartition, removePartition, revert, canRevert, resetForDisk } =
+    usePlan();
   const [disks, setDisks] = useState<Disk[]>([]);
   const [selectedIdx, setSelectedIdx] = useState(0);
   const [dropdownOpen, setDropdownOpen] = useState(false);
   const [loadingDisks, setLoadingDisks] = useState(true);
+  const [editing, setEditing] = useState<string | null>(null);
+  // Fila seleccionada en la tabla: «Editar» y «Eliminar» actúan sobre ella,
+  // nunca sobre la primera de la lista (era confuso y borraba otra partición).
+  const [selectedId, setSelectedId] = useState<string | null>(null);
+  const [creating, setCreating] = useState(false);
+  // Discos para los que ya se propuso un plan. Sin esto, borrar todas las
+  // particiones a propósito hacía que el efecto las recreara al instante y el
+  // usuario no podía dejar el plan vacío.
+  const seededDisk = useRef<string | null>(null);
+  const [backendPlanError, setBackendPlanError] = useState("");
+  // Capacidades reales del medio: sin efivarfs el equipo es BIOS, y un mkfs
+  // ausente (perfil de imagen mínimo) no debe ofrecerse en el plan.
+  const [capabilities, setCapabilities] = useState<{ uefi: boolean; filesystems: string[] }>({
+    uefi: false,
+    filesystems: ["ext4", "vfat", "swap"],
+  });
   const modeRef = useRef(state.partitioning.mode);
   modeRef.current = state.partitioning.mode;
 
@@ -45,9 +95,42 @@ export default function PartitioningScreen({ onCancel }: PartitioningScreenProps
 
   useEffect(() => { void detectDisks(); }, [detectDisks]);
 
+  useEffect(() => {
+    fetch("/api/partition/filesystems")
+      .then(r => (r.ok ? r.json() : null))
+      .then(data => {
+        if (!data) return;
+        setCapabilities({
+          uefi: Boolean(data.uefi),
+          filesystems: Array.isArray(data.filesystems)
+            ? data.filesystems.filter((f: { available?: boolean }) => f?.available !== false).map((f: { id: string }) => f.id)
+            : ["ext4", "vfat", "swap"],
+        });
+      })
+      .catch(() => {});
+  }, []);
+
   const disk = disks[selectedIdx];
   const isAuto = state.partitioning.mode === "auto";
+  const diskBytes = disk?.sizeBytes || Math.round((disk?.sizeGB || 0) * GIB);
   const totalGB = disk?.sizeGB || 1;
+
+  // Al entrar en modo manual (o al cambiar de disco, que deja el plan vacío) se
+  // propone un plan razonable, sin escribir nada: raíz con el resto, ESP de
+  // 512 MiB y 4 GB de swap. Depende del disco concreto, no solo de su tamaño.
+  useEffect(() => {
+    if (isAuto || !disk?.device || diskBytes <= 0) return;
+    if (seededDisk.current === disk.device) return;
+    seededDisk.current = disk.device;
+    if (plan.length === 0) resetForDisk(diskBytes);
+  }, [isAuto, disk?.device, diskBytes, plan.length, resetForDisk]);
+
+  const planProblem = isAuto ? null : checkPlan(plan, diskBytes);
+  // En UEFI una raíz sola no arranca: se avisa aquí, antes de escribir nada.
+  const needsEfi = !isAuto && capabilities.uefi && !plan.some(p => p.role === "efi");
+  const planBytes = planTotalBytes(plan);
+  const freeBytes = Math.max(0, diskBytes - planBytes);
+
   const partitionMessages = {
     "no-disk": ["Selecciona un disco para continuar.", "Elige un dispositivo de almacenamiento para instalar DylanOS."],
     "insufficient-space": ["No hay espacio suficiente.", "El disco seleccionado no tiene espacio suficiente para instalar DylanOS."],
@@ -55,6 +138,70 @@ export default function PartitioningScreen({ onCancel }: PartitioningScreenProps
     detection: ["No se pudieron detectar los dispositivos de almacenamiento.", "Vuelve a detectar los dispositivos antes de continuar."],
   } as const;
   const partitionNotice = state.partitionError === "none" ? null : partitionMessages[state.partitionError];
+
+  const editingPartition = plan.find(p => p.id === editing) ?? null;
+
+  // El plan se valida en el servidor antes de salir de esta pantalla: el
+  // backend es la autoridad y también revalida al iniciar la instalación.
+  const validateWithBackend = useCallback(async (): Promise<boolean> => {
+    if (isAuto) return true;
+    setBackendPlanError("");
+    try {
+      const response = await fetch("/api/partition/validate", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ disk: state.partitioning.disk, plan: { partitions: plan } }),
+      });
+      if (!response.ok) throw new Error("validate failed");
+      const result = await response.json();
+      if (!result?.ok) {
+        setBackendPlanError(result?.error || "El plan de particiones no es válido.");
+        return false;
+      }
+      return true;
+    } catch {
+      setBackendPlanError("No se pudo validar el plan con el backend del instalador.");
+      return false;
+    }
+  }, [isAuto, plan, state.partitioning.disk]);
+
+  const nextDisabled =
+    loadingDisks ||
+    state.partitionError !== "none" ||
+    !disk ||
+    disk.device !== state.partitioning.disk ||
+    (!isAuto && (planProblem !== null || plan.length === 0 || needsEfi));
+
+  const handleNext = async () => {
+    if (await validateWithBackend()) dispatch({ type: "NEXT_STEP" });
+  };
+
+  const saveDialog = (values: Omit<typeof plan[number], "id">) => {
+    if (editingPartition) {
+      updatePartition(editingPartition.id, values);
+      setSelectedId(editingPartition.id);
+    } else {
+      addPartition(values);
+    }
+    setEditing(null);
+    setCreating(false);
+    setBackendPlanError("");
+  };
+
+  const removeSelected = () => {
+    if (selectedId) removePartition(selectedId);
+    setSelectedId(null);
+    setEditing(null);
+    setBackendPlanError("");
+  };
+
+  const legendColor = (role: PartitionRole): string => {
+    if (role === "root") return "#DC143C";
+    if (role === "swap") return "#d97706";
+    if (role === "efi") return "#22c55e";
+    if (role === "home") return "#3b82f6";
+    return "#8b5cf6";
+  };
 
   return (
     <div className="flex flex-col h-full screen-enter">
@@ -87,7 +234,10 @@ export default function PartitioningScreen({ onCancel }: PartitioningScreenProps
           ].map(opt => (
             <button
               key={opt.mode}
-              onClick={() => dispatch({ type: "SET_PARTITIONING", mode: opt.mode, disk: state.partitioning.disk })}
+              onClick={() => {
+                dispatch({ type: "SET_PARTITIONING", mode: opt.mode, disk: state.partitioning.disk });
+                setBackendPlanError("");
+              }}
               className="flex items-start gap-3 p-4 rounded-xl text-left transition-all duration-150"
               style={{
                 background: state.partitioning.mode === opt.mode ? "rgba(220,20,60,0.08)" : "rgba(255,255,255,0.03)",
@@ -139,6 +289,11 @@ export default function PartitioningScreen({ onCancel }: PartitioningScreenProps
                     setSelectedIdx(idx);
                     dispatch({ type: "SET_PARTITIONING", mode: state.partitioning.mode, disk: d.device });
                     setDropdownOpen(false);
+                    setBackendPlanError("");
+                    // Un plan pertenece a un disco concreto: al cambiar de
+                    // disco se descarta para no aplicar tamaños de otro medio.
+                    seededDisk.current = d.device;
+                    resetForDisk(d.sizeBytes || Math.round(d.sizeGB * GIB));
                   }}
                   className="w-full px-3 py-2 text-left text-sm flex items-center gap-2 hover:bg-white/10 text-white"
                   style={{ background: idx === selectedIdx ? "rgba(220,20,60,0.2)" : "transparent" }}
@@ -153,37 +308,65 @@ export default function PartitioningScreen({ onCancel }: PartitioningScreenProps
 
         {/* Disk visualization */}
         <div className="mb-4">
-          <label className="text-xs font-medium mb-2 block" style={{ color: "#9ca3af" }}>Distribución actual:</label>
+          <label className="text-xs font-medium mb-2 block" style={{ color: "#9ca3af" }}>
+            {isAuto ? "Distribución actual:" : "Distribución del plan:"}
+          </label>
 
           <div className="flex rounded-lg overflow-hidden mb-3" style={{ height: 28 }}>
-            {(disk?.partitions ?? []).map((p, i) => (
+            {isAuto
+              ? (disk?.partitions ?? []).map((p, i) => (
+                  <div
+                    key={i}
+                    style={{
+                      width: `${(p.sizeGB / totalGB) * 100}%`,
+                      background: p.color,
+                      opacity: p.device === "Espacio libre" ? 0.3 : 0.85,
+                    }}
+                  />
+                ))
+              : plan.map(part => (
+                  <div
+                    key={part.id}
+                    title={`${ROLE_LABELS[part.role]} — ${formatSize(part.sizeBytes)}`}
+                    style={{
+                      width: `${diskBytes > 0 ? (part.sizeBytes / diskBytes) * 100 : 0}%`,
+                      background: legendColor(part.role),
+                      opacity: 0.85,
+                    }}
+                  />
+                ))}
+            {!isAuto && freeBytes > 0 && (
               <div
-                key={i}
-                style={{
-                  width: `${(p.sizeGB / totalGB) * 100}%`,
-                  background: p.color,
-                  opacity: p.device === "Espacio libre" ? 0.3 : 0.85,
-                }}
+                title={`Espacio libre — ${formatSize(freeBytes)}`}
+                style={{ width: `${diskBytes > 0 ? (freeBytes / diskBytes) * 100 : 0}%`, background: "#374151", opacity: 0.35 }}
               />
-            ))}
+            )}
           </div>
 
           <div className="flex flex-wrap gap-4 text-xs">
-            {(disk?.partitions ?? []).map((p, i) => (
-              p.device !== "Espacio libre" ? (
-                <div key={i} className="flex items-center gap-1.5">
-                  <div className="w-2.5 h-2.5 rounded-sm" style={{ background: p.color }} />
-                  <span className="text-white font-medium">{p.mount === "/" ? "DylanOS (/)" : p.mount === "swap" ? "Swap" : `Datos (${p.mount})`}</span>
-                  <span style={{ color: "#6b7280" }}>{p.size} {p.fs}</span>
-                </div>
-              ) : (
-                <div key={i} className="flex items-center gap-1.5">
-                  <div className="w-2.5 h-2.5 rounded-sm" style={{ background: p.color }} />
-                  <span className="text-white font-medium">Espacio libre</span>
-                  <span style={{ color: "#6b7280" }}>{p.size}</span>
-                </div>
-              )
-            ))}
+            {isAuto
+              ? (disk?.partitions ?? []).map((p, i) => (
+                  p.device !== "Espacio libre" ? (
+                    <div key={i} className="flex items-center gap-1.5">
+                      <div className="w-2.5 h-2.5 rounded-sm" style={{ background: p.color }} />
+                      <span className="text-white font-medium">{p.mount === "/" ? "DylanOS (/)" : p.mount === "swap" ? "Swap" : `Datos (${p.mount})`}</span>
+                      <span style={{ color: "#6b7280" }}>{p.size} {p.fs}</span>
+                    </div>
+                  ) : (
+                    <div key={i} className="flex items-center gap-1.5">
+                      <div className="w-2.5 h-2.5 rounded-sm" style={{ background: p.color }} />
+                      <span className="text-white font-medium">Espacio libre</span>
+                      <span style={{ color: "#6b7280" }}>{p.size}</span>
+                    </div>
+                  )
+                ))
+              : plan.map(part => (
+                  <div key={part.id} className="flex items-center gap-1.5">
+                    <div className="w-2.5 h-2.5 rounded-sm" style={{ background: legendColor(part.role) }} />
+                    <span className="text-white font-medium">{ROLE_LABELS[part.role]}</span>
+                    <span style={{ color: "#6b7280" }}>{formatSize(part.sizeBytes)} {part.fs}</span>
+                  </div>
+                ))}
           </div>
         </div>
 
@@ -192,33 +375,69 @@ export default function PartitioningScreen({ onCancel }: PartitioningScreenProps
           <div className="mb-3">
             <div className="flex items-center gap-2 mb-3">
               <button
-                className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium transition-all"
+                onClick={() => setCreating(true)}
+                disabled={loadingDisks || !disk}
+                className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium transition-all disabled:opacity-50 disabled:cursor-not-allowed"
                 style={{ background: "#DC143C", color: "#fff" }}
-                onMouseEnter={e => ((e.currentTarget as HTMLButtonElement).style.background = "#FF2A54")}
-                onMouseLeave={e => ((e.currentTarget as HTMLButtonElement).style.background = "#DC143C")}
+                onMouseEnter={e => { if (!e.currentTarget.disabled) e.currentTarget.style.background = "#FF2A54"; }}
+                onMouseLeave={e => (e.currentTarget.style.background = "#DC143C")}
               >
                 <PlusCircleIcon size={13} color="#fff" />
                 Nueva partición
               </button>
-              {["Editar", "Eliminar", "Revertir"].map(label => (
-                <button
-                  key={label}
-                  className="px-3 py-1.5 rounded-lg text-xs font-medium transition-all"
-                  style={{
-                    background: "rgba(255,255,255,0.06)",
-                    border: "1px solid rgba(255,255,255,0.1)",
-                    color: "#d1d5db",
-                  }}
-                  onMouseEnter={e => ((e.currentTarget as HTMLButtonElement).style.background = "rgba(255,255,255,0.1)")}
-                  onMouseLeave={e => ((e.currentTarget as HTMLButtonElement).style.background = "rgba(255,255,255,0.06)")}
-                >
-                  {label}
-                </button>
-              ))}
-
+              <button
+                onClick={() => setEditing(selectedId)}
+                disabled={!selectedId}
+                className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium transition-all disabled:opacity-40 disabled:cursor-not-allowed"
+                style={{ background: "rgba(255,255,255,0.06)", border: "1px solid rgba(255,255,255,0.1)", color: "#d1d5db" }}
+                onMouseEnter={e => { if (!e.currentTarget.disabled) e.currentTarget.style.background = "rgba(255,255,255,0.1)"; }}
+                onMouseLeave={e => (e.currentTarget.style.background = "rgba(255,255,255,0.06)")}
+              >
+                <EditIcon size={13} />
+                Editar
+              </button>
+              <button
+                onClick={removeSelected}
+                disabled={!selectedId}
+                className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium transition-all disabled:opacity-40 disabled:cursor-not-allowed"
+                style={{ background: "rgba(255,255,255,0.06)", border: "1px solid rgba(255,255,255,0.1)", color: "#d1d5db" }}
+                onMouseEnter={e => { if (!e.currentTarget.disabled) e.currentTarget.style.background = "rgba(255,255,255,0.1)"; }}
+                onMouseLeave={e => (e.currentTarget.style.background = "rgba(255,255,255,0.06)")}
+              >
+                <TrashIcon size={13} />
+                Eliminar
+              </button>
+              <button
+                onClick={() => { revert(); setBackendPlanError(""); }}
+                disabled={!canRevert}
+                className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium transition-all disabled:opacity-40 disabled:cursor-not-allowed"
+                style={{ background: "rgba(255,255,255,0.06)", border: "1px solid rgba(255,255,255,0.1)", color: "#d1d5db" }}
+                onMouseEnter={e => { if (!e.currentTarget.disabled) e.currentTarget.style.background = "rgba(255,255,255,0.1)"; }}
+                onMouseLeave={e => (e.currentTarget.style.background = "rgba(255,255,255,0.06)")}
+              >
+                <RefreshIcon size={13} />
+                Revertir
+              </button>
               <div className="flex-1" />
-              <span className="text-xs" style={{ color: "#6b7280" }}>Tabla de particiones:</span>
+              <button
+                onClick={() => { resetForDisk(diskBytes); setBackendPlanError(""); }}
+                disabled={!disk}
+                className="text-xs transition-colors disabled:opacity-40"
+                style={{ color: "#6b7280" }}
+              >
+                Plan sugerido
+              </button>
             </div>
+          </div>
+        )}
+
+        {(planProblem || backendPlanError || needsEfi) && !isAuto && (
+          <div className="mb-3">
+            <StatusNotice title="El plan de particiones no es válido.">
+              {needsEfi
+                ? "Este equipo arranca en UEFI: el plan necesita una partición de arranque EFI (FAT32). Usa «Plan sugerido» para crearla."
+                : backendPlanError || planProblem?.message}
+            </StatusNotice>
           </div>
         )}
 
@@ -244,39 +463,102 @@ export default function PartitioningScreen({ onCancel }: PartitioningScreenProps
             <span>Flags</span>
           </div>
 
-          {(disk?.partitions ?? []).map((p, i) => (
-            <div
-              key={i}
-              className="grid text-xs px-4 py-2.5 items-center transition-colors"
-              style={{
-                gridTemplateColumns: "1.6fr 0.8fr 1fr 0.8fr 0.7fr 0.7fr 0.5fr",
-                borderBottom: i < (disk?.partitions.length ?? 0) - 1 ? "1px solid rgba(255,255,255,0.04)" : "none",
-                color: "#d1d5db",
-              }}
-              onMouseEnter={e => ((e.currentTarget as HTMLDivElement).style.background = "rgba(255,255,255,0.03)")}
-              onMouseLeave={e => ((e.currentTarget as HTMLDivElement).style.background = "transparent")}
-            >
-              <div className="flex items-center gap-2">
-                <div className="w-2 h-2 rounded-full shrink-0" style={{ background: p.color }} />
-                <span className="font-mono text-xs">{p.device}</span>
-              </div>
-              <span>{p.type}</span>
-              <span className="font-mono">{p.mount}</span>
-              <span>{p.fs}</span>
-              <span className="font-semibold">{p.size}</span>
-              <span>{p.used}</span>
-              <span style={{ color: "#6b7280" }}>—</span>
+          {isAuto
+            ? (disk?.partitions ?? []).map((p, i) => (
+                <div
+                  key={i}
+                  className="grid text-xs px-4 py-2.5 items-center transition-colors"
+                  style={{
+                    gridTemplateColumns: "1.6fr 0.8fr 1fr 0.8fr 0.7fr 0.7fr 0.5fr",
+                    borderBottom: i < (disk?.partitions.length ?? 0) - 1 ? "1px solid rgba(255,255,255,0.04)" : "none",
+                    color: "#d1d5db",
+                  }}
+                  onMouseEnter={e => ((e.currentTarget as HTMLDivElement).style.background = "rgba(255,255,255,0.03)")}
+                  onMouseLeave={e => ((e.currentTarget as HTMLDivElement).style.background = "transparent")}
+                >
+                  <div className="flex items-center gap-2">
+                    <div className="w-2 h-2 rounded-full shrink-0" style={{ background: p.color }} />
+                    <span className="font-mono text-xs">{p.device}</span>
+                  </div>
+                  <span>{p.type}</span>
+                  <span className="font-mono">{p.mount}</span>
+                  <span>{p.fs}</span>
+                  <span className="font-semibold">{p.size}</span>
+                  <span>{p.used}</span>
+                  <span style={{ color: "#6b7280" }}>—</span>
+                </div>
+              ))
+            : plan.map((part, index) => (
+                <button
+                  key={part.id}
+                  onClick={() => setSelectedId(part.id)}
+                  onDoubleClick={() => setEditing(part.id)}
+                  aria-selected={selectedId === part.id}
+                  className="grid text-xs px-4 py-2.5 items-center text-left transition-colors w-full"
+                  style={{
+                    gridTemplateColumns: "1.6fr 0.8fr 1fr 0.8fr 0.7fr 0.7fr 0.5fr",
+                    borderBottom: index < plan.length - 1 ? "1px solid rgba(255,255,255,0.04)" : "none",
+                    color: "#d1d5db",
+                    background: selectedId === part.id ? "rgba(220,20,60,0.1)" : "transparent",
+                  }}
+                  onMouseEnter={e => {
+                    if (selectedId !== part.id) (e.currentTarget as HTMLButtonElement).style.background = "rgba(255,255,255,0.03)";
+                  }}
+                  onMouseLeave={e => {
+                    (e.currentTarget as HTMLButtonElement).style.background =
+                      selectedId === part.id ? "rgba(220,20,60,0.1)" : "transparent";
+                  }}
+                >
+                  <div className="flex items-center gap-2">
+                    <div className="w-2 h-2 rounded-full shrink-0" style={{ background: legendColor(part.role) }} />
+                    <span className="font-mono text-xs">Nueva #{index + 1}</span>
+                  </div>
+                  <span>{part.fs === "swap" ? "Swap" : "Partición"}</span>
+                  <span className="font-mono">{part.role === "root" ? "/" : part.role === "home" ? "/home" : "—"}</span>
+                  <span>{part.fs}</span>
+                  <span className="font-semibold">{formatSize(part.sizeBytes)}</span>
+                  <span style={{ color: "#6b7280" }}>—</span>
+                  <span style={{ color: "#6b7280" }}>—</span>
+                </button>
+              ))}
+
+          {!isAuto && plan.length === 0 && (
+            <div className="px-4 py-6 text-xs text-center" style={{ color: "#6b7280" }}>
+              No hay particiones en el plan. Usa «Nueva partición» o «Plan sugerido».
             </div>
-          ))}
+          )}
         </div>
 
         <div className="flex items-center justify-between mt-3 text-xs" style={{ color: "#9ca3af" }}>
-          <span>Dispositivo seleccionado: <span className="text-white font-medium">{disk ? `${disk.device} – ${disk.size}` : "ninguno"}</span></span>
-          <span>Espacio libre total: <span style={{ color: "#DC143C" }} className="font-semibold">204 GB</span></span>
+          <span>
+            Dispositivo seleccionado:{" "}
+            <span className="text-white font-medium">{disk ? `${disk.device} – ${disk.size}` : "ninguno"}</span>
+          </span>
+          <span>
+            {isAuto ? "Espacio libre total: " : "Espacio libre en el plan: "}
+            <span style={{ color: "#DC143C" }} className="font-semibold">
+              {isAuto ? formatSize(diskBytes) : formatSize(freeBytes)}
+            </span>
+          </span>
         </div>
       </div>
 
-      <BottomBar onCancel={onCancel} nextDisabled={loadingDisks || state.partitionError !== "none" || !disk || disk.device !== state.partitioning.disk} />
+      <BottomBar
+        onCancel={onCancel}
+        onNext={() => void handleNext()}
+        nextDisabled={nextDisabled}
+      />
+
+      {(creating || editingPartition) && (
+        <PartitionDialog
+          partition={editingPartition}
+          diskBytes={diskBytes}
+          plan={plan}
+          availableFilesystems={capabilities.filesystems}
+          onSave={saveDialog}
+          onClose={() => { setEditing(null); setCreating(false); }}
+        />
+      )}
     </div>
   );
 }

@@ -485,6 +485,26 @@ def real_storage_summary():
     return "—"
 
 
+def get_real_timezone():
+    """Zona horaria real del sistema, con respaldo UTC."""
+    try:
+        tz = os.path.realpath("/etc/localtime")
+        marker = "/zoneinfo/"
+        if marker in tz:
+            name = tz.split(marker, 1)[1].strip()
+            if name:
+                return name
+    except OSError:
+        pass
+    try:
+        name = Path("/etc/timezone").read_text(encoding="utf-8").strip()
+        if name:
+            return name
+    except OSError:
+        pass
+    return "UTC"
+
+
 def get_real_system_info():
     """Detecta las características reales del equipo.
 
@@ -630,6 +650,9 @@ def get_real_system_info():
         "storage": storage,
         "gpu": gpu,
         "arch": platform.machine(),
+        # Zona horaria real del medio live: la interfaz mostraba «América/Bogotá»
+        # fija aunque el equipo estuviera en otra región.
+        "timezone": get_real_timezone(),
     }
 
 
@@ -698,6 +721,7 @@ def get_real_disks():
                 "fs": child.get("fstype") or "sin formato",
                 "size": _human_size(child_bytes),
                 "sizeGB": round(child_bytes / (1024 ** 3), 1),
+                "sizeBytes": child_bytes,
                 "used": _partition_used_gb(child.get("path"), mount),
                 "color": "#dc2626" if mount == "/" else "#3b82f6",
             })
@@ -711,6 +735,7 @@ def get_real_disks():
                 "fs": "—",
                 "size": _human_size(free_bytes),
                 "sizeGB": round(free_bytes / (1024 ** 3), 1),
+                "sizeBytes": free_bytes,
                 "used": "—",
                 "color": "#374151",
             })
@@ -722,6 +747,7 @@ def get_real_disks():
                 "fs": "—",
                 "size": f"{size_gb} GB",
                 "sizeGB": size_gb,
+                "sizeBytes": size_bytes,
                 "used": "—",
                 "color": "#374151",
             })
@@ -730,6 +756,9 @@ def get_real_disks():
             "device": dev_path,
             "size": f"{size_gb} GB",
             "sizeGB": size_gb,
+            # sizeBytes permite al editor de particiones calcular el espacio
+            # libre real sin depender del GB redondeado que se muestra.
+            "sizeBytes": size_bytes,
             "model": model or "Unidad de almacenamiento",
             "partitions": partitions,
         })
@@ -742,6 +771,281 @@ def get_real_disks():
             "partitions": [],
         })
     return disks
+
+
+# ────────────────────────────────────────────────────────────────────────
+# Particionado manual: plan validado en el servidor y aplicado con parted
+#
+# La interfaz solo edita un *plan* (borradores de partición). Nada toca el
+# disco hasta que `apply_partition_plan` se ejecuta dentro de la instalación,
+# después de validar que el plan sigue siendo coherente con el disco real.
+# ────────────────────────────────────────────────────────────────────────
+
+PARTITION_FILESYSTEMS = {
+    "ext4": {"mkfs": "mkfs.ext4", "label": "ext4", "requires": "e2fsprogs"},
+    "vfat": {"mkfs": "mkfs.vfat", "label": "FAT32", "requires": "dosfstools"},
+    "swap": {"mkfs": "mkswap", "label": "Swap", "requires": "util-linux"},
+}
+
+PARTITION_ROLES = {
+    "root": "DylanOS (/)",
+    "efi": "Arranque EFI",
+    "home": "Datos (/home)",
+    "swap": "Swap",
+    "data": "Datos",
+}
+
+# Mínimos reales: una raíz ext4 con el sistema extraído no cabe en menos de
+# esto, y una ESP menor de 300 MiB rompe la actualización del firmware.
+MIN_ROOT_BYTES = 12 * 1024 ** 3
+MIN_EFI_BYTES = 300 * 1024 ** 2
+MIN_HOME_BYTES = 1 * 1024 ** 3
+MIN_SWAP_BYTES = 64 * 1024 ** 2
+MIN_DATA_BYTES = 64 * 1024 ** 2
+# Hueco de alineación reservado al principio y al final del disco.
+_DISK_GUARD_BYTES = 1024 ** 2
+
+
+def _tool_path(tool):
+    """Ruta real de una herramienta, aunque el PATH de la sesión no incluya sbin.
+
+    El backend lo lanza la ventana Qt desde la sesión gráfica del medio live; si
+    ese PATH no trae /usr/sbin, shutil.which no encontraría mkfs y el instalador
+    rechazaría planes perfectamente válidos.
+    """
+    found = shutil.which(tool)
+    if found:
+        return found
+    for folder in ("/usr/sbin", "/sbin", "/usr/local/sbin"):
+        candidate = Path(folder) / tool
+        if candidate.is_file() and os.access(candidate, os.X_OK):
+            return str(candidate)
+    return None
+
+
+def filesystem_catalog():
+    """Sistemas de archivos que el medio live puede formatear de verdad."""
+    catalog = []
+    for key, spec in PARTITION_FILESYSTEMS.items():
+        catalog.append({
+            "id": key,
+            "label": spec["label"],
+            # mkfs puede faltar si el perfil de imagen es mínimo; la interfaz
+            # oculta lo que no se puede crear en este medio.
+            "available": _tool_path(spec["mkfs"]) is not None,
+        })
+    return catalog
+
+
+def partition_role_label(role):
+    return PARTITION_ROLES.get(role, PARTITION_ROLES["data"])
+
+
+def _plan_error(message):
+    """Error de plan con el mismo formato que usan los avisos de la interfaz."""
+    return {"ok": False, "error": message}
+
+
+def _normalize_plan_partition(raw, index):
+    """Convierte una partición del plan de la interfaz en un dict tipado.
+
+    Se aceptan tamaños en bytes (lo normal) o en GB desde la interfaz; todo se
+    guarda en bytes para que la validación no dependa de redondeos.
+    """
+    if not isinstance(raw, dict):
+        raise ValueError(f"Partición {index + 1}: formato inválido.")
+    fs = str(raw.get("fs") or "ext4").strip().lower()
+    if fs not in PARTITION_FILESYSTEMS:
+        raise ValueError(f"Partición {index + 1}: sistema de archivos «{fs}» no soportado.")
+    role = str(raw.get("role") or "data").strip().lower()
+    if role not in PARTITION_ROLES:
+        raise ValueError(f"Partición {index + 1}: función «{role}» desconocida.")
+    try:
+        size_bytes = int(raw.get("sizeBytes") or 0)
+    except (TypeError, ValueError) as exc:
+        raise ValueError(f"Partición {index + 1}: tamaño inválido.") from exc
+    if size_bytes <= 0:
+        raise ValueError(f"Partición {index + 1}: el tamaño debe ser mayor que cero.")
+    if role == "efi" and fs != "vfat":
+        raise ValueError(f"Partición {index + 1}: la partición EFI debe ser FAT32.")
+    if role == "swap" and fs != "swap":
+        raise ValueError(f"Partición {index + 1}: la partición de intercambio debe ser swap.")
+    if role != "swap" and fs == "swap":
+        raise ValueError(f"Partición {index + 1}: swap solo puede usarse en una partición de intercambio.")
+    return {
+        "id": str(raw.get("id") or f"plan-{index + 1}"),
+        "role": role,
+        "fs": fs,
+        "sizeBytes": size_bytes,
+        "mount": str(raw.get("mount") or "").strip(),
+        "label": str(raw.get("label") or "").strip()[:16],
+    }
+
+
+def validate_partition_plan(disk, plan):
+    """Valida un plan de particionado manual contra el disco real.
+
+    Devuelve ``{"ok": True, "plan": …}`` con las particiones normalizadas y en
+    orden, o ``{"ok": False, "error": …}`` con un mensaje para el usuario. No
+    escribe nada: la aplicación real ocurre en `apply_partition_plan`.
+    """
+    if not isinstance(plan, dict):
+        return _plan_error("El plan de particiones no es válido.")
+    raw_parts = plan.get("partitions")
+    if not isinstance(raw_parts, list) or not raw_parts:
+        return _plan_error("Añade al menos una partición al plan manual.")
+
+    device_info = None
+    for dev in lsblk_devices():
+        dev_path = dev.get("path") or f"/dev/{dev.get('name', '')}"
+        if dev_path == disk:
+            device_info = dev
+            break
+    if device_info is None:
+        return _plan_error("El disco seleccionado ya no está disponible; vuelve a detectar los discos.")
+    disk_bytes = _safe_int(device_info.get("size"))
+    if disk_bytes <= 0:
+        return _plan_error("No se pudo leer el tamaño real del disco seleccionado.")
+
+    # Los sistemas de archivos se eligen en la interfaz, pero se revalidan aquí:
+    # un plan viejo o manipulado no debe llegar a mkfs.
+    unavailable = [
+        PARTITION_FILESYSTEMS[key]["label"]
+        for key, spec in PARTITION_FILESYSTEMS.items()
+        if _tool_path(spec["mkfs"]) is None
+    ]
+
+    partitions = []
+    try:
+        for index, raw in enumerate(raw_parts):
+            partitions.append(_normalize_plan_partition(raw, index))
+    except ValueError as exc:
+        return _plan_error(str(exc))
+
+    roles = [p["role"] for p in partitions]
+    if roles.count("root") != 1:
+        return _plan_error("El plan debe tener exactamente una partición raíz (DylanOS).")
+    if roles.count("efi") > 1:
+        return _plan_error("Solo puede haber una partición de arranque EFI.")
+    if roles.count("swap") > 1:
+        return _plan_error("Solo puede haber una partición de intercambio.")
+    if roles.count("home") > 1:
+        return _plan_error("Solo puede haber una partición /home.")
+
+    minimums = {
+        "root": (MIN_ROOT_BYTES, "raíz"),
+        "efi": (MIN_EFI_BYTES, "EFI"),
+        "home": (MIN_HOME_BYTES, "/home"),
+        "swap": (MIN_SWAP_BYTES, "swap"),
+        "data": (MIN_DATA_BYTES, "datos"),
+    }
+    for part in partitions:
+        minimum, name = minimums[part["role"]]
+        if part["sizeBytes"] < minimum:
+            return _plan_error(
+                f"La partición {name} necesita al menos {_human_size(minimum)}."
+            )
+        if part["fs"] in unavailable:
+            return _plan_error(
+                f"Este medio no puede crear {PARTITION_FILESYSTEMS[part['fs']]['label']}: "
+                f"falta {PARTITION_FILESYSTEMS[part['fs']]['requires']}."
+            )
+
+    total = sum(p["sizeBytes"] for p in partitions) + _DISK_GUARD_BYTES
+    if total > disk_bytes:
+        return _plan_error(
+            f"El plan ocupa {_human_size(total)} y el disco solo tiene "
+            f"{_human_size(disk_bytes)}. Reduce el tamaño de las particiones."
+        )
+
+    # En un equipo UEFI sin ESP, grub-install --target=x86_64-efi no tiene dónde
+    # escribir y la instalación fallaría al final, con el sistema ya copiado.
+    if Path("/sys/firmware/efi").is_dir() and roles.count("efi") == 0:
+        return _plan_error(
+            "Este equipo arranca en UEFI: el plan necesita una partición de arranque EFI (FAT32)."
+        )
+
+    # Orden estable para la tabla: EFI primero (alineada al inicio del disco).
+    order = {"efi": 0, "root": 1, "home": 2, "swap": 3, "data": 4}
+    partitions.sort(key=lambda p: order.get(p["role"], 9))
+
+    return {
+        "ok": True,
+        "plan": {
+            "disk": disk,
+            "diskBytes": disk_bytes,
+            "partitions": partitions,
+            "freeBytes": disk_bytes - total,
+            # UEFI se detecta en el medio live: sin efivarfs el firmware es BIOS.
+            "uefi": Path("/sys/firmware/efi").is_dir(),
+        },
+    }
+
+
+def _device_suffix(disk):
+    """Sufijo de partición: NVMe/mmcblk/loop usan «p», el resto no."""
+    return "p" if re.search(r"(nvme\d+n\d+|mmcblk\d+|loop\d+)$", disk) else ""
+
+
+def apply_partition_plan(disk, partitions):
+    """Escribe el plan manual en el disco y devuelve (root, efi, swap).
+
+    Es destructivo: rehace la tabla GPT y formatea cada partición del plan. Se
+    ejecuta solo desde `perform_installation`, nunca desde la API de edición.
+    """
+    if not partitions:
+        raise RuntimeError("No hay un plan de particiones que aplicar.")
+    suffix = _device_suffix(disk)
+
+    # Reutilizar una tabla existente es la causa más común del error «parted no
+    # puede satisfacer la restricción»: se liberan los montajes y se rehace la
+    # tabla. Las particiones del plan se crean en orden desde el inicio del
+    # disco, dejando 1 MiB de guarda para la GPT primaria.
+    run_quiet("swapoff -a")
+    run_quiet("umount -R /target")
+    unmount_disk_partitions(disk)
+    run_cmd(f"parted -s {shlex.quote(disk)} mklabel gpt")
+
+    start_mib = _DISK_GUARD_BYTES // (1024 ** 2)
+    created = []
+    for index, part in enumerate(partitions):
+        # Redondeo hacia arriba garantiza que la partición nunca quede por
+        # debajo del mínimo que ya validó validate_partition_plan.
+        size_mib = -(-part["sizeBytes"] // (1024 ** 2))
+        end_mib = start_mib + size_mib
+        dev = f"{disk}{suffix}{index + 1}"
+        run_cmd(
+            f"parted -s {shlex.quote(disk)} mkpart primary "
+            f"{start_mib}MiB {end_mib}MiB"
+        )
+        if part["role"] == "efi":
+            # El flag esp hace que el firmware UEFI reconozca la partición; sin
+            # él la instalación arranca en BIOS o no arranca en UEFI.
+            run_quiet(f"parted -s {shlex.quote(disk)} set {index + 1} esp on")
+        created.append({**part, "device": dev, "number": index + 1})
+        start_mib = end_mib
+
+    wait_for_partitions(disk)
+
+    devices = {"root": "", "efi": "", "home": "", "swap": ""}
+    for part in created:
+        dev = part["device"]
+        fs = part["fs"]
+        if fs == "swap":
+            run_cmd(f"mkswap -L {shlex.quote(part['label'] or 'swap')} {shlex.quote(dev)}")
+            devices["swap"] = devices["swap"] or dev
+            continue
+        if fs == "vfat":
+            label = (part["label"] or ("EFI" if part["role"] == "efi" else "VARIOS"))[:11]
+            run_cmd(f"mkfs.vfat -F32 -n {shlex.quote(label)} {shlex.quote(dev)}")
+        else:
+            label = (part["label"] or "DylanOS")[:16]
+            run_cmd(f"mkfs.ext4 -F -L {shlex.quote(label)} {shlex.quote(dev)}")
+        devices[part["role"]] = dev
+
+    if not devices["root"]:
+        raise RuntimeError("El plan no generó una partición raíz utilizable.")
+    return devices
 
 
 def find_install_partitions(disk):
@@ -1024,7 +1328,8 @@ def perform_installation(config):
             raise RuntimeError("No se recibió la contraseña del usuario; no es posible crear la cuenta.")
 
         root_part, efi_part, efi_mounted = "", "", False
-        suffix = "p" if "nvme" in disk else ""
+        manual_devices = {"root": "", "efi": "", "home": "", "swap": ""}
+        suffix = _device_suffix(disk)
         # Particionado automático (GPT): 1) ESP de 512 MiB, 2) partición BIOS
         # boot de 1 MiB — GRUB i386-pc la exige en GPT; sin ella
         # grub-install --target=i386-pc fallaba al final de la instalación —
@@ -1032,10 +1337,32 @@ def perform_installation(config):
         auto_efi = f"{disk}{suffix}1"
         auto_root = f"{disk}{suffix}3"
 
+        # El plan manual se revalida aquí contra el disco real: la copia de la
+        # interfaz puede haber quedado obsoleta y nunca se formatea un plan
+        # que el servidor no haya aceptado.
+        manual_plan = None
+        if mode == "manual":
+            raw_plan = config.get("plan")
+            if raw_plan:
+                validated = validate_partition_plan(disk, raw_plan)
+                if not validated.get("ok"):
+                    raise RuntimeError(f"Plan de particiones inválido: {validated.get('error')}")
+                manual_plan = validated["plan"]
+
         # ── Fase 0: preparación del disco y tabla de particiones ──
         update_state(3, 0, "Preparando disco y tabla de particiones...", f"Configurando {disk or 'el disco'}")
         if demo:
             time.sleep(1.0)
+        elif mode == "manual" and manual_plan:
+            update_state(6, 0, "Aplicando el plan de particiones manual...", f"parted {disk}")
+            manual_devices = apply_partition_plan(disk, manual_plan["partitions"])
+            root_part = manual_devices["root"]
+            efi_part = manual_devices["efi"]
+            log(
+                f"Modo manual (plan): root={root_part} efi={efi_part or '(sin ESP)'} "
+                f"home={manual_devices['home'] or '(sin /home)'} "
+                f"swap={manual_devices['swap'] or '(sin swap)'}"
+            )
         elif mode == "manual":
             root_part, efi_part = find_install_partitions(disk)
             log(f"Modo manual: root={root_part} efi={efi_part or '(sin ESP)'}")
@@ -1061,16 +1388,24 @@ def perform_installation(config):
         if demo:
             time.sleep(1.2)
         else:
+            # El modo manual nunca formatea aquí: apply_partition_plan ya
+            # formateó el plan, y el modo manual sin plan reutiliza una ext4
+            # existente que el usuario quiere conservar.
             if mode != "manual":
                 run_cmd(f"mkfs.vfat -F32 -n EFI {shlex.quote(efi_part)}")
                 run_cmd(f"mkfs.ext4 -F -L DylanOS {shlex.quote(root_part)}")
             TARGET_DIR.mkdir(parents=True, exist_ok=True)
             run_cmd(f"mount {shlex.quote(root_part)} /target")
-            # The manual mode reuses an existing ext4 partition. Remove its old
-            # contents before extracting the live system: unsquashfs -f only
-            # replaces matching paths and otherwise leaves stale user/system
-            # files behind, which can cause a mixed, non-reproducible install.
-            clear_target_root(TARGET_DIR)
+            # El modo manual reutiliza una partición ext4 existente. Hay que
+            # vaciarla antes de extraer el sistema live: unsquashfs -f solo
+            # reemplaza rutas coincidentes y deja archivos viejos de usuario o
+            # de sistema, produciendo una instalación mezclada. Con un plan
+            # manual la partición es nueva y no hay nada que limpiar.
+            if not manual_plan:
+                clear_target_root(TARGET_DIR)
+            if manual_devices["home"]:
+                run_cmd("mkdir -p /target/home")
+                run_cmd(f"mount {shlex.quote(manual_devices['home'])} /target/home")
             if efi_part:
                 run_cmd("mkdir -p /target/boot/efi")
                 run_cmd(f"mount {shlex.quote(efi_part)} /target/boot/efi")
@@ -1106,6 +1441,20 @@ def perform_installation(config):
                 fstab += f"UUID={root_uuid} / ext4 errors=remount-ro 0 1\n"
             else:
                 fstab += f"{root_part} / ext4 errors=remount-ro 0 1\n"
+            # /home y swap solo existen si el plan manual los creó: una entrada
+            # de fstab que apunta a algo inexistente impide arrancar el sistema.
+            if manual_devices["home"]:
+                home_uuid = run_cmd(
+                    f"blkid -s UUID -o value {shlex.quote(manual_devices['home'])}", check=False
+                )
+                if home_uuid:
+                    fstab += f"UUID={home_uuid} /home ext4 defaults 0 2\n"
+            if manual_devices["swap"]:
+                swap_uuid = run_cmd(
+                    f"blkid -s UUID -o value {shlex.quote(manual_devices['swap'])}", check=False
+                )
+                if swap_uuid:
+                    fstab += f"UUID={swap_uuid} none swap sw 0 0\n"
             if efi_mounted:
                 efi_uuid = run_cmd(f"blkid -s UUID -o value {shlex.quote(efi_part)}", check=False)
                 if efi_uuid:
@@ -1262,6 +1611,15 @@ class InstallerRequestHandler(http.server.SimpleHTTPRequestHandler):
             self.send_json(get_real_system_info())
         elif path == "/api/disks":
             self.send_json(get_real_disks())
+        elif path == "/api/partition/filesystems":
+            self.send_json({
+                "filesystems": filesystem_catalog(),
+                "roles": [
+                    {"id": key, "label": label}
+                    for key, label in PARTITION_ROLES.items()
+                ],
+                "uefi": Path("/sys/firmware/efi").is_dir(),
+            })
         elif path == "/api/locales":
             self.send_json(available_locales())
         elif path == "/api/keyboards":
@@ -1303,6 +1661,16 @@ class InstallerRequestHandler(http.server.SimpleHTTPRequestHandler):
                 (payload.get("username") or "").strip(),
                 (payload.get("hostname") or "").strip(),
             ))
+
+        elif path == "/api/partition/validate":
+            disk = (payload.get("disk") or "").strip()
+            # Validar un plan es de solo lectura: la vista previa sin root debe
+            # poder comprobarlo. validate_partition_plan ya verifica que el
+            # disco exista en el inventario real de lsblk.
+            if not re.fullmatch(r"/dev/(?:[A-Za-z0-9._+-]+|disk/by-id/[A-Za-z0-9._+-]+)", disk):
+                self.send_json({"ok": False, "error": "Selecciona un disco válido antes de editar particiones."})
+                return
+            self.send_json(validate_partition_plan(disk, payload.get("plan")))
 
         elif path == "/api/install":
             with install_lock:
