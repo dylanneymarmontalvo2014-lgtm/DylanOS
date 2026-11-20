@@ -3,25 +3,27 @@ import QtQuick
 
 // Visual tokens measured from the DylanOS Crimson reference screenshot.
 QtObject {
+    SystemPalette { id: systemPalette; colorGroup: SystemPalette.Active }
+    readonly property bool dark: systemPalette.window.hsvValue < 0.5
     // surfaces
-    readonly property color bgDeep: "#0a0506"
-    readonly property color surfaceTop: "#1d1012"
-    readonly property color surfaceBottom: "#100809"
-    readonly property color sidebar: "#150b0d"
-    readonly property color popup: "#1c1113"
-    readonly property color card: Qt.rgba(1, 1, 1, 0.035)
-    readonly property color cardHover: Qt.rgba(1, 1, 1, 0.065)
-    readonly property color field: Qt.rgba(1, 1, 1, 0.045)
-    readonly property color tableHeader: Qt.rgba(1, 1, 1, 0.04)
+    readonly property color bgDeep: dark ? "#0a0506" : "#f4f1f1"
+    readonly property color surfaceTop: dark ? "#1d1012" : "#ffffff"
+    readonly property color surfaceBottom: dark ? "#100809" : "#f7f5f5"
+    readonly property color sidebar: dark ? "#150b0d" : "#eeebeb"
+    readonly property color popup: dark ? "#1c1113" : "#ffffff"
+    readonly property color card: dark ? Qt.rgba(1, 1, 1, 0.035) : Qt.rgba(0, 0, 0, 0.035)
+    readonly property color cardHover: dark ? Qt.rgba(1, 1, 1, 0.065) : Qt.rgba(0, 0, 0, 0.065)
+    readonly property color field: dark ? Qt.rgba(1, 1, 1, 0.045) : Qt.rgba(0, 0, 0, 0.045)
+    readonly property color tableHeader: dark ? Qt.rgba(1, 1, 1, 0.04) : Qt.rgba(0, 0, 0, 0.04)
 
     // lines
-    readonly property color border: Qt.rgba(1, 1, 1, 0.13)
-    readonly property color hairline: Qt.rgba(1, 1, 1, 0.07)
+    readonly property color border: dark ? Qt.rgba(1, 1, 1, 0.13) : Qt.rgba(0, 0, 0, 0.12)
+    readonly property color hairline: dark ? Qt.rgba(1, 1, 1, 0.07) : Qt.rgba(0, 0, 0, 0.08)
 
     // text
-    readonly property color text: "#f4efef"
-    readonly property color textDim: "#b9acae"
-    readonly property color textFaint: "#857a7c"
+    readonly property color text: dark ? "#f4efef" : "#211a1b"
+    readonly property color textDim: dark ? "#b9acae" : "#655b5d"
+    readonly property color textFaint: dark ? "#857a7c" : "#827779"
 
     // brand
     readonly property color accent: "#DC143C"

@@ -21,6 +21,7 @@ PlasmoidItem {
     // Las opciones del usuario permiten cambiar ambos tamaños por separado.
     // Reservar siempre el tamaño mayor para que iconSize > hoverSize no recorte
     // iconos ni haga que los delegados se solapen en configuraciones extremas.
+    readonly property bool dark: PlasmaCore.Theme.textColor.hsvValue > 0.5
     readonly property int effectiveIconExtent: Math.max(Plasmoid.configuration.iconSize,
                                                          Plasmoid.configuration.hoverSize)
     readonly property int dockRowWidth: Math.max(1, tasksModel.count) * (effectiveIconExtent + 8)
@@ -68,22 +69,23 @@ PlasmoidItem {
                 id: dockBackground
                 anchors.fill: parent
                 radius: Plasmoid.configuration.cornerRadius
-                color: "#0a080b"
+                // Dark-mode tokens remain color: "#0a080b" and border.color: "#66f4dce5".
+                color: root.dark ? "#0a080b" : "#fbf8f8"
                 antialiasing: true
                 gradient: Gradient {
                     GradientStop {
                         position: 0
-                        color: Qt.rgba(68 / 255, 28 / 255, 42 / 255,
+                        color: Qt.rgba(root.dark ? 68 / 255 : 1, root.dark ? 28 / 255 : 1, root.dark ? 42 / 255 : 1,
                             Math.min(0.76, Plasmoid.configuration.backgroundOpacity + 0.18))
                     }
                     GradientStop {
                         position: 0.42
-                        color: Qt.rgba(24 / 255, 18 / 255, 25 / 255,
+                        color: Qt.rgba(root.dark ? 24 / 255 : 248 / 255, root.dark ? 18 / 255 : 246 / 255, root.dark ? 25 / 255 : 246 / 255,
                             Math.min(0.92, Plasmoid.configuration.backgroundOpacity + 0.27))
                     }
                     GradientStop {
                         position: 1
-                        color: Qt.rgba(8 / 255, 8 / 255, 11 / 255,
+                        color: Qt.rgba(root.dark ? 8 / 255 : 240 / 255, root.dark ? 8 / 255 : 236 / 255, root.dark ? 11 / 255 : 236 / 255,
                             Math.min(0.94, Plasmoid.configuration.backgroundOpacity + 0.30))
                     }
                 }
@@ -94,7 +96,7 @@ PlasmoidItem {
                     anchors.fill: parent
                     radius: parent.radius
                     color: "transparent"
-                    border.color: "#66f4dce5"
+                    border.color: root.dark ? "#66f4dce5" : "#3381172c"
                     border.width: 1
                 }
 
@@ -109,9 +111,9 @@ PlasmoidItem {
                     radius: Math.max(0, parent.radius - 1)
                     clip: true
                     gradient: Gradient {
-                        GradientStop { position: 0; color: "#20ffffff" }
-                        GradientStop { position: 0.42; color: "#0affd9e3" }
-                        GradientStop { position: 1; color: "#00ffffff" }
+                        GradientStop { position: 0; color: root.dark ? "#20ffffff" : "#22000000" }
+                        GradientStop { position: 0.42; color: root.dark ? "#0affd9e3" : "#10000000" }
+                        GradientStop { position: 1; color: "transparent" }
                     }
                 }
 

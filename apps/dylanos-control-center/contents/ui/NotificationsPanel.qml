@@ -1,4 +1,5 @@
 import QtQuick
+import org.kde.plasma.core as PlasmaCore
 import QtQuick.Layouts
 import QtQuick.Controls as QQC2
 import QtQuick.Effects
@@ -12,12 +13,13 @@ Rectangle {
     id: root
     property var notificationModel
 
-    readonly property color cBlack:      Qt.rgba(10 / 255, 10 / 255, 12 / 255, 0.88)
-    readonly property color cGray:       "#1A1A1A"
+    readonly property color cBlack:      PlasmaCore.Theme.textColor.hsvValue > 0.5 ? Qt.rgba(10 / 255, 10 / 255, 12 / 255, 0.88) : Qt.rgba(1, 1, 1, 0.97)
+    readonly property color cGray:       PlasmaCore.Theme.textColor.hsvValue > 0.5 ? "#1A1A1A" : "#efeded"
     readonly property color cCrimson:    "#DC143C"
-    readonly property color cWhite:      "#FFFFFF"
-    readonly property color cLightGray:  "#B3B3B3"
-    readonly property color cCardBorder: Qt.rgba(1, 1, 1, 0.12)
+    readonly property color cWhite:      PlasmaCore.Theme.textColor
+    readonly property color cOnAccent: "#FFFFFF"
+    readonly property color cLightGray:  PlasmaCore.Theme.disabledTextColor
+    readonly property color cCardBorder: PlasmaCore.Theme.textColor.hsvValue > 0.5 ? Qt.rgba(1, 1, 1, 0.12) : Qt.rgba(0, 0, 0, 0.12)
 
     color: cBlack
     radius: 22
@@ -134,7 +136,7 @@ Rectangle {
                             anchors.centerIn: parent
                             width: 20; height: 20
                             source: model.iconName || model.desktopEntry || "dialog-information"
-                            isMask: true; color: cWhite
+                            isMask: true; color: cOnAccent
                         }
                     }
 

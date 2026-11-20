@@ -168,8 +168,7 @@ export default function PartitioningScreen({ onCancel }: PartitioningScreenProps
   const nextDisabled =
     loadingDisks ||
     state.partitionError !== "none" ||
-    !disk ||
-    disk.device !== state.partitioning.disk ||
+    !disk || disk.device !== state.partitioning.disk ||
     (!isAuto && (planProblem !== null || plan.length === 0 || needsEfi));
 
   const handleNext = async () => {

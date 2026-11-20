@@ -1,5 +1,6 @@
 pragma ComponentBehavior: Bound
 import QtQuick
+import org.kde.plasma.core as PlasmaCore
 import org.kde.plasma.plasmoid
 import "lib"
 import "lib/WidgetTokens.js" as Tokens
@@ -81,7 +82,7 @@ PlasmoidItem {
 
         WidgetCard {
             anchors.fill: parent
-            variant: Tokens.variantDark
+            variant: PlasmaCore.Theme.textColor.hsvValue > 0.5 ? Tokens.variantDark : Tokens.variantLight
         }
 
         Column {
@@ -105,7 +106,7 @@ PlasmoidItem {
                     // En un widget de 133 px el nombre completo no cabe junto a
                     // los dos botones; se abrevia en vez de cortar con «…».
                     text: root.shortMonthLabel
-                    color: Tokens.white
+                    color: PlasmaCore.Theme.textColor
                     font.family: Tokens.fontFamily
                     font.pixelSize: Tokens.fontSizeBody
                     font.weight: Font.DemiBold
@@ -132,7 +133,7 @@ PlasmoidItem {
                                 anchors.centerIn: parent
                                 text: navButton.modelData.glyph
                                 color: navArea.containsMouse
-                                       ? Tokens.crimson : Tokens.lightGray
+                                       ? Tokens.crimson : PlasmaCore.Theme.disabledTextColor
                                 font.family: Tokens.fontFamily
                                 font.pixelSize: Tokens.fontSizeBody
                             }
@@ -162,7 +163,7 @@ PlasmoidItem {
                         width: dayGrid.cellWidth
                         horizontalAlignment: Text.AlignHCenter
                         text: modelData
-                        color: Tokens.lightGray
+                        color: PlasmaCore.Theme.disabledTextColor
                         font.family: Tokens.fontFamily
                         font.pixelSize: Tokens.fontSizeCaption - 1
                         font.weight: Font.DemiBold
@@ -214,7 +215,7 @@ PlasmoidItem {
                             anchors.centerIn: parent
                             text: dayCell.modelData > 0 ? dayCell.modelData : ""
                             color: root.isToday(dayCell.modelData)
-                                   ? Tokens.white : Tokens.lightGray
+                                   ? PlasmaCore.Theme.textColor : PlasmaCore.Theme.disabledTextColor
                             font.family: Tokens.fontFamily
                             // La cifra nunca puede ser mayor que su celda.
                             font.pixelSize: Math.min(Tokens.fontSizeCaption - 1,

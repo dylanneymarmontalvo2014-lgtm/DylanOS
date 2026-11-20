@@ -1,4 +1,5 @@
 import QtQuick
+import org.kde.plasma.core as PlasmaCore
 import QtQuick.Layouts
 import org.kde.plasma.plasmoid
 import org.kde.kirigami as Kirigami
@@ -24,7 +25,7 @@ PlasmoidItem {
             width: root.iconSize; height: root.iconSize
             source: "system-search"
             isMask: true
-            color: "#FFFFFF"
+            color: PlasmaCore.Theme.textColor
         }
 
         MouseArea {
@@ -41,7 +42,7 @@ PlasmoidItem {
         Kirigami.Icon {
             anchors.centerIn: parent
             width: root.iconSize; height: root.iconSize
-            source: "system-search"; isMask: true; color: "#FFFFFF"
+            source: "system-search"; isMask: true; color: PlasmaCore.Theme.textColor
         }
         MouseArea {
             anchors.fill: parent

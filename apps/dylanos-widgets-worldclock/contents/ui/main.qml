@@ -1,5 +1,6 @@
 pragma ComponentBehavior: Bound
 import QtQuick
+import org.kde.plasma.core as PlasmaCore
 import org.kde.plasma.plasmoid
 import org.kde.plasma.plasma5support as P5Support
 import "lib"
@@ -132,7 +133,7 @@ PlasmoidItem {
                             anchors.left: parent.left
                             anchors.verticalCenter: parent.verticalCenter
                             text: zoneRow.modelData.label
-                            color: Tokens.lightGray
+                            color: PlasmaCore.Theme.disabledTextColor
                             font.family: Tokens.fontFamily
                             font.pixelSize: Tokens.fontSizeCaption
                         }
@@ -141,7 +142,7 @@ PlasmoidItem {
                             anchors.right: parent.right
                             anchors.verticalCenter: parent.verticalCenter
                             text: root.hourFor(zoneRow.index) || "—"
-                            color: Tokens.white
+                            color: PlasmaCore.Theme.textColor
                             font.family: Tokens.fontFamily
                             font.pixelSize: Tokens.fontSizeBody
                             font.weight: Font.DemiBold

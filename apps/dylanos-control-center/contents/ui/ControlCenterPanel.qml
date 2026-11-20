@@ -1,4 +1,5 @@
 import QtQuick
+import org.kde.plasma.core as PlasmaCore
 import QtQuick.Layouts
 import QtQuick.Controls as QQC2
 import QtQuick.Effects
@@ -9,12 +10,13 @@ import org.kde.kirigami as Kirigami
 Rectangle {
     id: root
 
-    readonly property color cBlack:      Qt.rgba(10 / 255, 10 / 255, 12 / 255, 0.88)
-    readonly property color cGray:       "#1A1A1A"
+    readonly property color cBlack:      PlasmaCore.Theme.textColor.hsvValue > 0.5 ? Qt.rgba(10 / 255, 10 / 255, 12 / 255, 0.88) : Qt.rgba(1, 1, 1, 0.97)
+    readonly property color cGray:       PlasmaCore.Theme.textColor.hsvValue > 0.5 ? "#1A1A1A" : "#efeded"
     readonly property color cCrimson:    "#DC143C"
-    readonly property color cWhite:      "#FFFFFF"
-    readonly property color cLightGray:  "#B3B3B3"
-    readonly property color cCardBorder: Qt.rgba(1, 1, 1, 0.12)
+    readonly property color cWhite:      PlasmaCore.Theme.textColor
+    readonly property color cOnAccent: "#FFFFFF"
+    readonly property color cLightGray:  PlasmaCore.Theme.disabledTextColor
+    readonly property color cCardBorder: PlasmaCore.Theme.textColor.hsvValue > 0.5 ? Qt.rgba(1, 1, 1, 0.12) : Qt.rgba(0, 0, 0, 0.12)
 
     color: cBlack
     radius: 22
@@ -99,13 +101,13 @@ Rectangle {
                     anchors.fill: parent; anchors.margins: 12; spacing: 4
                     Kirigami.Icon {
                         source: "network-wireless"; isMask: true
-                        color: SystemStatus.wifiPowered ? cWhite : cLightGray
+                        color: SystemStatus.wifiPowered ? cOnAccent : cLightGray
                         Layout.preferredWidth: 22; Layout.preferredHeight: 22
                     }
                     Item { Layout.fillHeight: true }
                     QQC2.Label {
                         text: "Wi-Fi"
-                        color: cWhite
+                        color: SystemStatus.wifiPowered ? cOnAccent : cWhite
                         font.pixelSize: 13; font.bold: true
                     }
                     QQC2.Label {
@@ -144,13 +146,13 @@ Rectangle {
                     anchors.fill: parent; anchors.margins: 12; spacing: 4
                     Kirigami.Icon {
                         source: "preferences-system-bluetooth"; isMask: true
-                        color: SystemStatus.bluetoothPowered ? cWhite : cLightGray
+                        color: SystemStatus.bluetoothPowered ? cOnAccent : cLightGray
                         Layout.preferredWidth: 22; Layout.preferredHeight: 22
                     }
                     Item { Layout.fillHeight: true }
                     QQC2.Label {
                         text: "Bluetooth"
-                        color: cWhite
+                        color: SystemStatus.bluetoothPowered ? cOnAccent : cWhite
                         font.pixelSize: 13; font.bold: true
                     }
                     QQC2.Label {
@@ -189,13 +191,13 @@ Rectangle {
                     anchors.fill: parent; anchors.margins: 12; spacing: 4
                     Kirigami.Icon {
                         source: "notifications-disabled"; isMask: true
-                        color: SystemStatus.doNotDisturb ? cWhite : cLightGray
+                        color: SystemStatus.doNotDisturb ? cOnAccent : cLightGray
                         Layout.preferredWidth: 22; Layout.preferredHeight: 22
                     }
                     Item { Layout.fillHeight: true }
                     QQC2.Label {
                         text: "No molestar"
-                        color: cWhite
+                        color: SystemStatus.doNotDisturb ? cOnAccent : cWhite
                         font.pixelSize: 13; font.bold: true
                     }
                     QQC2.Label {
@@ -228,13 +230,13 @@ Rectangle {
                     anchors.fill: parent; anchors.margins: 12; spacing: 4
                     Kirigami.Icon {
                         source: "weather-clear-night"; isMask: true
-                        color: SystemStatus.darkModeActive ? cWhite : cLightGray
+                        color: SystemStatus.darkModeActive ? cOnAccent : cLightGray
                         Layout.preferredWidth: 22; Layout.preferredHeight: 22
                     }
                     Item { Layout.fillHeight: true }
                     QQC2.Label {
                         text: "Modo oscuro"
-                        color: cWhite
+                        color: SystemStatus.darkModeActive ? cOnAccent : cWhite
                         font.pixelSize: 13; font.bold: true
                     }
                     QQC2.Label {
@@ -515,7 +517,7 @@ Rectangle {
                     Layout.fillWidth: true
                     Layout.preferredHeight: 70
                     radius: 14
-                    color: secondaryMouse.containsMouse ? "#242424" : cGray
+                    color: secondaryMouse.containsMouse ? (PlasmaCore.Theme.textColor.hsvValue > 0.5 ? "#242424" : "#e6e3e3") : cGray
                     border.color: cCardBorder
                     border.width: 1
 

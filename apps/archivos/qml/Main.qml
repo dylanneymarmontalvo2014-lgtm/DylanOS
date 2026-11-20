@@ -13,16 +13,18 @@ ApplicationWindow {
     color: cBg
 
     // ---------- Paleta (idéntica al prototipo v2 aprobado) ----------
-    readonly property color cBg: "#1c1c1e"
-    readonly property color cBgElevated: "#242426"
-    readonly property color cBgSidebar: "#1f1f21"
-    readonly property color cBgHover: "#2d2d30"
-    readonly property color cBorder: "#333335"
-    readonly property color cText: "#f2f2f2"
-    readonly property color cTextDim: "#a6a6a8"
-    readonly property color cTextFaint: "#6e6e70"
+    SystemPalette { id: systemPalette; colorGroup: SystemPalette.Active }
+    readonly property bool dark: systemPalette.window.hsvValue < 0.5
+    readonly property color cBg: dark ? "#1c1c1e" : "#f5f3f3"
+    readonly property color cBgElevated: dark ? "#242426" : "#ffffff"
+    readonly property color cBgSidebar: dark ? "#1f1f21" : "#efeded"
+    readonly property color cBgHover: dark ? "#2d2d30" : "#e7e2e3"
+    readonly property color cBorder: dark ? "#333335" : "#d8d1d2"
+    readonly property color cText: dark ? "#f2f2f2" : "#211a1b"
+    readonly property color cTextDim: dark ? "#a6a6a8" : "#62595b"
+    readonly property color cTextFaint: dark ? "#6e6e70" : "#81787a"
     readonly property color cAccent: "#b8433f"
-    readonly property color cAccentSoft: "#33191a"
+    readonly property color cAccentSoft: dark ? "#33191a" : "#f4dfe2"
 
     property string assetsPath: "file://" + appDir + "/assets/"
 
@@ -363,7 +365,7 @@ ApplicationWindow {
         focus: true
         padding: 5
         closePolicy: Popup.CloseOnEscape | Popup.CloseOnPressOutside
-        background: Rectangle { color: "#1c1c1e"; border.color: win.cBorder; radius: 10 }
+        background: Rectangle { color: win.cBgElevated; border.color: win.cBorder; radius: 10 }
         property var blocks: []
         contentItem: ColumnLayout {
             spacing: 0
@@ -502,7 +504,7 @@ ApplicationWindow {
                 id: nameField
                 Layout.fillWidth: true
                 color: win.cText
-                background: Rectangle { color: "#0b0b0c"; border.color: win.cBorder; radius: 8 }
+                background: Rectangle { color: win.dark ? "#0b0b0c" : "#ffffff"; border.color: win.cBorder; radius: 8 }
                 Keys.onReturnPressed: { renameDialog.accept(); }
             }
         }
@@ -607,7 +609,7 @@ ApplicationWindow {
                 Rectangle {
                     Layout.preferredWidth: 116; Layout.preferredHeight: 26
                     radius: 8
-                    color: "#0b0b0c"
+                    color: win.dark ? "#0b0b0c" : "#ffffff"
                     border.color: win.cBorder; border.width: 1
                     RowLayout {
                         anchors.fill: parent
@@ -626,7 +628,7 @@ ApplicationWindow {
                 Rectangle {
                     Layout.preferredWidth: 170; Layout.preferredHeight: 27
                     radius: 8
-                    color: "#0b0b0c"
+                    color: win.dark ? "#0b0b0c" : "#ffffff"
                     border.color: win.cBorder; border.width: 1
                     RowLayout {
                         anchors.fill: parent
@@ -766,7 +768,7 @@ ApplicationWindow {
                                 }
                                 Label {
                                     text: modelData.label
-                                    color: win.activeSidebarKey === modelData.key ? "#ffffff" : win.cText
+                                    color: win.activeSidebarKey === modelData.key ? (win.dark ? "#ffffff" : "#211a1b") : win.cText
                                     font.pixelSize: 13
                                 }
                             }
@@ -1071,8 +1073,8 @@ ApplicationWindow {
                                             sourceSize.width: modelData.type === "folder" ? 20 : 13
                                             sourceSize.height: modelData.type === "folder" ? 16 : 17
                                         }
-                                        Label { text: modelData.name; color: isActive ? "#ffffff" : win.cText; font.pixelSize: 12; Layout.fillWidth: true; elide: Text.ElideRight }
-                                        Label { visible: modelData.type === "folder"; text: "›"; color: isActive ? "#ffffff" : win.cTextFaint; font.pixelSize: 12 }
+                                        Label { text: modelData.name; color: isActive ? (win.dark ? "#ffffff" : "#211a1b") : win.cText; font.pixelSize: 12; Layout.fillWidth: true; elide: Text.ElideRight }
+                                        Label { visible: modelData.type === "folder"; text: "›"; color: isActive ? (win.dark ? "#ffffff" : "#211a1b") : win.cTextFaint; font.pixelSize: 12 }
                                     }
                                     MouseArea {
                                         id: colRowMa

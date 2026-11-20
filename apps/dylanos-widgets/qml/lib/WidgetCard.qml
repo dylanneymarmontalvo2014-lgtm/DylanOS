@@ -15,8 +15,9 @@ import "WidgetTokens.js" as Tokens
  */
 Item {
     id: surface
+    SystemPalette { id: systemPalette; colorGroup: SystemPalette.Active }
 
-    property string variant: Tokens.variantDark
+    property string variant: systemPalette.window.hsvValue > 0.5 ? Tokens.variantDark : Tokens.variantLight
     // Estado que publica Crimson Glass (modo bajo consumo / llvmpipe).
     property bool performanceMode: false
     property bool showShadow: true
@@ -50,7 +51,7 @@ Item {
         opacity: surface.fillOpacity
         antialiasing: true
         border.width: 1
-        border.color: Qt.rgba(1, 1, 1, surface.performanceMode ? 0.10 : 0.14)
+        border.color: surface.variant === Tokens.variantDark ? Qt.rgba(1, 1, 1, surface.performanceMode ? 0.10 : 0.14) : Qt.rgba(0, 0, 0, surface.performanceMode ? 0.10 : 0.14)
 
         /*
          * Vidrio: más luminoso arriba (luz que entra) y más profundo abajo.

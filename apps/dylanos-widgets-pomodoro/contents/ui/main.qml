@@ -1,5 +1,6 @@
 pragma ComponentBehavior: Bound
 import QtQuick
+import org.kde.plasma.core as PlasmaCore
 import org.kde.plasma.plasmoid
 import "lib"
 import "lib/WidgetTokens.js" as Tokens
@@ -107,7 +108,7 @@ PlasmoidItem {
                 Text {
                     anchors.horizontalCenter: parent.horizontalCenter
                     text: root.clockText
-                    color: Tokens.white
+                    color: PlasmaCore.Theme.textColor
                     font.family: Tokens.fontFamily
                     font.pixelSize: Math.round(root.cellSize * 0.24)
                     font.weight: Font.Light
@@ -134,7 +135,7 @@ PlasmoidItem {
                             id: playLabel
                             anchors.centerIn: parent
                             text: root.running ? "Pausa" : "Iniciar"
-                            color: Tokens.white
+                            color: PlasmaCore.Theme.textColor
                             font.family: Tokens.fontFamily
                             font.pixelSize: Tokens.fontSizeCaption - 1
                             font.weight: Font.DemiBold
@@ -160,7 +161,7 @@ PlasmoidItem {
                             id: resetLabel
                             anchors.centerIn: parent
                             text: "Reiniciar"
-                            color: Tokens.lightGray
+                            color: PlasmaCore.Theme.disabledTextColor
                             font.family: Tokens.fontFamily
                             font.pixelSize: Tokens.fontSizeCaption - 1
                         }

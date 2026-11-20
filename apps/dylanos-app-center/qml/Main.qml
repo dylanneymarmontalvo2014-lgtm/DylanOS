@@ -17,7 +17,12 @@ ApplicationWindow {
     minimumHeight: 600
     title: "App Center · DylanOS"
     flags: Qt.Window | Qt.FramelessWindowHint
-    color: "#0a080c"
+    SystemPalette { id: systemPalette; colorGroup: SystemPalette.Active }
+    readonly property bool dark: systemPalette.window.hsvValue < 0.5
+    readonly property color foreground: dark ? "#f4eeee" : "#211a1b"
+    readonly property color secondaryText: dark ? window.secondaryText : "#655b5d"
+    readonly property color panelColor: dark ? "#0a080c" : "#f4f1f1"
+    color: "transparent"
     font.family: "Inter"
 
     readonly property bool maximized: visibility === Window.Maximized || visibility === Window.FullScreen
@@ -106,10 +111,10 @@ ApplicationWindow {
         anchors.fill: parent
         gradient: Gradient {
             orientation: Gradient.Vertical
-            GradientStop { position: 0.0; color: "#0d090d" }
-            GradientStop { position: 0.35; color: "#220912" }
-            GradientStop { position: 0.65; color: "#14050a" }
-            GradientStop { position: 1.0; color: "#080608" }
+            GradientStop { position: 0.0; color: (window.dark ? "#0d090d" : "#fffdfd") }
+            GradientStop { position: 0.35; color: (window.dark ? "#220912" : "#f4eeee") }
+            GradientStop { position: 0.65; color: (window.dark ? "#14050a" : "#eee8e9") }
+            GradientStop { position: 1.0; color: (window.dark ? "#080608" : "#f6f3f3") }
         }
     }
 
@@ -183,7 +188,7 @@ ApplicationWindow {
             background: Rectangle {
                 implicitWidth: 6
                 radius: 3
-                color: "#1f1016"
+                color: (window.dark ? "#1f1016" : "#e9e3e4")
             }
         }
 
@@ -283,7 +288,7 @@ ApplicationWindow {
                             Rectangle {
                                 anchors.fill: parent
                                 radius: 16
-                                color: "#18141d"
+                                color: (window.dark ? "#18141d" : window.foreground)
                                 opacity: 0.3
                             }
 
@@ -298,7 +303,7 @@ ApplicationWindow {
                         // App Label
                         Label {
                             text: modelData.name
-                            color: "#ffffff"
+                            color: window.foreground
                             font.pixelSize: 12
                             font.weight: Font.Normal
                             Layout.preferredWidth: grid.cellWidth - 12
@@ -346,7 +351,7 @@ ApplicationWindow {
                     anchors.centerIn: parent
                     visible: pageItems.length === 0
                     text: "No se encontraron aplicaciones coincidentes."
-                    color: "#d3c8d5"
+                    color: window.secondaryText
                     font.pixelSize: 16
                 }
             }
@@ -390,7 +395,7 @@ ApplicationWindow {
         anchors.centerIn: parent
         width: Math.min(480, window.width - 60)
         padding: 24
-        background: Rectangle { color: "#29222d"; radius: 20; border.color: "#eb607e" }
+        background: Rectangle { color: (window.dark ? "#29222d" : "#ffffff"); radius: 20; border.color: (window.dark ? "#eb607e" : "#d19ca5") }
         contentItem: Label { id: errorLabel; color: "white"; wrapMode: Text.Wrap }
     }
 }

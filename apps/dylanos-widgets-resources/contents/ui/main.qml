@@ -1,5 +1,6 @@
 pragma ComponentBehavior: Bound
 import QtQuick
+import org.kde.plasma.core as PlasmaCore
 import org.kde.plasma.plasmoid
 import org.kde.plasma.plasma5support as P5Support
 import "lib"
@@ -101,7 +102,7 @@ PlasmoidItem {
                 Text {
                     width: parent.width
                     text: "CPU  " + Data.formatPercent(root.cpuPercent)
-                    color: Tokens.white
+                    color: PlasmaCore.Theme.textColor
                     font.family: Tokens.fontFamily
                     font.pixelSize: Tokens.fontSizeBody
                 }
@@ -118,7 +119,7 @@ PlasmoidItem {
                     text: "RAM  " + (root.memTotalKb > 0
                                      ? root.memGb + " GB · " + Math.round(root.memRatio * 100) + " %"
                                      : "—")
-                    color: Tokens.white
+                    color: PlasmaCore.Theme.textColor
                     font.family: Tokens.fontFamily
                     font.pixelSize: Tokens.fontSizeBody
                 }

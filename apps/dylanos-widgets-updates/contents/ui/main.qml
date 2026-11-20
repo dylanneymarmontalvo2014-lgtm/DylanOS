@@ -1,5 +1,6 @@
 pragma ComponentBehavior: Bound
 import QtQuick
+import org.kde.plasma.core as PlasmaCore
 import org.kde.plasma.plasmoid
 import org.kde.plasma.plasma5support as P5Support
 import "lib"
@@ -29,7 +30,7 @@ PlasmoidItem {
     property int pending: -1
 
     readonly property color accent: root.pending > 0 ? Tokens.crimson
-                                 : root.pending === 0 ? Tokens.white : Tokens.lightGray
+                                 : root.pending === 0 ? PlasmaCore.Theme.textColor : PlasmaCore.Theme.disabledTextColor
 
     Timer {
         id: poll
@@ -110,7 +111,7 @@ PlasmoidItem {
                         return root.pending === 1 ? "paquete pendiente"
                                                   : "paquetes pendientes";
                     }
-                    color: Tokens.lightGray
+                    color: PlasmaCore.Theme.disabledTextColor
                     font.family: Tokens.fontFamily
                     font.pixelSize: Tokens.fontSizeCaption
                 }
@@ -127,7 +128,7 @@ PlasmoidItem {
                         id: storeLabel
                         anchors.centerIn: parent
                         text: "Abrir tienda"
-                        color: Tokens.white
+                        color: PlasmaCore.Theme.textColor
                         font.family: Tokens.fontFamily
                         font.pixelSize: Tokens.fontSizeCaption - 1
                         font.weight: Font.DemiBold
