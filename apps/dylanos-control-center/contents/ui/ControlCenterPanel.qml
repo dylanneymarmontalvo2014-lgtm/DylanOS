@@ -348,7 +348,7 @@ Rectangle {
                 ColumnLayout {
                     Layout.fillWidth: true
                     spacing: 3
-                    QQC2.Label { text: "IoT & Embedded"; color: cOnAccent; font.pixelSize: 14; font.bold: true }
+                    QQC2.Label { text: "IoT & Embedded"; color: cWhite; font.pixelSize: 14; font.bold: true }
                     QQC2.Label {
                         text: (MockData.iotStatus.devices ? MockData.iotStatus.devices.length : 0) + " puertos serie · MQTT "
                               + (MockData.iotStatus.mqttLocal ? "activo" : "inactivo")
@@ -582,7 +582,7 @@ Rectangle {
                     spacing: 2
                     QQC2.Label {
                         text: SystemStatus.mprisAvailable ? SystemStatus.mprisTitle : "Sin reproducción activa"
-                        color: cOnAccent; font.pixelSize: 14; font.bold: true
+                        color: cWhite; font.pixelSize: 14; font.bold: true
                         elide: Text.ElideRight; Layout.fillWidth: true
                     }
                     QQC2.Label {
@@ -594,16 +594,16 @@ Rectangle {
                         spacing: 16
                         visible: SystemStatus.mprisAvailable
                         QQC2.ToolButton {
-                            icon.name: "media-skip-backward"; icon.color: cOnAccent; flat: true
+                            icon.name: "media-skip-backward"; icon.color: cWhite; flat: true
                             onClicked: SystemStatus.mprisPrevious()
                         }
                         QQC2.ToolButton {
                             icon.name: SystemStatus.mprisPlaying ? "media-playback-pause" : "media-playback-start"
-                            icon.color: cOnAccent; flat: true
+                            icon.color: cWhite; flat: true
                             onClicked: SystemStatus.mprisPlayPause()
                         }
                         QQC2.ToolButton {
-                            icon.name: "media-skip-forward"; icon.color: cOnAccent; flat: true
+                            icon.name: "media-skip-forward"; icon.color: cWhite; flat: true
                             onClicked: SystemStatus.mprisNext()
                         }
                     }
