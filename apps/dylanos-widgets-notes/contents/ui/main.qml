@@ -1,5 +1,6 @@
 pragma ComponentBehavior: Bound
 import QtQuick
+import org.kde.plasma.core as PlasmaCore
 import org.kde.plasma.plasmoid
 import "lib"
 import "lib/WidgetTokens.js" as Tokens
@@ -53,9 +54,9 @@ PlasmoidItem {
                     id: noteArea
                     width: parent.width
                     text: root.note
-                    color: Tokens.white
+                    color: PlasmaCore.Theme.textColor
                     selectionColor: Tokens.crimson
-                    selectedTextColor: Tokens.white
+                    selectedTextColor: PlasmaCore.Theme.textColor
                     font.family: Tokens.fontFamily
                     font.pixelSize: Tokens.fontSizeBody
                     wrapMode: TextEdit.Wrap
@@ -65,7 +66,7 @@ PlasmoidItem {
                     Text {
                         anchors.fill: parent
                         text: "Escribe una nota…"
-                        color: Tokens.lightGray
+                        color: PlasmaCore.Theme.disabledTextColor
                         font.family: Tokens.fontFamily
                         font.pixelSize: Tokens.fontSizeBody
                         visible: noteArea.text.length === 0

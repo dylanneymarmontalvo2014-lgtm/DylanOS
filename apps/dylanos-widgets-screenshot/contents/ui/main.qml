@@ -1,5 +1,6 @@
 pragma ComponentBehavior: Bound
 import QtQuick
+import org.kde.plasma.core as PlasmaCore
 import org.kde.plasma.plasmoid
 import org.kde.plasma.plasma5support as P5Support
 import "lib"
@@ -100,7 +101,7 @@ PlasmoidItem {
                         id: shotLabel
                         anchors.centerIn: parent
                         text: root.spectacleAvailable ? "Capturar" : "Sin Spectacle"
-                        color: root.spectacleAvailable ? Tokens.white : Tokens.lightGray
+                        color: root.spectacleAvailable ? PlasmaCore.Theme.textColor : PlasmaCore.Theme.disabledTextColor
                         font.family: Tokens.fontFamily
                         font.pixelSize: Tokens.fontSizeCaption
                         font.weight: Font.DemiBold
@@ -122,7 +123,7 @@ PlasmoidItem {
                     text: root.captures >= 0
                           ? root.captures + (root.captures === 1 ? " captura" : " capturas")
                           : "Sin dato"
-                    color: Tokens.lightGray
+                    color: PlasmaCore.Theme.disabledTextColor
                     font.family: Tokens.fontFamily
                     font.pixelSize: Tokens.fontSizeCaption
                 }

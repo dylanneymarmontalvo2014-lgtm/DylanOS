@@ -1,5 +1,6 @@
 pragma ComponentBehavior: Bound
 import QtQuick
+import org.kde.plasma.core as PlasmaCore
 import org.kde.plasma.plasmoid
 import "lib"
 import "lib/WidgetTokens.js" as Tokens
@@ -96,7 +97,7 @@ PlasmoidItem {
                         anchors.leftMargin: Tokens.space2
                         anchors.rightMargin: Tokens.space2
                         verticalAlignment: TextInput.AlignVCenter
-                        color: Tokens.white
+                        color: PlasmaCore.Theme.textColor
                         font.family: Tokens.fontFamily
                         font.pixelSize: Tokens.fontSizeCaption
                         selectionColor: Tokens.crimson
@@ -105,7 +106,7 @@ PlasmoidItem {
                         Text {
                             anchors.verticalCenter: parent.verticalCenter
                             text: "Nueva tarea y Enter…"
-                            color: Tokens.lightGray
+                            color: PlasmaCore.Theme.disabledTextColor
                             font.family: Tokens.fontFamily
                             font.pixelSize: Tokens.fontSizeCaption
                             visible: newTask.text.length === 0
@@ -139,7 +140,7 @@ PlasmoidItem {
                             anchors.verticalCenter: parent.verticalCenter
                             width: parent.width - Tokens.space6
                             text: taskRow.modelData.t
-                            color: taskRow.modelData.d ? Tokens.lightGray : Tokens.white
+                            color: taskRow.modelData.d ? PlasmaCore.Theme.disabledTextColor : PlasmaCore.Theme.textColor
                             font.family: Tokens.fontFamily
                             font.pixelSize: Tokens.fontSizeCaption
                             font.strikeout: taskRow.modelData.d
@@ -162,7 +163,7 @@ PlasmoidItem {
                                 anchors.centerIn: parent
                                 text: "\u2715"
                                 color: removeArea.containsMouse ? Tokens.crimson
-                                                                : Tokens.lightGray
+                                                                : PlasmaCore.Theme.disabledTextColor
                                 font.family: Tokens.fontFamily
                                 font.pixelSize: Tokens.fontSizeCaption
                             }

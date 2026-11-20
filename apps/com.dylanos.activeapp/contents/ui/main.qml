@@ -1,5 +1,6 @@
 pragma ComponentBehavior: Bound
 import QtQuick
+import org.kde.plasma.core as PlasmaCore
 import QtQuick.Layouts
 import QtQuick.Controls as QQC2
 import org.kde.plasma.plasmoid
@@ -68,7 +69,7 @@ PlasmoidItem {
                 font.bold: true
                 font.pixelSize: 13
                 font.family: "Inter"
-                color: "#ffffff"
+                color: PlasmaCore.Theme.textColor
                 verticalAlignment: Text.AlignVCenter
                 elide: Text.ElideRight
                 Layout.fillWidth: true
@@ -101,7 +102,7 @@ PlasmoidItem {
 
                     background: Rectangle {
                         radius: 6
-                        color: newWindowButton.down ? "#9c0b28" : newWindowButton.hovered ? "#2A2A2E" : "transparent"
+                        color: newWindowButton.down ? "#9c0b28" : newWindowButton.hovered ? PlasmaCore.Theme.textColor.hsvValue > 0.5 ? "#2A2A2E" : "#e9e7e7" : "transparent"
                         border.color: newWindowButton.hovered || newWindowButton.activeFocus ? "#ff5274" : "transparent"
                         border.width: 1
                     }
@@ -127,7 +128,7 @@ PlasmoidItem {
 
                     background: Rectangle {
                         radius: 4
-                        color: actionsMenuBtn.down ? "#9c0b28" : actionsMenuBtn.hovered ? "#2A2A2E" : "#1A1A1E"
+                        color: actionsMenuBtn.down ? "#9c0b28" : actionsMenuBtn.hovered ? PlasmaCore.Theme.textColor.hsvValue > 0.5 ? "#2A2A2E" : "#e9e7e7" : PlasmaCore.Theme.textColor.hsvValue > 0.5 ? "#1A1A1E" : "#f5f3f3"
                         border.color: actionsMenuBtn.hovered || actionsMenuBtn.activeFocus ? "#ff5274" : "#2E2736"
                         border.width: 1
                     }
@@ -145,7 +146,7 @@ PlasmoidItem {
                         }
                         Text {
                             text: "▾"
-                            color: "#B3B3B3"
+                            color: PlasmaCore.Theme.disabledTextColor
                             font.pixelSize: 10
                         }
                     }
@@ -190,7 +191,7 @@ PlasmoidItem {
 
                     background: Rectangle {
                         radius: 4
-                        color: minimizeButton.down ? "#30FFFFFF" : minimizeButton.hovered ? "#2A2A2E" : "transparent"
+                        color: minimizeButton.down ? "#30FFFFFF" : minimizeButton.hovered ? PlasmaCore.Theme.textColor.hsvValue > 0.5 ? "#2A2A2E" : "#e9e7e7" : "transparent"
                         border.color: minimizeButton.hovered || minimizeButton.activeFocus ? "#40FFFFFF" : "transparent"
                         border.width: 1
                     }
@@ -218,7 +219,7 @@ PlasmoidItem {
 
                     background: Rectangle {
                         radius: 4
-                        color: maximizeButton.down ? "#30FFFFFF" : maximizeButton.hovered ? "#2A2A2E" : "transparent"
+                        color: maximizeButton.down ? "#30FFFFFF" : maximizeButton.hovered ? PlasmaCore.Theme.textColor.hsvValue > 0.5 ? "#2A2A2E" : "#e9e7e7" : "transparent"
                         border.color: maximizeButton.hovered || maximizeButton.activeFocus ? "#40FFFFFF" : "transparent"
                         border.width: 1
                     }
@@ -245,7 +246,7 @@ PlasmoidItem {
                         radius: 6
                         color: keepAboveButton.down ? "#9c0b28"
                             : root.isKeepAbove ? "#5ADC143C"
-                            : keepAboveButton.hovered ? "#2A2A2E" : "transparent"
+                            : keepAboveButton.hovered ? PlasmaCore.Theme.textColor.hsvValue > 0.5 ? "#2A2A2E" : "#e9e7e7" : "transparent"
                         border.color: root.isKeepAbove ? "#ff5274"
                             : keepAboveButton.hovered || keepAboveButton.activeFocus ? "#40FFFFFF" : "transparent"
                         border.width: 1

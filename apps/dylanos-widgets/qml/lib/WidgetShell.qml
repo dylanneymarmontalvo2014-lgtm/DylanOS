@@ -11,10 +11,11 @@ import "WidgetTokens.js" as Tokens
  */
 Item {
     id: shell
+    SystemPalette { id: systemPalette; colorGroup: SystemPalette.Active }
 
     property string title: ""
     property string subtitle: ""
-    property string variant: Tokens.variantDark
+    property string variant: systemPalette.window.hsvValue > 0.5 ? Tokens.variantDark : Tokens.variantLight
     property bool performanceMode: false
     property string actionIcon: ""
     signal actionClicked()
@@ -36,7 +37,7 @@ Item {
         anchors.margins: Tokens.space4
         title: shell.title
         secondaryText: shell.subtitle
-        textColor: Tokens.materialText[shell.variant] || Tokens.white
+        textColor: shell.variant === Tokens.variantDark ? Tokens.white : Tokens.materialText[Tokens.variantLight]
         secondaryColor: Tokens.materialTextSecondary[shell.variant] || Tokens.lightGray
         actionIcon: shell.actionIcon
         onActionClicked: shell.actionClicked()

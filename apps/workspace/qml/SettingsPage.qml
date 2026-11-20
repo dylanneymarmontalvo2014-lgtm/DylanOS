@@ -44,7 +44,7 @@ ScrollView {
                                 Row { x: 10; y: 9; spacing: 5; Repeater { model: ["#ff5f57", "#febc2e", "#28c840"]; Rectangle { required property string modelData; width: 7; height: 7; radius: 4; color: modelData } } }
                             }
                         }
-                        ActionButton { text: "Aplicar " + modelData.name.toLowerCase(); Layout.fillWidth: true; onClicked: { win.dark = modelData.variant === "Dark"; backend.theme(modelData.variant) } }
+                        ActionButton { text: "Aplicar " + modelData.name.toLowerCase(); Layout.fillWidth: true; onClicked: backend.theme(modelData.variant) }
                     }
                 }
             }

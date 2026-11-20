@@ -10,11 +10,12 @@ import "WidgetTokens.js" as Tokens
  */
 Item {
     id: header
+    SystemPalette { id: systemPalette; colorGroup: SystemPalette.Active }
 
     property string title: ""
     property string secondaryText: ""
-    property color textColor: Tokens.white
-    property color secondaryColor: Tokens.lightGray
+    property color textColor: systemPalette.text
+    property color secondaryColor: systemPalette.mid
     property string actionIcon: ""
     property string actionTooltip: ""
 

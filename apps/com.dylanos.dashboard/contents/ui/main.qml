@@ -8,6 +8,7 @@ pragma ComponentBehavior: Bound
 // (MPRIS) y el temporizador de enfoque calcula con la hora del sistema. No
 // consulta servicios remotos ni muestra clima ni eventos ficticios.
 import QtQuick
+import org.kde.plasma.core as PlasmaCore
 import QtQuick.Layouts
 import QtQuick.Controls as QQC2
 import org.kde.plasma.plasmoid
@@ -16,6 +17,11 @@ import "PomodoroClock.js" as PomodoroClock
 
 PlasmoidItem {
     id: root
+    readonly property bool dark: PlasmaCore.Theme.textColor.hsvValue > 0.5
+    readonly property color uiText: PlasmaCore.Theme.textColor
+    readonly property color uiMuted: PlasmaCore.Theme.disabledTextColor
+    readonly property color uiSurface: dark ? "#1A1A1A" : "#F1EEEE"
+    readonly property color uiLine: dark ? "#30FFFFFF" : "#28000000"
     preferredRepresentation: fullRepresentation
     readonly property date today: clock.date
     property date shownMonth: new Date()
@@ -340,9 +346,9 @@ PlasmoidItem {
         property string cardTitle: ""
         default property alias content: cardBody.children
         property alias headerExtra: headerExtra.data
-        color: "#D9101014"
+        color: (root.dark ? "#D9101014" : "#E6FFFFFF")
         radius: 22
-        border.color: "#30FFFFFF"
+        border.color: root.uiLine
         border.width: 1
 
         // Reflejo superior: línea especular blanca translúcida.
@@ -350,8 +356,8 @@ PlasmoidItem {
             anchors.fill: parent
             radius: parent.radius
             gradient: Gradient {
-                GradientStop { position: 0; color: Qt.rgba(1, 1, 1, 0.075) }
-                GradientStop { position: 0.42; color: Qt.rgba(1, 1, 1, 0.018) }
+                GradientStop { position: 0; color: (root.dark ? Qt.rgba(1, 1, 1, 0.075) : Qt.rgba(0, 0, 0, 0.035)) }
+                GradientStop { position: 0.42; color: (root.dark ? Qt.rgba(1, 1, 1, 0.018) : Qt.rgba(0, 0, 0, 0.015)) }
                 GradientStop { position: 1; color: "transparent" }
             }
             opacity: 0.72
@@ -442,14 +448,14 @@ PlasmoidItem {
             anchors.centerIn: parent
             anchors.horizontalCenterOffset: -1
             text: gauge.sampled ? (Math.round(Math.max(0, Math.min(1, gauge.portion)) * 100)).toFixed(0) + "%" : "…"
-            color: "white"
+            color: root.uiText
             font.pixelSize: 17
             font.weight: Font.DemiBold
             horizontalAlignment: Text.AlignHCenter
         }
         QQC2.Label {
             text: gauge.caption
-            color: "#AAA4AA"
+            color: root.uiMuted
             font.pixelSize: 10
             font.bold: true
             font.letterSpacing: 1
@@ -489,7 +495,7 @@ PlasmoidItem {
                             spacing: 8
                             QQC2.Label {
                                 text: root.padClockTime(root.clockParts(root.today).time)
-                                color: "white"
+                                color: root.uiText
                                 font.pixelSize: 44
                                 font.weight: Font.Light
                                 font.letterSpacing: 2
@@ -548,11 +554,11 @@ PlasmoidItem {
                                 text: root.memoryTotal > 0
                                     ? "RAM  ·  " + root.usagePercent(root.memoryUsed, root.memoryTotal).toFixed(0) + "%  ·  " + (root.memoryUsed / 1048576).toFixed(1) + " / " + (root.memoryTotal / 1048576).toFixed(1) + " GiB"
                                     : "RAM  ·  No disponible"
-                                color: "white"; font.pixelSize: 12
+                                color: root.uiText; font.pixelSize: 12
                                 elide: Text.ElideRight
                             }
                             Rectangle {
-                                Layout.fillWidth: true; height: 6; radius: 3; color: "#3CFFFFFF"
+                                Layout.fillWidth: true; height: 6; radius: 3; color: (root.dark ? "#3CFFFFFF" : "#28000000")
                                 Accessible.name: "Uso de memoria: " + root.usagePercent(root.memoryUsed, root.memoryTotal).toFixed(0) + "%"
                                 Rectangle {
                                     width: root.progressWidth(parent.width, root.memoryUsed, root.memoryTotal)
@@ -565,11 +571,11 @@ PlasmoidItem {
                                 text: root.diskTotalBytes > 0
                                     ? "Disco  ·  " + root.usagePercent(root.diskUsedBytes, root.diskTotalBytes).toFixed(0) + "%  ·  " + (root.diskUsedBytes / 1073741824).toFixed(1) + " / " + (root.diskTotalBytes / 1073741824).toFixed(1) + " GiB"
                                     : "Disco  ·  no disponible"
-                                color: "white"; font.pixelSize: 12
+                                color: root.uiText; font.pixelSize: 12
                                 elide: Text.ElideRight
                             }
                             Rectangle {
-                                Layout.fillWidth: true; height: 6; radius: 3; color: "#3CFFFFFF"
+                                Layout.fillWidth: true; height: 6; radius: 3; color: (root.dark ? "#3CFFFFFF" : "#28000000")
                                 Accessible.name: root.diskTotalBytes > 0 ? "Uso del filesystem raíz: " + root.usagePercent(root.diskUsedBytes, root.diskTotalBytes).toFixed(0) + "%" : "Uso del filesystem raíz sin datos"
                                 Rectangle {
                                     width: root.progressWidth(parent.width, root.diskUsedBytes, root.diskTotalBytes)
@@ -581,10 +587,10 @@ PlasmoidItem {
                     }
                     QQC2.Label {
                         text: root.cpuUsagePercent >= 0 ? "CPU  ·  " + root.cpuUsagePercent.toFixed(0) + "%" : "CPU  ·  leyendo…"
-                        color: "white"; font.pixelSize: 12
+                        color: root.uiText; font.pixelSize: 12
                     }
                     Rectangle {
-                        Layout.fillWidth: true; height: 6; radius: 3; color: "#3CFFFFFF"
+                        Layout.fillWidth: true; height: 6; radius: 3; color: (root.dark ? "#3CFFFFFF" : "#28000000")
                         Accessible.name: root.cpuUsagePercent >= 0 ? "Uso de CPU: " + root.cpuUsagePercent.toFixed(0) + "%" : "Uso de CPU sin datos"
                         Rectangle {
                             width: root.cpuUsagePercent >= 0 ? parent.width * Math.max(0, Math.min(100, root.cpuUsagePercent)) / 100 : 0
@@ -596,7 +602,7 @@ PlasmoidItem {
                         text: root.cpuHistory.length > 0
                             ? "TENDENCIA CPU · " + root.cpuHistory.length + "/24 muestras"
                             : "TENDENCIA CPU · esperando lecturas"
-                        color: "#AAA4AA"; font.pixelSize: 9; font.bold: true
+                        color: root.uiMuted; font.pixelSize: 9; font.bold: true
                         Accessible.name: root.cpuHistoryDescription()
                     }
                     Canvas {
@@ -641,13 +647,13 @@ PlasmoidItem {
                     }
                     QQC2.Label {
                         text: root.uptimeSeconds > 0 ? "En ejecución  ·  " + root.formatUptime(root.uptimeSeconds) : "Tiempo activo  ·  …"
-                        color: "#D7D2D6"; font.pixelSize: 12
+                        color: root.uiMuted; font.pixelSize: 12
                     }
                     QQC2.Label {
                         text: root.lastRefreshRequested.getTime() > 0
                             ? "Consulta · " + Qt.formatTime(root.lastRefreshRequested, "hh:mm:ss")
                             : "Consulta · esperando datos"
-                        color: "#AAA4AA"; font.pixelSize: 10
+                        color: root.uiMuted; font.pixelSize: 10
                         Accessible.name: text
                     }
                     QQC2.Button {
@@ -678,8 +684,8 @@ PlasmoidItem {
                                 Layout.preferredWidth: 56
                                 Layout.preferredHeight: 56
                                 radius: 12
-                                color: "#1A1A1A"
-                                border.color: "#30FFFFFF"
+                                color: root.uiSurface
+                                border.color: root.uiLine
                                 border.width: 1
                                 QQC2.Label {
                                     anchors.centerIn: parent
@@ -694,7 +700,7 @@ PlasmoidItem {
                                 QQC2.Label {
                                     Layout.fillWidth: true
                                     text: root.mediaTitle !== "" ? root.mediaTitle : "Sin reproducción activa"
-                                    color: "white"
+                                    color: root.uiText
                                     font.pixelSize: 14
                                     font.weight: Font.DemiBold
                                     elide: Text.ElideRight
@@ -703,7 +709,7 @@ PlasmoidItem {
                                 QQC2.Label {
                                     Layout.fillWidth: true
                                     text: root.mediaArtist !== "" ? root.mediaArtist : "—"
-                                    color: "#D7D2D6"
+                                    color: root.uiMuted
                                     font.pixelSize: 12
                                     elide: Text.ElideRight
                                 }
@@ -720,7 +726,7 @@ PlasmoidItem {
                                 x: mediaSlider.leftPadding
                                 y: mediaSlider.topPadding + mediaSlider.availableHeight / 2 - height / 2
                                 width: mediaSlider.availableWidth; height: 4; radius: 2
-                                color: "#3CFFFFFF"
+                                color: (root.dark ? "#3CFFFFFF" : "#28000000")
                                 Rectangle {
                                     width: mediaSlider.enabled ? mediaSlider.visualPosition * parent.width : 0
                                     height: parent.height; radius: 2; color: "#DC143C"
@@ -731,7 +737,7 @@ PlasmoidItem {
                                 x: mediaSlider.leftPadding + mediaSlider.visualPosition * (mediaSlider.availableWidth - width)
                                 y: mediaSlider.topPadding + mediaSlider.availableHeight / 2 - height / 2
                                 width: 14; height: 14; radius: 7
-                                color: "white"
+                                color: root.uiText
                             }
                             Binding {
                                 target: mediaSlider
@@ -745,13 +751,13 @@ PlasmoidItem {
                             Layout.fillWidth: true
                             QQC2.Label {
                                 text: root.formatMediaTime(root.mediaPositionSeconds)
-                                color: "#AAA4AA"; font.pixelSize: 11
+                                color: root.uiMuted; font.pixelSize: 11
                                 Accessible.name: "Posición actual: " + text
                             }
                             Item { Layout.fillWidth: true }
                             QQC2.Label {
                                 text: root.formatMediaTime(root.mediaDurationSeconds)
-                                color: "#AAA4AA"; font.pixelSize: 11
+                                color: root.uiMuted; font.pixelSize: 11
                                 Accessible.name: "Duración: " + text
                             }
                         }
@@ -763,21 +769,21 @@ PlasmoidItem {
                             Item { Layout.fillWidth: true }
                             QQC2.ToolButton {
                                 icon.name: "media-skip-backward"
-                                icon.color: "white"
+                                icon.color: root.uiText
                                 flat: true
                                 Accessible.name: "Pista anterior"
                                 onClicked: root.mediaPrevious()
                             }
                             QQC2.ToolButton {
                                 icon.name: root.mprisPlaying ? "media-playback-pause" : "media-playback-start"
-                                icon.color: "white"
+                                icon.color: root.uiText
                                 flat: true
                                 Accessible.name: root.mprisPlaying ? "Pausar" : "Reproducir"
                                 onClicked: root.mediaPlayPause()
                             }
                             QQC2.ToolButton {
                                 icon.name: "media-skip-forward"
-                                icon.color: "white"
+                                icon.color: root.uiText
                                 flat: true
                                 Accessible.name: "Pista siguiente"
                                 onClicked: root.mediaNext()
@@ -788,7 +794,7 @@ PlasmoidItem {
                             visible: !root.mprisAvailable
                             Layout.fillWidth: true
                             text: "Sin reproducción activa · se activa con un reproductor MPRIS"
-                            color: "#AAA4AA"
+                            color: root.uiMuted
                             font.pixelSize: 12
                             horizontalAlignment: Text.AlignHCenter
                             Accessible.name: text
@@ -817,7 +823,7 @@ PlasmoidItem {
                             Layout.fillWidth: true
                             QQC2.Label {
                                 text: root.monthTitle(root.shownMonth)
-                                color: "white"
+                                color: root.uiText
                                 font.pixelSize: 16
                                 font.bold: true
                                 Layout.fillWidth: true
@@ -833,14 +839,14 @@ PlasmoidItem {
                                 text: "‹"
                                 Accessible.name: "Mes anterior"
                                 onClicked: root.shiftMonth(-1)
-                                contentItem: QQC2.Label { text: botonMesAnterior.text; color: "white"; horizontalAlignment: Text.AlignHCenter; verticalAlignment: Text.AlignVCenter }
+                                contentItem: QQC2.Label { text: botonMesAnterior.text; color: root.uiText; horizontalAlignment: Text.AlignHCenter; verticalAlignment: Text.AlignVCenter }
                             }
                             QQC2.ToolButton {
                                 id: botonMesSiguiente
                                 text: "›"
                                 Accessible.name: "Mes siguiente"
                                 onClicked: root.shiftMonth(1)
-                                contentItem: QQC2.Label { text: botonMesSiguiente.text; color: "white"; horizontalAlignment: Text.AlignHCenter; verticalAlignment: Text.AlignVCenter }
+                                contentItem: QQC2.Label { text: botonMesSiguiente.text; color: root.uiText; horizontalAlignment: Text.AlignHCenter; verticalAlignment: Text.AlignVCenter }
                             }
                         }
                         GridLayout {
@@ -850,7 +856,7 @@ PlasmoidItem {
                                 model: ["D", "L", "M", "M", "J", "V", "S"]
                                 delegate: QQC2.Label {
                                     required property string modelData
-                                    text: modelData; color: "#AAA4AA"; font.pixelSize: 11
+                                    text: modelData; color: root.uiMuted; font.pixelSize: 11
                                     horizontalAlignment: Text.AlignHCenter
                                     Layout.fillWidth: true
                                 }
@@ -893,10 +899,10 @@ PlasmoidItem {
                         QQC2.Label {
                             text: "Día seleccionado · " + Qt.formatDate(root.selectedDate, "dddd d MMMM")
                                 + (root.isSameDate(root.selectedDate, root.today) ? " · hoy" : "")
-                            color: "#D7D2D6"; font.pixelSize: 12; font.bold: true
+                            color: root.uiMuted; font.pixelSize: 12; font.bold: true
                             Accessible.name: text
                         }
-                        QQC2.Label { text: "Información local · sin datos simulados"; color: "#AAA4AA"; font.pixelSize: 10 }
+                        QQC2.Label { text: "Información local · sin datos simulados"; color: root.uiMuted; font.pixelSize: 10 }
                     }
                 }
 
@@ -934,7 +940,7 @@ PlasmoidItem {
                             Rectangle {
                                 anchors.fill: parent
                                 radius: 10
-                                color: reminderRow.hovered || reminderRow.editing ? "#221A1E" : "transparent"
+                                color: reminderRow.hovered || reminderRow.editing ? (root.dark ? "#221A1E" : "#F1EEEE") : "transparent"
                                 border.color: reminderRow.editing ? "#70DC143C" : "transparent"
                                 border.width: 1
                             }
@@ -952,7 +958,7 @@ PlasmoidItem {
                                     anchors.centerIn: parent
                                     text: "✓"
                                     visible: reminderRow.modelData.d
-                                    color: "white"
+                                    color: root.uiText
                                     font.pixelSize: 12
                                     font.bold: true
                                 }
@@ -975,8 +981,8 @@ PlasmoidItem {
                                 visible: reminderRow.editing
                                 text: reminderRow.modelData.t
                                 font.pixelSize: 13
-                                color: "white"
-                                background: Rectangle { radius: 8; color: "#241B20"; border.color: "#70DC143C" }
+                                color: root.uiText
+                                background: Rectangle { radius: 8; color: (root.dark ? "#241B20" : "#F2EEEE"); border.color: "#70DC143C" }
                                 onAccepted: {
                                     root.renameReminder(reminderRow.index, text)
                                     reminderRow.editing = false
@@ -1016,7 +1022,7 @@ PlasmoidItem {
                                 visible: reminderRow.hovered
                                 flat: true
                                 icon.name: "list-remove"
-                                icon.color: "#D7D2D6"
+                                icon.color: root.uiMuted
                                 Accessible.name: "Eliminar recordatorio: " + reminderRow.modelData.t
                                 onClicked: root.removeReminder(reminderRow.index)
                             }
@@ -1040,7 +1046,7 @@ PlasmoidItem {
                             Layout.fillWidth: true
                             Layout.preferredHeight: 32
                             placeholderText: "Añadir recordatorio"
-                            color: "white"
+                            color: root.uiText
                             font.pixelSize: 12
                             maximumLength: 120
                             Accessible.name: "Campo para añadir un recordatorio nuevo"
@@ -1050,8 +1056,8 @@ PlasmoidItem {
                             }
                             background: Rectangle {
                                 radius: 10
-                                color: "#221A1E"
-                                border.color: reminderInput.activeFocus ? "#70DC143C" : "#30FFFFFF"
+                                color: (root.dark ? "#221A1E" : "#F1EEEE")
+                                border.color: reminderInput.activeFocus ? "#70DC143C" : root.uiLine
                             }
                         }
                         Rectangle {
@@ -1062,7 +1068,7 @@ PlasmoidItem {
                             QQC2.Label {
                                 anchors.centerIn: parent
                                 text: "+"
-                                color: "white"
+                                color: root.uiText
                                 font.pixelSize: 18
                                 font.bold: true
                             }
@@ -1107,7 +1113,7 @@ PlasmoidItem {
                             }
                             QQC2.Label {
                                 text: "Ciclos · " + root.completedFocusSessions
-                                color: "#AAA4AA"; font.pixelSize: 10
+                                color: root.uiMuted; font.pixelSize: 10
                                 Accessible.name: "Sesiones de enfoque completadas: " + root.completedFocusSessions
                             }
                         }
@@ -1115,7 +1121,7 @@ PlasmoidItem {
                             Layout.fillWidth: true
                             QQC2.Label {
                                 text: root.formatPomodoroTime(root.pomodoroRemainingSeconds)
-                                color: "white"; font.pixelSize: 27; font.weight: Font.DemiBold
+                                color: root.uiText; font.pixelSize: 27; font.weight: Font.DemiBold
                                 font.family: "monospace"
                                 Accessible.name: "Tiempo restante: " + root.pomodoroRemainingSeconds + " segundos"
                             }
@@ -1132,7 +1138,7 @@ PlasmoidItem {
                                 onClicked: root.pomodoroRunning ? root.pausePomodoro() : root.startPomodoro()
                                 contentItem: QQC2.Label {
                                     text: pomodoroStartButton.text
-                                    color: "white"; font.pixelSize: 11; font.bold: true
+                                    color: root.uiText; font.pixelSize: 11; font.bold: true
                                     horizontalAlignment: Text.AlignHCenter; verticalAlignment: Text.AlignVCenter
                                     elide: Text.ElideRight
                                 }
@@ -1148,7 +1154,7 @@ PlasmoidItem {
                                 Accessible.name: "Reiniciar temporizador de enfoque o descanso"
                                 onClicked: root.resetPomodoro()
                                 contentItem: QQC2.Label {
-                                    text: "↺"; color: "#D7D2D6"; font.pixelSize: 19
+                                    text: "↺"; color: root.uiMuted; font.pixelSize: 19
                                     horizontalAlignment: Text.AlignHCenter; verticalAlignment: Text.AlignVCenter
                                 }
                             }
@@ -1167,7 +1173,7 @@ PlasmoidItem {
                         }
                         QQC2.Label {
                             text: root.pomodoroStatus
-                            color: "#AAA4AA"; font.pixelSize: 10
+                            color: root.uiMuted; font.pixelSize: 10
                             Accessible.name: text
                         }
                     }

@@ -1,5 +1,6 @@
 pragma ComponentBehavior: Bound
 import QtQuick
+import org.kde.plasma.core as PlasmaCore
 import QtQuick.Layouts
 import org.kde.plasma.plasmoid
 // Los componentes comunes viven junto al widget (plasmoid autocontenido):
@@ -60,7 +61,7 @@ PlasmoidItem {
 
         WidgetCard {
             anchors.fill: parent
-            variant: Tokens.variantDark
+            variant: PlasmaCore.Theme.textColor.hsvValue > 0.5 ? Tokens.variantDark : Tokens.variantLight
         }
 
         Column {
@@ -73,7 +74,7 @@ PlasmoidItem {
             Text {
                 anchors.horizontalCenter: parent.horizontalCenter
                 text: Qt.formatTime(root.now, root.show24h ? "HH:mm" : "h:mm")
-                color: Tokens.white
+                color: PlasmaCore.Theme.textColor
                 font.family: Tokens.fontFamily
                 font.pixelSize: root.timeFontSize
                 font.weight: Font.Light
@@ -93,7 +94,7 @@ PlasmoidItem {
             Text {
                 anchors.horizontalCenter: parent.horizontalCenter
                 text: Qt.formatDate(root.now, "ddd d MMM").toUpperCase()
-                color: Tokens.lightGray
+                color: PlasmaCore.Theme.disabledTextColor
                 font.family: Tokens.fontFamily
                 font.pixelSize: Tokens.fontSizeCaption
                 font.letterSpacing: 1

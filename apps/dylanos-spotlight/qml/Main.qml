@@ -12,6 +12,13 @@ ApplicationWindow {
     color: "transparent"
     font.family: "Inter"
 
+    SystemPalette { id: systemPalette; colorGroup: SystemPalette.Active }
+    readonly property bool dark: systemPalette.window.hsvValue < 0.5
+    readonly property color textPrimary: dark ? window.textPrimary : "#211a1b"
+    readonly property color textSecondary: dark ? window.textSecondary : "#655b5d"
+    readonly property color panelColor: dark ? window.panelColor : window.textPrimary
+    readonly property color surfaceColor: dark ? window.surfaceColor : "#f1eded"
+    readonly property color borderColor: dark ? window.borderColor : "#d8d0d1"
     property string currentFilter: "Todo"
     readonly property var filterOptions: ["Todo", "Apps", "Proyectos", "Archivos", "Web", "Calcular"]
 
@@ -29,7 +36,7 @@ ApplicationWindow {
         id: card
         anchors.fill: parent
         radius: 18
-        color: "#f00e0d11"
+        color: window.dark ? "#f00e0d11" : "#f7f5f5f6"
         border.color: "#44DC143C"
         border.width: 1
 
@@ -40,7 +47,7 @@ ApplicationWindow {
             anchors.right: parent.right
             height: 1
             radius: 18
-            color: "#30ffffff"
+            color: window.dark ? "#30ffffff" : "#24000000"
         }
 
         ColumnLayout {
@@ -53,7 +60,7 @@ ApplicationWindow {
                 Layout.fillWidth: true
                 Text {
                     text: "B Ú S Q U E D A"
-                    color: "#8a8694"
+                    color: window.dark ? "#8a8694" : "#81787a"
                     font.pixelSize: 11
                     font.bold: true
                     font.letterSpacing: 2
@@ -61,22 +68,22 @@ ApplicationWindow {
                 Item { Layout.fillWidth: true }
                 Rectangle {
                     radius: 6
-                    color: "#221f26"
-                    border.color: "#30ffffff"
+                    color: window.surfaceColor
+                    border.color: window.dark ? "#30ffffff" : "#24000000"
                     implicitWidth: shortcutText.implicitWidth + 12
                     implicitHeight: 20
                     Text {
                         id: shortcutText
                         anchors.centerIn: parent
                         text: "CTRL + ESPACIO"
-                        color: "#9ca3af"
+                        color: window.textSecondary
                         font.pixelSize: 9
                         font.bold: true
                     }
                 }
                 Text {
                     text: "⚙"
-                    color: "#757180"
+                    color: window.textSecondary
                     font.pixelSize: 14
                     Layout.leftMargin: 6
                 }
@@ -87,8 +94,8 @@ ApplicationWindow {
                 Layout.fillWidth: true
                 implicitHeight: 48
                 radius: 12
-                color: "#18161e"
-                border.color: searchInput.activeFocus ? "#DC143C" : "#2e2b36"
+                color: window.panelColor
+                border.color: searchInput.activeFocus ? "#DC143C" : window.borderColor
                 border.width: 1
 
                 RowLayout {
@@ -108,8 +115,8 @@ ApplicationWindow {
                         id: searchInput
                         Layout.fillWidth: true
                         placeholderText: "¿Qué tienes en mente?"
-                        placeholderTextColor: "#686472"
-                        color: "#ffffff"
+                        placeholderTextColor: window.textSecondary
+                        color: window.textPrimary
                         font.pixelSize: 16
                         background: null
                         selectByMouse: true
@@ -129,7 +136,7 @@ ApplicationWindow {
 
                     Rectangle {
                         radius: 5
-                        color: "#26232d"
+                        color: window.surfaceColor
                         border.color: "#35ffffff"
                         implicitWidth: escText.implicitWidth + 10
                         implicitHeight: 18
@@ -137,7 +144,7 @@ ApplicationWindow {
                             id: escText
                             anchors.centerIn: parent
                             text: "esc"
-                            color: "#8e8a98"
+                            color: window.textSecondary
                             font.pixelSize: 10
                         }
                     }
@@ -165,7 +172,7 @@ ApplicationWindow {
                             id: tabLabel
                             anchors.centerIn: parent
                             text: modelData
-                            color: active ? "#ffffff" : "#9ca3af"
+                            color: active ? window.textPrimary : window.textSecondary
                             font.pixelSize: 12
                             font.weight: active ? Font.Medium : Font.Normal
                         }
@@ -188,7 +195,7 @@ ApplicationWindow {
             // Category Subtitle
             Text {
                 text: "TU ESPACIO  /  ACCESO RÁPIDO"
-                color: "#686472"
+                color: window.textSecondary
                 font.pixelSize: 10
                 font.letterSpacing: 1.5
                 font.bold: true
@@ -252,7 +259,7 @@ ApplicationWindow {
                             spacing: 2
                             Text {
                                 text: modelData.title
-                                color: "#ffffff"
+                                color: window.textPrimary
                                 font.pixelSize: 13
                                 font.bold: true
                                 elide: Text.ElideRight
@@ -260,7 +267,7 @@ ApplicationWindow {
                             }
                             Text {
                                 text: modelData.subtitle
-                                color: "#9ca3af"
+                                color: window.textSecondary
                                 font.pixelSize: 11
                                 elide: Text.ElideRight
                                 Layout.fillWidth: true
@@ -279,7 +286,7 @@ ApplicationWindow {
                                 id: badgeLabel
                                 anchors.centerIn: parent
                                 text: modelData.badge
-                                color: "#a39ea9"
+                                color: window.textSecondary
                                 font.pixelSize: 10
                             }
                         }
@@ -323,7 +330,7 @@ ApplicationWindow {
             Rectangle {
                 Layout.fillWidth: true
                 height: 1
-                color: "#1f1d26"
+                color: window.surfaceColor
             }
 
             // Bottom Footer
@@ -331,19 +338,19 @@ ApplicationWindow {
                 Layout.fillWidth: true
                 Text {
                     text: backend.statsText
-                    color: "#686472"
+                    color: window.textSecondary
                     font.pixelSize: 11
                 }
                 Item { Layout.fillWidth: true }
                 Text {
                     text: "↵ Abrir    ↑↓ navegar"
-                    color: "#8a8694"
+                    color: window.dark ? "#8a8694" : "#81787a"
                     font.pixelSize: 11
                 }
                 Item { Layout.fillWidth: true }
                 Text {
                     text: "Acciones ^ K"
-                    color: "#686472"
+                    color: window.textSecondary
                     font.pixelSize: 11
                 }
             }

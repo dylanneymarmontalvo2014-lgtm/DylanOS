@@ -1,5 +1,6 @@
 pragma ComponentBehavior: Bound
 import QtQuick
+import org.kde.plasma.core as PlasmaCore
 import org.kde.plasma.plasmoid
 import org.kde.kirigami as Kirigami
 import org.kde.plasma.plasma5support as P5Support
@@ -112,7 +113,7 @@ PlasmoidItem {
                                 // nombre: una sola inicial repetía «E, T, T» y
                                 // dos accesos quedaban indistinguibles.
                                 text: tile.modelData.name.substr(0, 2).toUpperCase()
-                                color: Tokens.white
+                                color: PlasmaCore.Theme.textColor
                                 font.family: Tokens.fontFamily
                                 font.pixelSize: Tokens.fontSizeCaption
                                 font.weight: Font.DemiBold
