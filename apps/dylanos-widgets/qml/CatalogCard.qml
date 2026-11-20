@@ -12,22 +12,24 @@ import "lib/WidgetTokens.js" as Tokens
  */
 Item {
     id: card
+    SystemPalette { id: systemPalette; colorGroup: SystemPalette.Active }
 
     property var entry: null
 
     readonly property bool limited: entry && (entry.status === "limited"
                                               || entry.status === "needs-pkg")
     readonly property color accent: entry && entry.inDefaultLayout
-                                    ? Tokens.crimson : Tokens.lightGray
+                                    ? Tokens.crimson : systemPalette.mid
 
     Rectangle {
         anchors.fill: parent
         radius: Tokens.radiusInner
-        color: hover.containsMouse ? Qt.rgba(1, 1, 1, 0.07)
-                                   : Qt.rgba(1, 1, 1, 0.04)
+        color: systemPalette.window.hsvValue > 0.5
+                   ? (hover.containsMouse ? Qt.rgba(1, 1, 1, 0.07) : Qt.rgba(1, 1, 1, 0.04))
+                   : (hover.containsMouse ? Qt.rgba(0, 0, 0, 0.07) : Qt.rgba(0, 0, 0, 0.035))
         border.width: 1
         border.color: hover.containsMouse ? Tokens.crimson
-                                          : Qt.rgba(1, 1, 1, 0.08)
+                                          : (systemPalette.window.hsvValue > 0.5 ? Qt.rgba(1, 1, 1, 0.08) : Qt.rgba(0, 0, 0, 0.10))
 
         Behavior on color {
             ColorAnimation { duration: Tokens.durationFast }
@@ -44,7 +46,7 @@ Item {
 
                 Text {
                     text: card.entry ? card.entry.name : ""
-                    color: Tokens.white
+                    color: systemPalette.text
                     font.family: Tokens.fontFamily
                     font.pixelSize: Tokens.fontSizeBody
                     font.weight: Font.DemiBold
@@ -74,7 +76,7 @@ Item {
             Text {
                 Layout.fillWidth: true
                 text: card.entry ? card.entry.description : ""
-                color: Tokens.lightGray
+                color: systemPalette.mid
                 font.family: Tokens.fontFamily
                 font.pixelSize: Tokens.fontSizeCaption
                 wrapMode: Text.WordWrap
@@ -91,7 +93,7 @@ Item {
                            + (card.entry.requiresNetwork ? "requiere red" : "sin red");
                 }
                 color: card.entry && card.entry.requiresNetwork
-                       ? Tokens.crimson : Tokens.lightGray
+                       ? Tokens.crimson : systemPalette.mid
                 font.family: Tokens.fontFamily
                 font.pixelSize: Tokens.fontSizeCaption - 1
                 elide: Text.ElideRight
@@ -117,7 +119,7 @@ Item {
                             id: sizeLabel
                             anchors.centerIn: parent
                             text: parent.modelData
-                            color: Tokens.lightGray
+                            color: systemPalette.mid
                             font.family: Tokens.fontFamily
                             font.pixelSize: Tokens.fontSizeCaption - 2
                         }
@@ -138,7 +140,7 @@ Item {
                         anchors.centerIn: parent
                         text: card.entry && card.entry.status === "needs-pkg"
                               ? "Falta paquete" : "Con límite"
-                        color: Tokens.lightGray
+                        color: systemPalette.mid
                         font.family: Tokens.fontFamily
                         font.pixelSize: Tokens.fontSizeCaption - 2
                     }

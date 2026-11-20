@@ -49,6 +49,8 @@ class ProcessVisualScriptTests(unittest.TestCase):
                 "DYLANOS_CMAKE": str(cmake),
                 "DYLANOS_PROCESS_INSTALL_PREFIX": str(prefix),
                 "DYLANOS_PROCESS_BUILD_DIR": str(tmp / "build"),
+                # CMake is mocked below; the test only verifies configure/build/install calls.
+                "DYLANOS_PROCESS_SKIP_CORE": "1",
             }
             subprocess.run(["bash", str(SCRIPT), "--build-only"], env=env, check=True, text=True, capture_output=True)
             calls = log.read_text(encoding="utf-8").splitlines()

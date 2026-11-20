@@ -1,5 +1,6 @@
 pragma ComponentBehavior: Bound
 import QtQuick
+import org.kde.plasma.core as PlasmaCore
 import org.kde.plasma.plasmoid
 import org.kde.plasma.plasma5support as P5Support
 import "lib"
@@ -116,7 +117,7 @@ PlasmoidItem {
                 Text {
                     width: parent.width
                     text: root.cpu.length > 0 ? root.cpu : "Procesador no identificado"
-                    color: Tokens.white
+                    color: PlasmaCore.Theme.textColor
                     font.family: Tokens.fontFamily
                     font.pixelSize: Tokens.fontSizeBody
                     elide: Text.ElideRight
@@ -126,7 +127,7 @@ PlasmoidItem {
                     width: parent.width
                     text: root.memGb > 0 ? root.memGb + " GB de RAM"
                                          : "Memoria no disponible"
-                    color: Tokens.lightGray
+                    color: PlasmaCore.Theme.disabledTextColor
                     font.family: Tokens.fontFamily
                     font.pixelSize: Tokens.fontSizeCaption
                     elide: Text.ElideRight

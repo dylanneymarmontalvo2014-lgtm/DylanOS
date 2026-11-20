@@ -1,5 +1,6 @@
 pragma ComponentBehavior: Bound
 import QtQuick
+import org.kde.plasma.core as PlasmaCore
 import org.kde.plasma.plasmoid
 import org.kde.plasma.plasma5support as P5Support
 import "lib"
@@ -88,7 +89,7 @@ PlasmoidItem {
                         return "El portapapeles está vacío.";
                     return root.content;
                 }
-                color: root.available < 0 ? Tokens.lightGray : Tokens.white
+                color: root.available < 0 ? PlasmaCore.Theme.disabledTextColor : PlasmaCore.Theme.textColor
                 font.family: Tokens.fontFamily
                 font.pixelSize: Tokens.fontSizeCaption
                 wrapMode: Text.WrapAnywhere

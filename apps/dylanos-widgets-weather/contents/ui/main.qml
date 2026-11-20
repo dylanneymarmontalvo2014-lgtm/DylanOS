@@ -1,5 +1,6 @@
 pragma ComponentBehavior: Bound
 import QtQuick
+import org.kde.plasma.core as PlasmaCore
 import org.kde.plasma.plasmoid
 import "lib"
 import "lib/WidgetTokens.js" as Tokens
@@ -44,7 +45,7 @@ PlasmoidItem {
 
         WidgetCard {
             anchors.fill: parent
-            variant: Tokens.variantCrimson
+            variant: PlasmaCore.Theme.textColor.hsvValue > 0.5 ? Tokens.variantCrimson : Tokens.variantLight
         }
 
         // ── Con datos del proveedor ──────────────────────────────────────
@@ -65,7 +66,7 @@ PlasmoidItem {
 
             Text {
                 text: root.temperature
-                color: Tokens.white
+                color: PlasmaCore.Theme.textColor
                 font.family: Tokens.fontFamily
                 font.pixelSize: Math.round(root.cellSize * 0.32)
                 font.weight: Font.Light
@@ -73,7 +74,7 @@ PlasmoidItem {
 
             Text {
                 text: root.condition
-                color: Tokens.white
+                color: PlasmaCore.Theme.textColor
                 font.family: Tokens.fontFamily
                 font.pixelSize: Tokens.fontSizeHeading
             }
@@ -98,7 +99,7 @@ PlasmoidItem {
             Text {
                 anchors.horizontalCenter: parent.horizontalCenter
                 text: "Clima"
-                color: Tokens.white
+                color: PlasmaCore.Theme.textColor
                 font.family: Tokens.fontFamily
                 font.pixelSize: Tokens.fontSizeHeading
                 font.weight: Font.DemiBold
@@ -128,7 +129,7 @@ PlasmoidItem {
                     id: configLabel
                     anchors.centerIn: parent
                     text: "Configurar"
-                    color: Tokens.white
+                    color: PlasmaCore.Theme.textColor
                     font.family: Tokens.fontFamily
                     font.pixelSize: Tokens.fontSizeCaption
                     font.weight: Font.DemiBold

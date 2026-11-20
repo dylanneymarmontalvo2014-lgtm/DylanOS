@@ -1,5 +1,6 @@
 pragma ComponentBehavior: Bound
 import QtQuick
+import org.kde.plasma.core as PlasmaCore
 import org.kde.plasma.plasmoid
 import "lib"
 import "lib/WidgetTokens.js" as Tokens
@@ -58,7 +59,7 @@ PlasmoidItem {
                         anchors.leftMargin: Tokens.space2
                         anchors.rightMargin: Tokens.space2
                         verticalAlignment: TextInput.AlignVCenter
-                        color: Tokens.white
+                        color: PlasmaCore.Theme.textColor
                         font.family: Tokens.fontFamily
                         font.pixelSize: Tokens.fontSizeBody
                         selectionColor: Tokens.crimson
@@ -71,7 +72,7 @@ PlasmoidItem {
                         Text {
                             anchors.verticalCenter: parent.verticalCenter
                             text: "12 * (3 + 4)"
-                            color: Tokens.lightGray
+                            color: PlasmaCore.Theme.disabledTextColor
                             font.family: Tokens.fontFamily
                             font.pixelSize: Tokens.fontSizeCaption
                             visible: input.text.length === 0
@@ -83,7 +84,7 @@ PlasmoidItem {
                     width: parent.width
                     horizontalAlignment: Text.AlignRight
                     text: root.invalid ? "Expresión no válida" : root.result
-                    color: root.invalid ? Tokens.crimson : Tokens.white
+                    color: root.invalid ? Tokens.crimson : PlasmaCore.Theme.textColor
                     font.family: Tokens.fontFamily
                     font.pixelSize: Tokens.fontSizeHeading
                     font.weight: Font.DemiBold

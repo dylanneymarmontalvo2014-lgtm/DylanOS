@@ -22,8 +22,12 @@ ApplicationWindow {
     property bool resetOnNextDigit: true
     property string lastExpression: ""
 
+    SystemPalette { id: systemPalette; colorGroup: SystemPalette.Active }
+    readonly property bool dark: systemPalette.window.hsvValue < 0.5
     readonly property color accentRed: "#DC143C"
-    readonly property color keyDark: "#1c1c1c"
+    readonly property color keyDark: dark ? "#1c1c1c" : "#e6e1e2"
+    readonly property color foreground: dark ? "#f0dde6" : "#201a1b"
+    readonly property color secondaryText: dark ? "#b9acbf" : "#655b5d"
 
     readonly property double maxResultMagnitude: 1e100
 
@@ -123,9 +127,9 @@ ApplicationWindow {
         anchors.fill: parent
         radius: root.radius
         clip: true
-        color: "#19171e"
+        color: root.dark ? "#19171e" : "#f7f4f4"
         border.width: 1
-        border.color: "#2e2736"
+        border.color: root.dark ? "#2e2736" : "#d8ced0"
 
         // Arrastre de la ventana: cubre el frame completo con z -1, así solo
         // recibe eventos del área muerta (título, huecos) y no interfiere con
@@ -167,18 +171,18 @@ ApplicationWindow {
                     MouseArea { id: calcMax; anchors.fill: parent; hoverEnabled: true; cursorShape: Qt.PointingHandCursor; onClicked: root.visibility === Window.Maximized ? root.showNormal() : root.showMaximized() }
                 }
             }
-            Text { text: "DYLANOS"; color: "#b4a9bb"; font.pixelSize: 10; font.letterSpacing: 2 }
+            Text { text: "DYLANOS"; color: root.secondaryText; font.pixelSize: 10; font.letterSpacing: 2 }
             Item { Layout.fillWidth: true }
-            Text { text: "Calculadora"; color: "#f0dde6"; font.pixelSize: 13 }
+            Text { text: "Calculadora"; color: root.foreground; font.pixelSize: 13 }
         }
         Item { Layout.fillHeight: true }
-        Text { text: root.lastExpression; color: "#b9acbf"; Layout.fillWidth: true; horizontalAlignment: Text.AlignRight; font.pixelSize: 15; elide: Text.ElideLeft }
+        Text { text: root.lastExpression; color: root.secondaryText; Layout.fillWidth: true; horizontalAlignment: Text.AlignRight; font.pixelSize: 15; elide: Text.ElideLeft }
 
         Text {
             id: display
             objectName: "display"
             text: "0"
-            color: "#ffffff"
+            color: root.foreground
             font.pixelSize: 56
             font.weight: Font.Light
             horizontalAlignment: Text.AlignRight

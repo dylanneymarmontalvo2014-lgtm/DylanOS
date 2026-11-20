@@ -1,4 +1,5 @@
 import QtQuick
+import org.kde.plasma.core as PlasmaCore
 import "WidgetTokens.js" as Tokens
 
 /*
@@ -14,7 +15,7 @@ Item {
 
     property string title: ""
     property string subtitle: ""
-    property string variant: Tokens.variantDark
+    property string variant: PlasmaCore.Theme.textColor.hsvValue > 0.5 ? Tokens.variantDark : Tokens.variantLight
     property bool performanceMode: false
     property string actionIcon: ""
     signal actionClicked()

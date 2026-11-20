@@ -1,4 +1,5 @@
 import QtQuick
+import org.kde.plasma.core as PlasmaCore
 import QtQuick.Controls as QQC2
 import QtQuick.Controls.Basic as DockControls
 import org.kde.plasma.plasmoid
@@ -117,7 +118,7 @@ Item {
         contentItem: Text {
             text: menuEntry.text
             font: menuEntry.font
-            color: menuEntry.enabled ? "#ffffff" : "#9ca3af"
+            color: menuEntry.enabled ? PlasmaCore.Theme.textColor : PlasmaCore.Theme.disabledTextColor
             textFormat: Text.PlainText
             verticalAlignment: Text.AlignVCenter
             horizontalAlignment: Text.AlignLeft
@@ -170,11 +171,12 @@ Item {
         background: Rectangle {
             radius: 22
             antialiasing: true
+            // Existing dark-glass token: border.color: "#55f4dce5".
             border.width: 1
-            border.color: "#55f4dce5"
+            border.color: PlasmaCore.Theme.textColor.hsvValue > 0.5 ? "#55f4dce5" : "#302a2b"
             gradient: Gradient {
-                GradientStop { position: 0; color: "#df25151f" }
-                GradientStop { position: 1; color: "#e609090c" }
+                GradientStop { position: 0; color: PlasmaCore.Theme.textColor.hsvValue > 0.5 ? "#df25151f" : "#f8f4f4" }
+                GradientStop { position: 1; color: PlasmaCore.Theme.textColor.hsvValue > 0.5 ? "#e609090c" : "#ebe6e6" }
             }
         }
 

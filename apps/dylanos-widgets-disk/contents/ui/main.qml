@@ -1,5 +1,6 @@
 pragma ComponentBehavior: Bound
 import QtQuick
+import org.kde.plasma.core as PlasmaCore
 import org.kde.plasma.plasmoid
 import org.kde.plasma.plasma5support as P5Support
 import "lib"
@@ -69,7 +70,7 @@ PlasmoidItem {
                 Text {
                     anchors.horizontalCenter: parent.horizontalCenter
                     text: root.ratio >= 0 ? Math.round(root.ratio * 100) + " %" : "—"
-                    color: Tokens.white
+                    color: PlasmaCore.Theme.textColor
                     font.family: Tokens.fontFamily
                     font.pixelSize: Math.round(root.cellSize * 0.26)
                     font.weight: Font.Light
@@ -81,7 +82,7 @@ PlasmoidItem {
                           ? Data.formatBytes(root.usedBytes) + " de "
                             + Data.formatBytes(root.totalBytes)
                           : "Sin dato"
-                    color: Tokens.lightGray
+                    color: PlasmaCore.Theme.disabledTextColor
                     font.family: Tokens.fontFamily
                     font.pixelSize: Tokens.fontSizeCaption
                 }

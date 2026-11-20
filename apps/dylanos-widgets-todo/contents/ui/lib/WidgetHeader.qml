@@ -1,4 +1,5 @@
 import QtQuick
+import org.kde.plasma.core as PlasmaCore
 import "WidgetTokens.js" as Tokens
 
 /*
@@ -13,8 +14,8 @@ Item {
 
     property string title: ""
     property string secondaryText: ""
-    property color textColor: Tokens.white
-    property color secondaryColor: Tokens.lightGray
+    property color textColor: PlasmaCore.Theme.textColor
+    property color secondaryColor: PlasmaCore.Theme.disabledTextColor
     property string actionIcon: ""
     property string actionTooltip: ""
 

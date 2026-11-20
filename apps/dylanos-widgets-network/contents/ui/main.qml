@@ -1,5 +1,6 @@
 pragma ComponentBehavior: Bound
 import QtQuick
+import org.kde.plasma.core as PlasmaCore
 import org.kde.plasma.plasmoid
 import org.kde.plasma.plasma5support as P5Support
 import "lib"
@@ -29,7 +30,7 @@ PlasmoidItem {
 
     readonly property bool connected: root.connection.length > 0
     readonly property bool wireless: root.device.indexOf("wifi") === 0
-    readonly property color accent: root.connected ? Tokens.white : Tokens.lightGray
+    readonly property color accent: root.connected ? PlasmaCore.Theme.textColor : PlasmaCore.Theme.disabledTextColor
 
     Timer {
         id: poll
@@ -118,7 +119,7 @@ PlasmoidItem {
                     text: root.connected
                           ? (root.ipv4.length > 0 ? root.ipv4 : "Sin dirección IPv4")
                           : "NetworkManager no reporta conexión activa"
-                    color: Tokens.lightGray
+                    color: PlasmaCore.Theme.disabledTextColor
                     font.family: Tokens.fontFamily
                     font.pixelSize: Tokens.fontSizeCaption
                     wrapMode: Text.WordWrap

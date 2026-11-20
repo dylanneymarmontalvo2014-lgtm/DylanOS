@@ -1,5 +1,6 @@
 pragma ComponentBehavior: Bound
 import QtQuick
+import org.kde.plasma.core as PlasmaCore
 import org.kde.plasma.plasmoid
 import org.kde.plasma.plasma5support as P5Support
 import "lib"
@@ -92,7 +93,7 @@ PlasmoidItem {
                     text: root.available
                           ? (root.hasTrack ? root.title : "Sin metadatos")
                           : "Sin reproductor activo"
-                    color: Tokens.white
+                    color: PlasmaCore.Theme.textColor
                     font.family: Tokens.fontFamily
                     font.pixelSize: Tokens.fontSizeBody
                     font.weight: Font.DemiBold
@@ -103,7 +104,7 @@ PlasmoidItem {
                     width: parent.width
                     text: root.available && root.artist.length > 0 ? root.artist
                                                                   : ""
-                    color: Tokens.lightGray
+                    color: PlasmaCore.Theme.disabledTextColor
                     font.family: Tokens.fontFamily
                     font.pixelSize: Tokens.fontSizeCaption
                     elide: Text.ElideRight
@@ -132,7 +133,7 @@ PlasmoidItem {
                                 anchors.centerIn: parent
                                 text: control.modelData.glyph
                                 color: controlArea.containsMouse ? Tokens.crimson
-                                                                 : Tokens.white
+                                                                 : PlasmaCore.Theme.textColor
                                 font.family: Tokens.fontFamily
                                 font.pixelSize: Tokens.fontSizeHeading
                             }
