@@ -1,0 +1,24 @@
+#!/bin/sh
+# Rechaza commits firmados con la identidad de relleno de la aplicación
+# (zwork <zwork@local>): el entorno exporta GIT_AUTHOR_*/GIT_COMMITTER_* y esas
+# variables tienen prioridad sobre user.name/user.email, así que un commit
+# acababa con el autor equivocado. Es preferible fallar aquí, con un mensaje
+# claro, que reescribir la historia después.
+case "${GIT_AUTHOR_NAME-}:${GIT_AUTHOR_EMAIL-}:${GIT_COMMITTER_NAME-}:${GIT_COMMITTER_EMAIL-}" in
+    *zwork*)
+        cat >&2 <<'MSG'
+pre-commit: la identidad de git es la de relleno (zwork <zwork@local>).
+
+El entorno exporta GIT_AUTHOR_*/GIT_COMMITTER_* y esas variables tienen
+prioridad sobre tu configuración. Commitea así:
+
+    env -u GIT_AUTHOR_NAME -u GIT_AUTHOR_EMAIL \
+        -u GIT_COMMITTER_NAME -u GIT_COMMITTER_EMAIL \
+        git commit -m "fix(scope): …"
+
+O recarga la shell, donde ~/.bashrc ya las descarta.
+MSG
+        exit 1
+        ;;
+esac
+exit 0
