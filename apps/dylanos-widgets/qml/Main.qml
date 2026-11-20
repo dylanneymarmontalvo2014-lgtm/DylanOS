@@ -160,7 +160,7 @@ ApplicationWindow {
                     anchors.rightMargin: Tokens.space3
                     placeholderText: "Buscar widget…"
                     color: window.foreground
-                    placeholderTextColor: Tokens.lightGray
+                    placeholderTextColor: window.secondaryText
                     font.family: Tokens.fontFamily
                     font.pixelSize: Tokens.fontSizeBody
                     background: null
