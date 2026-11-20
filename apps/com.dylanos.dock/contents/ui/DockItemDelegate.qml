@@ -171,6 +171,7 @@ Item {
         background: Rectangle {
             radius: 22
             antialiasing: true
+            // Existing dark-glass token: border.color: "#55f4dce5".
             border.width: 1
             border.color: PlasmaCore.Theme.textColor.hsvValue > 0.5 ? "#55f4dce5" : "#302a2b"
             gradient: Gradient {
