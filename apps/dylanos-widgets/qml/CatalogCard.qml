@@ -1,5 +1,4 @@
 import QtQuick
-import org.kde.plasma.core as PlasmaCore
 import QtQuick.Layouts
 import "lib"
 import "lib/WidgetTokens.js" as Tokens
@@ -20,7 +19,7 @@ Item {
     readonly property bool limited: entry && (entry.status === "limited"
                                               || entry.status === "needs-pkg")
     readonly property color accent: entry && entry.inDefaultLayout
-                                    ? Tokens.crimson : PlasmaCore.Theme.disabledTextColor
+                                    ? Tokens.crimson : systemPalette.mid
 
     Rectangle {
         anchors.fill: parent
@@ -47,7 +46,7 @@ Item {
 
                 Text {
                     text: card.entry ? card.entry.name : ""
-                    color: PlasmaCore.Theme.textColor
+                    color: systemPalette.text
                     font.family: Tokens.fontFamily
                     font.pixelSize: Tokens.fontSizeBody
                     font.weight: Font.DemiBold
@@ -77,7 +76,7 @@ Item {
             Text {
                 Layout.fillWidth: true
                 text: card.entry ? card.entry.description : ""
-                color: PlasmaCore.Theme.disabledTextColor
+                color: systemPalette.mid
                 font.family: Tokens.fontFamily
                 font.pixelSize: Tokens.fontSizeCaption
                 wrapMode: Text.WordWrap
@@ -94,7 +93,7 @@ Item {
                            + (card.entry.requiresNetwork ? "requiere red" : "sin red");
                 }
                 color: card.entry && card.entry.requiresNetwork
-                       ? Tokens.crimson : PlasmaCore.Theme.disabledTextColor
+                       ? Tokens.crimson : systemPalette.mid
                 font.family: Tokens.fontFamily
                 font.pixelSize: Tokens.fontSizeCaption - 1
                 elide: Text.ElideRight
@@ -120,7 +119,7 @@ Item {
                             id: sizeLabel
                             anchors.centerIn: parent
                             text: parent.modelData
-                            color: PlasmaCore.Theme.disabledTextColor
+                            color: systemPalette.mid
                             font.family: Tokens.fontFamily
                             font.pixelSize: Tokens.fontSizeCaption - 2
                         }
@@ -141,7 +140,7 @@ Item {
                         anchors.centerIn: parent
                         text: card.entry && card.entry.status === "needs-pkg"
                               ? "Falta paquete" : "Con límite"
-                        color: PlasmaCore.Theme.disabledTextColor
+                        color: systemPalette.mid
                         font.family: Tokens.fontFamily
                         font.pixelSize: Tokens.fontSizeCaption - 2
                     }
