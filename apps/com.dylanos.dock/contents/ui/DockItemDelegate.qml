@@ -1,4 +1,5 @@
 import QtQuick
+import org.kde.plasma.core as PlasmaCore
 import QtQuick.Controls as QQC2
 import QtQuick.Controls.Basic as DockControls
 import org.kde.plasma.plasmoid

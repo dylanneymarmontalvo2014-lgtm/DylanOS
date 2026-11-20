@@ -14,6 +14,7 @@ Rectangle {
     readonly property color cGray:       PlasmaCore.Theme.textColor.hsvValue > 0.5 ? "#1A1A1A" : "#efeded"
     readonly property color cCrimson:    "#DC143C"
     readonly property color cWhite:      PlasmaCore.Theme.textColor
+    readonly property color cOnAccent: "#FFFFFF"
     readonly property color cLightGray:  PlasmaCore.Theme.disabledTextColor
     readonly property color cCardBorder: PlasmaCore.Theme.textColor.hsvValue > 0.5 ? Qt.rgba(1, 1, 1, 0.12) : Qt.rgba(0, 0, 0, 0.12)
 
@@ -100,13 +101,13 @@ Rectangle {
                     anchors.fill: parent; anchors.margins: 12; spacing: 4
                     Kirigami.Icon {
                         source: "network-wireless"; isMask: true
-                        color: SystemStatus.wifiPowered ? cWhite : cLightGray
+                        color: SystemStatus.wifiPowered ? cOnAccent : cLightGray
                         Layout.preferredWidth: 22; Layout.preferredHeight: 22
                     }
                     Item { Layout.fillHeight: true }
                     QQC2.Label {
                         text: "Wi-Fi"
-                        color: cWhite
+                        color: SystemStatus.wifiPowered ? cOnAccent : cWhite
                         font.pixelSize: 13; font.bold: true
                     }
                     QQC2.Label {
@@ -145,13 +146,13 @@ Rectangle {
                     anchors.fill: parent; anchors.margins: 12; spacing: 4
                     Kirigami.Icon {
                         source: "preferences-system-bluetooth"; isMask: true
-                        color: SystemStatus.bluetoothPowered ? cWhite : cLightGray
+                        color: SystemStatus.bluetoothPowered ? cOnAccent : cLightGray
                         Layout.preferredWidth: 22; Layout.preferredHeight: 22
                     }
                     Item { Layout.fillHeight: true }
                     QQC2.Label {
                         text: "Bluetooth"
-                        color: cWhite
+                        color: SystemStatus.bluetoothPowered ? cOnAccent : cWhite
                         font.pixelSize: 13; font.bold: true
                     }
                     QQC2.Label {
@@ -190,13 +191,13 @@ Rectangle {
                     anchors.fill: parent; anchors.margins: 12; spacing: 4
                     Kirigami.Icon {
                         source: "notifications-disabled"; isMask: true
-                        color: SystemStatus.doNotDisturb ? cWhite : cLightGray
+                        color: SystemStatus.doNotDisturb ? cOnAccent : cLightGray
                         Layout.preferredWidth: 22; Layout.preferredHeight: 22
                     }
                     Item { Layout.fillHeight: true }
                     QQC2.Label {
                         text: "No molestar"
-                        color: cWhite
+                        color: SystemStatus.doNotDisturb ? cOnAccent : cWhite
                         font.pixelSize: 13; font.bold: true
                     }
                     QQC2.Label {
@@ -229,13 +230,13 @@ Rectangle {
                     anchors.fill: parent; anchors.margins: 12; spacing: 4
                     Kirigami.Icon {
                         source: "weather-clear-night"; isMask: true
-                        color: SystemStatus.darkModeActive ? cWhite : cLightGray
+                        color: SystemStatus.darkModeActive ? cOnAccent : cLightGray
                         Layout.preferredWidth: 22; Layout.preferredHeight: 22
                     }
                     Item { Layout.fillHeight: true }
                     QQC2.Label {
                         text: "Modo oscuro"
-                        color: cWhite
+                        color: SystemStatus.darkModeActive ? cOnAccent : cWhite
                         font.pixelSize: 13; font.bold: true
                     }
                     QQC2.Label {
@@ -347,7 +348,7 @@ Rectangle {
                 ColumnLayout {
                     Layout.fillWidth: true
                     spacing: 3
-                    QQC2.Label { text: "IoT & Embedded"; color: cWhite; font.pixelSize: 14; font.bold: true }
+                    QQC2.Label { text: "IoT & Embedded"; color: cOnAccent; font.pixelSize: 14; font.bold: true }
                     QQC2.Label {
                         text: (MockData.iotStatus.devices ? MockData.iotStatus.devices.length : 0) + " puertos serie · MQTT "
                               + (MockData.iotStatus.mqttLocal ? "activo" : "inactivo")
@@ -581,7 +582,7 @@ Rectangle {
                     spacing: 2
                     QQC2.Label {
                         text: SystemStatus.mprisAvailable ? SystemStatus.mprisTitle : "Sin reproducción activa"
-                        color: cWhite; font.pixelSize: 14; font.bold: true
+                        color: cOnAccent; font.pixelSize: 14; font.bold: true
                         elide: Text.ElideRight; Layout.fillWidth: true
                     }
                     QQC2.Label {
@@ -593,16 +594,16 @@ Rectangle {
                         spacing: 16
                         visible: SystemStatus.mprisAvailable
                         QQC2.ToolButton {
-                            icon.name: "media-skip-backward"; icon.color: cWhite; flat: true
+                            icon.name: "media-skip-backward"; icon.color: cOnAccent; flat: true
                             onClicked: SystemStatus.mprisPrevious()
                         }
                         QQC2.ToolButton {
                             icon.name: SystemStatus.mprisPlaying ? "media-playback-pause" : "media-playback-start"
-                            icon.color: cWhite; flat: true
+                            icon.color: cOnAccent; flat: true
                             onClicked: SystemStatus.mprisPlayPause()
                         }
                         QQC2.ToolButton {
-                            icon.name: "media-skip-forward"; icon.color: cWhite; flat: true
+                            icon.name: "media-skip-forward"; icon.color: cOnAccent; flat: true
                             onClicked: SystemStatus.mprisNext()
                         }
                     }

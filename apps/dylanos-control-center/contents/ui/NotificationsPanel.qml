@@ -17,6 +17,7 @@ Rectangle {
     readonly property color cGray:       PlasmaCore.Theme.textColor.hsvValue > 0.5 ? "#1A1A1A" : "#efeded"
     readonly property color cCrimson:    "#DC143C"
     readonly property color cWhite:      PlasmaCore.Theme.textColor
+    readonly property color cOnAccent: "#FFFFFF"
     readonly property color cLightGray:  PlasmaCore.Theme.disabledTextColor
     readonly property color cCardBorder: PlasmaCore.Theme.textColor.hsvValue > 0.5 ? Qt.rgba(1, 1, 1, 0.12) : Qt.rgba(0, 0, 0, 0.12)
 
@@ -135,7 +136,7 @@ Rectangle {
                             anchors.centerIn: parent
                             width: 20; height: 20
                             source: model.iconName || model.desktopEntry || "dialog-information"
-                            isMask: true; color: cWhite
+                            isMask: true; color: cOnAccent
                         }
                     }
 

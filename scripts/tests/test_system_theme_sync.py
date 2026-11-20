@@ -25,7 +25,6 @@ class SystemThemeSourceTest(unittest.TestCase):
     def test_primary_native_apps_follow_the_live_qt_palette(self):
         cases = {
             "apps/archivos/qml/Main.qml": ("systemPalette.window.hsvValue", "cAccent"),
-            "apps/calculator/qml/Main.qml": ("systemPalette.window.hsvValue", "#DC143C"),
             "apps/dylanos-app-center/qml/Main.qml": ("systemPalette.window.hsvValue", "#DC143C"),
             "apps/dylanos-spotlight/qml/Main.qml": ("systemPalette.window.hsvValue", "#DC143C"),
             "apps/dylanos-widgets/qml/Main.qml": ("systemPalette.window.hsvValue", "Tokens.crimson"),
@@ -36,6 +35,14 @@ class SystemThemeSourceTest(unittest.TestCase):
                 self.assertIn("SystemPalette {", source)
                 self.assertIn(marker, source)
                 self.assertIn(crimson, source)
+
+    def test_calculator_buttons_use_live_foreground_and_keep_crimson_operations(self):
+        button = self.read("apps/calculator/qml/CalcButton.qml")
+        main = self.read("apps/calculator/qml/Main.qml")
+        self.assertIn("SystemPalette {", button)
+        self.assertIn("systemPalette.window.hsvValue", button)
+        self.assertIn("property color textColor: dark ?", button)
+        self.assertIn('accentRed: "#DC143C"', main)
 
     def test_tokenized_apps_switch_existing_palettes_without_replacing_crimson(self):
         explorer = self.read("apps/dylanos-explorer/qml/theme/Theme.qml")
