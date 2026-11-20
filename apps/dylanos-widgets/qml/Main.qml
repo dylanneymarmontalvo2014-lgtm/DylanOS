@@ -1,4 +1,5 @@
 import QtQuick
+import org.kde.plasma.core as PlasmaCore
 import QtQuick.Layouts
 import QtQuick.Controls as QQC2
 // ApplicationWindow viene de QtQuick.Controls; se importa además sin alias
@@ -33,18 +34,22 @@ ApplicationWindow {
     color: "transparent"
     flags: Qt.Window | Qt.FramelessWindowHint
 
+    SystemPalette { id: systemPalette; colorGroup: SystemPalette.Active }
+    readonly property bool dark: systemPalette.window.hsvValue < 0.5
+    readonly property color foreground: dark ? "#f4eeee" : "#211a1b"
+    readonly property color secondaryText: dark ? "#b3b3b3" : "#655b5d"
     readonly property int pageMargin: Tokens.space6
 
     Rectangle {
         anchors.fill: parent
         radius: Tokens.radiusWidget
         gradient: Gradient {
-            GradientStop { position: 0; color: "#F0201618" }
-            GradientStop { position: 0.6; color: "#F5100C0D" }
-            GradientStop { position: 1; color: "#F0280A0E" }
+            GradientStop { position: 0; color: window.dark ? "#F0201618" : "#F7FAF6F6" }
+            GradientStop { position: 0.6; color: window.dark ? "#F5100C0D" : "#F7F0E8E9" }
+            GradientStop { position: 1; color: window.dark ? "#F0280A0E" : "#F7E8E0E1" }
         }
         border.width: 1
-        border.color: Qt.rgba(1, 1, 1, 0.08)
+        border.color: window.dark ? Qt.rgba(1, 1, 1, 0.08) : Qt.rgba(0, 0, 0, 0.10)
     }
 
     ColumnLayout {
@@ -101,7 +106,7 @@ ApplicationWindow {
             Text {
                 anchors.centerIn: parent
                 text: "Galería de Widgets"
-                color: Tokens.white
+                color: window.foreground
                 font.family: Tokens.fontFamily
                 font.pixelSize: Tokens.fontSizeBody
                 font.weight: Font.DemiBold
@@ -121,7 +126,7 @@ ApplicationWindow {
 
                 Text {
                     text: "DylanOS Widgets"
-                    color: Tokens.white
+                    color: window.foreground
                     font.family: Tokens.fontFamily
                     font.pixelSize: 26
                     font.weight: Font.DemiBold
@@ -130,7 +135,7 @@ ApplicationWindow {
                 Text {
                     text: Catalog.count() + " widgets · "
                           + Catalog.roadmap.length + " en el roadmap"
-                    color: Tokens.lightGray
+                    color: window.secondaryText
                     font.family: Tokens.fontFamily
                     font.pixelSize: Tokens.fontSizeCaption
                 }
@@ -143,10 +148,10 @@ ApplicationWindow {
                 width: 260
                 height: 36
                 radius: Tokens.radiusControl
-                color: Qt.rgba(1, 1, 1, 0.05)
+                color: window.dark ? Qt.rgba(1, 1, 1, 0.05) : Qt.rgba(0, 0, 0, 0.04)
                 border.width: 1
                 border.color: searchField.activeFocus ? Tokens.crimson
-                                                      : Qt.rgba(1, 1, 1, 0.10)
+                                                      : (window.dark ? Qt.rgba(1, 1, 1, 0.10) : Qt.rgba(0, 0, 0, 0.12))
 
                 QQC2.TextField {
                     id: searchField
@@ -154,7 +159,7 @@ ApplicationWindow {
                     anchors.leftMargin: Tokens.space3
                     anchors.rightMargin: Tokens.space3
                     placeholderText: "Buscar widget…"
-                    color: Tokens.white
+                    color: window.foreground
                     placeholderTextColor: Tokens.lightGray
                     font.family: Tokens.fontFamily
                     font.pixelSize: Tokens.fontSizeBody

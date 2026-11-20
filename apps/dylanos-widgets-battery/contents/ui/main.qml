@@ -1,5 +1,6 @@
 pragma ComponentBehavior: Bound
 import QtQuick
+import org.kde.plasma.core as PlasmaCore
 import org.kde.plasma.plasmoid
 import org.kde.plasma.plasma5support as P5Support
 import "lib"
@@ -30,7 +31,7 @@ PlasmoidItem {
     property string stateLabel: "Sin batería"
 
     readonly property bool low: root.percent >= 0 && root.percent <= 15
-    readonly property color accent: root.low ? Tokens.crimson : Tokens.white
+    readonly property color accent: root.low ? Tokens.crimson : PlasmaCore.Theme.textColor
 
     Timer {
         id: poll
@@ -108,7 +109,7 @@ PlasmoidItem {
                 Text {
                     anchors.horizontalCenter: parent.horizontalCenter
                     text: root.stateLabel
-                    color: Tokens.lightGray
+                    color: PlasmaCore.Theme.disabledTextColor
                     font.family: Tokens.fontFamily
                     font.pixelSize: Tokens.fontSizeCaption
                 }

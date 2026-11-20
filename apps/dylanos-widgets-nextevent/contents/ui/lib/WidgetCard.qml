@@ -1,4 +1,5 @@
 import QtQuick
+import org.kde.plasma.core as PlasmaCore
 import "WidgetTokens.js" as Tokens
 
 /*
@@ -16,7 +17,7 @@ import "WidgetTokens.js" as Tokens
 Item {
     id: surface
 
-    property string variant: Tokens.variantDark
+    property string variant: PlasmaCore.Theme.textColor.hsvValue > 0.5 ? Tokens.variantDark : Tokens.variantLight
     // Estado que publica Crimson Glass (modo bajo consumo / llvmpipe).
     property bool performanceMode: false
     property bool showShadow: true
@@ -50,7 +51,9 @@ Item {
         opacity: surface.fillOpacity
         antialiasing: true
         border.width: 1
-        border.color: Qt.rgba(1, 1, 1, surface.performanceMode ? 0.10 : 0.14)
+        border.color: PlasmaCore.Theme.textColor.hsvValue > 0.5
+                       ? Qt.rgba(1, 1, 1, surface.performanceMode ? 0.10 : 0.14)
+                       : Qt.rgba(0, 0, 0, surface.performanceMode ? 0.10 : 0.14)
 
         /*
          * Vidrio: más luminoso arriba (luz que entra) y más profundo abajo.
@@ -77,7 +80,9 @@ Item {
             anchors.margins: Tokens.space3
             height: 1
             radius: 1
-            color: Qt.rgba(1, 1, 1, surface.performanceMode ? 0.06 : 0.22)
+            color: PlasmaCore.Theme.textColor.hsvValue > 0.5
+                   ? Qt.rgba(1, 1, 1, surface.performanceMode ? 0.06 : 0.22)
+                   : Qt.rgba(0, 0, 0, surface.performanceMode ? 0.045 : 0.08)
         }
 
         // Halo interior muy tenue: da volumen sin ensuciar el texto.
@@ -87,7 +92,9 @@ Item {
             radius: Tokens.radiusWidget - 1
             color: "transparent"
             border.width: 1
-            border.color: Qt.rgba(1, 1, 1, surface.performanceMode ? 0.03 : 0.05)
+            border.color: PlasmaCore.Theme.textColor.hsvValue > 0.5
+                               ? Qt.rgba(1, 1, 1, surface.performanceMode ? 0.03 : 0.05)
+                               : Qt.rgba(0, 0, 0, surface.performanceMode ? 0.025 : 0.04)
         }
     }
 

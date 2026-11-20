@@ -17,7 +17,8 @@ ApplicationWindow {
     flags: Qt.Window | Qt.FramelessWindowHint
     readonly property int radius: 22
     property string page: initialPage
-    property bool dark: preferences.dark
+    SystemPalette { id: systemPalette; colorGroup: SystemPalette.Active }
+    readonly property bool dark: systemPalette.window.hsvValue < 0.5
     readonly property var names: ({welcome:"Bienvenido", files:"Archivos", notes:"Notas", dev:"Desarrollo", monitor:"Monitor", settings:"Ajustes"})
     readonly property string pageTitle: names[page] || "DylanOS"
     readonly property var symbols: ({welcome:"✦", files:"▤", notes:"▥", dev:"⌘", monitor:"◴", settings:"⚙"})
@@ -31,8 +32,6 @@ ApplicationWindow {
     palette.highlight: "#DC143C"
     palette.highlightedText: "white"
     palette.placeholderText: dark ? "#aaa7b4" : "#666373"
-    Settings { id: preferences; category: "Appearance"; property bool dark: true }
-    onDarkChanged: preferences.dark = dark
     onClosing: function(close) { if (page === "notes" && content.item) close.accepted = content.item.flush() }
 
     // Retained for internal navigation/QA; app launchers create separate processes.
@@ -117,8 +116,8 @@ ApplicationWindow {
             }
             Item { Layout.fillWidth: true }
             ActionButton {
-                text: win.dark ? "Claro" : "Oscuro"
-                onClicked: win.dark = !win.dark
+                text: win.dark ? "Modo claro en DylanOS Configuration" : "Modo oscuro en DylanOS Configuration"
+                onClicked: backend.theme(win.dark ? "Light" : "Dark")
                 Accessible.name: "Cambiar apariencia de esta aplicación"
             }
         }

@@ -1,5 +1,6 @@
 pragma ComponentBehavior: Bound
 import QtQuick
+import org.kde.plasma.core as PlasmaCore
 import org.kde.plasma.plasmoid
 import Qt.labs.folderlistmodel
 import org.kde.plasma.plasma5support as P5Support
@@ -75,7 +76,7 @@ PlasmoidItem {
 
         WidgetCard {
             anchors.fill: parent
-            variant: Tokens.variantDark
+            variant: PlasmaCore.Theme.textColor.hsvValue > 0.5 ? Tokens.variantDark : Tokens.variantLight
         }
 
         Image {
@@ -98,7 +99,7 @@ PlasmoidItem {
             visible: !root.hasPhotos
             text: "Sin fotos en " + (root.folder.length > 0 ? root.folder : "~/Imágenes")
                   + ". Configura una carpeta en el applet."
-            color: Tokens.lightGray
+            color: PlasmaCore.Theme.disabledTextColor
             font.family: Tokens.fontFamily
             font.pixelSize: Tokens.fontSizeCaption
         }

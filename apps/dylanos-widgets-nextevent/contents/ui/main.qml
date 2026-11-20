@@ -1,5 +1,6 @@
 pragma ComponentBehavior: Bound
 import QtQuick
+import org.kde.plasma.core as PlasmaCore
 import org.kde.plasma.plasmoid
 import org.kde.plasma.plasma5support as P5Support
 import "lib"
@@ -118,7 +119,7 @@ PlasmoidItem {
                             return "No hay eventos futuros en el calendario.";
                         return root.eventTitle;
                     }
-                    color: root.hasEvent ? Tokens.white : Tokens.lightGray
+                    color: root.hasEvent ? PlasmaCore.Theme.textColor : PlasmaCore.Theme.disabledTextColor
                     font.family: Tokens.fontFamily
                     font.pixelSize: Tokens.fontSizeBody
                     font.weight: root.hasEvent ? Font.DemiBold : Font.Normal
