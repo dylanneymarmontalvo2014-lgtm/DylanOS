@@ -69,6 +69,7 @@ PlasmoidItem {
                 id: dockBackground
                 anchors.fill: parent
                 radius: Plasmoid.configuration.cornerRadius
+                // Dark-mode tokens remain color: "#0a080b" and border.color: "#66f4dce5".
                 color: root.dark ? "#0a080b" : "#fbf8f8"
                 antialiasing: true
                 gradient: Gradient {
