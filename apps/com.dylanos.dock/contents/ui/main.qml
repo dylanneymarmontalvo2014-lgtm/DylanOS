@@ -69,6 +69,7 @@ PlasmoidItem {
                 id: dockBackground
                 anchors.fill: parent
                 radius: Plasmoid.configuration.cornerRadius
+                // Preserve the established dark-glass base: color: "#0a080b"; light mode uses a warm surface.
                 color: root.dark ? "#0a080b" : "#fbf8f8"
                 antialiasing: true
                 gradient: Gradient {
