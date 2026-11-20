@@ -1,5 +1,4 @@
 import QtQuick
-import org.kde.plasma.core as PlasmaCore
 import QtQuick.Layouts
 import QtQuick.Controls as QQC2
 // ApplicationWindow viene de QtQuick.Controls; se importa además sin alias
