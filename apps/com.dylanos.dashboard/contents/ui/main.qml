@@ -341,6 +341,9 @@ PlasmoidItem {
     }
 
     // ===== Tarjeta base de vidrio oscuro =====
+    // Design-token contract: dark glass keeps `color: "#D9101014"` and
+    // `border.color: root.pomodoroRunning ? "#70DC143C" : "#38FFFFFF"`;
+    // the light branch below substitutes warm, low-contrast neutral surfaces.
     component WidgetCard: Rectangle {
         id: card
         property string cardTitle: ""
