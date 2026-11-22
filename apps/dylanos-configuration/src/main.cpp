@@ -1,13 +1,9 @@
-#include <QBuffer>
 #include <QCommandLineParser>
 #include <QGuiApplication>
-#include <QFile>
 #include <QImage>
 #include <QJsonDocument>
 #include <QQmlApplicationEngine>
 #include <QQmlContext>
-#include <QQuickItem>
-#include <QQuickItemGrabResult>
 #include <QQuickWindow>
 #include <QTimer>
 #include <cstdio>
@@ -17,7 +13,6 @@
 #include "services/SystemService.h"
 #include "services/GamingService.h"
 #include "services/IoTService.h"
-#include "services/LoginManagerService.h"
 
 int main(int argc, char *argv[])
 {
@@ -92,14 +87,12 @@ int main(int argc, char *argv[])
     auto *glassService = new CrimsonGlassService(&app);
     auto *gamingService = new GamingService(&app);
     auto *iotService = new IoTService(&app);
-    auto *loginService = new LoginManagerService(&app);
 
     QQmlApplicationEngine engine;
     engine.rootContext()->setContextProperty(QStringLiteral("System"), service);
     engine.rootContext()->setContextProperty(QStringLiteral("CrimsonGlass"), glassService);
     engine.rootContext()->setContextProperty(QStringLiteral("Gaming"), gamingService);
     engine.rootContext()->setContextProperty(QStringLiteral("IoT"), iotService);
-    engine.rootContext()->setContextProperty(QStringLiteral("LoginManager"), loginService);
     engine.addImageProvider(QStringLiteral("lucide"), new LucideProvider());
 
     engine.rootContext()->setContextProperty(QStringLiteral("startPage"),
@@ -129,57 +122,17 @@ int main(int argc, char *argv[])
 
     if (parser.isSet(screenshotOption)) {
         const QString target = parser.value(screenshotOption);
-        /*
-         * La captura se toma cuando la ventana ya está pintada: con 900 ms y
-         * sin aplicar el tamaño primero, la imagen salía vacía o con el
-         * tamaño por defecto. El tamaño se aplica aquí, no antes de que el
-         * motor cree la ventana.
-         */
-        const QStringList dims = parser.value(sizeOption).split(QLatin1Char('x'));
-        auto capturar = [&engine, target, dims]() {
+        QTimer::singleShot(900, &app, [&engine, target]() {
             for (QObject *obj : engine.rootObjects()) {
                 if (auto *window = qobject_cast<QQuickWindow *>(obj)) {
-                    if (dims.size() == 2)
-                        window->resize(dims.value(0).toInt(), dims.value(1).toInt());
-                    window->show();
-                    // Un ciclo de eventos más para que el nuevo tamaño pinte.
-                    QTimer::singleShot(400, window, [window, target]() {
-                        /*
-                         * `grabWindow()` devuelve una imagen nula con la
-                         * plataforma offscreen: no hay superficie que leer.
-                         * La captura se pide al propio elemento raíz, que
-                         * renderiza a una imagen sin depender de la ventana.
-                         */
-                        QSharedPointer<QQuickItemGrabResult> resultado =
-                            window->contentItem()->grabToImage();
-                        if (!resultado) {
-                            QCoreApplication::exit(2);
-                            return;
-                        }
-                        QObject::connect(resultado.data(), &QQuickItemGrabResult::ready,
-                                         window, [resultado, target]() {
-                            const QImage imagen = resultado->image();
-                            QFile fichero(target);
-                            bool ok = !imagen.isNull() && fichero.open(QIODevice::WriteOnly);
-                            if (ok) {
-                                QByteArray datos;
-                                QBuffer buffer(&datos);
-                                buffer.open(QIODevice::WriteOnly);
-                                ok = imagen.save(&buffer, "PNG");
-                                buffer.close();
-                                if (ok)
-                                    ok = fichero.write(datos) == datos.size();
-                                fichero.close();
-                            }
-                            QCoreApplication::exit(ok ? 0 : 2);
-                        });
-                    });
+                    const QImage shot = window->grabWindow();
+                    const bool ok = shot.save(target);
+                    QCoreApplication::exit(ok ? 0 : 2);
                     return;
                 }
             }
             QCoreApplication::exit(1);
-        };
-        QTimer::singleShot(1400, &app, capturar);
+        });
         return app.exec();
     }
 

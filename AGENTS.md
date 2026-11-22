@@ -82,19 +82,6 @@ técnica viva: `docs/architecture.md`. Este archivo es el índice operativo de r
   DBus `org.dylanos.dylanos-store`, desktop `org.dylanos.store.desktop`. QA de captura:
   `dylanos-store --screenshot out.png --size 1280x800 --view home` (chroot, con DBus).
 - `apps/dylanos-spotlight/` — Búsqueda rápida (Python, ventana frameless).
-- `apps/dylanos-login-manager/` — **DylanOS Login Manager**: la pantalla de acceso.
-  El prototipo HTML se sirve desde `themes/sddm/DylanOS-Crimson/web` y un host
-  PySide6 + QWebEngineView ocupa el lugar del greeter de SDDM (el binario
-  original queda como `sddm-greeter-qt6.sddm-original`), hablando su protocolo:
-  así la autenticación es PAM real. Sustituye los datos de ejemplo por datos del
-  sistema y **oculta** el widget cuando no hay dato (clima, agenda, música,
-  batería). Catálogo de 12 atajos y 14 widgets en `catalog/catalogo.json`;
-  helper privilegiado con lista blanca y política polkit. Se configura entero
-  desde DylanOS Configuration → Pantalla de acceso (fondo, composición, tamaños,
-  widgets, 4 atajos como máximo, Crimson Glass y color de acento) y su vista
-  previa es una captura del greeter real. Detalles y límites en
-  `docs/login-manager.md`; fidelidad del prototipo verificada con diff 0 en
-  `artifacts/login-manager-qa/`.
 - `apps/ozi-flappy/` — Easter egg de consola: Flappy Bird ASCII, iniciado únicamente por `echo "ozi ozi"` en una sesión Bash interactiva con TTY; lógica comprobable con `python3 apps/ozi-flappy/ozi-flappy.py --self-test`.
 - `apps/dylanos-browser/` — **DylanOS Browser predeterminado**: fork vendorizado de
   Zen/Gecko. `npm run build:linux -- candidate` genera un payload ignorado con inventario

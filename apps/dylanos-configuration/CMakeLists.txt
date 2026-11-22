@@ -25,7 +25,6 @@ qt_add_executable(dylanos-configuration
     src/services/SystemService.cpp
     src/services/GamingService.cpp
     src/services/IoTService.cpp
-    src/services/LoginManagerService.cpp
     src/services/LucideProvider.cpp
 )
 
@@ -83,7 +82,6 @@ qt_add_qml_module(dylanos-configuration
         qml/pages/CrimsonGlassPage.qml
         qml/pages/GamingPage.qml
         qml/pages/IoTPage.qml
-        qml/pages/LoginManagerPage.qml
         qml/Main.qml
 )
 
