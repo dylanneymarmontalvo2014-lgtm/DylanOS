@@ -33,3 +33,13 @@ Fuente de la huella: https://ftp-master.debian.org/keys.html.
   bibliotecas web del ZIP.
 - Fondo predeterminado: recurso preexistente `branding/wallpapers/dylanos-default.png`,
   copiado sin regenerarlo ni alterarlo.
+- **Login manager HTML** (`themes/sddm/DylanOS-Crimson/web/`): el prototipo lo
+  aportó el usuario; el tema se genera con `scripts/lib/extract-login-prototype.py`
+  y `scripts/lib/enlazar-datos-login.py` (GPL-3.0-or-later). Incluye:
+  - React 18.3.1 y ReactDOM 18.3.1 (UMD, producción): licencia MIT, cabecera
+    `@license React` conservada intacta en cada fichero de `web/vendor/`.
+  - `dc-runtime` (runtime del prototipo): generado a partir del paquete
+    original, se distribuye tal cual.
+  - Inter (subconjunto latino, `web/fonts/inter-latin.woff2`): SIL Open Font
+    License 1.1, la misma que el paquete `fonts-inter` de Debian.
+  - Fondos y logo: recursos preexistentes del repositorio, sin modificar.
