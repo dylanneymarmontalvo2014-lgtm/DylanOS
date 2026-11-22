@@ -56,6 +56,7 @@ Window {
         { id: "network", title: "Red e Internet", sub: "Wi-Fi, Ethernet, VPN", icon: "wifi", color: "#7b4fe0", sidebar: true, keywords: "wifi ethernet conexión vpn proxy" },
         { id: "personalization", title: "Personalización", sub: "Fondo, temas, colores, pantalla", icon: "palette", color: "#e8702a", sidebar: true, keywords: "apariencia tema color fondo escritorio paneles iconos fuente wallpaper" },
         { id: "crimson-glass", title: "Crimson Glass", sub: "Cristal, desenfoque y efectos globales", icon: "sliders-horizontal", color: "#dc143c", sidebar: false, keywords: "apariencia cristal glass transparencia desenfoque blur reflejos sombras ventanas compositor" },
+        { id: "login", title: "Pantalla de acceso", sub: "Fondo, composición, atajos y widgets del login", icon: "lock", color: "#dc143c", sidebar: true, keywords: "login sddm bloqueo pantalla acceso fondo atajos widgets reloj avatar contrasena crimson glass" },
         { id: "apps", title: "Aplicaciones", sub: "Aplicaciones instaladas y predeterminadas", icon: "layout-grid", color: "#d4202f", sidebar: true, keywords: "navegador correo predeterminadas instaladas" },
         { id: "accounts", title: "Cuentas", sub: "Tu cuenta, sincronización, familia", icon: "user", color: "#d4202f", sidebar: true, keywords: "usuario perfil sesión inicio" },
         { id: "datetime", title: "Hora e idioma", sub: "Fecha, hora, región, idioma", icon: "globe", color: "#1f9aa6", sidebar: true, keywords: "zona horaria teclado formato región" },
@@ -77,6 +78,9 @@ Window {
         { label: "Color de énfasis", route: "personalization", tab: "Apariencia" },
         { label: "Tema de iconos", route: "personalization", tab: "Apariencia" },
         { label: "Crimson Glass", route: "crimson-glass" },
+        { label: "Pantalla de acceso", route: "login" },
+        { label: "Atajos del login", route: "login", tab: "Atajos" },
+        { label: "Fondo del login", route: "login", tab: "Apariencia" },
         { label: "Desenfoque de fondo", route: "crimson-glass" },
         { label: "Modo de bajo consumo gráfico", route: "crimson-glass" },
         { label: "Fondo de pantalla", route: "personalization", tab: "Fondo de pantalla" },
@@ -275,6 +279,7 @@ Window {
                     case "storage": return Qt.resolvedUrl("pages/StoragePage.qml")
                     case "gaming": return Qt.resolvedUrl("pages/GamingPage.qml")
                     case "iot": return Qt.resolvedUrl("pages/IoTPage.qml")
+                    case "login": return Qt.resolvedUrl("pages/LoginManagerPage.qml")
                     default: return Qt.resolvedUrl("pages/SystemPage.qml")
                     }
                 }
