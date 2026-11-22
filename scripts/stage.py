@@ -110,6 +110,11 @@ def stage(destination, installer_dist=None, version=None):
         ("themes/aurorae/DylanOS-Crimson-Glass-Light", "/usr/share/aurorae/themes/DylanOS-Crimson-Glass-Light"),
         ("themes/lookandfeel/org.dylanos.crimson", "/usr/share/plasma/look-and-feel/org.dylanos.crimson"),
         ("themes/sddm/DylanOS-Crimson", "/usr/share/sddm/themes/DylanOS-Crimson"),
+        # DylanOS Login Manager: el host HTML y sus datos. El tema de arriba
+        # contiene el prototipo en `web/`; aquí van el proceso que ocupa el
+        # lugar del greeter y el catálogo de atajos/widgets.
+        ("apps/dylanos-login-manager/catalog", "/usr/share/dylanos/login-manager"),
+        ("apps/dylanos-login-manager/helper", "/usr/lib/dylanos"),
         ("themes/grub/DylanOS-Grub", "/usr/share/grub/themes/dylanos"),
         ("themes/plymouth/DylanOS-Plymouth", "/usr/share/plymouth/themes/dylanos"),
         ("branding/logo.png", "/usr/share/plymouth/themes/dylanos/logo.png"),
@@ -474,6 +479,7 @@ if [ ! -e "$state/welcome-seen" ]; then
 fi
 ''', 0o755)
     write("/etc/sddm.conf.d/10-dylanos.conf", "[Theme]\nCurrent=DylanOS-Crimson\nCursorTheme=breeze_cursors\n\n[General]\nInputMethod=\n\n[Autologin]\nUser=dylan\nSession=plasmax11.desktop\nRelogin=false\n")
+    instalar_login_manager(dest, write)
     # En el sistema instalado el GRUB no debe mostrar menú: arranca DylanOS
     # directamente. El menú del LIVE lo genera scripts/iso.sh (timeout=10).
     # DylanOS Explorer es el gestor de archivos predeterminado del sistema:
@@ -674,6 +680,133 @@ exec /usr/bin/startplasma-x11 "$@"
                     continue
                 entry.chmod(0o755 if entry.stat().st_mode & 0o111 else 0o644)
     print(f"Payload DylanOS instalado en {dest}")
+
+
+def instalar_login_manager(dest: Path, write) -> None:
+    """Instala el host del login y sustituye el greeter de SDDM.
+
+    SDDM no permite configurar otro binario de greeter: siempre lanza
+    `/usr/bin/sddm-greeter-qt6`. Para que el prototipo HTML sea el login real
+    sin reescribirlo, ese nombre pasa a ser el host de DylanOS y el binario
+    original se conserva como `sddm-greeter-qt6.sddm-original`.
+
+    Si el tema activo no es DylanOS, el host delega en el original: una
+    configuración de SDDM cambiada a mano sigue funcionando.
+    """
+    host = dest / "usr/share/dylanos/login-manager"
+    host.mkdir(parents=True, exist_ok=True)
+
+    # Código del host y de sus datos.
+    shutil.copy2(ROOT / "apps/dylanos-login-manager/host/dylanos-login-greeter.py",
+                 host / "dylanos-login-greeter.py")
+    (host / "dylanos-login-greeter.py").chmod(0o755)
+    for nombre, destino in (("variables.json", host / "variables.json"),
+                            ("catalogo.json", host / "catalogo.json")):
+        origen = (ROOT / "themes/sddm/DylanOS-Crimson/web/config/variables.json"
+                  if nombre == "variables.json"
+                  else ROOT / "apps/dylanos-login-manager/catalog/catalogo.json")
+        if origen.is_file():
+            shutil.copy2(origen, destino)
+            destino.chmod(0o644)
+
+    # Helper privilegiado (lista blanca, invocado por polkit).
+    helper = dest / "usr/lib/dylanos/dylanos-login-helper"
+    helper.parent.mkdir(parents=True, exist_ok=True)
+    shutil.copy2(ROOT / "apps/dylanos-login-manager/helper/dylanos-login-helper.py", helper)
+    helper.chmod(0o755)
+
+    # Lanzador del greeter. El binario de SDDM se conserva aparte.
+    write("/usr/bin/dylanos-login-greeter", '''#!/bin/sh
+# Host del DylanOS Login Manager: sirve el tema HTML y habla el protocolo de
+# SDDM. Con cualquier otro tema se delega en el greeter original, de modo que
+# una configuración de SDDM cambiada a mano sigue funcionando.
+#
+# Las rutas se resuelven junto al propio lanzador (no fijas en /usr) para que
+# el mismo guion funcione en el sistema instalado y en una imagen de prueba.
+# El lanzador vive en <raíz>/usr/bin: la raíz es dos niveles arriba. Así el
+# mismo guion sirve en el sistema instalado (/usr/bin → /) y en una imagen de
+# prueba (<destino>/usr/bin → <destino>).
+base=$(cd "${0%/*}/../.." 2>/dev/null && pwd) || base=
+host="$base/usr/share/dylanos/login-manager/dylanos-login-greeter.py"
+original="$base/usr/bin/sddm-greeter-qt6.sddm-original"
+
+tema=""
+previo=""
+for argumento in "$@"; do
+    [ "$previo" = "--theme" ] && tema="$argumento"
+    previo="$argumento"
+done
+# También se acepta la forma --theme=<ruta>.
+case "$*" in
+    *--theme=*) tema=$(printf '%s\n' "$*" | sed -n 's/.*--theme=\([^ ]*\).*/\1/p') ;;
+esac
+
+# El host se lanza con los mismos argumentos que SDDM pasa al greeter
+# (--socket, --theme, --test-mode…).
+if [ -r "$host" ]; then
+    ejecutar_host() { exec /usr/bin/python3 "$host" "$@"; }
+else
+    ejecutar_host() { echo "dylanos-login-greeter: falta $host" >&2; exit 1; }
+fi
+
+case "$tema" in
+    ""|*DylanOS-Crimson*) ejecutar_host "$@" ;;
+esac
+
+# Cualquier otro tema se sirve con el greeter de siempre.
+if [ -x "$original" ]; then
+    exec "$original" "$@"
+fi
+ejecutar_host "$@"
+''', 0o755)
+
+    # Sustitución del greeter de SDDM. Es idempotente: si ya está hecho, no
+    # se vuelve a tocar el binario original.
+    original = dest / "usr/bin/sddm-greeter-qt6"
+    respaldo = dest / "usr/bin/sddm-greeter-qt6.sddm-original"
+    if original.is_file() and not original.is_symlink() and not respaldo.exists():
+        shutil.copy2(original, respaldo)
+    enlace = dest / "usr/bin/sddm-greeter-qt6"
+    if enlace.exists() or enlace.is_symlink():
+        enlace.unlink()
+    enlace.symlink_to("dylanos-login-greeter")
+
+    # Configuración por defecto del login: la plantilla del tema.
+    ajustes = dest / "etc/dylanos/login-manager.json"
+    ajustes.parent.mkdir(parents=True, exist_ok=True)
+    plantilla = ROOT / "themes/sddm/DylanOS-Crimson/web/config/variables.json"
+    if plantilla.is_file() and not ajustes.exists():
+        shutil.copy2(plantilla, ajustes)
+    ajustes.chmod(0o644)
+
+    # Carpeta de fotos de perfil publicadas para el greeter.
+    fotos = dest / "var/lib/dylanos/login-manager/fotos"
+    fotos.mkdir(parents=True, exist_ok=True)
+    fotos.chmod(0o755)
+
+    # Política de polkit para el helper.
+    write("/usr/share/polkit-1/actions/org.dylanos.login-helper.policy", '''<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE policyconfig PUBLIC "-//freedesktop//DTD PolicyKit Policy Configuration 1.0//EN"
+ "http://www.freedesktop.org/standards/PolicyKit/1.0/policyconfig.dtd">
+<policyconfig>
+  <vendor>DylanOS</vendor>
+  <action id="org.dylanos.login-helper.red">
+    <description>Encender o apagar la red desde el login</description>
+    <message>DylanOS necesita permiso para cambiar el estado de la red antes de iniciar sesión.</message>
+    <!--
+      Solo el greeter (usuario sddm) puede usar el helper. Con allow_any=yes
+      cualquier cuenta podría apagar la red con pkexec; aquí se restringe y
+      polkit pedirá autenticación a quien no sea el greeter.
+    -->
+    <defaults>
+      <allow_any>auth_admin</allow_any>
+      <allow_inactive>no</allow_inactive>
+      <allow_active>auth_admin</allow_active>
+    </defaults>
+    <annotate key="org.freedesktop.policykit.exec.path">/usr/lib/dylanos/dylanos-login-helper</annotate>
+  </action>
+</policyconfig>
+''')
 
 
 if __name__ == "__main__":
