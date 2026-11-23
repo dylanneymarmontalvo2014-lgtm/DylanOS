@@ -1,4 +1,4 @@
-# DylanOS Alpha
+# DylanOS 
 
 <p align="center">
 	<img src="branding/logo.svg" alt="Logotipo de DylanOS" width="112">
