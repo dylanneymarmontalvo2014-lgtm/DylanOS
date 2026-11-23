@@ -18,7 +18,7 @@
 </p>
 
 > [!CAUTION]
-> DylanOS está en fase Alpha. La configuración de Calamares y un arranque de prueba no certifican una instalación completa ni compatibilidad con hardware. Prueba en una máquina virtual y respalda tus datos antes de instalar.
+> DylanOS está en fase beta. La configuración de Calamares y un arranque de prueba no certifican una instalación completa ni compatibilidad con hardware. Prueba en una máquina virtual y respalda tus datos antes de instalar.
 
 ## Qué incluye
 
