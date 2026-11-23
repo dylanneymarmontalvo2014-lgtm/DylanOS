@@ -75,7 +75,7 @@ Se requieren `xorriso`, `squashfs-tools`, `qemu-system-x86_64` y firmware OVMF. 
 
 Consulta la [página de GitHub Releases](https://github.com/dylanneymarmontalvo2014-lgtm/DylanOS/releases). Una Release de producción con etiqueta `v*` adjunta la ISO amd64 y su checksum SHA-256. Sigue [la guía de descarga y prueba](docs/install.md) y verifica el checksum antes de iniciar.
 
-## Documentación
+## Documentacion
 
 - [Descargar y probar DylanOS](docs/install.md)
 - [Construir DylanOS](docs/build.md)
