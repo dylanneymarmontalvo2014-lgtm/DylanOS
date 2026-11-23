@@ -6,7 +6,7 @@
 
 <p align="center">
 	<strong>Una distribución Linux basada en Debian Live y KDE Plasma.</strong><br>
-	Debian Stable · amd64 · versión Alpha
+	Debian Stable · amd64 · versión beta
 </p>
 
 <p align="center">
