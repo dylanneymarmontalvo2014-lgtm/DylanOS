@@ -166,6 +166,11 @@ class StagingTest(unittest.TestCase):
             self.assertIn("__aurorae__svg__DylanOS-Crimson-Glass", kwinrc)
             self.assertIn("translucencyEnabled=true", kwinrc)
             self.assertIn("[Effect-blur]", kwinrc)
+            self.assertIn("BlurStrength=7", kwinrc)
+            self.assertIn("slideEnabled=false", kwinrc)
+            baloorc = root / "etc/skel/.config/baloofilerc"
+            self.assertTrue(baloorc.is_file())
+            self.assertIn("Indexing-Enabled=false", baloorc.read_text(encoding="utf-8"))
             source_dist = ROOT / "installer/dylanos-installer/dist"
             staged_dist = root / "usr/share/dylanos/installer/dist/index.html"
             if source_dist.is_dir():
@@ -238,7 +243,11 @@ class StagingTest(unittest.TestCase):
             self.assertIn("pactl get-source-volume @DEFAULT_SOURCE@", status_qml)
             self.assertIn("pactl set-source-volume @DEFAULT_SOURCE@", status_qml)
             self.assertIn("pactl set-source-mute @DEFAULT_SOURCE@ toggle", status_qml)
+            self.assertIn("active: root.expanded", cc_main)
             cc_panel = (cc_root / "contents/ui/ControlCenterPanel.qml").read_text()
+            self.assertIn("layer.enabled: root.active && root.visible", cc_panel)
+            self.assertIn("onActiveChanged: if (active)", cc_panel)
+            self.assertNotIn("Component.onCompleted: { MockData.refreshGaming(); MockData.refreshIoT() }", cc_panel)
             self.assertIn('Accessible.name: "Nivel del micrófono"', cc_panel)
             self.assertIn('"Micrófono no detectado"', cc_panel)
             self.assertIn("DylanOSDark", status_qml)
@@ -559,7 +568,7 @@ class StagingTest(unittest.TestCase):
 
             kwinrc = (root / "etc/skel/.config/kwinrc").read_text(encoding="utf-8")
             self.assertIn("blurEnabled=true", kwinrc)
-            self.assertIn("slideEnabled=true", kwinrc)
+            self.assertIn("slideEnabled=false", kwinrc)
 
             before = {path.relative_to(root): path.read_bytes() for path in required + [autostart]}
             module.stage(root)

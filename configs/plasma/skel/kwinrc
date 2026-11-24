@@ -9,14 +9,16 @@ BorderSize=Tiny
 blurEnabled=true
 translucencyEnabled=true
 contrastEnabled=false
-slideEnabled=true
+slideEnabled=false
+glideEnabled=false
+slidingpopupsEnabled=false
 
 # Crimson-glass: KWin solo desenfoca donde la decoración expone su máscara,
 # por eso el vidrio vive en el marco translúcido (Effect-blur, no Effect-Blur).
 [Effect-blur]
 # Rango válido del slider: 1-15 (BlurStrength fuera de rango hace
 # blurStrengthValues[] leer fuera del vector y SIGSEGV en BlurEffect::reconfigure).
-BlurStrength=15
+BlurStrength=7
 NoiseStrength=4
 
 [Effect-translucency]

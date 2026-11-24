@@ -10,6 +10,8 @@ import org.kde.kirigami as Kirigami
 Rectangle {
     id: root
 
+    property bool active: false
+
     readonly property color cBlack:      PlasmaCore.Theme.textColor.hsvValue > 0.5 ? Qt.rgba(10 / 255, 10 / 255, 12 / 255, 0.88) : Qt.rgba(1, 1, 1, 0.97)
     readonly property color cGray:       PlasmaCore.Theme.textColor.hsvValue > 0.5 ? "#1A1A1A" : "#efeded"
     readonly property color cCrimson:    "#DC143C"
@@ -22,9 +24,9 @@ Rectangle {
     radius: 22
     border.color: cCardBorder
     border.width: 1
-    onVisibleChanged: if (visible) { MockData.refreshGaming(); MockData.refreshIoT() }
+    onActiveChanged: if (active) { MockData.refreshGaming(); MockData.refreshIoT() }
 
-    layer.enabled: true
+    layer.enabled: root.active && root.visible
     layer.effect: MultiEffect {
         shadowEnabled: true
         shadowColor: "#000000"
@@ -39,11 +41,10 @@ Rectangle {
         anchors.margins: 20
         spacing: 16
 
-        Component.onCompleted: { MockData.refreshGaming(); MockData.refreshIoT() }
         Timer {
             interval: 15000
             repeat: true
-            running: root.visible
+            running: root.active && root.visible
             onTriggered: { MockData.refreshGaming(); MockData.refreshIoT() }
         }
 

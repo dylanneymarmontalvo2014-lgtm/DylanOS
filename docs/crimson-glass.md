@@ -12,6 +12,7 @@ código en aplicaciones y no mantiene un proceso residente.
   `__aurorae__svg__DylanOS-Crimson-Glass` para ventanas con decoración del
   servidor;
 - configura blur, contraste, translucidez y transiciones nativas de KWin;
+  el perfil inicial usa blur moderado y deja contraste y transiciones desactivados;
 - sincroniza el acento y el modo oscuro/claro de KDE y GTK 3/4;
 - ajusta por separado el modo de opacidad del panel superior y el dock;
 - genera en el perfil del usuario los SVG de paneles y diálogos con la

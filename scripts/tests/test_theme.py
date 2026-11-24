@@ -270,8 +270,11 @@ class CrimsonGlassTest(unittest.TestCase):
         self.assertEqual(kwinrc.get("Plugins", "blurEnabled"), "true")
         self.assertEqual(kwinrc.get("Plugins", "translucencyEnabled"), "true")
         # BlurStrength solo admite 1-15; fuera de rango es UB (SIGSEGV en BlurEffect)
-        self.assertEqual(kwinrc.get("Effect-blur", "BlurStrength"), "15")
+        self.assertEqual(kwinrc.get("Effect-blur", "BlurStrength"), "7")
         self.assertEqual(kwinrc.get("Effect-blur", "NoiseStrength"), "4")
+        self.assertEqual(kwinrc.get("Plugins", "slideEnabled"), "false")
+        self.assertEqual(kwinrc.get("Plugins", "glideEnabled"), "false")
+        self.assertEqual(kwinrc.get("Plugins", "slidingpopupsEnabled"), "false")
         self.assertEqual(kwinrc.get("Effect-translucency", "Inactive"), "80")
         self.assertEqual(kwinrc.get("Effect-translucency", "Dialogs"), "85")
 

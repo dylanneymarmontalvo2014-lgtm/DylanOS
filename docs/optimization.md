@@ -199,3 +199,27 @@ se modifica el wallpaper ni la geometría de perfiles existentes.
   en reposo, no una cifra certificada de RAM total. Para cuantificar MiB hay que
   comparar la misma ISO, VM, sesión y estado de widgets antes/después (PSS por
   proceso y memoria `MemAvailable`), con varias mediciones repetidas.
+
+
+## Perfil general de bajo consumo (2026-11-23)
+
+- **Indexación acotada:** `configs/plasma/skel/baloofilerc` desactiva Baloo solo
+  para perfiles nuevos. Spotlight lee `.desktop` y proyectos directamente y
+  Explorer usa KIO; no hay consumidores de Baloo en el shell de DylanOS. El
+  paquete y la posibilidad de reactivarlo desde KDE se conservan, al igual que
+  las preferencias de usuarios existentes.
+- **Compositor eficiente:** el skel usa `BlurStrength=7`, `NoiseStrength=4` y
+  desactiva `slide`, `glide` y `slidingpopups`. Crimson Glass conserva el marco
+  translúcido, pero sus valores iniciales coordinados son blur 40, reflejos 40,
+  animaciones y efectos adicionales desactivados. En software sigue aplicando
+  la degradación segura a material opaco sin blur.
+- **Centro de Control:** `ControlCenterPanel.active` se enlaza a
+  `Plasmoid.expanded`. La capa `MultiEffect` y las consultas Gaming/IoT solo
+  funcionan con el desplegable abierto; no basta con `visible`, que es local al
+  Item y puede permanecer verdadero dentro de un popup cerrado.
+- **Sin recortes funcionales:** no se desactivan red, audio, Bluetooth, energía,
+  accesibilidad, actualizaciones, KIO ni aplicaciones predeterminadas. Los
+  cambios son reversibles y no instalan un daemon nuevo.
+- **Validación:** 48 pruebas de tema/shell/staging, 54 de Configuration/contratos
+  y 15 pruebas C++ de Crimson Glass con Qt 6.8.2. No se afirma un porcentaje de
+  ahorro de CPU/RAM: debe medirse en la misma sesión y bajo la misma carga.

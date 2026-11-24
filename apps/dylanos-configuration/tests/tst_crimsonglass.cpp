@@ -58,8 +58,8 @@ void CrimsonGlassServiceTest::defaultsAreComplete()
     QCOMPARE(values.value("globalEffects").toBool(), true);
     QCOMPARE(values.value("glassIntensity").toInt(), 72);
     QCOMPARE(values.value("transparency").toInt(), 68);
-    QCOMPARE(values.value("blur").toInt(), 70);
-    QCOMPARE(values.value("reflections").toInt(), 64);
+    QCOMPARE(values.value("blur").toInt(), 40);
+    QCOMPARE(values.value("reflections").toInt(), 40);
     QCOMPARE(values.value("shadows").toInt(), 66);
     QCOMPARE(values.value("cornerRadius").toInt(), 18);
     QCOMPARE(values.value("accent").toString(), QStringLiteral("#DC143C"));
@@ -69,9 +69,9 @@ void CrimsonGlassServiceTest::defaultsAreComplete()
     QCOMPARE(values.value("menuTransparency").toInt(), 70);
     QCOMPARE(values.value("windowEffects").toBool(), true);
     QCOMPARE(values.value("backgroundBlur").toBool(), true);
-    QCOMPARE(values.value("animations").toBool(), true);
+    QCOMPARE(values.value("animations").toBool(), false);
     QCOMPARE(values.value("animationDuration").toInt(), 180);
-    QCOMPARE(values.value("additionalEffects").toBool(), true);
+    QCOMPARE(values.value("additionalEffects").toBool(), false);
     QCOMPARE(values.value("lowPower").toBool(), false);
     QCOMPARE(values.value("autoDetect").toBool(), true);
 }
@@ -86,7 +86,7 @@ void CrimsonGlassServiceTest::invalidValuesAreRejected()
     QVERIFY(!service.setOption(QStringLiteral("accent"), QStringLiteral("crimson")));
     QVERIFY(!service.setOption(QStringLiteral("mode"), QStringLiteral("sepia")));
     QVERIFY(!service.setOption(QStringLiteral("unknown"), true));
-    QCOMPARE(service.settings().value("blur").toInt(), 70);
+    QCOMPARE(service.settings().value("blur").toInt(), 40);
 }
 
 void CrimsonGlassServiceTest::settingsPersist()
@@ -106,11 +106,14 @@ void CrimsonGlassServiceTest::softwareRenderingDegradesSafely()
 {
     qputenv("DYLANOS_CRIMSON_RENDERER", "llvmpipe");
     CrimsonGlassService service;
+    QVERIFY(service.setOption(QStringLiteral("animations"), true));
+    QVERIFY(service.setOption(QStringLiteral("additionalEffects"), true));
     service.detectCapabilities();
 
     QCOMPARE(service.capabilities().value("softwareRendering").toBool(), true);
     QCOMPARE(service.effectiveEffects().value("blur").toBool(), false);
     QCOMPARE(service.effectiveEffects().value("contrast").toBool(), false);
+    QCOMPARE(service.effectiveEffects().value("animations").toBool(), false);
     QVERIFY(service.effectiveEffects().value("surfaceOpacity").toInt() >= 88);
 }
 
@@ -131,6 +134,7 @@ void CrimsonGlassServiceTest::reducedMotionDisablesAnimations()
 {
     qputenv("KDE_ANIMATION_DURATION_FACTOR", "0");
     CrimsonGlassService service;
+    QVERIFY(service.setOption(QStringLiteral("animations"), true));
     service.detectCapabilities();
 
     QCOMPARE(service.capabilities().value("reducedMotion").toBool(), true);
@@ -178,6 +182,8 @@ void CrimsonGlassServiceTest::applyWritesKWinAndToolkitMappings()
     qputenv("DYLANOS_CRIMSON_RENDERER", "OpenGL 3.1");
     CrimsonGlassService service;
     QVERIFY(service.setOption(QStringLiteral("blur"), 100));
+    QVERIFY(service.setOption(QStringLiteral("animations"), true));
+    QVERIFY(service.setOption(QStringLiteral("additionalEffects"), true));
     QVERIFY(service.setOption(QStringLiteral("animationDuration"), 240));
     QVERIFY(service.setOption(QStringLiteral("mode"), QStringLiteral("dark")));
     QVERIFY(service.setOption(QStringLiteral("accent"), QStringLiteral("#E81740")));
@@ -216,6 +222,8 @@ void CrimsonGlassServiceTest::lowPowerDisablesExpensiveEffects()
 {
     qputenv("DYLANOS_CRIMSON_RENDERER", "OpenGL 3.1");
     CrimsonGlassService service;
+    QVERIFY(service.setOption(QStringLiteral("animations"), true));
+    QVERIFY(service.setOption(QStringLiteral("additionalEffects"), true));
     QVERIFY(service.setOption(QStringLiteral("lowPower"), true));
     QVERIFY(service.apply());
 
@@ -286,6 +294,13 @@ void CrimsonGlassServiceTest::applyIsIdempotent()
     QVERIFY(firstFile.open(QIODevice::ReadOnly | QIODevice::Text));
     const QByteArray first = firstFile.readAll();
     firstFile.close();
+
+    const QString defaultKwin = QString::fromUtf8(first);
+    QVERIFY(defaultKwin.contains(QStringLiteral("BlurStrength=7")));
+    QVERIFY(defaultKwin.contains(QStringLiteral("NoiseStrength=4")));
+    QVERIFY(defaultKwin.contains(QStringLiteral("contrastEnabled=false")));
+    QVERIFY(defaultKwin.contains(QStringLiteral("glideEnabled=false")));
+    QVERIFY(defaultKwin.contains(QStringLiteral("slidingpopupsEnabled=false")));
 
     QVERIFY(service.apply());
     QVERIFY(firstFile.open(QIODevice::ReadOnly | QIODevice::Text));

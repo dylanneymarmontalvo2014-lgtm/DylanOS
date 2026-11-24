@@ -108,6 +108,7 @@ PlasmoidItem {
             }
 
             ControlCenterPanel {
+                active: root.expanded
                 Layout.fillHeight: true
                 Layout.fillWidth: true
             }

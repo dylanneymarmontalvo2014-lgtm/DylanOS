@@ -139,7 +139,7 @@ ScrollView {
                         }
                     }
                     BadgePill {
-                        text: root.active.lowPowerApplied ? "Degradación segura" : "Perfil completo"
+                        text: root.active.lowPowerApplied ? "Degradación segura" : "Perfil eficiente"
                         tone: root.active.lowPowerApplied ? "#FEBC2E" : "#58D68D"
                     }
                 }

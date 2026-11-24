@@ -82,8 +82,8 @@ QVariantMap CrimsonGlassService::defaultSettings()
         {QStringLiteral("globalEffects"), true},
         {QStringLiteral("glassIntensity"), 72},
         {QStringLiteral("transparency"), 68},
-        {QStringLiteral("blur"), 70},
-        {QStringLiteral("reflections"), 64},
+        {QStringLiteral("blur"), 40},
+        {QStringLiteral("reflections"), 40},
         {QStringLiteral("shadows"), 66},
         {QStringLiteral("cornerRadius"), 18},
         {QStringLiteral("accent"), QStringLiteral("#DC143C")},
@@ -93,9 +93,9 @@ QVariantMap CrimsonGlassService::defaultSettings()
         {QStringLiteral("menuTransparency"), 70},
         {QStringLiteral("windowEffects"), true},
         {QStringLiteral("backgroundBlur"), true},
-        {QStringLiteral("animations"), true},
+        {QStringLiteral("animations"), false},
         {QStringLiteral("animationDuration"), 180},
-        {QStringLiteral("additionalEffects"), true},
+        {QStringLiteral("additionalEffects"), false},
         {QStringLiteral("lowPower"), false},
         {QStringLiteral("autoDetect"), true}
     };
