@@ -1,0 +1,292 @@
+{
+  "_comentario": [
+    "Catálogo del DylanOS Login Manager: atajos y widgets disponibles en el",
+    "login. Cada entrada declara de dónde salen sus datos y qué se dibuja",
+    "cuando ese dato no existe. Un elemento sin fuente real no se ofrece: no",
+    "hay widgets ni atajos simulados.",
+    "El usuario elige como máximo 4 atajos (el límite de la rejilla del",
+    "prototipo) y los widgets que quiera, sin límite de cantidad: los que no",
+    "quepan se reparten en las dos columnas."
+  ],
+  "version": 2,
+  "atajos": [
+    {
+      "id": "tema",
+      "nombre": "Modo oscuro",
+      "descripcion": "Alterna entre la apariencia clara y la oscura.",
+      "fuente": "preferencia del usuario",
+      "accion": "local",
+      "por_defecto": true
+    },
+    {
+      "id": "no-molestar",
+      "nombre": "No molestar",
+      "descripcion": "Silencia las notificaciones de la sesión que va a iniciar.",
+      "fuente": "preferencia del usuario",
+      "accion": "local",
+      "por_defecto": true
+    },
+    {
+      "id": "wifi",
+      "nombre": "Wi-Fi",
+      "descripcion": "Enciende o apaga la radio Wi-Fi del equipo.",
+      "fuente": "NetworkManager (helper privilegiado)",
+      "accion": "red",
+      "por_defecto": true
+    },
+    {
+      "id": "bluetooth",
+      "nombre": "Bluetooth",
+      "descripcion": "Enciende o apaga el adaptador Bluetooth.",
+      "fuente": "BlueZ (helper privilegiado)",
+      "accion": "red",
+      "por_defecto": true
+    },
+    {
+      "id": "apagar",
+      "nombre": "Apagar",
+      "descripcion": "Apaga el equipo desde el propio login.",
+      "fuente": "SDDM (canPowerOff)",
+      "accion": "energia",
+      "por_defecto": false
+    },
+    {
+      "id": "reiniciar",
+      "nombre": "Reiniciar",
+      "descripcion": "Reinicia el equipo desde el propio login.",
+      "fuente": "SDDM (canReboot)",
+      "accion": "energia",
+      "por_defecto": false
+    },
+    {
+      "id": "suspender",
+      "nombre": "Suspender",
+      "descripcion": "Suspende el equipo sin iniciar sesión.",
+      "fuente": "SDDM (canSuspend)",
+      "accion": "energia",
+      "por_defecto": false
+    },
+    {
+      "id": "sesion",
+      "nombre": "Sesión",
+      "descripcion": "Elige la sesión de escritorio que se iniciará.",
+      "fuente": "sesiones instaladas",
+      "accion": "local",
+      "por_defecto": false
+    },
+    {
+      "id": "teclado",
+      "nombre": "Teclado",
+      "descripcion": "Muestra la distribución de teclado activa.",
+      "fuente": "/etc/default/keyboard",
+      "accion": "local",
+      "por_defecto": false
+    },
+    {
+      "id": "contraste",
+      "nombre": "Contraste",
+      "descripcion": "Activa el modo de alto contraste del login.",
+      "fuente": "preferencia del usuario",
+      "accion": "local",
+      "por_defecto": false
+    },
+    {
+      "id": "texto",
+      "nombre": "Texto grande",
+      "descripcion": "Aumenta el tamaño del texto del login.",
+      "fuente": "preferencia del usuario",
+      "accion": "local",
+      "por_defecto": false
+    },
+    {
+      "id": "crimson-glass",
+      "nombre": "Crimson Glass",
+      "descripcion": "Enciende o apaga el desenfoque de cristal del login.",
+      "fuente": "preferencia del usuario",
+      "accion": "local",
+      "por_defecto": false
+    }
+  ],
+  "widgets": [
+    {
+      "id": "clima",
+      "nombre": "Clima",
+      "columna": "izquierda",
+      "fuente": "open-meteo (abierto, sin clave)",
+      "requiere": "latitud y longitud en la configuración",
+      "sin_datos": "no se pinta",
+      "nota": "Se consulta con caché de 30 min; sin red se usa el último dato bueno. Sin ubicación configurada no se muestra.",
+      "por_defecto": true
+    },
+    {
+      "id": "proximo-evento",
+      "nombre": "Próximo evento",
+      "columna": "izquierda",
+      "fuente": "calendario .ics indicado en la configuración",
+      "requiere": "ruta a un .ics local",
+      "sin_datos": "no se pinta",
+      "nota": "Sin fichero .ics no se muestra: el login no tiene calendario de sistema.",
+      "por_defecto": true
+    },
+    {
+      "id": "reproduccion",
+      "nombre": "En reproducción",
+      "columna": "izquierda",
+      "fuente": "reproductor MPRIS activo",
+      "requiere": "reproductor en ejecución",
+      "sin_datos": "no se pinta",
+      "nota": "Antes de iniciar sesión normalmente no hay reproductor: se oculta.",
+      "por_defecto": true
+    },
+    {
+      "id": "sistema",
+      "nombre": "Sistema",
+      "columna": "izquierda",
+      "fuente": "/sys/class/power_supply y statvfs",
+      "requiere": "batería o disco montado",
+      "sin_datos": "se oculta la fila sin dato",
+      "nota": "Muestra solo lo que existe: sin batería no hay anillo de carga.",
+      "por_defecto": true
+    },
+    {
+      "id": "usuarios",
+      "nombre": "Usuarios",
+      "columna": "izquierda",
+      "fuente": "cuentas con sesión del sistema",
+      "requiere": "más de una cuenta",
+      "sin_datos": "no se pinta",
+      "nota": "Permite ver qué cuentas existen y cuál está en uso.",
+      "por_defecto": false
+    },
+    {
+      "id": "sesiones",
+      "nombre": "Sesiones",
+      "columna": "izquierda",
+      "fuente": "/usr/share/xsessions y wayland-sessions",
+      "requiere": "más de una sesión instalada",
+      "sin_datos": "no se pinta",
+      "nota": "Lista real de escritorios instalados.",
+      "por_defecto": false
+    },
+    {
+      "id": "teclado",
+      "nombre": "Teclado",
+      "columna": "izquierda",
+      "fuente": "/etc/default/keyboard",
+      "requiere": "distribución configurada",
+      "sin_datos": "no se pinta",
+      "nota": "Solo lectura: la distribución se cambia al iniciar sesión.",
+      "por_defecto": false
+    },
+    {
+      "id": "calendario",
+      "nombre": "Calendario",
+      "columna": "derecha",
+      "fuente": "reloj del sistema",
+      "requiere": "ninguno",
+      "sin_datos": "siempre visible",
+      "nota": "Mes y día reales, calculados en el momento.",
+      "por_defecto": true
+    },
+    {
+      "id": "recordatorios",
+      "nombre": "Recordatorios",
+      "columna": "derecha",
+      "fuente": "lista en /etc/dylanos/login-manager.json",
+      "requiere": "recordatorios guardados",
+      "sin_datos": "no se pinta",
+      "nota": "Los define la configuración del login; máximo cuatro, como el prototipo.",
+      "por_defecto": true
+    },
+    {
+      "id": "atajos",
+      "nombre": "Atajos",
+      "columna": "derecha",
+      "fuente": "selección del usuario",
+      "requiere": "al menos un atajo activo",
+      "sin_datos": "no se pinta",
+      "nota": "Cuatro como máximo, igual que el prototipo.",
+      "por_defecto": true
+    },
+    {
+      "id": "energia",
+      "nombre": "Energía",
+      "columna": "derecha",
+      "fuente": "capacidades de SDDM",
+      "requiere": "sistema con energía gestionada",
+      "sin_datos": "no se pinta",
+      "nota": "Apagar, reiniciar y suspender solo si SDDM los permite.",
+      "por_defecto": false
+    },
+    {
+      "id": "version",
+      "nombre": "Versión del sistema",
+      "columna": "derecha",
+      "fuente": "/etc/dylanos-release",
+      "requiere": "ninguno",
+      "sin_datos": "no se pinta",
+      "nota": "Nombre y versión reales de la distribución.",
+      "por_defecto": false
+    },
+    {
+      "id": "mensaje",
+      "nombre": "Mensaje del administrador",
+      "columna": "derecha",
+      "fuente": "/etc/dylanos/login-manager.json",
+      "requiere": "mensaje configurado",
+      "sin_datos": "no se pinta",
+      "nota": "Aviso dirigido a todas las cuentas o a una concreta.",
+      "por_defecto": false
+    },
+    {
+      "id": "reloj-mundial",
+      "nombre": "Reloj mundial",
+      "columna": "derecha",
+      "fuente": "zonas horarias del sistema",
+      "requiere": "zonas configuradas",
+      "sin_datos": "no se pinta",
+      "nota": "Horas reales de las zonas elegidas.",
+      "por_defecto": false
+    },
+    {
+      "id": "red",
+      "nombre": "Red",
+      "columna": "izquierda",
+      "fuente": "NetworkManager (nmcli)",
+      "requiere": "adaptador de red",
+      "sin_datos": "no se pinta",
+      "nota": "Nombre de la red conectada y estado del adaptador.",
+      "por_defecto": false
+    },
+    {
+      "id": "carga",
+      "nombre": "Carga del sistema",
+      "columna": "izquierda",
+      "fuente": "/proc/loadavg y /proc/uptime",
+      "requiere": "ninguno",
+      "sin_datos": "no se pinta",
+      "nota": "Carga media y tiempo encendido reales.",
+      "por_defecto": false
+    },
+    {
+      "id": "memoria",
+      "nombre": "Memoria",
+      "columna": "derecha",
+      "fuente": "/proc/meminfo",
+      "requiere": "ninguno",
+      "sin_datos": "no se pinta",
+      "nota": "Memoria en uso y disponible, sin redondeos inventados.",
+      "por_defecto": false
+    },
+    {
+      "id": "hora-solar",
+      "nombre": "Salida y puesta de sol",
+      "columna": "derecha",
+      "fuente": "open-meteo (amanecer/atardecer)",
+      "requiere": "ubicación configurada",
+      "sin_datos": "no se pinta",
+      "nota": "Horas reales del día según la ubicación del clima.",
+      "por_defecto": false
+    }
+  ]
+}

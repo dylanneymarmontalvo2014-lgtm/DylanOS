@@ -22,6 +22,7 @@ endif()
 qt_add_executable(dylanos-configuration
     src/main.cpp
     src/services/CrimsonGlassService.cpp
+    src/services/LoginManagerService.cpp
     src/services/SystemService.cpp
     src/services/GamingService.cpp
     src/services/IoTService.cpp
@@ -80,6 +81,7 @@ qt_add_qml_module(dylanos-configuration
         qml/pages/NotificationsPage.qml
         qml/pages/StoragePage.qml
         qml/pages/CrimsonGlassPage.qml
+        qml/pages/LoginManagerPage.qml
         qml/pages/GamingPage.qml
         qml/pages/IoTPage.qml
         qml/Main.qml

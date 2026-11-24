@@ -9,6 +9,138 @@ import re
 ROOT = Path(__file__).resolve().parent.parent
 
 
+def install_login_manager(dest: Path, copy, write, remove) -> None:
+    """Instala el DylanOS Login Manager como greeter de SDDM.
+
+    SDDM no permite configurar otro binario de greeter: siempre lanza
+    `/usr/bin/sddm-greeter-qt6`. Para que el tema HTML sea el login real sin
+    reescribirlo, ese nombre pasa a ser un lanzador de DylanOS y el binario
+    original se conserva como `sddm-greeter-qt6.sddm-original`. Si el tema
+    activo no es DylanOS, el lanzador delega en el original, así que una
+    configuración de SDDM cambiada a mano sigue funcionando.
+
+    Es idempotente sobre un chroot reutilizado: no vuelve a tocar el binario
+    original si ya existe el respaldo y reescribe siempre el lanzador.
+    """
+    # Código del host y de sus datos.
+    copy("apps/dylanos-login-manager/host", "/usr/share/dylanos/login-manager/host")
+    copy("apps/dylanos-login-manager/catalog", "/usr/share/dylanos/login-manager/catalog")
+    (dest / "usr/share/dylanos/login-manager/host/dylanos-login-greeter.py").chmod(0o755)
+
+    # Helper privilegiado (lista blanca, invocado por polkit).
+    copy("apps/dylanos-login-manager/helper/dylanos-login-helper.py",
+         "/usr/lib/dylanos/dylanos-login-helper")
+    (dest / "usr/lib/dylanos/dylanos-login-helper").chmod(0o755)
+
+    # Lanzador del greeter. El binario de SDDM vive aparte y no se toca.
+    write("/usr/bin/dylanos-login-greeter", '''#!/bin/sh
+# Host del DylanOS Login Manager: sirve el tema HTML y habla el protocolo de
+# SDDM, de modo que la autenticación es PAM real.
+#
+# Las rutas se resuelven junto al propio lanzador (no fijas en /usr) para que
+# el mismo guion funcione en el sistema instalado (/usr/bin → /) y en una
+# imagen de prueba (<destino>/usr/bin → <destino>).
+base=$(cd "${0%/*}/../.." 2>/dev/null && pwd) || base=
+host="$base/usr/share/dylanos/login-manager/host/dylanos-login-greeter.py"
+original="$base/usr/bin/sddm-greeter-qt6.sddm-original"
+
+tema=""
+previo=""
+for argumento in "$@"; do
+    [ "$previo" = "--theme" ] && tema="$argumento"
+    previo="$argumento"
+done
+# Forma larga --theme=<ruta>: se queda con lo que sigue al signo igual.
+for argumento in "$@"; do
+    case "$argumento" in
+        --theme=*) tema="${argumento#--theme=}" ;;
+    esac
+done
+
+lanzar_host() {
+    if [ -r "$host" ]; then
+        exec /usr/bin/python3 "$host" "$@"
+    fi
+    echo "dylanos-login-greeter: falta $host" >&2
+    exit 1
+}
+
+case "$tema" in
+    ""|*DylanOS-Crimson*) lanzar_host "$@" ;;
+esac
+
+# Cualquier otro tema se sirve con el greeter de siempre.
+if [ -x "$original" ]; then
+    exec "$original" "$@"
+fi
+lanzar_host "$@"
+''', 0o755)
+
+    # Sustitución del greeter de SDDM (idempotente).
+    original = dest / "usr/bin/sddm-greeter-qt6"
+    respaldo = dest / "usr/bin/sddm-greeter-qt6.sddm-original"
+    if original.is_file() and not original.is_symlink() and not respaldo.exists():
+        shutil.copy2(original, respaldo)
+        respaldo.chmod(0o755)
+    enlace = dest / "usr/bin/sddm-greeter-qt6"
+    if enlace.is_symlink() or enlace.exists():
+        enlace.unlink()
+    enlace.symlink_to("dylanos-login-greeter")
+
+    # Configuración del login: la plantilla del tema, sin pisar la del usuario.
+    ajustes = dest / "etc/dylanos/login-manager.json"
+    ajustes.parent.mkdir(parents=True, exist_ok=True)
+    plantilla = ROOT / "themes/sddm/DylanOS-Crimson/web/config/variables.json"
+    if plantilla.is_file() and not ajustes.exists():
+        shutil.copy2(plantilla, ajustes)
+    ajustes.chmod(0o644)
+
+    # Fotos de perfil publicadas para el greeter (no puede leer ~/.face).
+    for carpeta in (dest / "var/lib/dylanos/login-manager/fotos",
+                    dest / "var/cache/dylanos/login-manager"):
+        carpeta.mkdir(parents=True, exist_ok=True)
+        carpeta.chmod(0o755)
+
+    # Política de polkit: solo el greeter usa el helper sin autenticarse.
+    write("/usr/share/polkit-1/actions/org.dylanos.login-helper.policy", '''<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE policyconfig PUBLIC "-//freedesktop//DTD PolicyKit Policy Configuration 1.0//EN"
+ "http://www.freedesktop.org/standards/PolicyKit/1.0/policyconfig.dtd">
+<policyconfig>
+  <vendor>DylanOS</vendor>
+  <action id="org.dylanos.login-helper.red">
+    <description>Encender o apagar la red desde el login</description>
+    <message>DylanOS necesita permiso para cambiar el estado de la red antes de iniciar sesión.</message>
+    <defaults>
+      <allow_any>auth_admin</allow_any>
+      <allow_inactive>no</allow_inactive>
+      <allow_active>auth_admin</allow_active>
+    </defaults>
+    <annotate key="org.freedesktop.policykit.exec.path">/usr/lib/dylanos/dylanos-login-helper</annotate>
+  </action>
+  <action id="org.dylanos.login-helper.foto">
+    <description>Publicar la foto de perfil para el login</description>
+    <message>DylanOS necesita permiso para publicar la foto de perfil antes de iniciar sesión.</message>
+    <defaults>
+      <allow_any>auth_admin</allow_any>
+      <allow_inactive>no</allow_inactive>
+      <allow_active>auth_admin</allow_active>
+    </defaults>
+    <annotate key="org.freedesktop.policykit.exec.path">/usr/lib/dylanos/dylanos-login-helper</annotate>
+  </action>
+</policyconfig>
+''')
+
+    # El fondo de la pantalla de bloqueo, en el catálogo del sistema para que
+    # Configuration pueda elegirlo como cualquier otro fondo.
+    if (ROOT / "branding/wallpapers/dylanos-lock.png").is_file():
+        copy("branding/wallpapers/dylanos-lock.png",
+             "/usr/share/wallpapers/DylanOS/dylanos-lock.png")
+
+    # Artefactos de versiones anteriores que ya no se envían.
+    remove("/usr/share/dylanos/login-manager/dylanos-login-greeter.py")
+    remove("/usr/share/dylanos/login-manager/variables.json")
+
+
 def stage(destination, installer_dist=None, version=None):
     dest = Path(destination).resolve()
     if dest == Path("/") or dest == ROOT or dest in ROOT.parents:
@@ -87,6 +219,7 @@ def stage(destination, installer_dist=None, version=None):
 
     remove("/usr/share/dylanos/gaming")
     remove("/usr/share/dylanos/iot")
+    install_login_manager(dest, copy, write, remove)
     for source, target in [
         ("apps/workspace", "/usr/share/dylanos/workspace"),
         ("branding/logo.png", "/usr/share/icons/hicolor/512x512/apps/distributor-logo-dylanos.png"),

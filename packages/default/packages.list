@@ -96,6 +96,9 @@ python3-pyside6.qtquickcontrols2
 python3-pyside6.qtwidgets
 python3-pyside6.qtwebenginecore
 python3-pyside6.qtwebenginewidgets
+# Puente del DylanOS Login Manager: sin QtWebChannel el login no puede hablar
+# con el sistema (QWebChannel viaja en este paquete de Python).
+python3-pyside6.qtwebchannel
 python3-psutil
 qml6-module-qtquick
 qml6-module-qtquick-controls

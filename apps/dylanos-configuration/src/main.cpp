@@ -10,6 +10,7 @@
 
 #include "services/LucideProvider.h"
 #include "services/CrimsonGlassService.h"
+#include "services/LoginManagerService.h"
 #include "services/SystemService.h"
 #include "services/GamingService.h"
 #include "services/IoTService.h"
@@ -61,6 +62,7 @@ int main(int argc, char *argv[])
     }
     if (parser.isSet(iotStatusOption)) {
         auto *iotService = new IoTService(&app);
+    auto *loginService = new LoginManagerService(&app);
         const QByteArray json = QJsonDocument::fromVariant(iotService->status()).toJson(QJsonDocument::Compact);
         fwrite(json.constData(), 1, size_t(json.size()), stdout);
         fputc('\n', stdout);
@@ -93,6 +95,7 @@ int main(int argc, char *argv[])
     engine.rootContext()->setContextProperty(QStringLiteral("CrimsonGlass"), glassService);
     engine.rootContext()->setContextProperty(QStringLiteral("Gaming"), gamingService);
     engine.rootContext()->setContextProperty(QStringLiteral("IoT"), iotService);
+    engine.rootContext()->setContextProperty(QStringLiteral("LoginManager"), loginService);
     engine.addImageProvider(QStringLiteral("lucide"), new LucideProvider());
 
     engine.rootContext()->setContextProperty(QStringLiteral("startPage"),

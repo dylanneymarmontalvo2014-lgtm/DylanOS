@@ -56,6 +56,7 @@ Window {
         { id: "network", title: "Red e Internet", sub: "Wi-Fi, Ethernet, VPN", icon: "wifi", color: "#7b4fe0", sidebar: true, keywords: "wifi ethernet conexión vpn proxy" },
         { id: "personalization", title: "Personalización", sub: "Fondo, temas, colores, pantalla", icon: "palette", color: "#e8702a", sidebar: true, keywords: "apariencia tema color fondo escritorio paneles iconos fuente wallpaper" },
         { id: "crimson-glass", title: "Crimson Glass", sub: "Cristal, desenfoque y efectos globales", icon: "sliders-horizontal", color: "#dc143c", sidebar: false, keywords: "apariencia cristal glass transparencia desenfoque blur reflejos sombras ventanas compositor" },
+        { id: "login-manager", title: "Pantalla de acceso", sub: "Login, fondo, widgets y atajos", icon: "lock", color: "#dc143c", sidebar: false, keywords: "login acceso bloqueo sddm greeter fondo widgets atajos crimson glass color" },
         { id: "apps", title: "Aplicaciones", sub: "Aplicaciones instaladas y predeterminadas", icon: "layout-grid", color: "#d4202f", sidebar: true, keywords: "navegador correo predeterminadas instaladas" },
         { id: "accounts", title: "Cuentas", sub: "Tu cuenta, sincronización, familia", icon: "user", color: "#d4202f", sidebar: true, keywords: "usuario perfil sesión inicio" },
         { id: "datetime", title: "Hora e idioma", sub: "Fecha, hora, región, idioma", icon: "globe", color: "#1f9aa6", sidebar: true, keywords: "zona horaria teclado formato región" },
@@ -79,6 +80,9 @@ Window {
         { label: "Crimson Glass", route: "crimson-glass" },
         { label: "Desenfoque de fondo", route: "crimson-glass" },
         { label: "Modo de bajo consumo gráfico", route: "crimson-glass" },
+        { label: "Pantalla de acceso", route: "login-manager" },
+        { label: "Widgets del login", route: "login-manager" },
+        { label: "Atajos del login", route: "login-manager" },
         { label: "Fondo de pantalla", route: "personalization", tab: "Fondo de pantalla" },
         { label: "Comportamiento del escritorio", route: "personalization", tab: "Escritorio" },
         { label: "Navegador web predeterminado", route: "apps", tab: "Predeterminadas" },
@@ -260,6 +264,7 @@ Window {
                     case "about": return Qt.resolvedUrl("pages/AboutPage.qml")
                     case "personalization": return Qt.resolvedUrl("pages/PersonalizationPage.qml")
                     case "crimson-glass": return Qt.resolvedUrl("pages/CrimsonGlassPage.qml")
+                    case "login-manager": return Qt.resolvedUrl("pages/LoginManagerPage.qml")
                     case "network": return Qt.resolvedUrl("pages/NetworkPage.qml")
                     case "bluetooth": return Qt.resolvedUrl("pages/BluetoothPage.qml")
                     case "apps": return Qt.resolvedUrl("pages/AppsPage.qml")

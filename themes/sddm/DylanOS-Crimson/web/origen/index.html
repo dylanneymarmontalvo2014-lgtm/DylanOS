@@ -1,0 +1,420 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>DylanOS — Lock Screen (prototipo Crimson Glass)</title>
+<style>
+  :root{
+    --crimson:#DC143C;
+    --black:#0A0A0A;
+    --white:#FFFFFF;
+    --gray:#1A1A1A;
+    --light-gray:#B3B3B3;
+  }
+  @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap');
+  *{ box-sizing:border-box; }
+  html,body{ margin:0; height:100%; background:var(--black); }
+  body{ font-family:'Inter',system-ui,sans-serif; -webkit-font-smoothing:antialiased; display:flex; align-items:center; justify-content:center; min-height:100vh; }
+  a{ color:var(--crimson); }
+
+  /* ===== Escena raíz: todo el fondo+UI vive aquí para poder invertir colores en modo claro ===== */
+  .theme-root{
+    position:relative; width:1440px; height:960px; max-width:100%; overflow:hidden;
+    background:var(--black); color:var(--white); transition:filter .25s ease;
+  }
+  .theme-root.light{ filter:invert(1) hue-rotate(180deg); }
+  /* Las imágenes reales deben cancelar el filtro del tema para no verse "negativas" */
+  .theme-root.light img.cancel-invert{ filter:invert(1) hue-rotate(180deg); }
+
+  .icon-btn{
+    appearance:none; border:none; background:transparent; cursor:pointer;
+    display:flex; align-items:center; justify-content:center;
+    width:36px; height:36px; border-radius:10px; color:var(--white);
+    transition: background-color .15s ease, transform .1s ease;
+  }
+  .icon-btn:hover{ background:rgba(255,255,255,0.08); }
+  .icon-btn:active{ transform:scale(0.94); }
+  .icon-btn.is-open{ background:rgba(220,20,60,0.22); color:var(--crimson); }
+
+  .glass-panel{
+    background: linear-gradient(165deg, rgba(26,26,26,0.62) 0%, rgba(10,10,10,0.58) 100%);
+    backdrop-filter: blur(36px) saturate(150%);
+    -webkit-backdrop-filter: blur(36px) saturate(150%);
+    border:1px solid rgba(255,255,255,0.09);
+    box-shadow: 0 1px 0 rgba(255,255,255,0.06) inset, 0 1px 0 rgba(0,0,0,0.3), 0 24px 60px -12px rgba(0,0,0,0.6);
+  }
+
+  .popover{ animation: pop-in .16s cubic-bezier(.2,.8,.2,1); transform-origin: top right; }
+  @keyframes pop-in{ from{ opacity:0; transform: scale(.94) translateY(-6px); } to{ opacity:1; transform: scale(1) translateY(0); } }
+
+  .toggle{
+    width:40px; height:24px; border-radius:999px; position:relative; border:none; cursor:pointer;
+    transition: background-color .18s ease;
+  }
+  .toggle::after{
+    content:''; position:absolute; top:3px; left:3px; width:18px; height:18px; border-radius:50%;
+    background:#fff; transition: transform .18s ease; box-shadow:0 1px 3px rgba(0,0,0,.4);
+  }
+  .toggle.on{ background:var(--crimson); }
+  .toggle.on::after{ transform: translateX(16px); }
+  .toggle.off{ background:rgba(255,255,255,0.18); }
+
+  .pw-input{
+    width:100%; border-radius:999px; border:1px solid rgba(255,255,255,0.14);
+    background:rgba(26,26,26,0.55); backdrop-filter:blur(10px); color:var(--white);
+    font-size:15px; font-family:'Inter',sans-serif; padding:14px 20px; padding-right:50px; outline:none;
+    transition: border-color .15s ease, background-color .15s ease;
+  }
+  .pw-input::placeholder{ color:rgba(255,255,255,0.4); }
+  .pw-input:focus{ border-color:rgba(220,20,60,0.65); background:rgba(26,26,26,0.72); }
+  .pw-input.is-error{ border-color:rgba(220,20,60,0.95); box-shadow:0 0 0 3px rgba(220,20,60,0.28); }
+
+  .unlock-btn{
+    appearance:none; border:none; cursor:pointer; border-radius:50%; width:36px; height:36px;
+    display:flex; align-items:center; justify-content:center; background:var(--crimson); color:#fff;
+    transition: background-color .15s ease, transform .1s ease;
+  }
+  .unlock-btn:hover{ background:#ff2d3d; }
+  .unlock-btn:active{ transform: scale(0.92); }
+
+  .widget-row{ display:flex; align-items:center; gap:12px; }
+  .overlay-click{ position:absolute; inset:0; background:transparent; border:none; cursor:default; padding:0; z-index:40; }
+  .shortcut-chip{ transition: background-color .15s ease, color .15s ease; }
+
+  .pw-shake-a, .pw-shake-b{ animation: pw-shake .42s cubic-bezier(.36,.07,.19,.97); }
+  @keyframes pw-shake{ 10%,90%{transform:translateX(-2px)} 20%,80%{transform:translateX(5px)} 30%,50%,70%{transform:translateX(-9px)} 40%,60%{transform:translateX(9px)} }
+
+  .clock-digit{
+    font-family:'Inter',sans-serif; font-weight:800; font-size:168px; line-height:1; letter-spacing:-0.03em;
+    background:linear-gradient(180deg, #ffffff 0%, #d9d9de 32%, #9a9aa3 55%, #58585f 78%, #2c2c31 100%);
+    -webkit-background-clip:text; background-clip:text; color:transparent;
+    filter: drop-shadow(0 3px 0 rgba(0,0,0,0.55)) drop-shadow(0 0 26px rgba(220,20,60,0.22));
+  }
+  .clock-colon{
+    font-family:'Inter',sans-serif; font-weight:800; font-size:168px; line-height:1;
+    background:linear-gradient(180deg, #ffffff 0%, #c9c9ce 45%, #6e6e76 70%, #2c2c31 100%);
+    -webkit-background-clip:text; background-clip:text; color:transparent;
+    filter: drop-shadow(0 3px 0 rgba(0,0,0,0.55)) drop-shadow(0 0 16px rgba(220,20,60,0.35));
+    margin:0 2px;
+  }
+
+  [data-hidden]{ display:none !important; }
+</style>
+</head>
+<body>
+
+<div class="theme-root" id="themeRoot">
+
+  <!-- Wallpaper: reemplazar assets/wallpaper.png por el fondo real -->
+  <img class="cancel-invert" src="assets/wallpaper.png" alt="" style="position:absolute; inset:0; width:100%; height:100%; object-fit:cover; object-position:50% 30%;">
+
+  <!-- Scrim de legibilidad -->
+  <div style="position:absolute; inset:0; background:
+      linear-gradient(180deg, rgba(10,10,10,0.55) 0%, rgba(10,10,10,0.08) 16%, rgba(10,10,10,0.02) 38%, rgba(10,10,10,0.12) 58%, rgba(10,10,10,0.58) 82%, rgba(10,10,10,0.82) 100%),
+      linear-gradient(90deg, rgba(10,10,10,0.38) 0%, rgba(10,10,10,0) 20%, rgba(10,10,10,0) 80%, rgba(10,10,10,0.38) 100%);"></div>
+
+  <!-- Acento de marca: resplandor carmesí inferior -->
+  <div style="position:absolute; left:50%; bottom:-260px; transform:translateX(-50%); width:1100px; height:460px;
+      background:radial-gradient(50% 100% at 50% 100%, rgba(220,20,60,0.30) 0%, rgba(220,20,60,0) 68%); filter:blur(4px);"></div>
+
+  <!-- Overlay para cerrar paneles emergentes -->
+  <button id="overlayClick" class="overlay-click" data-hidden aria-label="Cerrar panel"></button>
+
+  <!-- Barra superior -->
+  <div style="position:relative; z-index:50; display:flex; align-items:center; justify-content:space-between; padding:22px 36px;">
+
+    <div class="widget-row">
+      <img class="cancel-invert" src="assets/logo.png" alt="DylanOS" style="width:28px; height:28px; object-fit:contain;">
+      <span style="font-size:19px; font-weight:700; letter-spacing:-0.01em;">Dylan<span style="color:var(--crimson);">OS</span></span>
+    </div>
+
+    <div class="widget-row" style="gap:6px;">
+
+      <!-- Wi-Fi -->
+      <div style="position:relative;">
+        <button class="icon-btn" id="btnWifi" aria-label="Wi-Fi">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none"><path d="M3 8.5c5-4 13-4 18 0" stroke="currentColor" stroke-width="2" stroke-linecap="round"></path><path d="M6.5 12.5c3.3-2.6 7.7-2.6 11 0" stroke="currentColor" stroke-width="2" stroke-linecap="round"></path><path d="M10 16.5c1.2-1 2.8-1 4 0" stroke="currentColor" stroke-width="2" stroke-linecap="round"></path><circle cx="12" cy="19.5" r="1.3" fill="currentColor"></circle></svg>
+        </button>
+        <div class="glass-panel popover" id="panelWifi" data-hidden style="position:absolute; top:46px; right:-120px; width:300px; border-radius:18px; padding:16px; z-index:60;">
+          <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:14px;">
+            <span style="font-size:14px; font-weight:600;">Wi-Fi</span>
+            <button class="toggle on" aria-label="Activar Wi-Fi"></button>
+          </div>
+          <div style="font-size:11px; text-transform:uppercase; letter-spacing:.06em; color:rgba(255,255,255,.4); margin-bottom:8px;">Redes disponibles</div>
+          <div style="display:flex; flex-direction:column; gap:2px;">
+            <div style="display:flex; align-items:center; justify-content:space-between; padding:8px 6px; border-radius:10px; background:rgba(220,20,60,0.14);">
+              <span style="font-size:13.5px;">Casa-Dylan-5G</span>
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" style="color:var(--crimson);"><path d="M20 7l-9 10-5-5" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"></path></svg>
+            </div>
+            <div style="display:flex; align-items:center; justify-content:space-between; padding:8px 6px; border-radius:10px;">
+              <span style="font-size:13.5px; color:rgba(255,255,255,.75);">Oficina DylanOS</span>
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" style="color:rgba(255,255,255,.4);"><path d="M12 17a5 5 0 1 1 0-0.01" stroke="currentColor" stroke-width="2"></path><rect x="10" y="9" width="4" height="4" rx="1" fill="currentColor"></rect></svg>
+            </div>
+            <div style="display:flex; align-items:center; justify-content:space-between; padding:8px 6px; border-radius:10px;">
+              <span style="font-size:13.5px; color:rgba(255,255,255,.75);">Invitados</span>
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" style="color:rgba(255,255,255,.4);"><rect x="5" y="11" width="14" height="9" rx="2" stroke="currentColor" stroke-width="2"></rect><path d="M8 11V8a4 4 0 0 1 8 0v3" stroke="currentColor" stroke-width="2"></path></svg>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Bluetooth -->
+      <div style="position:relative;">
+        <button class="icon-btn" id="btnBt" aria-label="Bluetooth">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M7 7l10 10-5 5V2l5 5L7 17" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></path></svg>
+        </button>
+        <div class="glass-panel popover" id="panelBt" data-hidden style="position:absolute; top:46px; right:-90px; width:280px; border-radius:18px; padding:16px; z-index:60;">
+          <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:14px;">
+            <span style="font-size:14px; font-weight:600;">Bluetooth</span>
+            <button class="toggle on" aria-label="Activar Bluetooth"></button>
+          </div>
+          <div style="font-size:11px; text-transform:uppercase; letter-spacing:.06em; color:rgba(255,255,255,.4); margin-bottom:8px;">Dispositivos</div>
+          <div style="display:flex; flex-direction:column; gap:2px;">
+            <div style="display:flex; align-items:center; justify-content:space-between; padding:8px 6px; border-radius:10px; background:rgba(220,20,60,0.14);">
+              <span style="font-size:13.5px;">Audífonos Crimson</span>
+              <span style="font-size:11px; color:var(--crimson);">Conectado</span>
+            </div>
+            <div style="display:flex; align-items:center; justify-content:space-between; padding:8px 6px; border-radius:10px;">
+              <span style="font-size:13.5px; color:rgba(255,255,255,.75);">Teclado DylanOS</span>
+              <span style="font-size:11px; color:rgba(255,255,255,.4);">Emparejado</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Pantalla -->
+      <div style="position:relative;">
+        <button class="icon-btn" id="btnDisplay" aria-label="Pantalla">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none"><rect x="3" y="4" width="18" height="12" rx="2" stroke="currentColor" stroke-width="2"></rect><path d="M9 20h6M12 16v4" stroke="currentColor" stroke-width="2" stroke-linecap="round"></path></svg>
+        </button>
+        <div class="glass-panel popover" id="panelDisplay" data-hidden style="position:absolute; top:46px; right:-60px; width:260px; border-radius:18px; padding:16px; z-index:60;">
+          <div style="font-size:14px; font-weight:600; margin-bottom:12px;">Pantallas disponibles</div>
+          <div style="display:flex; flex-direction:column; gap:2px;">
+            <div style="display:flex; align-items:center; gap:10px; padding:8px 6px; border-radius:10px;">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" style="color:rgba(255,255,255,.6);"><rect x="3" y="5" width="18" height="12" rx="2" stroke="currentColor" stroke-width="2"></rect></svg>
+              <span style="font-size:13.5px; color:rgba(255,255,255,.75);">TV Sala Crimson</span>
+            </div>
+            <div style="display:flex; align-items:center; gap:10px; padding:8px 6px; border-radius:10px;">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" style="color:rgba(255,255,255,.6);"><rect x="3" y="5" width="18" height="12" rx="2" stroke="currentColor" stroke-width="2"></rect></svg>
+              <span style="font-size:13.5px; color:rgba(255,255,255,.75);">Monitor Oficina</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Batería -->
+      <div style="position:relative;">
+        <button class="icon-btn" id="btnBattery" aria-label="Batería" style="width:auto; padding:0 10px; gap:6px;">
+          <svg width="22" height="12" viewBox="0 0 26 14" fill="none">
+            <rect x="1" y="1" width="21" height="12" rx="3" stroke="currentColor" stroke-width="1.4"></rect>
+            <rect x="23" y="4.5" width="2" height="5" rx="1" fill="currentColor"></rect>
+            <rect id="batteryFillRect" x="2.5" y="2.5" width="19" height="9" rx="1.6" fill="var(--crimson)"></rect>
+          </svg>
+          <span id="batteryPctTop" style="font-size:13.5px; font-weight:500; color:var(--white);">78%</span>
+        </button>
+        <div class="glass-panel popover" id="panelBattery" data-hidden style="position:absolute; top:46px; right:-20px; width:240px; border-radius:18px; padding:16px; z-index:60;">
+          <div style="font-size:14px; font-weight:600; margin-bottom:10px;">Batería — <span id="batteryPctPopover">78</span>%</div>
+          <div style="font-size:12.5px; color:rgba(255,255,255,.55); margin-bottom:12px;">Tiempo restante estimado: 4h 40min</div>
+          <div style="display:flex; align-items:center; justify-content:space-between; padding:8px 0; border-top:1px solid rgba(255,255,255,0.08);">
+            <span style="font-size:13px;">Ahorro de energía</span>
+            <button class="toggle off" aria-label="Activar ahorro de energía"></button>
+          </div>
+        </div>
+      </div>
+
+      <span style="width:1px; height:16px; background:rgba(255,255,255,0.12); margin:0 4px;"></span>
+      <span id="clockTimeText" style="font-size:14.5px; font-weight:500; color:var(--white); padding:0 4px;">9:00 PM</span>
+    </div>
+  </div>
+
+  <!-- Grid principal -->
+  <div style="position:relative; z-index:10; display:flex; align-items:flex-start; justify-content:space-between; padding:8px 36px 0; height:calc(960px - 80px);">
+
+    <!-- Columna izquierda -->
+    <div style="width:370px; display:flex; flex-direction:column; gap:16px;">
+
+      <!-- Clima -->
+      <div class="glass-panel" style="border-radius:18px; padding:18px;">
+        <div style="font-size:12px; font-weight:600; color:var(--crimson); text-transform:uppercase; letter-spacing:.06em; margin-bottom:12px;">Clima</div>
+        <div class="widget-row" style="justify-content:space-between; margin-bottom:14px;">
+          <div class="widget-row">
+            <svg width="38" height="38" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+              <circle cx="16" cy="9" r="4.2" fill="var(--crimson)"></circle>
+              <path d="M6 16a4 4 0 0 1 1-7.9A5.5 5.5 0 0 1 17.8 11H18a3.5 3.5 0 0 1 0 7H6a3 3 0 0 1 0-6z" fill="var(--light-gray)"></path>
+            </svg>
+            <div>
+              <div style="font-size:30px; font-weight:700; line-height:1;"><span id="weatherTemp">19</span>°</div>
+              <div style="font-size:12.5px; color:rgba(255,255,255,.55);" id="weatherCondition">Nublado</div>
+            </div>
+          </div>
+        </div>
+        <div id="forecastRow" style="display:flex; justify-content:space-between;"></div>
+      </div>
+
+      <!-- Próximo evento -->
+      <div class="glass-panel" style="border-radius:18px; padding:18px;">
+        <div style="font-size:12px; font-weight:600; color:var(--crimson); text-transform:uppercase; letter-spacing:.06em; margin-bottom:12px;">Próximo evento</div>
+        <div class="widget-row" style="align-items:flex-start;">
+          <div style="width:34px; height:34px; border-radius:9px; background:rgba(220,20,60,0.18); display:flex; align-items:center; justify-content:center; flex-shrink:0;">
+            <svg width="17" height="17" viewBox="0 0 24 24" fill="none" style="color:var(--crimson);"><rect x="3" y="5" width="18" height="16" rx="2" stroke="currentColor" stroke-width="2"></rect><path d="M3 10h18M8 3v4M16 3v4" stroke="currentColor" stroke-width="2" stroke-linecap="round"></path></svg>
+          </div>
+          <div>
+            <div id="eventTitle" style="font-size:14.5px; font-weight:600;">Reunión de proyecto</div>
+            <div id="eventTime" style="font-size:12.5px; color:rgba(255,255,255,.55); margin-top:2px;">Mañana · 10:00 AM – 11:30 AM</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- En reproducción -->
+      <div class="glass-panel" style="border-radius:18px; padding:18px;">
+        <div style="font-size:12px; font-weight:600; color:var(--crimson); text-transform:uppercase; letter-spacing:.06em; margin-bottom:12px;">En reproducción</div>
+        <div class="widget-row" style="margin-bottom:12px;">
+          <div style="width:40px; height:40px; border-radius:10px; background:linear-gradient(135deg,var(--crimson),var(--black)); display:flex; align-items:center; justify-content:center; flex-shrink:0;">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="#fff"><path d="M8 5v14l11-7z"></path></svg>
+          </div>
+          <div style="min-width:0;">
+            <div id="trackTitle" style="font-size:14px; font-weight:600; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">Dream It Possible</div>
+            <div id="trackArtist" style="font-size:12.5px; color:rgba(255,255,255,.55);">Delacey</div>
+          </div>
+        </div>
+        <div style="height:3px; border-radius:2px; background:rgba(255,255,255,0.12); margin-bottom:6px; overflow:hidden;">
+          <div style="width:42%; height:100%; background:var(--crimson);"></div>
+        </div>
+        <div style="display:flex; justify-content:space-between; font-size:11px; color:rgba(255,255,255,.4); margin-bottom:10px;">
+          <span>1:23</span><span>3:24</span>
+        </div>
+        <div style="display:flex; align-items:center; justify-content:center; gap:22px;">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="var(--light-gray)"><path d="M18 6v12l-8.5-6L18 6zM7 6h2v12H7z"></path></svg>
+          <button class="icon-btn" aria-label="Pausar" style="width:30px; height:30px; background:#fff; border-radius:50%;">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="var(--black)"><rect x="6" y="5" width="4" height="14"></rect><rect x="14" y="5" width="4" height="14"></rect></svg>
+          </button>
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="var(--light-gray)"><path d="M6 6v12l8.5-6L6 6zM15 6h2v12h-2z"></path></svg>
+        </div>
+      </div>
+
+      <!-- Sistema -->
+      <div class="glass-panel" style="border-radius:18px; padding:18px;">
+        <div style="font-size:12px; font-weight:600; color:var(--crimson); text-transform:uppercase; letter-spacing:.06em; margin-bottom:12px;">Sistema</div>
+        <div class="widget-row" style="gap:16px;">
+          <div style="position:relative; width:58px; height:58px; flex-shrink:0;">
+            <svg width="58" height="58" viewBox="0 0 58 58">
+              <circle cx="29" cy="29" r="25" fill="none" stroke="rgba(255,255,255,0.1)" stroke-width="6"></circle>
+              <circle id="batteryGaugeCircle" cx="29" cy="29" r="25" fill="none" stroke="var(--crimson)" stroke-width="6" stroke-linecap="round" stroke-dasharray="157" stroke-dashoffset="22" transform="rotate(-90 29 29)"></circle>
+            </svg>
+            <div style="position:absolute; inset:0; display:flex; align-items:center; justify-content:center; font-size:14px; font-weight:700;"><span id="batteryPctGauge">78</span>%</div>
+          </div>
+          <div>
+            <div style="font-size:13.5px; font-weight:600;">Batería</div>
+            <div style="font-size:12px; color:rgba(255,255,255,.5); margin-bottom:8px;"><span id="batteryPctLabel">78</span>% restante</div>
+            <div style="font-size:13.5px; font-weight:600;">Almacenamiento</div>
+            <div id="storageFree" style="font-size:12px; color:rgba(255,255,255,.5);">237 GB libres</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Columna central -->
+    <div style="width:420px; height:858px; display:flex; flex-direction:column; align-items:center; justify-content:space-between;">
+
+      <!-- Grupo: reloj -->
+      <div id="groupClock" style="display:flex; flex-direction:column; align-items:center;">
+        <div class="widget-row glass-panel" style="gap:9px; color:rgba(255,255,255,.75); margin-bottom:26px; padding:9px 20px; border-radius:999px;">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none"><rect x="5" y="11" width="14" height="9" rx="2" stroke="currentColor" stroke-width="2"></rect><path d="M8 11V8a4 4 0 0 1 8 0v3" stroke="currentColor" stroke-width="2"></path></svg>
+          <span id="lockText" style="font-size:17px; font-weight:500;">Bloqueado</span>
+        </div>
+
+        <div style="position:relative; display:flex; flex-direction:column; align-items:center;">
+          <span style="font-size:22px; font-weight:800; color:var(--crimson); letter-spacing:.12em; margin-bottom:6px; text-shadow:0 2px 10px rgba(0,0,0,0.55);" id="timeAmPm">PM</span>
+          <div style="position:relative; display:flex; align-items:center;">
+            <span class="clock-digit" id="timeHour">09</span><span class="clock-colon">:</span><span class="clock-digit" id="timeMinute">00</span>
+          </div>
+        </div>
+        <div id="dateText" style="font-size:16px; font-weight:500; color:rgba(255,255,255,.72); margin-top:12px; text-shadow:0 1px 8px rgba(0,0,0,0.5);">Martes, 04 de agosto</div>
+      </div>
+
+      <!-- Grupo: login -->
+      <div id="groupLogin" style="display:flex; flex-direction:column; align-items:center;">
+        <div style="position:relative; width:104px; height:104px;">
+          <div style="position:absolute; inset:-6px; border-radius:50%; background:radial-gradient(circle, rgba(220,20,60,0.5), transparent 70%); filter:blur(6px);"></div>
+          <div style="position:relative; width:104px; height:104px; border-radius:50%; overflow:hidden; border:2.5px solid rgba(220,20,60,0.7); background:var(--gray); display:flex; align-items:center; justify-content:center;">
+            <!-- Si hay foto real, poner <img class="cancel-invert" src="assets/avatar.png"> y quitar el SVG de abajo -->
+            <svg width="54" height="54" viewBox="0 0 24 24" fill="none" style="color:rgba(255,255,255,0.5);">
+              <circle cx="12" cy="8.5" r="3.6" stroke="currentColor" stroke-width="1.8"></circle>
+              <path d="M4.5 20c1.4-3.8 4.6-5.8 7.5-5.8s6.1 2 7.5 5.8" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"></path>
+            </svg>
+          </div>
+        </div>
+
+        <div id="username" style="font-size:18px; font-weight:600; margin-top:16px;">Dylan Rodríguez</div>
+        <div style="font-size:13px; color:rgba(255,255,255,.45); margin-top:6px; margin-bottom:22px; text-align:center;">Usa tu huella o presiona cualquier tecla para desbloquear</div>
+
+        <div id="pwShakeWrap" style="position:relative; width:280px;">
+          <input class="pw-input" id="pwInput" type="password" placeholder="Contraseña" aria-label="Contraseña">
+          <button class="unlock-btn" id="btnUnlock" aria-label="Desbloquear" style="position:absolute; right:5px; top:5px;">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none"><path d="M5 12h13M13 6l6 6-6 6" stroke="#fff" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"></path></svg>
+          </button>
+          <div id="pwErrorText" data-hidden style="position:absolute; top:100%; left:0; right:0; margin-top:8px; text-align:center; font-size:12.5px; color:var(--crimson);">Contraseña incorrecta</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Columna derecha -->
+    <div style="width:370px; display:flex; flex-direction:column; gap:16px;">
+
+      <!-- Calendario -->
+      <div class="glass-panel" style="border-radius:18px; padding:18px;">
+        <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:12px;">
+          <span id="calendarMonth" style="font-size:12px; font-weight:600; color:var(--crimson); text-transform:uppercase; letter-spacing:.06em;">Agosto 2025</span>
+          <div class="widget-row" style="gap:4px;">
+            <button class="icon-btn" aria-label="Mes anterior" style="width:22px; height:22px;">
+              <svg width="12" height="12" viewBox="0 0 24 24" fill="none"><path d="M15 6l-6 6 6 6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></path></svg>
+            </button>
+            <button class="icon-btn" aria-label="Mes siguiente" style="width:22px; height:22px;">
+              <svg width="12" height="12" viewBox="0 0 24 24" fill="none"><path d="M9 6l6 6-6 6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></path></svg>
+            </button>
+          </div>
+        </div>
+        <div id="calendarGrid" style="display:grid; grid-template-columns:repeat(7,1fr); gap:6px; text-align:center;"></div>
+      </div>
+
+      <!-- Recordatorios -->
+      <div class="glass-panel" style="border-radius:18px; padding:18px;">
+        <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:12px;">
+          <span style="font-size:12px; font-weight:600; color:var(--crimson); text-transform:uppercase; letter-spacing:.06em;">Recordatorios</span>
+          <button class="icon-btn" aria-label="Añadir recordatorio" style="width:24px; height:24px;">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none"><path d="M12 5v14M5 12h14" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"></path></svg>
+          </button>
+        </div>
+        <div id="remindersList" style="display:flex; flex-direction:column; gap:10px;"></div>
+      </div>
+
+      <!-- Atajos -->
+      <div class="glass-panel" style="border-radius:18px; padding:18px;">
+        <div style="font-size:12px; font-weight:600; color:var(--crimson); text-transform:uppercase; letter-spacing:.06em; margin-bottom:12px;">Atajos</div>
+        <div style="display:grid; grid-template-columns:repeat(2,1fr); gap:10px;">
+          <button class="icon-btn shortcut-chip" id="chipTheme" aria-label="Cambiar tema" style="width:auto; height:auto; flex-direction:column; gap:8px; padding:14px 0; border-radius:14px; background:rgba(255,255,255,0.05);">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none"><path d="M21 12.6A9 9 0 1 1 11.4 3a7 7 0 0 0 9.6 9.6z" fill="currentColor"></path></svg>
+            <span id="chipThemeLabel" style="font-size:11.5px;">Modo oscuro</span>
+          </button>
+          <button class="icon-btn shortcut-chip" id="chipDnd" aria-label="No molestar" style="width:auto; height:auto; flex-direction:column; gap:8px; padding:14px 0; border-radius:14px; background:rgba(255,255,255,0.05);">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="9" stroke="currentColor" stroke-width="2"></circle><path d="M8 12h8" stroke="currentColor" stroke-width="2" stroke-linecap="round"></path></svg>
+            <span style="font-size:11.5px;">No molestar</span>
+          </button>
+          <button class="icon-btn shortcut-chip is-open" id="chipWifi" aria-label="Wi-Fi" style="width:auto; height:auto; flex-direction:column; gap:8px; padding:14px 0; border-radius:14px; background:rgba(255,255,255,0.05);">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none"><path d="M3 8.5c5-4 13-4 18 0" stroke="currentColor" stroke-width="2" stroke-linecap="round"></path><path d="M6.5 12.5C8.29 11.09 10.41 9.94 12.5 10.06C13.48 10.12 14.46 10.51 15.39 11.04C16.13 11.46 16.83 11.98 17.5 12.5" stroke="currentColor" stroke-width="2" stroke-linecap="round"></path><path d="M10 16.5c1.2-1 2.8-1 4 0" stroke="currentColor" stroke-width="2" stroke-linecap="round"></path><circle cx="12" cy="19.5" r="1.3" fill="currentColor"></circle></svg>
+            <span style="font-size:11.5px;">Wi-Fi</span>
+          </button>
+          <button class="icon-btn shortcut-chip is-open" id="chipBt" aria-label="Bluetooth" style="width:auto; height:auto; flex-direction:column; gap:8px; padding:14px 0; border-radius:14px; background:rgba(255,255,255,0.05);">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none"><path d="M7 7l10 10-5 5V2l5 5L7 17" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></path></svg>
+            <span style="font-size:11.5px;">Bluetooth</span>
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script src="script.js"></script>
+</body>
+</html>

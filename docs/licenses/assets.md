@@ -10,6 +10,14 @@
   (`packages.microsoft.com/repos/vscode`) con `Signed-By` independiente. El
   binario distribuido se rige por la licencia de Microsoft (el código fuente
   "Code - OSS" es MIT y no se redistribuye aquí). VSCodium fue retirado.
+- Tema web del DylanOS Login Manager: derivado del prototipo aportado por el
+  usuario (mismo repositorio). La fuente Inter empaquetada
+  (`themes/sddm/DylanOS-Crimson/web/fonts/inter-latin.woff2`) es la variante
+  «latin» que sirve Google Fonts para la familia Inter, bajo la Licencia OFL de
+  SIL; se redistribuye con su licencia. El fondo de la pantalla de bloqueo
+  (`branding/wallpapers/dylanos-lock.png`) es el aportado por el usuario.
+- El clima lo proporciona open-meteo (https://open-meteo.com), servicio abierto
+  sin clave bajo licencia CC BY 4.0; no se redistribuye ningún dato.
 - El tema SDDM anterior, su fuente SFUIText y sus recursos se conservan en el
   repositorio, pero **no se copian a la imagen beta**. El login nuevo usa Inter.
 - No se incorporaron fondos, iconos, fuentes ni código extraídos de macOS.

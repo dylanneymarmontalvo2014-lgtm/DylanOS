@@ -29,7 +29,12 @@ técnica viva: `docs/architecture.md`. Este archivo es el índice operativo de r
   Configuration. Usa KWin/Plasma/Aurorae/GTK, genera el tema de usuario bajo
   `~/.local/share` y respalda por clave en
   `~/.local/state/dylanos/crimson-glass/backup.json`; no crear otro configurador,
-  daemon ni inyectar código en apps de terceros.
+  daemon ni inyectar código en apps de terceros. El perfil general usa blur 7,
+  ruido 4 y animaciones adicionales desactivadas; conservar la degradación por
+  software y no devolver los valores altos sin una medición.
+- **Baloo no indexa por defecto en perfiles nuevos** (`configs/plasma/skel/baloofilerc`):
+  Spotlight lee `.desktop`/proyectos y Explorer usa KIO. No quitar el paquete ni
+  tocar preferencias existentes; el usuario puede reactivarlo desde KDE.
 - stage.py SIEMPRE hace staging a un root explícito y es idempotente (borra artefactos
   obsoletos: discover, dolphin, kcalc, org.dylanos.settings.desktop,
   org.dylanos.files.desktop…).
@@ -124,8 +129,11 @@ técnica viva: `docs/architecture.md`. Este archivo es el índice operativo de r
   FileUndoManager, OpenUrlJob) + operaciones reales en FileOperations (crear archivo y
   carpeta, renombrar, copiar/mover con progreso, papelera/restore/vaciar). Tests reales
   ctest (`tests/tst_fileoperations.cpp`). Icono de app_id: `org.dylanos.explorer`.
-- `apps/dylanos-configuration/` — **DylanOS Configuration**: 16 páginas base,
-  ruta Crimson Glass, SystemService y CrimsonGlassService.
+- `apps/dylanos-login-manager/` — **DylanOS Login Manager**: la pantalla de acceso.
+  Host PySide6/QWebEngine que ocupa el lugar del greeter de SDDM con PAM real, helper
+  privilegiado con polkit y catálogo; detalles y reglas en la sección propia más abajo.
+- `apps/dylanos-configuration/` — **DylanOS Configuration**: páginas base + Crimson Glass
+  + **Pantalla de acceso** (LoginManagerService y LoginManagerPage).
   QA: `dylanos-configuration --page <p> --screenshot out.png --size 1280x800` (offscreen;
   stderr debe quedar limpio). `sysInfo()`: CPU con cadena de fuentes (/proc/cpuinfo
   "model name" o "Hardware" → `lscpu` "Model name:" → "Procesador de N núcleos") porque
@@ -165,6 +173,38 @@ técnica viva: `docs/architecture.md`. Este archivo es el índice operativo de r
   --test-mode --theme <copia con background local>`; los errores deben mostrar
   ReferenceError/TypeError/fallback ausentes. Métricas en `artifacts/sddm-qa/`.
 
+## DylanOS Login Manager (prototipo HTML convertido en login real)
+
+- **Es el greeter real**: el prototipo adjunto (`index.html` + `js/dylanos-login.js`) es
+  el tema SDDM; el host `apps/dylanos-login-manager/host/dylanos-login-greeter.py`
+  (PySide6 + QWebEngineView) ocupa el lugar de `sddm-greeter-qt6` y habla su protocolo
+  (PAM real). El binario original queda como `sddm-greeter-qt6.sddm-original`; con otros
+  temas el lanzador delega en él. NO reescribir el prototipo a QML ni rediseñarlo.
+- **Fidelidad diff 0**: con los datos del prototipo el render es idéntico píxel a píxel
+  (artifacts/login-manager-qa/prototipo.png). La personalización vive en una capa CSS
+  inerte salvo con `data-dylanos="personalizado"`; el acento pasa por
+  `--dylanos-primario(-rgb)` con el MISMO valor por defecto (#DC143C / 220,20,60).
+- **Regla de datos**: widget sin dato real se OCULTA (no se rellena). Clima → open-meteo
+  (caché 30 min, requiere lat/lon), evento → .ics local, música → MPRIS, batería →
+  /sys/class/power_supply, disco → statvfs, foto → `~/.face` publicada por el helper en
+  /var/lib/dylanos/login-manager/fotos. El greeter corre como `sddm` y no puede leer /home.
+- **Atajos: máximo 4** (`MAXIMO_ATAJOS` en el tema, `maximumShortcuts()` en el servicio).
+  Catálogo: `apps/dylanos-login-manager/catalog/catalogo.json` (12 atajos, 18 widgets).
+- **Variantes**: completa (7 widgets del prototipo), sencilla (3), mínima (solo reloj y
+  acceso, `posicion_paneles="solo-centro"`). El espejo es CSS `row-reverse` — mover nodos
+  por JS lo DUPLICA y descuadra la composición.
+- **Configuración**: `/etc/dylanos/login-manager.json`, plantilla en
+  `web/config/variables.json`, cada elemento separado por nombre. Página
+  «Pantalla de acceso» en Configuration (`LoginManagerService`, ruta `login-manager`),
+  con vista previa = captura del greeter real (`--preview --screenshot`).
+- **QWebChannel es asíncrono**: los slots con retorno devuelven undefined sin callback;
+  el estado inicial viaja como JSON literal en el puente. `quint32` del protocolo SDDM =
+  4 bytes big-endian (escribirlos a mano); la longitud de QString son bytes UTF-16.
+- **QA**: `python3 -m unittest scripts.tests.test_login_manager` (25 tests; fidelidad diff 0
+  con Playwright, variantes PNG, helper, staging, protocolo). Detalles y límites en
+  `docs/login-manager.md`. Escala del lienzo: `transform: scale()` sobre 1440×960 —
+  `zoom` reflowa y movería las columnas; `max-width:100%` del prototipo hay que anularlo.
+
 ## DylanOS Console
 
 - **Única terminal**: Kitty, lanzada siempre mediante `/usr/bin/dylanos-console`; nombre
@@ -203,8 +243,10 @@ DYLANOS_PYTHON=/tmp/opencode/venv/bin/python bash scripts/check.sh
   `test_configuration.py` (app + staging), `test_sddm_theme.py` (Test Greeter real),
   `test_desktop.py` (layout de paneles con node), `test_store.py`, `test_ui.py`,
   `test_workspace.py`, `test_backend.py`, `test_browser_contract.py`,
-  `test_browser_package.py`, `test_packages.sh`; el fork ejecuta además
-  `python3 -m unittest discover -v scripts/dylanos 'test_*.py'`.
+  `test_browser_package.py`, `test_packages.sh`, `test_login_manager.py` (login:
+  fidelidad diff 0 del prototipo, variantes, helper, staging y límite de 4 atajos;
+  las capturas PNG requieren Chromium/Playwright y se omiten con aviso si falta);
+  el fork ejecuta además `python3 -m unittest discover -v scripts/dylanos 'test_*.py'`.
 - QA nativas específicas: capturas offscreen de las 16 páginas base y Crimson Glass (stderr
   limpio), `ctest` del Explorer en el chroot (incluye createFile), Test Greeter del SDDM con
   captura opt-in (artefactos en `artifacts/sddm-qa/`), `bash scripts/test_QEMU.sh` para el ISO.

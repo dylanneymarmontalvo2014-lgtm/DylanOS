@@ -76,6 +76,24 @@ ScrollView {
                 width: parent.width
                 RowItem {
                     width: parent.width
+                    icon: "lock"
+                    iconColor: Theme.accent
+                    title: "Pantalla de acceso"
+                    desc: "Fondo, composición, widgets y atajos del login"
+                    Item {
+                        width: entrarLogin.width
+                        height: 40
+                        ActionButton {
+                            id: entrarLogin
+                            anchors.verticalCenter: parent.verticalCenter
+                            text: "Personalizar"
+                            variant: "primary"
+                            onClicked: Window.window.go("login-manager")
+                        }
+                    }
+                }
+                RowItem {
+                    width: parent.width
                     icon: "sliders-horizontal"
                     iconColor: Theme.accent
                     title: "Crimson Glass"

@@ -1,0 +1,53 @@
+{
+  "_comentario": [
+    "Plantilla del DylanOS Login Manager. Es el fichero que copia el staging a",
+    "/etc/dylanos/login-manager.json y lo que edita DylanOS Configuration.",
+    "Cada elemento del prototipo está separado por nombre: cambiar un valor",
+    "aquí cambia solo ese elemento, nunca el dibujo de los demás.",
+    "Con estos valores el login es idéntico al prototipo."
+  ],
+  "version": 2,
+  "apariencia": {
+    "fondo_seleccionado": "assets/fondo-seleccionado.png",
+    "color_primario": "#DC143C",
+    "usar_acento_del_sistema": true,
+    "crimson_glass": true
+  },
+  "composicion": {
+    "variante": "completa",
+    "posicion_paneles": "clasica",
+    "tamano_reloj": 1.0,
+    "tamano_bloque_acceso": 1.0
+  },
+  "widgets": {
+    "columna_izquierda": ["clima", "proximo-evento", "reproduccion", "sistema"],
+    "columna_derecha": ["calendario", "recordatorios", "atajos"]
+  },
+  "atajos": {
+    "maximo": 4,
+    "activos": ["tema", "no-molestar", "wifi", "bluetooth"]
+  },
+  "clima": {
+    "latitud": null,
+    "longitud": null,
+    "ciudad": ""
+  },
+  "agenda": {
+    "ics": ""
+  },
+  "recordatorios": [
+    { "texto": "Estudiar para examen", "hecho": false },
+    { "texto": "Editar video de DylanTube", "hecho": true },
+    { "texto": "Revisar proyecto DylanOS", "hecho": false },
+    { "texto": "Entrenar", "hecho": false }
+  ],
+  "reloj_mundial": {
+    "zonas": []
+  },
+  "mensaje": {
+    "texto": "",
+    "usuario": ""
+  },
+  "usuario_predeterminado": "",
+  "sesion": ""
+}
