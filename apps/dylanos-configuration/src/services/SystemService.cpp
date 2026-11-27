@@ -90,25 +90,72 @@ void SystemService::launchDetached(const QString &program, const QStringList &ar
 
 void SystemService::openKcm(const QVariantList &candidates)
 {
+    if (kcmShell().isEmpty()) {
+        emit actionFailed(QStringLiteral("No hay kcmshell disponible en este sistema"));
+        return;
+    }
+    m_kcmCandidates.clear();
+    for (const QVariant &candidate : candidates)
+        m_kcmCandidates.append(candidate.toString());
+    m_kcmIndex = 0;
+    ++m_kcmGeneration;
+    probeNextKcm();
+}
+
+void SystemService::probeNextKcm()
+{
+    if (m_kcmIndex >= m_kcmCandidates.size()) {
+        emit actionFailed(QStringLiteral("No se encontró el módulo de configuración solicitado"));
+        return;
+    }
     const QString shell = kcmShell();
     if (shell.isEmpty()) {
         emit actionFailed(QStringLiteral("No hay kcmshell disponible en este sistema"));
         return;
     }
-    for (const QVariant &candidate : candidates) {
-        QProcess probe;
-        probe.start(shell, QStringList{candidate.toString()});
-        if (probe.waitForStarted(2000)) {
-            // Un módulo inválido arranca y termina; uno válido permanece vivo.
-            const bool finished = probe.waitForFinished(2000);
-            const bool moduleOk = !finished || (probe.exitStatus() == QProcess::NormalExit && probe.exitCode() == 0);
-            if (moduleOk) {
-                QProcess::startDetached(shell, QStringList{candidate.toString()});
-                return;
-            }
+    const QString candidate = m_kcmCandidates.at(m_kcmIndex++);
+    const int generation = m_kcmGeneration;
+    auto *probe = new QProcess(this);
+    probe->setProperty("dylanos-kcm-candidate", candidate);
+
+    // Un módulo válido abre su ventana y sigue vivo; uno inválido termina
+    // enseguida. La comprobación es asíncrona: nunca se bloquea el hilo de UI
+    // durante los 2 s de espera que antes congelaban la ventana.
+    auto *timeout = new QTimer(probe);
+    timeout->setSingleShot(true);
+    connect(timeout, &QTimer::timeout, this, [this, probe, shell, generation]() {
+        if (generation != m_kcmGeneration)
+            return;
+        probe->setProperty("dylanos-kcm-accepted", true);
+        const QString accepted = probe->property("dylanos-kcm-candidate").toString();
+        probe->kill();
+        QProcess::startDetached(shell, {accepted});
+        m_kcmCandidates.clear();
+    });
+
+    connect(probe, &QProcess::started, this, [timeout]() { timeout->start(2000); });
+    connect(probe, &QProcess::errorOccurred, this, [this, probe, generation](QProcess::ProcessError error) {
+        if (error != QProcess::FailedToStart || generation != m_kcmGeneration)
+            return;
+        probe->deleteLater();
+        probeNextKcm();
+    });
+    connect(probe, &QProcess::finished, this, [this, probe, shell, generation](int code, QProcess::ExitStatus status) {
+        if (generation != m_kcmGeneration || probe->property("dylanos-kcm-accepted").toBool()) {
+            probe->deleteLater();
+            return;
         }
-    }
-    emit actionFailed(QStringLiteral("No se encontró el módulo de configuración solicitado"));
+        const QString candidate = probe->property("dylanos-kcm-candidate").toString();
+        const bool moduleOk = status == QProcess::NormalExit && code == 0;
+        probe->deleteLater();
+        if (moduleOk) {
+            QProcess::startDetached(shell, {candidate});
+            m_kcmCandidates.clear();
+        } else {
+            probeNextKcm();
+        }
+    });
+    probe->start(shell, {candidate});
 }
 
 QString SystemService::kcmShell() const

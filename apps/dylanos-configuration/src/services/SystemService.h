@@ -135,6 +135,8 @@ private slots:
 
 private:
     QString kcmShell() const;
+    // Prueba en segundo plano el siguiente candidato KCM sin bloquear la UI.
+    void probeNextKcm();
     QString configPath(const QString &file) const;
     QString currentSchemeFile() const;
     bool writeKey(const QString &file, const QString &group, const QString &key, const QString &value);
@@ -146,6 +148,9 @@ private:
     QFileSystemWatcher m_watcher;
     mutable QString m_lastError;
     QString m_iconTheme;
+    QStringList m_kcmCandidates;
+    int m_kcmIndex = 0;
+    int m_kcmGeneration = 0;
 };
 
 #endif

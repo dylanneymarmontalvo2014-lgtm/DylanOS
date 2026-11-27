@@ -116,8 +116,16 @@ PlacesService::PlacesService(QObject *parent)
         m_recent = m_recentWatcher.result();
         emit recentFilesChanged();
     });
-    m_deviceTimer.setInterval(10000);
+    m_deviceTimer.setInterval(60000);
     connect(&m_deviceTimer, &QTimer::timeout, this, &PlacesService::refreshDevices);
+    // KFilePlacesModel ya avisa de altas, bajas y cambios de estado (montaje,
+    // etiqueta, icono). Sondear la lista cada 10 s despertaba el proceso sin
+    // necesidad; ahora solo se refresca por evento. El temporizador queda para
+    // el espacio libre, que QStorageInfo no notifica, y con un periodo largo.
+    connect(m_places, &QAbstractItemModel::rowsInserted, this, &PlacesService::refreshDevices);
+    connect(m_places, &QAbstractItemModel::rowsRemoved, this, &PlacesService::refreshDevices);
+    connect(m_places, &QAbstractItemModel::modelReset, this, &PlacesService::refreshDevices);
+    connect(m_places, &QAbstractItemModel::dataChanged, this, &PlacesService::refreshDevices);
     m_deviceTimer.start();
 
     refreshDevices();
