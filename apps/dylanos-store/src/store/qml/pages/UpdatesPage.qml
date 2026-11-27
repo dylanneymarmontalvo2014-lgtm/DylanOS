@@ -11,9 +11,9 @@ PageScaffold {
     // Rows come from the initial updates list; recomputed on every state change.
     property int tick: 0
     Connections { target: Store; function onCountsChanged() { page.tick++ } }
-    Repeater { id: stateProbe; model: Store.list("updates"); delegate: Item { Connections { target: Store.app(modelData); function onStateChanged() { page.tick++ } } } }
+    Repeater { id: stateProbe; model: Store.shelfVersion >= 0 ? Store.list("updates") : []; delegate: Item { Connections { target: Store.app(modelData); function onStateChanged() { page.tick++ } } } }
 
-    readonly property var rows: Store.list("updates").map(id => Store.app(id))
+    readonly property var rows: Store.shelfVersion >= 0 ? Store.list("updates").map(id => Store.app(id)) : []
     readonly property int pending: { tick; return rows.filter(a => a.status === "update").length }
     readonly property bool busy: { tick; return rows.some(a => a.status === "busy") }
     readonly property bool done: { tick; return rows.length > 0 && rows.every(a => a.status === "installed") }

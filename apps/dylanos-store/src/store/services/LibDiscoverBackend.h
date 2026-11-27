@@ -30,6 +30,7 @@ public:
 
     void registerResource(const QString &id, AbstractResource *resource) override;
     QVariant resourceIcon(const QString &id) const override;
+    QString resourceLongDescription(const QString &id) const override;
     bool launch(const QString &id) override;
 
 private:

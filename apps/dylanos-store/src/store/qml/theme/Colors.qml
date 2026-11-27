@@ -3,7 +3,8 @@ import QtQuick
 
 // Single source of truth for colour. Values mirror the React prototype (src/index.css).
 QtObject {
-    SystemPalette { id: systemPalette; colorGroup: SystemPalette.Active }
+    // QtObject no admite hijos: la paleta del sistema va como propiedad.
+    readonly property SystemPalette systemPalette: SystemPalette { colorGroup: SystemPalette.Active }
     readonly property bool dark: systemPalette.window.hsvValue < 0.5
     readonly property color bg: dark ? "#070405" : "#f4f2f2"
     readonly property color panel: dark ? "#0f0a0b" : "#ffffff"

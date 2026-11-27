@@ -44,7 +44,7 @@ int AppFilterModel::score(const AppItem *a, const QString &needle)
     for (const auto &t : a->m_tags)
         if (t.contains(n))
             return 2;
-    if (a->m_short.toLower().contains(n) || a->m_long.toLower().contains(n) || a->m_categoryLabel.toLower().contains(n))
+    if (a->m_short.toLower().contains(n) || a->longDesc().toLower().contains(n) || a->m_categoryLabel.toLower().contains(n))
         return 1;
     return 0;
 }

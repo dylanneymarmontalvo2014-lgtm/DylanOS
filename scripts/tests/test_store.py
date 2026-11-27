@@ -153,6 +153,40 @@ class StoreStructureTest(unittest.TestCase):
         self.assertLess(cache, cleanup)
         self.assertIn("qml6-module-qtquick-shapes", (ROOT / "packages/default/packages.list").read_text())
 
+    def test_qml_singletons_qtobject_sin_hijos(self):
+        """QtObject no tiene propiedad por defecto: un hijo directo no carga.
+
+        Colors.qml declaraba `SystemPalette { ... }` dentro de un QtObject raíz; el
+        árbol compilaba, pero la tienda no arrancaba (fallo al cargar el QML).
+        """
+        for path in sorted((STORE / "qml/theme").glob("*.qml")):
+            lines = path.read_text(encoding="utf-8").splitlines()
+            body = [line for line in lines if not line.strip().startswith("//")]
+            root = next((line for line in body if line.rstrip().endswith("{")), "")
+            if root.split()[0] != "QtObject":
+                continue
+            for number, line in enumerate(lines, 1):
+                if re.match(r"^    [A-Z][\w.]* \{", line):
+                    self.fail(f"{path.name}:{number} declara un hijo dentro de QtObject: {line.strip()}")
+
+    def test_vistas_por_enlace_directo_son_reactivas(self):
+        """Abrir una ficha o las actualizaciones al arrancar debe resolverse al llegar
+        el catálogo: sin la dependencia de shelfVersion la vista queda vacía."""
+        detail = (STORE / "qml/pages/DetailPage.qml").read_text(encoding="utf-8")
+        self.assertIn("Store.shelfVersion >= 0 ? Store.app(appId)", detail)
+        updates = (STORE / "qml/pages/UpdatesPage.qml").read_text(encoding="utf-8")
+        self.assertIn('Store.shelfVersion >= 0 ? Store.list("updates")', updates)
+
+    def test_descripcion_larga_diferida(self):
+        """La lista no retiene la descripción larga de las ~2600 apps: se pide al abrir
+        la ficha. El campo se lee del backend una sola vez."""
+        item = (STORE / "models/AppItem.h").read_text(encoding="utf-8")
+        self.assertIn("Q_PROPERTY(QString longDesc READ longDesc CONSTANT)", item)
+        self.assertNotIn("m_short, m_long", item)
+        controller = (STORE / "models/StoreController.cpp").read_text(encoding="utf-8")
+        self.assertNotIn("a->m_long = res->longDescription()", controller)
+        self.assertIn("a->m_backend = m_backend", controller)
+
     def test_packages_and_build_wiring(self):
         default = (ROOT / "packages/default/packages.list").read_text(encoding="utf-8")
         self.assertNotIn("plasma-discover", default)

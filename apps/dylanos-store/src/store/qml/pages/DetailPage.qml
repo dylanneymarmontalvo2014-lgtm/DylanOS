@@ -6,7 +6,9 @@ PageScaffold {
     id: page
     header: false
     property string appId
-    readonly property var app: Store.app(appId)
+    // shelfVersion hace reactiva la lectura: al llegar el catálogo se resuelve la app
+    // aunque la vista se abra por enlace directo antes de cargarlo.
+    readonly property var app: Store.shelfVersion >= 0 ? Store.app(appId) : null
     readonly property string st: app.status
     readonly property bool inst: st === "installed" || st === "update" || ((st === "busy" || st === "error") && app.isUpdate)
     readonly property bool favorite: Store.favorites.indexOf(appId) >= 0
@@ -189,7 +191,7 @@ PageScaffold {
                 Layout.alignment: Qt.AlignTop
                 spacing: 0
                 Txt { text: "Acerca de esta aplicación"; font.pixelSize: Typography.lg; font.weight: Font.DemiBold; Layout.bottomMargin: 8 }
-                Txt { Layout.fillWidth: true; text: page.app.longDesc; color: Colors.dim; wrapMode: Text.WordWrap; lineHeight: 1.45 }
+                Txt { Layout.fillWidth: true; text: page.app.longDesc; textFormat: Text.RichText; color: Colors.dim; wrapMode: Text.WordWrap; lineHeight: 1.45 }
                 Txt { text: "Valoraciones y reseñas"; font.pixelSize: Typography.lg; font.weight: Font.DemiBold; Layout.topMargin: 24; Layout.bottomMargin: 8 }
                 Txt { text: "Todavía no hay valoraciones de usuarios."; color: Colors.faint; font.pixelSize: Typography.sm }
                 Txt { visible: page.st === "update" && page.app.changes.length > 0; text: "Novedades de la versión " + page.app.newVersion; font.pixelSize: Typography.lg; font.weight: Font.DemiBold; Layout.topMargin: 24; Layout.bottomMargin: 8 }

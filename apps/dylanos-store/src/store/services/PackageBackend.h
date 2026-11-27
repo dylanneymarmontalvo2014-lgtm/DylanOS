@@ -56,6 +56,12 @@ public:
         Q_UNUSED(id)
         return {};
     }
+    // Descripción larga: se pide solo al abrir una ficha, nunca al listar.
+    virtual QString resourceLongDescription(const QString &id) const
+    {
+        Q_UNUSED(id)
+        return {};
+    }
     virtual bool launch(const QString &id)
     {
         Q_UNUSED(id)

@@ -24,6 +24,12 @@ QVariant LibDiscoverBackend::resourceIcon(const QString &id) const
     return res ? res->icon() : QVariant();
 }
 
+QString LibDiscoverBackend::resourceLongDescription(const QString &id) const
+{
+    auto *res = m_resources.value(id);
+    return res ? res->longDescription() : QString();
+}
+
 bool LibDiscoverBackend::launch(const QString &id)
 {
     auto *res = m_resources.value(id);

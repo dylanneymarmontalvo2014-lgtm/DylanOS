@@ -108,7 +108,7 @@ bool StoreController::loadCatalog(const QJsonObject &root, QString *error)
         a->m_category = o[QLatin1String("cat")].toString();
         a->m_categoryLabel = labels.value(a->m_category);
         a->m_short = o[QLatin1String("short")].toString();
-        a->m_long = o[QLatin1String("long")].toString();
+        a->setLongDesc(o[QLatin1String("long")].toString());
         a->m_dev = o[QLatin1String("dev")].toString();
         a->m_license = o[QLatin1String("license")].toString();
         a->m_version = o[QLatin1String("v")].toString();
@@ -253,7 +253,7 @@ void StoreController::addResources(const QVector<AbstractResource *> &resources,
         if (a->m_name.isEmpty())
             a->m_name = res->packageName();
         a->m_short = res->comment();
-        a->m_long = res->longDescription();
+        a->m_backend = m_backend;
         a->m_dev = res->author();
         if (a->m_dev.isEmpty())
             a->m_dev = res->packageName();

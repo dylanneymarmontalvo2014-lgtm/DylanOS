@@ -3,6 +3,8 @@
 #include <QStringList>
 #include <QtQml/qqmlregistration.h>
 
+class PackageBackend;
+
 // One catalog entry as seen by QML. Static fields come from the catalog (demo JSON today,
 // AppStream tomorrow); live fields (status, progress...) are fed by the PackageBackend.
 class AppItem : public QObject
@@ -18,7 +20,7 @@ class AppItem : public QObject
     Q_PROPERTY(QString category MEMBER m_category CONSTANT)
     Q_PROPERTY(QString categoryLabel MEMBER m_categoryLabel CONSTANT)
     Q_PROPERTY(QString shortDesc MEMBER m_short CONSTANT)
-    Q_PROPERTY(QString longDesc MEMBER m_long CONSTANT)
+    Q_PROPERTY(QString longDesc READ longDesc CONSTANT)
     Q_PROPERTY(QString developer MEMBER m_dev CONSTANT)
     Q_PROPERTY(QString license MEMBER m_license CONSTANT)
     Q_PROPERTY(QString version MEMBER m_version CONSTANT)
@@ -44,13 +46,20 @@ public:
     using QObject::QObject;
 
     // static
-    QString m_id, m_name, m_glyph, m_color, m_category, m_categoryLabel, m_short, m_long, m_dev, m_license;
+    QString m_id, m_name, m_glyph, m_color, m_category, m_categoryLabel, m_short, m_dev, m_license;
     QString m_version, m_newVersion, m_size, m_date, m_installedOn, m_initial, m_failsOnce;
     QString m_packageName, m_backendName;
     QStringList m_tags, m_changes;
+    PackageBackend *m_backend = nullptr;
     bool m_unknown = false;
     bool m_hasIcon = false;
     int m_iconVersion = 0;
+
+    // La descripción larga se resuelve una sola vez y solo si alguien la pide.
+    QString longDesc() const;
+    void setLongDesc(const QString &text);
+    mutable QString m_longDesc;
+    mutable bool m_longDescLoaded = false;
 
     QString installedOn() const { return m_installedOn; }
     void setInstalledOn(const QString &date)
