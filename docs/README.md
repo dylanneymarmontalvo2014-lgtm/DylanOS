@@ -6,6 +6,7 @@ Este directorio reúne la documentación activa y útil del proyecto DylanOS Cri
 
 - [install.md](install.md): instalación, arranque live y validación.
 - [optimization.md](optimization.md): estrategia y verificación de optimización del sistema/ISO.
+- [benchmarks/resource-budget.md](benchmarks/resource-budget.md): presupuestos de RAM/CPU/GPU, arnés de medición y primera línea base.
 - [architecture.md](architecture.md): arquitectura y principios del proyecto.
 - [dylanos-shell.md](dylanos-shell.md): dashboard, Control Center y DylanOS Console.
 - [widgets.md](widgets.md): DylanOS Widgets (plasmoides, retícula, live frente a instalado) y su [auditoría](widgets-auditoria.md).

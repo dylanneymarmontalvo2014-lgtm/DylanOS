@@ -220,6 +220,50 @@ se modifica el wallpaper ni la geometría de perfiles existentes.
 - **Sin recortes funcionales:** no se desactivan red, audio, Bluetooth, energía,
   accesibilidad, actualizaciones, KIO ni aplicaciones predeterminadas. Los
   cambios son reversibles y no instalan un daemon nuevo.
-- **Validación:** 48 pruebas de tema/shell/staging, 54 de Configuration/contratos
-  y 15 pruebas C++ de Crimson Glass con Qt 6.8.2. No se afirma un porcentaje de
-  ahorro de CPU/RAM: debe medirse en la misma sesión y bajo la misma carga.
+- **Validación:** 105 pruebas Python de documentación, tema/shell/staging y
+  Configuration/contratos, más 15 pruebas C++ de Crimson Glass con Qt 6.8.2.
+  La suite no privilegiada completa (unittest, staging y cargas QML) terminó OK;
+  `plasmawindowed` quedó pendiente porque el kernel denegó los montajes sin sudo.
+  No se afirma un porcentaje de ahorro de CPU/RAM: debe medirse en la misma sesión
+  y bajo la misma carga.
+
+## Especificación Ultra de recursos (2026-11-26)
+
+Se fijan presupuestos medibles: ≤ 300 MB de RAM y ≤ 3 % de CPU/GPU en reposo;
+≤ 200 MB de RAM, ≤ 3 % de CPU y ≤ 1 % de GPU por aplicación oficial en uso normal
+(DylanOS Browser excluido). Una operación pesada puede excederlos de forma
+temporal, pero debe volver al objetivo al terminar.
+
+El instrumento es [`scripts/benchmarks/resource_benchmark.py`](../scripts/benchmarks/resource_benchmark.py):
+lee `/proc` y `/sys`, informa RAM RSS/PSS, swap, CPU normalizada, GPU de sistema y
+por proceso (`fdinfo`), disco y número de procesos, y escribe JSON y Markdown.
+Cuando no existe una fuente real (GPU sin contador, latencia de UI, FPS) la
+métrica se marca como no disponible; no se sustituye por cero.
+
+La primera línea base, el método reproducible, el desglose del Store y las
+acciones aplicadas están en [benchmarks/resource-budget.md](benchmarks/resource-budget.md).
+Allí también se registra lo que aún falta: medir el reposo en la ISO instalada y
+añadir sondas reales de latencia de UI y frame pacing.
+
+Cambios de esta revisión, verificados por compilación en el chroot:
+
+- Explorer: refresco de dispositivos por señales de `KFilePlacesModel`; el sondeo
+  de 10 s desaparece y el de espacio libre pasa a 60 s.
+- Configuration: la prueba de módulos KCM es asíncrona y ya no congela la UI.
+- Configuration: corregida una declaración de `LoginManagerService` fuera de
+  ámbito que rompía la compilación de `main.cpp`.
+- Store: corregido `Colors.qml` (`SystemPalette` era hijo de un `QtObject`; el
+  árbol compilaba pero la tienda no arrancaba).
+- Store: la descripción larga se lee del backend al abrir la ficha en vez de
+  retenerse para todo el catálogo (~1,8 MiB menos de mediana; la búsqueda sigue
+  coincidiendo porque consulta `longDesc()`).
+- Store: la ficha y las actualizaciones son reactivas a `Store.shelfVersion`;
+  abrirlas por enlace directo ya no deja la vista vacía.
+- Store: la descripción larga se renderiza como texto enriquecido, no como
+  etiquetas `<p>` literales.
+
+Queda pendiente el catálogo completo al arrancar (~2.600 apps), la descarga de
+valoraciones ODRS que la UI no muestra, el contraste del destacado en modo claro
+y el aborto de libostree con un remoto sin metadatos. Se documentan en la línea
+base para no presentarlos como resueltos.
+
